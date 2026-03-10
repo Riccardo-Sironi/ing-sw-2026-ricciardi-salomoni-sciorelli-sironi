@@ -11,7 +11,13 @@ public class GameModel {
     private int foodGeneralSupply;
     private int prestigeGeneralSupply;
 
-    private ArrayList<BuildingCard> buildingCardsDeck;
+    // current solution but may be switched with the bottom version
+    private ArrayList<ArrayList<BuildingCard>> buildingCardsDecks;
+
+//    private ArrayList<BuildingCard> buildingCardsEraIDeck;
+//    private ArrayList<BuildingCard> buildingCardsEraIIDeck;
+//    private ArrayList<BuildingCard> buildingCardsEraIIIDeck;
+
     private ArrayList<TribeCard> tribeCardsDeck;
 
     private EventCard[] finalEventCards;
@@ -24,8 +30,8 @@ public class GameModel {
     public GameModel() {
     }
 
-    protected boolean startGame() {};
-    protected boolean endGame() {};
+    protected boolean startGame() {return true;};
+    protected boolean endGame() {return true;};
 
     protected ArrayList<TileSlot> getOfferTrack() {
         return offerTrack;
@@ -35,8 +41,21 @@ public class GameModel {
         return turnOrderTile;
     }
 
-    protected ArrayList<BuildingCard> getBuildingCardsDeck() {
-        return buildingCardsDeck;
+//    public ArrayList<BuildingCard> getBuildingCardsEraIDeck() {
+//        return buildingCardsEraIDeck;
+//    }
+//
+//    public ArrayList<BuildingCard> getBuildingCardsEraIIDeck() {
+//        return buildingCardsEraIIDeck;
+//    }
+//
+//    public ArrayList<BuildingCard> getBuildingCardsEraIIIDeck() {
+//        return buildingCardsEraIIIDeck;
+//    }
+
+    // current solution but may be switched with the version above
+    public ArrayList<ArrayList<BuildingCard>> getBuildingCardsDecks() {
+        return buildingCardsDecks;
     }
 
     protected ArrayList<TribeCard> getTribeCardsDeck() {

@@ -8,10 +8,12 @@ public class Board {
     private ArrayList<BuildingCard> topBuildings;
     private ArrayList<BuildingCard> bottomBuildings;
 
+    private ArrayList<ArrayList<BuildingCard>> buildingsDecks;
+
     // WIP
-    private ArrayList<BuildingCard> eraIBuildingDeck;
-    private ArrayList<BuildingCard> eraIIBuildingDeck;
-    private ArrayList<BuildingCard> eraIIIBuildingDeck;
+//    private ArrayList<BuildingCard> eraIBuildingsDeck;
+//    private ArrayList<BuildingCard> eraIIBuildingsDeck;
+//    private ArrayList<BuildingCard> eraIIIBuildingsDeck;
 
     private Era currentEra;
 
@@ -23,6 +25,8 @@ public class Board {
 
         topBuildings = new ArrayList<BuildingCard>();
         bottomBuildings = new ArrayList<BuildingCard>();
+
+        buildingsDecks = new ArrayList<ArrayList<BuildingCard>>(3);
 
         currentEra = Era.ERA_I;
     }
@@ -43,6 +47,18 @@ public class Board {
         return bottomBuildings;
     }
 
+//    public ArrayList<BuildingCard> getEraIBuildingsDeck() {
+//        return eraIBuildingsDeck;
+//    }
+//
+//    public ArrayList<BuildingCard> getEraIIBuildingsDeck() {
+//        return eraIIBuildingsDeck;
+//    }
+//
+//    public ArrayList<BuildingCard> getEraIIIBuildingsDeck() {
+//        return eraIIIBuildingsDeck;
+//    }
+
     public Era getCurrentEra() {
         return currentEra;
     }
@@ -53,9 +69,25 @@ public class Board {
      * @return
      */
     protected boolean initBoard(GameModel model) {
+        // first and only initialization of bottom row tribe cards
         populateBottomRow(model);
+
+        // top row initialization (there could be some events cards already)
         populateTopRow(model);
-        populateTopBuildings(model);
+
+        // create the decks of buildings cards
+        // the rules specify the number of the buildings on the top row based on the number of player and Era
+        int[][] nBuildings = {{1,2,3},{2,2,4},{2,3,4},{2,3,5}};
+
+        for (int i = 0; i < buildingsDecks.size(); i++) {
+            for (int j = 0; j < nBuildings[model.getPlayers().size() - 2][i]; j++) {
+                // add to the board deck 'i' the card removed from the deck 'i' of the model
+                buildingsDecks.get(i).addFirst(model.getBuildingCardsDecks().get(i).removeFirst());
+            }
+        }
+
+        // populate the top building cards space with the cards from deck of the current era (ERA_I in this case)
+        populateTopBuildings();
 
         return true;
     };
@@ -130,27 +162,12 @@ public class Board {
 
     /**
      * {@inheritDoc}
-     * Populate the top building cards row.
-     * @param model Game model
+     * Populate the top building cards row
      * @return
      */
-    protected boolean populateTopBuildings(GameModel model) {
-        // the rules specify the number of the buildings on the top row based on
-        // the number of player and current Era
-        int[][] nBuildings = {{1,2,3},{2,2,4},{2,3,4},{2,3,5}};
-
-        // add the specified number of buildings from the deck
-        for(int i = 0; i < nBuildings[model.getPlayers().size() - 2][currentEra.ordinal()]; i++) {
-            BuildingCard removedCard = model.getBuildingCardsDeck().removeFirst();
-
-            // WIP
-            if(removedCard.getEra().equals(getCurrentEra())) {
-                topBuildings.addFirst(removedCard);
-            } else {
-                //  WIP
-                return false;
-            }
-        }
+    protected boolean populateTopBuildings() {
+        topBuildings = buildingsDecks.get(currentEra.ordinal());
+        buildingsDecks.set(currentEra.ordinal(), null);
 
         return true;
     };
