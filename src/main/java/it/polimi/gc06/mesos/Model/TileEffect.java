@@ -1,4 +1,6 @@
 package it.polimi.gc06.mesos.Model;
 
-public abstract class TileEffect {
+public interface TileEffect {
+
+    abstract boolean execute(Player player, GameModel context) throws IllegalArgumentException;
 }
