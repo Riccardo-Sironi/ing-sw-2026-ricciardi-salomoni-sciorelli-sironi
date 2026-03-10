@@ -7,4 +7,6 @@ module it.polimi.gc06.mesos {
 
     opens it.polimi.gc06.mesos to javafx.fxml;
     exports it.polimi.gc06.mesos;
+    exports it.polimi.gc06.mesos.Model;
+    opens it.polimi.gc06.mesos.Model to javafx.fxml;
 }
