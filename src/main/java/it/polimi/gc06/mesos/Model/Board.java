@@ -8,6 +8,11 @@ public class Board {
     private ArrayList<BuildingCard> topBuildings;
     private ArrayList<BuildingCard> bottomBuildings;
 
+    // WIP
+    private ArrayList<BuildingCard> eraIBuildingDeck;
+    private ArrayList<BuildingCard> eraIIBuildingDeck;
+    private ArrayList<BuildingCard> eraIIIBuildingDeck;
+
     private Era currentEra;
 
     /*  */
@@ -50,6 +55,7 @@ public class Board {
     protected boolean initBoard(GameModel model) {
         populateBottomRow(model);
         populateTopRow(model);
+        populateTopBuildings(model);
 
         return true;
     };
@@ -136,7 +142,14 @@ public class Board {
         // add the specified number of buildings from the deck
         for(int i = 0; i < nBuildings[model.getPlayers().size() - 2][currentEra.ordinal()]; i++) {
             BuildingCard removedCard = model.getBuildingCardsDeck().removeFirst();
-            topBuildings.addFirst(removedCard);
+
+            // WIP
+            if(removedCard.getEra().equals(getCurrentEra())) {
+                topBuildings.addFirst(removedCard);
+            } else {
+                //  WIP
+                return false;
+            }
         }
 
         return true;
