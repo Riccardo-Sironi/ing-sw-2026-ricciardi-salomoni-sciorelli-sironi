@@ -15,7 +15,7 @@ public class Player {
     private Color color;
 
     //CONSTRUCTOR
-    public Player(String nickname) {
+    public Player(String nickname, Color color) {
         this.nickname = nickname;
         this.prestigeTokens = 0;
         this.foodTokens = 0;
@@ -52,6 +52,7 @@ public class Player {
     protected void addFoodTokens(int amount){
         this.foodTokens += amount;
     }
+    /*remove food tokens only if the player has them. otherwise is thrown an excception*/
     protected void removeFoodTokens(int amount) throws IllegalStateException{
         if ((this.foodTokens - amount) >= 0) this.foodTokens -= amount;
         else throw new IllegalStateException();
@@ -69,7 +70,7 @@ public class Player {
     }
 
     //COLOR
-    protected Color getColor(Color color){
+    protected Color getColor(){
         return this.color;
     }
 }

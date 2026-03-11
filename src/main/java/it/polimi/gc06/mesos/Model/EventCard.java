@@ -16,7 +16,7 @@ public abstract class EventCard extends TribeCard{
     }
 
     //RESOLVE
-    public abstract void resolveEvent(Player player);
+    public abstract void resolveEvent(Player player, GameModel context);
 
     // we need this to initialize the bottom row of the board
     @Override
