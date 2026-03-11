@@ -10,16 +10,9 @@ public class Board {
 
     private ArrayList<ArrayList<BuildingCard>> buildingsDecks;
 
-    // WIP
-//    private ArrayList<BuildingCard> eraIBuildingsDeck;
-//    private ArrayList<BuildingCard> eraIIBuildingsDeck;
-//    private ArrayList<BuildingCard> eraIIIBuildingsDeck;
-
     private Era currentEra;
 
-    /*  */
-
-    public Board(GameModel model) {
+    public Board() {
         topRow = new ArrayList<TribeCard>();
         bottomRow = new ArrayList<TribeCard>();
 
@@ -31,34 +24,50 @@ public class Board {
         currentEra = Era.ERA_I;
     }
 
+    /**
+     * {@inheritDoc}
+     * @return The top row of tribe cards ArrayList.
+     */
     public ArrayList<TribeCard> getTopRow() {
         return topRow;
     }
 
+    /**
+     * {@inheritDoc}
+     * @return The bottom row of tribe cards ArrayList.
+     */
     public ArrayList<TribeCard> getBottomRow() {
         return bottomRow;
     }
 
+    /**
+     * {@inheritDoc}
+     * @return The top row of building cards space ArrayList.
+     */
     public ArrayList<BuildingCard> getTopBuildings() {
         return topBuildings;
     }
 
+    /**
+    * {@inheritDoc}
+    * @return The bottom row of building cards space ArrayList.
+    */
     public ArrayList<BuildingCard> getBottomBuildings() {
         return bottomBuildings;
     }
 
-//    public ArrayList<BuildingCard> getEraIBuildingsDeck() {
-//        return eraIBuildingsDeck;
-//    }
-//
-//    public ArrayList<BuildingCard> getEraIIBuildingsDeck() {
-//        return eraIIBuildingsDeck;
-//    }
-//
-//    public ArrayList<BuildingCard> getEraIIIBuildingsDeck() {
-//        return eraIIIBuildingsDeck;
-//    }
+    /**
+     * {@inheritDoc}
+     * @return The decks of building cards which are not active yet (so whose era is yet to come).
+     */
+    public ArrayList<ArrayList<BuildingCard>> getBuildingsDecks() {
+        return buildingsDecks;
+    }
 
+    /**
+     * {@inheritDoc}
+     * @return The current era of the game.
+     */
     public Era getCurrentEra() {
         return currentEra;
     }
@@ -90,7 +99,7 @@ public class Board {
         populateTopBuildings();
 
         return true;
-    };
+    }
 
     /**
      * {@inheritDoc}
@@ -103,14 +112,26 @@ public class Board {
         // (in the first round it's forbidden to have events in the bottom row so we
         // move them from the bottom to the top)
 
+        boolean newEraHasCome = false;
+
         for (int i = 0; i < model.getPlayers().size() + 4 - topRow.size(); i++) {
             TribeCard removedCard = model.getTribeCardsDeck().removeFirst();
 
+            // should this be removedCard.Era > currentEra?
+            if(!removedCard.getEra().equals(currentEra)) {
+                newEraHasCome = true;
+                // tell new era has come ....
+            }
             topRow.addFirst(removedCard);
+
+        }
+
+        if (newEraHasCome) {
+            currentEra = currentEra.nextEra();
         }
 
         return true;
-    };
+    }
 
     /**
      * {@inheritDoc}
@@ -124,8 +145,8 @@ public class Board {
         for (int i = 0; i < model.getPlayers().size() + 4 - bottomRow.size(); i++) {
             TribeCard removedCard = model.getTribeCardsDeck().removeFirst();
 
-            // check if the card is not an event
-            if (removedCard instanceof EventCard) {
+            // check if the card is an event
+            if (removedCard.isEventCard()) {
                 topRow.addFirst(removedCard);
                 i--;
             } else {
@@ -143,11 +164,10 @@ public class Board {
      */
     protected boolean moveFromTopToBottom() {
         bottomRow = topRow;
-        topRow = null;
         topRow = new ArrayList<TribeCard>();
 
         return true;
-    };
+    }
 
     /**
      * {@inheritDoc}
@@ -158,7 +178,7 @@ public class Board {
         bottomRow.clear();
 
         return true;
-    };
+    }
 
     /**
      * {@inheritDoc}
@@ -170,7 +190,7 @@ public class Board {
         buildingsDecks.set(currentEra.ordinal(), null);
 
         return true;
-    };
+    }
 
     /**
      * {@inheritDoc}
@@ -179,11 +199,10 @@ public class Board {
      */
     protected boolean moveBuildingsFromTopTopBottom() {
         bottomBuildings = topBuildings;
-        topBuildings = null;
         topBuildings = new ArrayList<BuildingCard>();
 
         return  true;
-    };
+    }
 
     /**
      * {@inheritDoc}
@@ -194,8 +213,27 @@ public class Board {
         bottomBuildings.clear();
 
         return true;
-    };
+    }
 
-    protected boolean removeCardFromTop() {return true;};
-    protected boolean removeCardFromBottom() {return true;};
+    /**
+     * {@inheritDoc}
+     * Removes the specified card from the top row of tribe cards.
+     * @return
+    */
+    protected boolean removeCardFromTop(TribeCard card) {
+        topRow.remove(card);
+        return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     * Removes the specified card from the bottom row of tribe cards.
+     * @return
+     */
+    protected boolean removeCardFromBottom(TribeCard card) {
+        bottomRow.remove(card);
+        return true;
+    }
+
+    // should we have a remove top row (or bottom row) method based on the index of the card on the list?
 }

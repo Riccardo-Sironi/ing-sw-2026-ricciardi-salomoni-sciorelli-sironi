@@ -1,12 +1,11 @@
 package it.polimi.gc06.mesos.Model;
 
 public abstract class EventCard extends TribeCard{
-
     private String eventType;
-    private int era;
+    private Era era;
 
     //CONSTRUCTOR
-    public EventCard(String eventType, int era){
+    public EventCard(String eventType, Era era){
         this.eventType = eventType;
         this.era = era;
     }
@@ -16,11 +15,13 @@ public abstract class EventCard extends TribeCard{
         return this.eventType;
     }
 
-    //EVENT ERA
-    protected int getEra(){
-        return this.era;
-    }
-
     //RESOLVE
     public abstract void resolveEvent(Player player);
+
+    // we need this to initialize the bottom row of the board
+    @Override
+    public boolean isEventCard() {
+        return true;
+    }
+
 }
