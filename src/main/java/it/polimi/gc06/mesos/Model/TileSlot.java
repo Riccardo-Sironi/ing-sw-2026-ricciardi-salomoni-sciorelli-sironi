@@ -8,11 +8,10 @@ public class TileSlot {
     /**
      * TileSlot constructor.
      *
-     * @param  tileEffect effect applied on the player on player positioning.
+     * @param  tileEffect effect applied on the player on player positioning, it can be null if no effect needs to be applied.
      * @throws IllegalArgumentException {@inheritDoc}
      */
-    public TileSlot(TileEffect tileEffect) throws IllegalArgumentException{
-        if(tileEffect == null) throw new IllegalArgumentException();
+    public TileSlot(TileEffect tileEffect){
         this.tileEffect = tileEffect;
         this.player = null;
     }
@@ -21,7 +20,6 @@ public class TileSlot {
      * Returns the player currently on the tile.
      *
      * @return the element at the specified position in this list
-     * @throws IndexOutOfBoundsException {@inheritDoc}
      */
     protected Player getPlayer() {
         return player;
@@ -40,7 +38,7 @@ public class TileSlot {
         if(player == null) throw new IllegalArgumentException();
         if(this.player != null) throw new IllegalStateException();
         this.player = player;
-        return tileEffect.execute(player,context);
+        return tileEffect == null || tileEffect.execute(player, context);
     }
 
     /**

@@ -3,19 +3,19 @@ package it.polimi.gc06.mesos.Model;
 public class ChooseCardTileEffect implements TileEffect{
 
     private final int numOfTopCards;
-    private final int numOfBottomcards;
+    private final int numOfBottomCards;
 
-    public ChooseCardTileEffect(int numOfTopCards, int numOfBottomcards) {
+    public ChooseCardTileEffect(int numOfTopCards, int numOfBottomCards) {
         this.numOfTopCards = numOfTopCards;
-        this.numOfBottomcards = numOfBottomcards;
+        this.numOfBottomCards = numOfBottomCards;
     }
 
     /**
-     * Let the player draw .
+     * Let the player draw the specified number of card from the top/bottom row.
      *
      * @param player the player placed on the tile.
      * @param context the current GameModel.
-     * @return if the effect has been applied succesfuly
+     * @return if the effect has been applied successfully
      * @throws IllegalArgumentException {@inheritDoc}
      * @throws IllegalStateException {@inheritDoc}
      */

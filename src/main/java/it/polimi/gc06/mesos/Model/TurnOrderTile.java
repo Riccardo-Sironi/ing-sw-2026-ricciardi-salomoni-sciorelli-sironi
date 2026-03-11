@@ -36,10 +36,11 @@ public class TurnOrderTile {
      * @param player the player to add to the nth tile.
      * @param  n index of the element to return.
      * @param context the current GameModel.
+     * @return whether the effect has been applied successfully to the player placed in the specified position
      * @throws IllegalArgumentException {@inheritDoc}
      */
-    protected void setPlayerOnNthTile(Player player, int n, GameModel context) throws IllegalArgumentException{
+    protected boolean setPlayerOnNthTile(Player player, int n, GameModel context) throws IllegalArgumentException{
         if(n < 0 || n > slots.size() || player == null) throw new IllegalArgumentException();
-        slots.get(n).setPlayer(player, context);
+        return slots.get(n).setPlayer(player, context);
     }
 }
