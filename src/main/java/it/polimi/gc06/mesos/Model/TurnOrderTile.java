@@ -40,7 +40,7 @@ public class TurnOrderTile {
      * @throws IllegalArgumentException {@inheritDoc}
      */
     protected boolean setPlayerOnNthTile(Player player, int n, GameModel context) throws IllegalArgumentException{
-        if(n < 0 || n > slots.size() || player == null) throw new IllegalArgumentException();
+        if(n < 0 || n > slots.size() || player == null || context == null) throw new IllegalArgumentException();
         return slots.get(n).setPlayer(player, context);
     }
 }

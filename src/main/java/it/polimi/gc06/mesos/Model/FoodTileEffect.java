@@ -16,7 +16,7 @@ public class FoodTileEffect implements TileEffect{
     }
 
     /**
-     * Adds numFood food tokens to the player if the general supply has enough.
+     * Adds numFood food tokens to the player.
      *
      * @param player the player to which the effect will be applied.
      * @param context the current GameModel.
@@ -27,10 +27,7 @@ public class FoodTileEffect implements TileEffect{
     public boolean execute(Player player, GameModel context) throws IllegalArgumentException{
         if(player == null || context == null) throw new IllegalArgumentException();
 
-        int availableFood = context.removeUpToFromGeneralFoodSupply(numFood);
-        if(availableFood > 0) player.addFood(availableFood);
-        else return false;
-
+        player.addFoodTokens(numFood);
         return true;
     }
 }
