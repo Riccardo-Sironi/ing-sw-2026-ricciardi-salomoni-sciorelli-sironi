@@ -12,6 +12,9 @@ public class Board {
 
     private Era currentEra;
 
+    // TODO : the getters returns the reference to the objects, should we return a
+    // a copy of some of them which should not be modified externally?
+
     public Board() {
         topRow = new ArrayList<TribeCard>();
         bottomRow = new ArrayList<TribeCard>();
@@ -20,6 +23,9 @@ public class Board {
         bottomBuildings = new ArrayList<BuildingCard>();
 
         buildingsDecks = new ArrayList<ArrayList<BuildingCard>>(3);
+        for (int i = 0; i < 3; i++) {
+            buildingsDecks.add(new ArrayList<BuildingCard>());
+        }
 
         currentEra = Era.ERA_I;
     }
@@ -74,15 +80,31 @@ public class Board {
 
     /**
      * {@inheritDoc}
-     * @param model Game model
-     * @return
+     * Initialize the board with the cards from the model.
      */
-    protected boolean initBoard(GameModel model) {
-        // first and only initialization of bottom row tribe cards
-        populateBottomRow(model);
+    protected void initBoard(GameModel model)  {
+        if(model == null) {
+            throw new IllegalArgumentException("Model cannot be null");
+        }
+        if(model.getTribeCardsDeck() == null || model.getTribeCardsDeck().isEmpty()) {
+            throw new IllegalArgumentException("Tribe cards deck cannot be null or empty");
+        }
+        if(model.getBuildingCardsDecks() == null || model.getBuildingCardsDecks().isEmpty()) {
+            throw new IllegalArgumentException("Building cards decks cannot be null or empty");
+        }
+        if(model.getPlayers().size() < 2 || model.getPlayers().size() > 5) {
+            throw new IllegalArgumentException("Number of players must be between 2 and 5");
+        }
+        if(model.getFinalEventCards() == null || model.getFinalEventCards().length != 2) {
+            throw new IllegalArgumentException("Final event cards cannot be null and there must be 2 of them");
+        }
 
-        // top row initialization (there could be some events cards already)
-        populateTopRow(model);
+        // rules state that the initialization of the board is done in this order:
+        // initialize bottom row -> initialize top row -> create building decks -> initialize top buildings row
+
+        // (ma inizializziamo prima i mazzetti dei buildings perché nel caso di new era durante i test con
+        // poche carte potrebbe essere necessario spostare dei buildings dalla top row alla bottom row e quindi
+        // è meglio avere già i mazzetti pronti)
 
         // create the decks of buildings cards
         // the rules specify the number of the buildings on the top row based on the number of player and Era
@@ -95,54 +117,103 @@ public class Board {
             }
         }
 
+        // first and only initialization of bottom row tribe cards
+        populateBottomRow(model);
+
+        // top row initialization (there could be some events cards already)
+        populateTopRow(model);
+
         // populate the top building cards space with the cards from deck of the current era (ERA_I in this case)
         populateTopBuildings();
-
-        return true;
     }
 
     /**
      * {@inheritDoc}
      * Populate the top row of tribe cards.
      * @param model Game model
-     * @return
      */
-    protected boolean populateTopRow(GameModel model) {
+    protected void populateTopRow(GameModel model) {
         // we need to subtract the toprow.size() for initialization purposes
         // (in the first round it's forbidden to have events in the bottom row so we
         // move them from the bottom to the top)
 
+        if(model == null) {
+            throw new IllegalArgumentException("Model cannot be null");
+        }
+        if(model.getTribeCardsDeck() == null) {
+            throw new IllegalArgumentException("Tribe cards deck cannot be null or empty");
+        }
+        if(model.getPlayers().size() < 2 || model.getPlayers().size() > 5) {
+            throw new IllegalArgumentException("Number of players must be between 2 and 5");
+        }
+        if(model.getFinalEventCards() == null || model.getFinalEventCards().length != 2) {
+            throw new IllegalArgumentException("Final event cards cannot be null and there must be 2 of them");
+        }
+        if (topRow == null) {
+            throw new IllegalStateException("Top row cannot be null during top row initialization");
+        }
+
         boolean newEraHasCome = false;
 
-        for (int i = 0; i < model.getPlayers().size() + 4 - topRow.size(); i++) {
+        int cardsToDraw = model.getPlayers().size() + 4 - topRow.size();
+
+        for (int i = 0; i < cardsToDraw; i++) {
+            if(model.getTribeCardsDeck().isEmpty()) {
+                // if the deck is empty then we add to the top row the final event cards
+                topRow.addFirst(model.getFinalEventCards()[0]);
+                topRow.addFirst(model.getFinalEventCards()[1]);
+                break;
+            }
+
             TribeCard removedCard = model.getTribeCardsDeck().removeFirst();
 
             // should this be removedCard.Era > currentEra?
-            if(!removedCard.getEra().equals(currentEra)) {
+            if(removedCard.getEra().ordinal() > currentEra.ordinal()) {
                 newEraHasCome = true;
-                // tell new era has come ....
             }
             topRow.addFirst(removedCard);
-
         }
 
         if (newEraHasCome) {
+            // increase the era
             currentEra = currentEra.nextEra();
-        }
+            // move the buildings from previous era to the bottom buildings row
+            moveBuildingsFromTopTopBottom();
+            // populate the top building cards space with the cards from deck of the new current era
+            populateTopBuildings();
 
-        return true;
+            // TODO : comunicare inizio nuova era ...
+        }
     }
 
     /**
      * {@inheritDoc}
      * Populate the bottom row of tribe cards.
      * @param model Game model
-     * @return
      */
-    protected boolean populateBottomRow(GameModel model) {
+    protected void populateBottomRow(GameModel model) {
         // this method is used mainly in the initialization process of the board which
         // means that the bottom row cannot contain event cards
-        for (int i = 0; i < model.getPlayers().size() + 4 - bottomRow.size(); i++) {
+
+        if(model == null) {
+            throw new IllegalArgumentException("Model cannot be null");
+        }
+        if(model.getTribeCardsDeck() == null || model.getTribeCardsDeck().isEmpty()) {
+            throw new IllegalArgumentException("Tribe cards deck cannot be null or empty during bottom row initialization");
+        }
+        if(model.getPlayers().size() < 2 || model.getPlayers().size() > 5) {
+            throw new IllegalArgumentException("Number of players must be between 2 and 5");
+        }
+        if (bottomRow == null) {
+            throw new IllegalStateException("Bottom row cannot be null during bottom row initialization");
+        }
+
+        int cardsToDraw = model.getPlayers().size() + 4 - bottomRow.size();
+
+        for (int i = 0; i < cardsToDraw; i++) {
+            if(model.getTribeCardsDeck().isEmpty()) {
+                throw new IllegalStateException("Tribe cards deck cannot be empty during bottom row initialization loop");
+            }
             TribeCard removedCard = model.getTribeCardsDeck().removeFirst();
 
             // check if the card is an event
@@ -153,86 +224,118 @@ public class Board {
                 bottomRow.addFirst(removedCard);
             }
         }
-
-        return true;
     }
 
     /**
      * {@inheritDoc}
      * Move the cards from the top row to the bottom row.
-     * @return
      */
-    protected boolean moveFromTopToBottom() {
-        bottomRow = topRow;
-        topRow = new ArrayList<TribeCard>();
+    protected void moveFromTopToBottom() {
+//        if (topRow.isEmpty()) {
+//            throw new IllegalStateException("Top row cannot be empty when moving cards to the bottom row");
+//        }
+        if(topRow == null) {
+            throw new IllegalStateException("Top row cannot be null when moving cards to the bottom row");
+        }
+        if(bottomRow == null) {
+            throw new IllegalStateException("Bottom row cannot be null when moving cards to the bottom row");
+        }
 
-        return true;
+        if(bottomRow.isEmpty()) {
+            bottomRow = topRow;
+            topRow = new ArrayList<TribeCard>();
+        } else {
+            bottomRow.addAll(topRow);
+            topRow.clear();
+        }
+
     }
 
     /**
      * {@inheritDoc}
      * Clear the bottom tribe cards row.
-     * @return
      */
-    protected boolean discardBottomRow() {
+    protected void discardBottomRow() {
         bottomRow.clear();
-
-        return true;
     }
 
     /**
      * {@inheritDoc}
      * Populate the top building cards row
-     * @return
      */
-    protected boolean populateTopBuildings() {
+    protected void populateTopBuildings() {
         topBuildings = buildingsDecks.get(currentEra.ordinal());
         buildingsDecks.set(currentEra.ordinal(), null);
-
-        return true;
     }
 
     /**
      * {@inheritDoc}
      * Moves the building cards from the top row to the bottom row.
-     * @return
      */
-    protected boolean moveBuildingsFromTopTopBottom() {
+    protected void moveBuildingsFromTopTopBottom() {
+        if (topBuildings == null) {
+            throw new IllegalStateException("Top buildings cannot be null when moving cards to the bottom buildings row");
+        }
+        if(bottomBuildings == null) {
+            throw new IllegalStateException("Bottom buildings cannot be null when moving cards to the bottom buildings row");
+        }
+
         bottomBuildings = topBuildings;
         topBuildings = new ArrayList<BuildingCard>();
-
-        return  true;
     }
 
     /**
      * {@inheritDoc}
      * Clears the bottom building cards row.
-     * @return
      */
-    protected boolean discardBottomBuildings() {
-        bottomBuildings.clear();
+    protected void discardBottomBuildings() {
+        if(bottomBuildings == null) {
+            throw new IllegalStateException("Bottom buildings cannot be null when discarding the bottom buildings row");
+        }
 
-        return true;
+        bottomBuildings.clear();
     }
 
     /**
      * {@inheritDoc}
      * Removes the specified card from the top row of tribe cards.
-     * @return
     */
-    protected boolean removeCardFromTop(TribeCard card) {
+    protected void removeCardFromTop(TribeCard card) {
+        if (card == null) {
+            throw new IllegalArgumentException("Card cannot be null");
+        }
+        if (topRow == null) {
+            throw new IllegalStateException("Top row cannot be null when removing a card from the top row");
+        }
+        if (!topRow.contains(card)) {
+            throw new IllegalArgumentException("Card not found in the top row");
+        }
+//        if (card.isEventCard()) {
+//            throw new IllegalArgumentException("Cannot remove an event card");
+//        }
+
         topRow.remove(card);
-        return true;
     }
 
     /**
      * {@inheritDoc}
      * Removes the specified card from the bottom row of tribe cards.
-     * @return
      */
-    protected boolean removeCardFromBottom(TribeCard card) {
+    protected void removeCardFromBottom(TribeCard card) {
+        if (card == null) {
+            throw new IllegalArgumentException("Card cannot be null");
+        }
+        if (bottomRow == null) {
+            throw new IllegalStateException("Bottom row cannot be null when removing a card from the bottom row");
+        }
+        if (!bottomRow.contains(card)) {
+            throw new IllegalArgumentException("Card not found in the bottom row");
+        }
+//        if (card.isEventCard()) {
+//            throw new IllegalArgumentException("Cannot remove an event card");
+//        }
+
         bottomRow.remove(card);
-        return true;
     }
 
     // should we have a remove top row (or bottom row) method based on the index of the card on the list?
