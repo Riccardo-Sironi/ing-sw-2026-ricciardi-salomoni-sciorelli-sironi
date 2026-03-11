@@ -8,9 +8,6 @@ public class GameModel {
 
     private Board board;
 
-    private int foodGeneralSupply;
-    private int prestigeGeneralSupply;
-
     // current solution but may be switched with the bottom version
     private ArrayList<ArrayList<BuildingCard>> buildingCardsDecks;
 
@@ -72,14 +69,6 @@ public class GameModel {
 
     protected ArrayList<Player> getPlayers() {
         return players;
-    }
-
-    protected int getFoodGeneralSupply() {
-        return foodGeneralSupply;
-    }
-
-    protected int getPrestigeGeneralSupply() {
-        return prestigeGeneralSupply;
     }
 
     public TurnManager getTurnManager() {

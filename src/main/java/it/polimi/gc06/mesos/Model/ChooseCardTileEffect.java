@@ -17,7 +17,6 @@ public class ChooseCardTileEffect implements TileEffect{
      * @param context the current GameModel.
      * @return if the effect has been applied successfully
      * @throws IllegalArgumentException {@inheritDoc}
-     * @throws IllegalStateException {@inheritDoc}
      */
     @Override
     public boolean execute(Player player, GameModel context) throws IllegalArgumentException{

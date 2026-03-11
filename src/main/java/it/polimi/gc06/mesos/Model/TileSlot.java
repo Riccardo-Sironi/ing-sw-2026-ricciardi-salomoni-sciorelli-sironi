@@ -18,7 +18,6 @@ public class TileSlot {
 
     /**
      * Returns the player currently on the tile.
-     *
      * @return the element at the specified position in this list
      */
     protected Player getPlayer() {
@@ -29,16 +28,26 @@ public class TileSlot {
      * Set the player on the tile and applies the effect.
      *
      * @param player the player placed on the tile.
-     * @param context the current GameModel.
-     * @return if the effect has been applied successfully
      * @throws IllegalArgumentException {@inheritDoc}
      * @throws IllegalStateException {@inheritDoc}
      */
-    protected boolean setPlayer(Player player, GameModel context) throws IllegalArgumentException, IllegalStateException{
+    protected void setPlayer(Player player) throws IllegalArgumentException, IllegalStateException{
         if(player == null) throw new IllegalArgumentException();
         if(this.player != null) throw new IllegalStateException();
         this.player = player;
-        return tileEffect == null || tileEffect.execute(player, context);
+    }
+
+    /**
+     * Apply the effects on the player, it needs to have a player or an IllegalArgumentException gets thrown.
+     * @param context the current GameModel
+     * @return if the effects has been applied successfully.
+     * @throws IllegalStateException {@inheritDoc}
+     */
+    protected boolean applyEffect(GameModel context) throws IllegalArgumentException, IllegalStateException {
+        if(context == null) throw new IllegalArgumentException();
+        if(player == null) throw new IllegalStateException();
+
+        return tileEffect == null || tileEffect.execute(player,context);
     }
 
     /**
