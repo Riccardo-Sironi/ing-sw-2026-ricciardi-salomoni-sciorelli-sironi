@@ -9,6 +9,6 @@ public class GathererCard extends CharacterCard{
 
     @Override
     protected CharacterType whatAmI() {
-        return CharacterType.GHATERER;
+        return CharacterType.GATHERER;
     }
 }

@@ -3,7 +3,7 @@ package it.polimi.gc06.mesos.Model;
 public enum CharacterType {
     ARTIST,
     BUILDER,
-    GHATERER,
+    GATHERER,
     HUNTER,
     INVENTOR,
     SHAMAN

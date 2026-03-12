@@ -18,7 +18,7 @@ public class HuntEvent extends EventCard{
         /*for each card of the deck*/
         for (CharacterCard card : player.getCharacterDeck()){
             /*if is a hunter card increase the counter +1*/
-            if (card instanceof HunterCard) huntersCount++;
+            if (card.whatAmI() == CharacterType.HUNTER) huntersCount++;
         }
 
         /*add food tokens for every hunter in the deck*/

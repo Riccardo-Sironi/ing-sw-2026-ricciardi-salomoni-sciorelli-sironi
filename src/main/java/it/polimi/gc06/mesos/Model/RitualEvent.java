@@ -17,7 +17,8 @@ public class RitualEvent extends EventCard{
         int stars = 0;
 
         for (CharacterCard card : player.getCharacterDeck()){
-            if (card instanceof ShamanCard shaman){
+            if (card.whatAmI() == CharacterType.SHAMAN){
+                ShamanCard shaman = (ShamanCard) card;
                 stars += shaman.getStars();
             }
         }

@@ -20,7 +20,7 @@ public class SustenanceEvent extends EventCard{
         /*for each card of the deck*/
         for (CharacterCard card : player.getCharacterDeck()){
             /*if is a gatherer card increase the counter +1*/
-            if (card instanceof GathererCard) gatherersCount++;
+            if (card.whatAmI() == CharacterType.GATHERER) gatherersCount++;
         }
 
         /*initialization of required food (adding the gatherer discount)*/
