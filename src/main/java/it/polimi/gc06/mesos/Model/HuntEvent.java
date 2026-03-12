@@ -12,14 +12,19 @@ public class HuntEvent extends EventCard{
 
     @Override
     public void resolveEvent(Player player, GameModel context) {
+        /*initialization of hunters counter*/
         int huntersCount = 0;
 
+        /*for each card of the deck*/
         for (CharacterCard card : player.getCharacterDeck()){
+            /*if is a hunter card increase the counter +1*/
             if (card instanceof HunterCard) huntersCount++;
         }
 
+        /*add food tokens for every hunter in the deck*/
         player.addFoodTokens(huntersCount);
 
+        /*add prestige tokens for every hunter in the deck multiplied by the prestige on the card*/
         player.addPrestigeTokens(huntersCount * numPrestigeGained);
     }
 }
