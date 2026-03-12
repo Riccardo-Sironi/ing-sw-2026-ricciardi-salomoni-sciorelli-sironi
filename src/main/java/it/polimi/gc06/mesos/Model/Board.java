@@ -4,13 +4,13 @@ import java.util.EnumMap;
 import java.util.List;
 
 public class Board {
-    private List<TribeCard> topRow;
-    private List<TribeCard> bottomRow;
+    private final List<TribeCard> topRow;
+    private final List<TribeCard> bottomRow;
 
-    private List<BuildingCard> topBuildings;
-    private List<BuildingCard> bottomBuildings;
+    private final List<BuildingCard> topBuildings;
+    private final List<BuildingCard> bottomBuildings;
 
-    private EnumMap<Era,List<BuildingCard>> buildingsDecks;
+    private final EnumMap<Era,List<BuildingCard>> buildingsDecks;
 
     private Era currentEra;
 

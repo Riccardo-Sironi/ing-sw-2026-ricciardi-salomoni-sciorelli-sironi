@@ -6,4 +6,9 @@ public class ArtistCard extends CharacterCard{
     public ArtistCard(Era era) {
         super(era);
     }
+
+    @Override
+    protected CharacterType whatAmI() {
+        return CharacterType.ARTIST;
+    }
 }

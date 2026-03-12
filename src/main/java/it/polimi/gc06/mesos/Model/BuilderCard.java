@@ -2,8 +2,8 @@ package it.polimi.gc06.mesos.Model;
 
 public class BuilderCard extends CharacterCard{
     Era era;
-    private int prestige;
-    private int foodDiscount;
+    private final int prestige;
+    private final int foodDiscount;
 
     public BuilderCard(Era era, int prestige, int foodDiscount) {
         super(era);
@@ -17,5 +17,10 @@ public class BuilderCard extends CharacterCard{
 
     protected int getFoodDiscount() {
         return foodDiscount;
+    }
+
+    @Override
+    protected CharacterType whatAmI() {
+        return CharacterType.BUILDER;
     }
 }
