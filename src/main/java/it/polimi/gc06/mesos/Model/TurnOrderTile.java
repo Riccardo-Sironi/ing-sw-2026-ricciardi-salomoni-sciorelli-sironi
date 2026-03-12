@@ -6,6 +6,7 @@ import java.util.Collections;
 public class TurnOrderTile {
 
     private final ArrayList<TileSlot> slots;
+    //TODO: implement tile id for view (or the class loses significance).
 
     /**
      * TurnOrderTile constructor.
@@ -19,6 +20,7 @@ public class TurnOrderTile {
     }
 
     /**
+     * TODO: remove
      * Returns the player on the nth tile.
      *
      * @param  n index of the element to return
@@ -31,17 +33,19 @@ public class TurnOrderTile {
     }
 
     /**
+     * TODO: remove
      * Sets the player on the nth tile.
      *
      * @param player the player to add to the nth tile.
      * @param  n index of the element to return.
-     * @param context the current GameModel.
-     * @return whether the effect has been applied successfully to the player placed in the specified position
      * @throws IllegalArgumentException {@inheritDoc}
      */
-    protected boolean setPlayerOnNthTile(Player player, int n, GameModel context) throws IllegalArgumentException{
-        if(n < 0 || n > slots.size() || player == null || context == null) throw new IllegalArgumentException();
+    protected void setPlayerOnNthTile(Player player, int n) throws IllegalArgumentException{
+        if(n < 0 || n > slots.size() || player == null) throw new IllegalArgumentException();
         slots.get(n).setPlayer(player);
-        return slots.get(n).applyEffect(context);
+    }
+
+    protected ArrayList<TileSlot> getSlots(){
+        return slots;
     }
 }
