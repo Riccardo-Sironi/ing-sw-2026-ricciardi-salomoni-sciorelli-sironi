@@ -1,6 +1,8 @@
 package it.polimi.gc06.mesos.Model;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.List;
 
 public class GameModel {
     private ArrayList<TileSlot> offerTrack;
@@ -8,12 +10,7 @@ public class GameModel {
 
     private Board board;
 
-    // current solution but may be switched with the bottom version
-    private ArrayList<ArrayList<BuildingCard>> buildingCardsDecks;
-
-//    private ArrayList<BuildingCard> buildingCardsEraIDeck;
-//    private ArrayList<BuildingCard> buildingCardsEraIIDeck;
-//    private ArrayList<BuildingCard> buildingCardsEraIIIDeck;
+    private EnumMap<Era, List<BuildingCard>> buildingCardsDecks;
 
     private ArrayList<TribeCard> tribeCardsDeck;
 
@@ -38,20 +35,7 @@ public class GameModel {
         return turnOrderTile;
     }
 
-//    public ArrayList<BuildingCard> getBuildingCardsEraIDeck() {
-//        return buildingCardsEraIDeck;
-//    }
-//
-//    public ArrayList<BuildingCard> getBuildingCardsEraIIDeck() {
-//        return buildingCardsEraIIDeck;
-//    }
-//
-//    public ArrayList<BuildingCard> getBuildingCardsEraIIIDeck() {
-//        return buildingCardsEraIIIDeck;
-//    }
-
-    // current solution but may be switched with the version above
-    public ArrayList<ArrayList<BuildingCard>> getBuildingCardsDecks() {
+    public EnumMap<Era, List<BuildingCard>> getBuildingCardsDecks() {
         return buildingCardsDecks;
     }
 
@@ -74,5 +58,4 @@ public class GameModel {
     public TurnManager getTurnManager() {
         return turnManager;
     }
-
 }

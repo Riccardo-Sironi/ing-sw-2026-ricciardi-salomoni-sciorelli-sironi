@@ -1,19 +1,19 @@
 package it.polimi.gc06.mesos.Model;
 import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.List;
 
 public class Board {
-    private ArrayList<TribeCard> topRow;
-    private ArrayList<TribeCard> bottomRow;
+    private List<TribeCard> topRow;
+    private List<TribeCard> bottomRow;
 
-    private ArrayList<BuildingCard> topBuildings;
-    private ArrayList<BuildingCard> bottomBuildings;
+    private List<BuildingCard> topBuildings;
+    private List<BuildingCard> bottomBuildings;
 
-    private ArrayList<ArrayList<BuildingCard>> buildingsDecks;
+    // private ArrayList<ArrayList<BuildingCard>> buildingsDecks;
+    private EnumMap<Era,List<BuildingCard>> buildingsDecks;
 
     private Era currentEra;
-
-    // TODO : the getters returns the reference to the objects, should we return a
-    // a copy of some of them which should not be modified externally?
 
     public Board() {
         topRow = new ArrayList<TribeCard>();
@@ -22,19 +22,20 @@ public class Board {
         topBuildings = new ArrayList<BuildingCard>();
         bottomBuildings = new ArrayList<BuildingCard>();
 
-        buildingsDecks = new ArrayList<ArrayList<BuildingCard>>(3);
-        for (int i = 0; i < 3; i++) {
-            buildingsDecks.add(new ArrayList<BuildingCard>());
+        buildingsDecks = new EnumMap<>(Era.class);
+        for (Era era : Era.values()) {
+            buildingsDecks.put(era, new ArrayList<BuildingCard>());
         }
 
         currentEra = Era.ERA_I;
     }
 
+    // TODO : the getters returns the reference to the objects, should we return a copy of some of them which should not be modified externally?
     /**
      * {@inheritDoc}
      * @return The top row of tribe cards ArrayList.
      */
-    public ArrayList<TribeCard> getTopRow() {
+    public List<TribeCard> getTopRow() {
         return topRow;
     }
 
@@ -42,7 +43,7 @@ public class Board {
      * {@inheritDoc}
      * @return The bottom row of tribe cards ArrayList.
      */
-    public ArrayList<TribeCard> getBottomRow() {
+    public List<TribeCard> getBottomRow() {
         return bottomRow;
     }
 
@@ -50,7 +51,7 @@ public class Board {
      * {@inheritDoc}
      * @return The top row of building cards space ArrayList.
      */
-    public ArrayList<BuildingCard> getTopBuildings() {
+    public List<BuildingCard> getTopBuildings() {
         return topBuildings;
     }
 
@@ -58,7 +59,7 @@ public class Board {
     * {@inheritDoc}
     * @return The bottom row of building cards space ArrayList.
     */
-    public ArrayList<BuildingCard> getBottomBuildings() {
+    public List<BuildingCard> getBottomBuildings() {
         return bottomBuildings;
     }
 
@@ -66,7 +67,7 @@ public class Board {
      * {@inheritDoc}
      * @return The decks of building cards which are not active yet (so whose era is yet to come).
      */
-    public ArrayList<ArrayList<BuildingCard>> getBuildingsDecks() {
+    public EnumMap<Era, List<BuildingCard>> getBuildingsDecks() {
         return buildingsDecks;
     }
 
@@ -107,13 +108,17 @@ public class Board {
         // è meglio avere già i mazzetti pronti)
 
         // create the decks of buildings cards
-        // the rules specify the number of the buildings on the top row based on the number of player and Era
+        // the rules specify the number of the buildings on the top row based on the number of player and Era,
+        // which are respectively the columns and the rows of the matrix.
         int[][] nBuildings = {{1,2,3},{2,2,4},{2,3,4},{2,3,5}};
 
-        for (int i = 0; i < buildingsDecks.size(); i++) {
-            for (int j = 0; j < nBuildings[model.getPlayers().size() - 2][i]; j++) {
-                // add to the board deck 'i' the card removed from the deck 'i' of the model
-                buildingsDecks.get(i).addFirst(model.getBuildingCardsDecks().get(i).removeFirst());
+
+        for (Era era : Era.values()) {
+            for (int j = 0; j < nBuildings[model.getPlayers().size() - 2][era.ordinal()]; j++) {
+                if (model.getBuildingCardsDecks().get(era) == null || model.getBuildingCardsDecks().get(era).isEmpty()) {
+                    throw new IllegalStateException("Building cards deck for era " + era + " cannot be null or empty during building decks initialization");
+                }
+                buildingsDecks.get(era).addFirst(model.getBuildingCardsDecks().get(era).removeFirst());
             }
         }
 
@@ -141,7 +146,7 @@ public class Board {
             throw new IllegalArgumentException("Model cannot be null");
         }
         if(model.getTribeCardsDeck() == null) {
-            throw new IllegalArgumentException("Tribe cards deck cannot be null or empty");
+            throw new IllegalArgumentException("Tribe cards deck cannot be null");
         }
         if(model.getPlayers().size() < 2 || model.getPlayers().size() > 5) {
             throw new IllegalArgumentException("Number of players must be between 2 and 5");
@@ -156,6 +161,10 @@ public class Board {
         boolean newEraHasCome = false;
 
         int cardsToDraw = model.getPlayers().size() + 4 - topRow.size();
+
+        if (cardsToDraw < 0) {
+            throw new IllegalStateException("Cards to draw cannot be negative during top row population");
+        }
 
         for (int i = 0; i < cardsToDraw; i++) {
             if(model.getTribeCardsDeck().isEmpty()) {
@@ -178,9 +187,10 @@ public class Board {
             // increase the era
             currentEra = currentEra.nextEra();
             // move the buildings from previous era to the bottom buildings row
-            moveBuildingsFromTopTopBottom();
+            moveBuildingsFromTopToBottom();
             // populate the top building cards space with the cards from deck of the new current era
             populateTopBuildings();
+
 
             // TODO : comunicare inizio nuova era ...
         }
@@ -241,21 +251,20 @@ public class Board {
             throw new IllegalStateException("Bottom row cannot be null when moving cards to the bottom row");
         }
 
-        if(bottomRow.isEmpty()) {
-            bottomRow = topRow;
-            topRow = new ArrayList<TribeCard>();
-        } else {
-            bottomRow.addAll(topRow);
-            topRow.clear();
-        }
-
+        bottomRow.addAll(topRow);
+        topRow.clear();
     }
 
     /**
      * {@inheritDoc}
      * Clear the bottom tribe cards row.
      */
+    // TODO : do we need this?
     protected void discardBottomRow() {
+        if (bottomRow == null) {
+            throw new IllegalStateException("Bottom row cannot be null when discarding the bottom row");
+        }
+
         bottomRow.clear();
     }
 
@@ -264,15 +273,29 @@ public class Board {
      * Populate the top building cards row
      */
     protected void populateTopBuildings() {
-        topBuildings = buildingsDecks.get(currentEra.ordinal());
-        buildingsDecks.set(currentEra.ordinal(), null);
+        if (topBuildings == null) {
+            throw new IllegalStateException("Top buildings cannot be null when populating the top buildings row");
+        }
+        if (currentEra == null) {
+            throw new IllegalStateException("Current era cannot be null when populating the top buildings row");
+        }
+        if (buildingsDecks == null || buildingsDecks.get(currentEra) == null) {
+            throw new IllegalStateException("Buildings decks cannot be null when populating the top buildings row");
+        }
+        if(buildingsDecks.get(currentEra).isEmpty()) {
+            throw new IllegalStateException("Building cards deck for current era cannot be empty when populating the top buildings row");
+        }
+
+        topBuildings.clear();
+        topBuildings.addAll(buildingsDecks.get(currentEra));
+        buildingsDecks.get(currentEra).clear();
     }
 
     /**
      * {@inheritDoc}
      * Moves the building cards from the top row to the bottom row.
      */
-    protected void moveBuildingsFromTopTopBottom() {
+    protected void moveBuildingsFromTopToBottom() {
         if (topBuildings == null) {
             throw new IllegalStateException("Top buildings cannot be null when moving cards to the bottom buildings row");
         }
@@ -280,14 +303,16 @@ public class Board {
             throw new IllegalStateException("Bottom buildings cannot be null when moving cards to the bottom buildings row");
         }
 
-        bottomBuildings = topBuildings;
-        topBuildings = new ArrayList<BuildingCard>();
+        bottomBuildings.clear();
+        bottomBuildings.addAll(topBuildings);
+        topBuildings.clear();
     }
 
     /**
      * {@inheritDoc}
      * Clears the bottom building cards row.
      */
+    // TODO : i dont think we need this, when we want to clear the bottom buildings row we just move the top buildings to the bottom and then we populate the top buildings with the new era cards, so the old bottom buildings are automatically cleared
     protected void discardBottomBuildings() {
         if(bottomBuildings == null) {
             throw new IllegalStateException("Bottom buildings cannot be null when discarding the bottom buildings row");
@@ -296,11 +321,13 @@ public class Board {
         bottomBuildings.clear();
     }
 
+
+    // TODO : should we have a remove top row (or bottom row) method based on the index of the card on the list?
     /**
      * {@inheritDoc}
      * Removes the specified card from the top row of tribe cards.
     */
-    protected void removeCardFromTop(TribeCard card) {
+    protected void removeTribeCardFromTopRow(TribeCard card) {
         if (card == null) {
             throw new IllegalArgumentException("Card cannot be null");
         }
@@ -321,7 +348,7 @@ public class Board {
      * {@inheritDoc}
      * Removes the specified card from the bottom row of tribe cards.
      */
-    protected void removeCardFromBottom(TribeCard card) {
+    protected void removeTribeCardFromBottomRow(TribeCard card) {
         if (card == null) {
             throw new IllegalArgumentException("Card cannot be null");
         }
@@ -338,5 +365,39 @@ public class Board {
         bottomRow.remove(card);
     }
 
-    // should we have a remove top row (or bottom row) method based on the index of the card on the list?
+    /**
+     * {@inheritDoc}
+     * Removes the specified card from the top row of buildings cards.
+     */
+    protected void removeBuildingCardFromTopRow(BuildingCard card) {
+        if (card == null) {
+            throw new IllegalArgumentException("Building Card cannot be null");
+        }
+        if (topBuildings == null) {
+            throw new IllegalStateException("Top row cannot be null when removing a card from the top buildings row");
+        }
+        if (!topBuildings.contains(card)) {
+            throw new IllegalArgumentException("Card not found in the top buildings row");
+        }
+
+        topBuildings.remove(card);
+    }
+
+    /**
+     * {@inheritDoc}
+     * Removes the specified card from the bottom row of buildings cards.
+     */
+    protected void removeBuildingCardFromBottomRow(BuildingCard card) {
+        if (card == null) {
+            throw new IllegalArgumentException("Building Card cannot be null");
+        }
+        if (bottomBuildings == null) {
+            throw new IllegalStateException("Bottom buildings row cannot be null when removing a card from the bottom buildings row");
+        }
+        if (!bottomBuildings.contains(card)) {
+            throw new IllegalArgumentException("Card not found in the bottom buildings row");
+        }
+
+        bottomBuildings.remove(card);
+    }
 }
