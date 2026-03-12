@@ -14,7 +14,7 @@ public enum Era {
     ERA_III {
         public Era nextEra() {
             // it should never happen btw
-            return null;
+            throw new IllegalStateException("There is no next era after the third one");
         }
     };
 

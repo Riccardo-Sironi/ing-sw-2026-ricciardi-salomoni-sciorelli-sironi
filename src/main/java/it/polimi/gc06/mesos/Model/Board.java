@@ -10,7 +10,6 @@ public class Board {
     private List<BuildingCard> topBuildings;
     private List<BuildingCard> bottomBuildings;
 
-    // private ArrayList<ArrayList<BuildingCard>> buildingsDecks;
     private EnumMap<Era,List<BuildingCard>> buildingsDecks;
 
     private Era currentEra;
@@ -30,7 +29,6 @@ public class Board {
         currentEra = Era.ERA_I;
     }
 
-    // TODO : the getters returns the reference to the objects, should we return a copy of some of them which should not be modified externally?
     /**
      * {@inheritDoc}
      * @return The top row of tribe cards ArrayList.
@@ -83,7 +81,7 @@ public class Board {
      * {@inheritDoc}
      * Initialize the board with the cards from the model.
      */
-    protected void initBoard(GameModel model)  {
+    protected void initBoard(GameModel model) throws IllegalArgumentException, IllegalStateException {
         if(model == null) {
             throw new IllegalArgumentException("Model cannot be null");
         }
@@ -98,6 +96,9 @@ public class Board {
         }
         if(model.getFinalEventCards() == null || model.getFinalEventCards().length != 2) {
             throw new IllegalArgumentException("Final event cards cannot be null and there must be 2 of them");
+        }
+        if (topRow == null || bottomRow == null || topBuildings == null || bottomBuildings == null || buildingsDecks == null) {
+            throw new IllegalStateException("Board rows and decks cannot be null during board initialization");
         }
 
         // rules state that the initialization of the board is done in this order:
@@ -159,6 +160,7 @@ public class Board {
         }
 
         boolean newEraHasCome = false;
+        boolean isEndGame = false;
 
         int cardsToDraw = model.getPlayers().size() + 4 - topRow.size();
 
@@ -171,12 +173,13 @@ public class Board {
                 // if the deck is empty then we add to the top row the final event cards
                 topRow.addFirst(model.getFinalEventCards()[0]);
                 topRow.addFirst(model.getFinalEventCards()[1]);
+                isEndGame = true;
+
                 break;
             }
 
             TribeCard removedCard = model.getTribeCardsDeck().removeFirst();
 
-            // should this be removedCard.Era > currentEra?
             if(removedCard.getEra().ordinal() > currentEra.ordinal()) {
                 newEraHasCome = true;
             }
@@ -193,6 +196,10 @@ public class Board {
 
 
             // TODO : comunicare inizio nuova era ...
+        }
+
+        if (isEndGame) {
+            // TODO : comunicare end game ...
         }
     }
 
@@ -217,8 +224,12 @@ public class Board {
         if (bottomRow == null) {
             throw new IllegalStateException("Bottom row cannot be null during bottom row initialization");
         }
+        if(!bottomRow.isEmpty()) {
+            throw new IllegalStateException("Bottom row must be empty during bottom row initialization");
+        }
 
-        int cardsToDraw = model.getPlayers().size() + 4 - bottomRow.size();
+        int cardsToDraw = model.getPlayers().size() + 1;
+        int maxTopRowSize = model.getPlayers().size() + 4;
 
         for (int i = 0; i < cardsToDraw; i++) {
             if(model.getTribeCardsDeck().isEmpty()) {
@@ -228,6 +239,9 @@ public class Board {
 
             // check if the card is an event
             if (removedCard.isEventCard()) {
+                if(topRow.size() >= maxTopRowSize) {
+                    throw new IllegalStateException("Top row cannot contain more than " + maxTopRowSize + " cards during bottom row initialization");
+                }
                 topRow.addFirst(removedCard);
                 i--;
             } else {
@@ -259,7 +273,6 @@ public class Board {
      * {@inheritDoc}
      * Clear the bottom tribe cards row.
      */
-    // TODO : do we need this?
     protected void discardBottomRow() {
         if (bottomRow == null) {
             throw new IllegalStateException("Bottom row cannot be null when discarding the bottom row");
@@ -308,21 +321,6 @@ public class Board {
         topBuildings.clear();
     }
 
-    /**
-     * {@inheritDoc}
-     * Clears the bottom building cards row.
-     */
-    // TODO : i dont think we need this, when we want to clear the bottom buildings row we just move the top buildings to the bottom and then we populate the top buildings with the new era cards, so the old bottom buildings are automatically cleared
-    protected void discardBottomBuildings() {
-        if(bottomBuildings == null) {
-            throw new IllegalStateException("Bottom buildings cannot be null when discarding the bottom buildings row");
-        }
-
-        bottomBuildings.clear();
-    }
-
-
-    // TODO : should we have a remove top row (or bottom row) method based on the index of the card on the list?
     /**
      * {@inheritDoc}
      * Removes the specified card from the top row of tribe cards.
