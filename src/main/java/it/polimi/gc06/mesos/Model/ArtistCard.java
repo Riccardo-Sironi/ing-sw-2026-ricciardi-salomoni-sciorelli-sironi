@@ -8,7 +8,7 @@ public class ArtistCard extends CharacterCard{
     }
 
     @Override
-    protected CharacterType whatAmI() {
+    protected CharacterType getCharacterType() {
         return CharacterType.ARTIST;
     }
 }

@@ -18,7 +18,7 @@ public class HunterCard extends CharacterCard{
     }
 
     @Override
-    protected CharacterType whatAmI() {
+    protected CharacterType getCharacterType() {
         return CharacterType.HUNTER;
     }
 }

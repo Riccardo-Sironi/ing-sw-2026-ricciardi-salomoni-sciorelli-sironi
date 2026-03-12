@@ -2,9 +2,9 @@ package it.polimi.gc06.mesos.Model;
 
 public class PaintingsEvent extends EventCard{
 
-    private int numPrestigeGained;
-    private int numPrestigeLost;
-    private int minNumberOfArtists;
+    private final int numPrestigeGained;
+    private final int numPrestigeLost;
+    private final int minNumberOfArtists;
 
     //CONSTRUCTOR
     public PaintingsEvent(Era era, int numPrestigeGained, int numPrestigeLost, int minNumberOfArtists){
@@ -22,7 +22,7 @@ public class PaintingsEvent extends EventCard{
         /*for each card of the deck*/
         for (CharacterCard card : player.getCharacterDeck()) {
             /*if is an artist card increase the counter +1*/
-            if (card.whatAmI() == CharacterType.ARTIST) { artistCount++;}
+            if (card.getCharacterType() == CharacterType.ARTIST) { artistCount++;}
         }
 
         /*if number of artist is lower than the number of the card remove the prestige written on the card*/

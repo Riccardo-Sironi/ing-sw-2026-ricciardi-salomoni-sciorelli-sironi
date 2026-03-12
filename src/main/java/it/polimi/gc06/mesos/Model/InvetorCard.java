@@ -18,7 +18,7 @@ public class InvetorCard extends CharacterCard{
     }
 
     @Override
-    protected CharacterType whatAmI() {
+    protected CharacterType getCharacterType() {
         return CharacterType.INVENTOR;
     }
 }

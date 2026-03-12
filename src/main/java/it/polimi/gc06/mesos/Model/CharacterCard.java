@@ -1,7 +1,7 @@
 package it.polimi.gc06.mesos.Model;
 
 public abstract class CharacterCard extends TribeCard{
-    private Era era;
+    private final Era era;
 
     public CharacterCard(Era era) {
         this.era = era;
@@ -17,5 +17,5 @@ public abstract class CharacterCard extends TribeCard{
      * This method is used to know which type of character card it is.
      * @return the type of character card
      */
-    protected abstract CharacterType whatAmI();
+    protected abstract CharacterType getCharacterType();
 }

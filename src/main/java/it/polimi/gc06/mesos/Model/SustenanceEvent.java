@@ -2,7 +2,7 @@ package it.polimi.gc06.mesos.Model;
 
 public class SustenanceEvent extends EventCard{
 
-    private int numPrestigeLost;
+    private final int numPrestigeLost;
 
     //CONSTRUCTOR
     public SustenanceEvent (Era era, int numPrestigeLost){
@@ -20,7 +20,7 @@ public class SustenanceEvent extends EventCard{
         /*for each card of the deck*/
         for (CharacterCard card : player.getCharacterDeck()){
             /*if is a gatherer card increase the counter +1*/
-            if (card.whatAmI() == CharacterType.GATHERER) gatherersCount++;
+            if (card.getCharacterType() == CharacterType.GATHERER) gatherersCount++;
         }
 
         /*initialization of required food (adding the gatherer discount)*/

@@ -2,7 +2,7 @@ package it.polimi.gc06.mesos.Model;
 
 public class HuntEvent extends EventCard{
 
-    private int numPrestigeGained;
+    private final int numPrestigeGained;
 
     //CONSTRUCTOR
     public HuntEvent(Era era, int numPrestigeGained){
@@ -18,7 +18,7 @@ public class HuntEvent extends EventCard{
         /*for each card of the deck*/
         for (CharacterCard card : player.getCharacterDeck()){
             /*if is a hunter card increase the counter +1*/
-            if (card.whatAmI() == CharacterType.HUNTER) huntersCount++;
+            if (card.getCharacterType() == CharacterType.HUNTER) huntersCount++;
         }
 
         /*add food tokens for every hunter in the deck*/

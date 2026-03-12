@@ -2,8 +2,8 @@ package it.polimi.gc06.mesos.Model;
 
 public class RitualEvent extends EventCard{
 
-    private int numPrestigeGained;
-    private int numPrestigeLost;
+    private final int numPrestigeGained;
+    private final int numPrestigeLost;
 
     //CONSTRUCTOR
     public RitualEvent(Era era, int numPrestigeGained, int numPrestigeLost){
@@ -17,7 +17,7 @@ public class RitualEvent extends EventCard{
         int stars = 0;
 
         for (CharacterCard card : player.getCharacterDeck()){
-            if (card.whatAmI() == CharacterType.SHAMAN){
+            if (card.getCharacterType() == CharacterType.SHAMAN){
                 ShamanCard shaman = (ShamanCard) card;
                 stars += shaman.getStars();
             }
@@ -37,7 +37,7 @@ public class RitualEvent extends EventCard{
         /*for every player*/
         for (Player opponent : context.getPlayers()){
 
-            /*if the nickanme is the same skip to the next player (it means is the same player)*/
+            /*if the nickname is the same skip to the next player (it means is the same player)*/
             if (opponent.getNickname().equals(player.getNickname())){ continue; }
 
             /*count the stars of the opponent player*/

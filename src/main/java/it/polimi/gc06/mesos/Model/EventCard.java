@@ -1,8 +1,8 @@
 package it.polimi.gc06.mesos.Model;
 
 public abstract class EventCard extends TribeCard{
-    private EventType eventType;
-    private Era era;
+    private final Era era;
+    private final EventType eventType;
 
     //CONSTRUCTOR
     public EventCard(EventType eventType, Era era){
@@ -11,6 +11,11 @@ public abstract class EventCard extends TribeCard{
     }
 
     //EVENT TYPE
+
+    /**
+     * This method is used to know which type of event card it is.
+     * @return the type of event card
+     */
     protected EventType getEventType(){
         return this.eventType;
     }

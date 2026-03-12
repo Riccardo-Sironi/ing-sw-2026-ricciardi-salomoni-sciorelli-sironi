@@ -20,7 +20,7 @@ public class BuilderCard extends CharacterCard{
     }
 
     @Override
-    protected CharacterType whatAmI() {
+    protected CharacterType getCharacterType() {
         return CharacterType.BUILDER;
     }
 }
