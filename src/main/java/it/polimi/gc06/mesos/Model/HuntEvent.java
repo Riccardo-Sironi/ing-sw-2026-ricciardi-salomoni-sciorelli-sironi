@@ -5,8 +5,8 @@ public class HuntEvent extends EventCard{
     private int numPrestigeGained;
 
     //CONSTRUCTOR
-    public HuntEvent(String eventType, Era era, int numPrestigeGained){
-        super(eventType, era);
+    public HuntEvent(Era era, int numPrestigeGained){
+        super(EventType.HUNT_EVENT, era);
         this.numPrestigeGained = numPrestigeGained;
     }
 

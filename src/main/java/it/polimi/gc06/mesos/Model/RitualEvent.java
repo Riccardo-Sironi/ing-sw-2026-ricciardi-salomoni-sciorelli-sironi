@@ -6,8 +6,8 @@ public class RitualEvent extends EventCard{
     private int numPrestigeLost;
 
     //CONSTRUCTOR
-    public RitualEvent(String eventType, Era era, int numPrestigeGained, int numPrestigeLost){
-        super(eventType, era);
+    public RitualEvent(Era era, int numPrestigeGained, int numPrestigeLost){
+        super(EventType.RITUAL_EVENT, era);
         this.numPrestigeGained = numPrestigeGained;
         this.numPrestigeLost = numPrestigeLost;
     }

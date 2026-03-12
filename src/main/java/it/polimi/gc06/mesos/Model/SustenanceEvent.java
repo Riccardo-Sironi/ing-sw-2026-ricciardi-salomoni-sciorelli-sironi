@@ -5,8 +5,8 @@ public class SustenanceEvent extends EventCard{
     private int numPrestigeLost;
 
     //CONSTRUCTOR
-    public SustenanceEvent (String eventType, Era era, int numPrestigeLost){
-        super(eventType, era);
+    public SustenanceEvent (Era era, int numPrestigeLost){
+        super(EventType.SUSTENANCE_EVENT, era);
         this.numPrestigeLost = numPrestigeLost;
     }
 

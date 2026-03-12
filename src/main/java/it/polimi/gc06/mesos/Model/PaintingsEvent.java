@@ -7,8 +7,8 @@ public class PaintingsEvent extends EventCard{
     private int minNumberOfArtists;
 
     //CONSTRUCTOR
-    public PaintingsEvent(String eventType, Era era, int numPrestigeGained, int numPrestigeLost, int minNumberOfArtists){
-        super(eventType, era);
+    public PaintingsEvent(Era era, int numPrestigeGained, int numPrestigeLost, int minNumberOfArtists){
+        super(EventType.PAINTINGS_EVENT, era);
         this.numPrestigeGained = numPrestigeGained;
         this.numPrestigeLost = numPrestigeLost;
         this.minNumberOfArtists = minNumberOfArtists;

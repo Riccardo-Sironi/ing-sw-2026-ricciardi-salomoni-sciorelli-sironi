@@ -1,17 +1,17 @@
 package it.polimi.gc06.mesos.Model;
 
 public abstract class EventCard extends TribeCard{
-    private String eventType;
+    private EventType eventType;
     private Era era;
 
     //CONSTRUCTOR
-    public EventCard(String eventType, Era era){
+    public EventCard(EventType eventType, Era era){
         this.eventType = eventType;
         this.era = era;
     }
 
     //EVENT TYPE
-    protected String getEventType(){
+    protected EventType getEventType(){
         return this.eventType;
     }
 
