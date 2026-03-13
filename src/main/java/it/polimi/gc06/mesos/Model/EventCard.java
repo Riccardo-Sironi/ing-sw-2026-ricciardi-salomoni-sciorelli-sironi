@@ -1,7 +1,5 @@
 package it.polimi.gc06.mesos.Model;
 
-import java.util.ArrayList;
-
 public abstract class EventCard extends TribeCard {
     private final Era era;
     private final EventType eventType;
@@ -24,7 +22,7 @@ public abstract class EventCard extends TribeCard {
     }
 
     //RESOLVE
-    protected abstract void resolveEvent(Player player, ArrayList<Player> players);
+    protected abstract void resolveEvent(Player player);
 
     // we need this to initialize the bottom row of the board
     @Override

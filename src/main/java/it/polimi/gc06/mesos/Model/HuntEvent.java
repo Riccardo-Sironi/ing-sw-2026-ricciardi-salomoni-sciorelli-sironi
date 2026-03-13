@@ -1,7 +1,5 @@
 package it.polimi.gc06.mesos.Model;
 
-import java.util.ArrayList;
-
 public class HuntEvent extends EventCard {
 
     private final int numPrestigeGained;
@@ -13,7 +11,7 @@ public class HuntEvent extends EventCard {
     }
 
     @Override
-    public void resolveEvent(Player player, ArrayList<Player> players) {
+    public void resolveEvent(Player player) {
         /*initialization of hunters counter*/
         int huntersCount = 0;
 

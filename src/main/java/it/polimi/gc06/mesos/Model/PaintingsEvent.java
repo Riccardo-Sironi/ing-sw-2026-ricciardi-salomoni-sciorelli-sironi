@@ -1,7 +1,5 @@
 package it.polimi.gc06.mesos.Model;
 
-import java.util.ArrayList;
-
 public class PaintingsEvent extends EventCard {
 
     private final int numPrestigeGained;
@@ -17,7 +15,7 @@ public class PaintingsEvent extends EventCard {
     }
 
     @Override
-    public void resolveEvent(Player player, ArrayList<Player> players) {
+    public void resolveEvent(Player player) {
         /*initialization of artist counter*/
         int artistCount = 0;
 

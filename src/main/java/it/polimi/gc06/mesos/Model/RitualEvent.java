@@ -1,7 +1,5 @@
 package it.polimi.gc06.mesos.Model;
 
-import java.util.ArrayList;
-
 public class RitualEvent extends EventCard {
 
     private final int numPrestigeGained;
@@ -29,7 +27,7 @@ public class RitualEvent extends EventCard {
     }
 
     @Override
-    public void resolveEvent(Player player, ArrayList<Player> players) {
+    public void resolveEvent(Player player) {
 
         boolean hasMost = true;
         boolean hasLeast = true;
