@@ -1,28 +1,20 @@
 package it.polimi.gc06.mesos.Model;
 
+import java.util.ArrayList;
+
 public abstract class EventCard extends TribeCard {
     private final Era era;
-    private final EventType eventType;
+    private final boolean hasPriority;
 
     //CONSTRUCTOR
-    public EventCard(EventType eventType, Era era) {
-        this.eventType = eventType;
+    public EventCard(Era era, boolean hasPriority) {
         this.era = era;
-    }
-
-    //EVENT TYPE
-
-    /**
-     * This method is used to know which type of event card it is.
-     *
-     * @return the type of event card
-     */
-    protected EventType getEventType() {
-        return this.eventType;
+        this.hasPriority = hasPriority;
     }
 
     //RESOLVE
     protected abstract void resolveEvent(Player player);
+    protected abstract void resolveEvent(Player player, ArrayList<Player> players);
 
     // we need this to initialize the bottom row of the board
     @Override

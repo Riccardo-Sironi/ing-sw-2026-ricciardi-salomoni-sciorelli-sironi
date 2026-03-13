@@ -20,7 +20,6 @@ public class TurnOrderTile {
     }
 
     /**
-     * TODO: remove
      * Returns the player on the nth tile.
      *
      * @param  n index of the element to return
@@ -33,7 +32,6 @@ public class TurnOrderTile {
     }
 
     /**
-     * TODO: remove
      * Sets the player on the nth tile.
      *
      * @param player the player to add to the nth tile.

@@ -21,7 +21,7 @@ public class ChooseCardTileEffect implements TileEffect{
     @Override
     public boolean execute(Player player, GameModel context) throws IllegalArgumentException{
         if(player == null || context == null) throw new IllegalArgumentException();
-        //To do: drawing cards logic, could we use integer as player attribute?
+        //TODO drawing cards logic, could we use integer as player attribute?
         return false;
     }
 }

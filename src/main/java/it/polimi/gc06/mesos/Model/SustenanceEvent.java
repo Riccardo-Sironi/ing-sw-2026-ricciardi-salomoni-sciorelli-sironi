@@ -6,7 +6,7 @@ public class SustenanceEvent extends EventCard {
 
     //CONSTRUCTOR
     public SustenanceEvent(Era era, int numPrestigeLoss) {
-        super(EventType.SUSTENANCE_EVENT, era);
+        super(era,true);
         this.numPrestigeLoss = numPrestigeLoss;
     }
 
