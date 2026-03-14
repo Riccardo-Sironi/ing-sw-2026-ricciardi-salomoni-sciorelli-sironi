@@ -1,7 +1,7 @@
 package it.polimi.gc06.mesos.Model;
 
 public enum InventionIcon {
-    ROCK,
+    BOAT,
     ARROWHEAD,
     HOOK,
     NECKLACE,
