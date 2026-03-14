@@ -16,13 +16,7 @@ public class SustenanceEvent extends EventCard {
         // get total number of character cards of the player
         int totalCharacterCards = player.getCharacterDeck().size();
         // initialization gatherers count
-        int gatherersCount = 0;
-
-        // for each card of the deck
-        for (CharacterCard card : player.getCharacterDeck()) {
-            //if is a gatherer card increase the counter +1
-            if (card.getCharacterType() == CharacterType.GATHERER) gatherersCount++;
-        }
+        int gatherersCount = player.getGatherersCounter();
 
         // initialization of required food (adding the gatherer discount)
         int requiredFood = Math.max(totalCharacterCards - (gatherersCount * DISCOUNT_PER_GATHERER), 0);

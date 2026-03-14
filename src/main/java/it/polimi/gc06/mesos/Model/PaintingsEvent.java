@@ -17,15 +17,7 @@ public class PaintingsEvent extends EventCard {
     @Override
     public void resolveEvent(Player player) {
         /*initialization of artist counter*/
-        int artistCount = 0;
-
-        /*for each card of the deck*/
-        for (CharacterCard card : player.getCharacterDeck()) {
-            /*if is an artist card increase the counter +1*/
-            if (card.getCharacterType() == CharacterType.ARTIST) {
-                artistCount++;
-            }
-        }
+        int artistCount = player.getArtistsCounter();
 
         /*if number of artist is lower than the number of the card remove the prestige written on the card*/
         if (artistCount < minNumberOfArtists) {
