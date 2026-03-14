@@ -3,13 +3,16 @@ package it.polimi.gc06.mesos.Model;
 import java.util.ArrayList;
 
 public abstract class EventCard extends TribeCard {
-    private final Era era;
     private final boolean hasPriority;
 
     //CONSTRUCTOR
     public EventCard(Era era, boolean hasPriority) {
-        this.era = era;
+        super(era);
         this.hasPriority = hasPriority;
+    }
+
+    protected boolean hasPriority() {
+        return hasPriority;
     }
 
     //RESOLVE

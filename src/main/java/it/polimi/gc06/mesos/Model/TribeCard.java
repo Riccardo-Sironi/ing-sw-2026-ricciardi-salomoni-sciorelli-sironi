@@ -1,7 +1,11 @@
 package it.polimi.gc06.mesos.Model;
 
 public abstract class TribeCard implements Card {
-    Era era;
+    private final Era era;
+
+    public TribeCard(Era era) {
+        this.era = era;
+    }
 
     /**
      * This method is used to know if the card is an event card or a character card.

@@ -1,10 +1,10 @@
 package it.polimi.gc06.mesos.Model;
 
 public class BuildingCard {
-    private Era era;
-    private int foodCost;
-    private int prestigeGain;
-    private BuildingEffect effect;
+    private final Era era;
+    private final int foodCost;
+    private final int prestigeGain;
+    private final BuildingEffect effect;
 
     public BuildingCard(Era era, int foodCost, int prestigeGain, BuildingEffect effect) {
         this.era = era;
@@ -13,7 +13,14 @@ public class BuildingCard {
         this.effect = effect;
     }
 
+
+    /**
+     *
+     * @param player
+     * @return
+     */
     protected boolean applyEffect(Player player){
+        // ...
         return true;
     }
 

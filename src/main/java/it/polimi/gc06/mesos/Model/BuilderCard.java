@@ -1,7 +1,6 @@
 package it.polimi.gc06.mesos.Model;
 
 public class BuilderCard extends CharacterCard{
-    Era era;
     private final int prestige;
     private final int foodDiscount;
 

@@ -1,7 +1,6 @@
 package it.polimi.gc06.mesos.Model;
 
 public class InvetorCard extends CharacterCard{
-    private Era era;
     private final InventionIcon icon;
 
     public InvetorCard(Era era, InventionIcon icon) {

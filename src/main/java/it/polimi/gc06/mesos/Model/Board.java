@@ -1,16 +1,15 @@
 package it.polimi.gc06.mesos.Model;
 import java.util.ArrayList;
 import java.util.EnumMap;
-import java.util.List;
 
 public class Board {
-    private final List<TribeCard> topRow;
-    private final List<TribeCard> bottomRow;
+    private final ArrayList<TribeCard> topRow;
+    private final ArrayList<TribeCard> bottomRow;
 
-    private final List<BuildingCard> topBuildings;
-    private final List<BuildingCard> bottomBuildings;
+    private final ArrayList<BuildingCard> topBuildings;
+    private final ArrayList<BuildingCard> bottomBuildings;
 
-    private final EnumMap<Era,List<BuildingCard>> buildingsDecks;
+    private final EnumMap<Era,ArrayList<BuildingCard>> buildingsDecks;
 
     private Era currentEra;
 
@@ -33,7 +32,7 @@ public class Board {
      * {@inheritDoc}
      * @return The top row of tribe cards ArrayList.
      */
-    public List<TribeCard> getTopRow() {
+    protected ArrayList<TribeCard> getTopRow() {
         return topRow;
     }
 
@@ -41,7 +40,7 @@ public class Board {
      * {@inheritDoc}
      * @return The bottom row of tribe cards ArrayList.
      */
-    public List<TribeCard> getBottomRow() {
+    protected ArrayList<TribeCard> getBottomRow() {
         return bottomRow;
     }
 
@@ -49,7 +48,7 @@ public class Board {
      * {@inheritDoc}
      * @return The top row of building cards space ArrayList.
      */
-    public List<BuildingCard> getTopBuildings() {
+    protected ArrayList<BuildingCard> getTopBuildings() {
         return topBuildings;
     }
 
@@ -57,7 +56,7 @@ public class Board {
     * {@inheritDoc}
     * @return The bottom row of building cards space ArrayList.
     */
-    public List<BuildingCard> getBottomBuildings() {
+    protected ArrayList<BuildingCard> getBottomBuildings() {
         return bottomBuildings;
     }
 
@@ -65,7 +64,7 @@ public class Board {
      * {@inheritDoc}
      * @return The decks of building cards which are not active yet (so whose era is yet to come).
      */
-    public EnumMap<Era, List<BuildingCard>> getBuildingsDecks() {
+    protected EnumMap<Era, ArrayList<BuildingCard>> getBuildingsDecks() {
         return buildingsDecks;
     }
 
@@ -73,7 +72,7 @@ public class Board {
      * {@inheritDoc}
      * @return The current era of the game.
      */
-    public Era getCurrentEra() {
+    protected Era getCurrentEra() {
         return currentEra;
     }
 
@@ -97,16 +96,6 @@ public class Board {
         if(model.getFinalEventCards() == null || model.getFinalEventCards().length != 2) {
             throw new IllegalArgumentException("Final event cards cannot be null and there must be 2 of them");
         }
-        if (topRow == null || bottomRow == null || topBuildings == null || bottomBuildings == null || buildingsDecks == null) {
-            throw new IllegalStateException("Board rows and decks cannot be null during board initialization");
-        }
-
-        // rules state that the initialization of the board is done in this order:
-        // initialize bottom row -> initialize top row -> create building decks -> initialize top buildings row
-
-        // (ma inizializziamo prima i mazzetti dei buildings perché nel caso di new era durante i test con
-        // poche carte potrebbe essere necessario spostare dei buildings dalla top row alla bottom row e quindi
-        // è meglio avere già i mazzetti pronti)
 
         // create the decks of buildings cards
         // the rules specify the number of the buildings on the top row based on the number of player and Era,
@@ -154,9 +143,6 @@ public class Board {
         }
         if(model.getFinalEventCards() == null || model.getFinalEventCards().length != 2) {
             throw new IllegalArgumentException("Final event cards cannot be null and there must be 2 of them");
-        }
-        if (topRow == null) {
-            throw new IllegalStateException("Top row cannot be null during top row initialization");
         }
 
         boolean newEraHasCome = false;
@@ -221,9 +207,6 @@ public class Board {
         if(model.getPlayers().size() < 2 || model.getPlayers().size() > 5) {
             throw new IllegalArgumentException("Number of players must be between 2 and 5");
         }
-        if (bottomRow == null) {
-            throw new IllegalStateException("Bottom row cannot be null during bottom row initialization");
-        }
         if(!bottomRow.isEmpty()) {
             throw new IllegalStateException("Bottom row must be empty during bottom row initialization");
         }
@@ -258,13 +241,6 @@ public class Board {
 //        if (topRow.isEmpty()) {
 //            throw new IllegalStateException("Top row cannot be empty when moving cards to the bottom row");
 //        }
-        if(topRow == null) {
-            throw new IllegalStateException("Top row cannot be null when moving cards to the bottom row");
-        }
-        if(bottomRow == null) {
-            throw new IllegalStateException("Bottom row cannot be null when moving cards to the bottom row");
-        }
-
         bottomRow.addAll(topRow);
         topRow.clear();
     }
@@ -274,11 +250,7 @@ public class Board {
      * Clear the bottom tribe cards row.
      */
     protected void discardBottomRow() {
-        if (bottomRow == null) {
-            throw new IllegalStateException("Bottom row cannot be null when discarding the bottom row");
-        }
-
-        bottomRow.clear();
+         bottomRow.clear();
     }
 
     /**
@@ -286,9 +258,6 @@ public class Board {
      * Populate the top building cards row
      */
     protected void populateTopBuildings() {
-        if (topBuildings == null) {
-            throw new IllegalStateException("Top buildings cannot be null when populating the top buildings row");
-        }
         if (currentEra == null) {
             throw new IllegalStateException("Current era cannot be null when populating the top buildings row");
         }
@@ -309,13 +278,6 @@ public class Board {
      * Moves the building cards from the top row to the bottom row.
      */
     protected void moveBuildingsFromTopToBottom() {
-        if (topBuildings == null) {
-            throw new IllegalStateException("Top buildings cannot be null when moving cards to the bottom buildings row");
-        }
-        if(bottomBuildings == null) {
-            throw new IllegalStateException("Bottom buildings cannot be null when moving cards to the bottom buildings row");
-        }
-
         bottomBuildings.clear();
         bottomBuildings.addAll(topBuildings);
         topBuildings.clear();
@@ -328,9 +290,6 @@ public class Board {
     protected void removeTribeCardFromTopRow(TribeCard card) {
         if (card == null) {
             throw new IllegalArgumentException("Card cannot be null");
-        }
-        if (topRow == null) {
-            throw new IllegalStateException("Top row cannot be null when removing a card from the top row");
         }
         if (!topRow.contains(card)) {
             throw new IllegalArgumentException("Card not found in the top row");
@@ -350,9 +309,6 @@ public class Board {
         if (card == null) {
             throw new IllegalArgumentException("Card cannot be null");
         }
-        if (bottomRow == null) {
-            throw new IllegalStateException("Bottom row cannot be null when removing a card from the bottom row");
-        }
         if (!bottomRow.contains(card)) {
             throw new IllegalArgumentException("Card not found in the bottom row");
         }
@@ -371,9 +327,6 @@ public class Board {
         if (card == null) {
             throw new IllegalArgumentException("Building Card cannot be null");
         }
-        if (topBuildings == null) {
-            throw new IllegalStateException("Top row cannot be null when removing a card from the top buildings row");
-        }
         if (!topBuildings.contains(card)) {
             throw new IllegalArgumentException("Card not found in the top buildings row");
         }
@@ -388,9 +341,6 @@ public class Board {
     protected void removeBuildingCardFromBottomRow(BuildingCard card) {
         if (card == null) {
             throw new IllegalArgumentException("Building Card cannot be null");
-        }
-        if (bottomBuildings == null) {
-            throw new IllegalStateException("Bottom buildings row cannot be null when removing a card from the bottom buildings row");
         }
         if (!bottomBuildings.contains(card)) {
             throw new IllegalArgumentException("Card not found in the bottom buildings row");

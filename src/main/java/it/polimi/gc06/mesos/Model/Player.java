@@ -9,8 +9,8 @@ public class Player {
     private int prestigeTokens;
     private int foodTokens;
 
-    private ArrayList<CharacterCard> characterDeck;
-    private ArrayList<BuildingCard> buildingDeck;
+    private final ArrayList<CharacterCard> characterDeck;
+    private final ArrayList<BuildingCard> buildingDeck;
 
     private Color color;
 
@@ -45,6 +45,7 @@ public class Player {
     }
 
     protected void addCharacterCards(CharacterCard card){
+        if (card == null) throw new IllegalArgumentException("Card cannot be null");
         this.characterDeck.add(card);
     }
 
@@ -54,6 +55,7 @@ public class Player {
     }
 
     protected void addBuildingCards(BuildingCard card){
+        if (card == null) throw new IllegalArgumentException("Card cannot be null");
         this.buildingDeck.add(card);
     }
 
@@ -63,13 +65,18 @@ public class Player {
     }
 
     protected void addFoodTokens(int amount){
+        if (amount < 0) throw new IllegalArgumentException("Amount must be non-negative");
         this.foodTokens += amount;
     }
 
-    /*remove food tokens only if the player has them. otherwise is thrown an excception*/
+    /*remove food tokens only if the player has them. otherwise is thrown an exception*/
     protected void removeFoodTokens(int amount) throws IllegalStateException{
-        if ((this.foodTokens - amount) >= 0) this.foodTokens -= amount;
-        else throw new IllegalStateException();
+        if(amount < 0) throw new IllegalArgumentException("Amount must be non-negative");
+        if ((this.foodTokens - amount) >= 0) {
+            this.foodTokens -= amount;
+        } else {
+            throw new IllegalStateException();
+        }
     }
 
     //PRESTIGE TOKEN CARDS
@@ -78,10 +85,12 @@ public class Player {
     }
 
     protected void addPrestigeTokens(int amount){
+        if (amount < 0) throw new IllegalArgumentException("Amount must be non-negative");
         this.prestigeTokens += amount;
     }
 
     protected void removePrestigeTokens(int amount){
+        if(amount < 0) throw new IllegalArgumentException("Amount must be non-negative");
         this.prestigeTokens -= amount;
     }
 
