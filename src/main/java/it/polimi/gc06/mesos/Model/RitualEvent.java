@@ -23,11 +23,11 @@ public class RitualEvent extends EventCard{
 
     private void getStarsBound(GameModel model) {
 
-        for (int i = 0; i < model.getPlayers().size(); i++) {
+        for (int j = 0; j < model.getPlayers().size(); j++) {
 
-            int stars = model.getPlayers().get(i).getShamanStars();
+            int stars = model.getPlayers().get(j).getShamanStars();
 
-            if(i == 0) {
+            if(j == 0) {
                 maxStars = stars;
                 minStars = stars;
             }
