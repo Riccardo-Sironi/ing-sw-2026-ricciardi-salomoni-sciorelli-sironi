@@ -14,14 +14,12 @@ public class ChooseCardTileEffect implements TileEffect{
      * Let the player draw the specified number of card from the top/bottom row.
      *
      * @param player the player placed on the tile.
-     * @param context the current GameModel.
-     * @return if the effect has been applied successfully
      * @throws IllegalArgumentException {@inheritDoc}
      */
     @Override
-    public boolean execute(Player player, GameModel context) throws IllegalArgumentException{
-        if(player == null || context == null) throw new IllegalArgumentException();
-        //TODO drawing cards logic, could we use integer as player attribute?
-        return false;
+    public void execute(Player player) throws IllegalArgumentException{
+        if(player == null) throw new IllegalArgumentException();
+        player.setTopDrawNum(numOfTopCards);
+        player.setBottomDrawNum(numOfBottomCards);
     }
 }

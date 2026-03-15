@@ -5,19 +5,22 @@ import java.util.ArrayList;
 
 public class Player {
 
-    private String nickname;
+    private final String nickname;
     private int prestigeTokens;
     private int foodTokens;
 
     private final ArrayList<CharacterCard> characterDeck;
     private final ArrayList<BuildingCard> buildingDeck;
 
-    private Color color;
+    private final Color color;
 
     private int shamanStars;
     private int huntersCounter;
     private int artistsCounter;
     private int gatherersCounter;
+
+    private int topDrawNum;
+    private int bottomDrawNum;
 
     //CONSTRUCTOR
     public Player(String nickname, Color color) {
@@ -32,6 +35,9 @@ public class Player {
         this.huntersCounter = 0;
         this.artistsCounter = 0;
         this.gatherersCounter = 0;
+
+        this.topDrawNum = 0;
+        this.bottomDrawNum = 0;
     }
 
     //NICKNAME
@@ -57,6 +63,24 @@ public class Player {
     protected void addBuildingCards(BuildingCard card){
         if (card == null) throw new IllegalArgumentException("Card cannot be null");
         this.buildingDeck.add(card);
+    }
+
+    public int getTopDrawNum() {
+        return topDrawNum;
+    }
+
+    public void setTopDrawNum(int topDrawNum) throws IllegalArgumentException{
+        if(topDrawNum < 0) throw new IllegalArgumentException();
+        this.topDrawNum = topDrawNum;
+    }
+
+    public int getBottomDrawNum() {
+        return bottomDrawNum;
+    }
+
+    public void setBottomDrawNum(int bottomDrawNum) throws IllegalArgumentException{
+        if(bottomDrawNum < 0) throw new IllegalArgumentException();
+        this.bottomDrawNum = bottomDrawNum;
     }
 
     //FOOD TOKEN CARDS

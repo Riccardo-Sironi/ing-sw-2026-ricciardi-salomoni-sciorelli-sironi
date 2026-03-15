@@ -19,15 +19,12 @@ public class FoodTileEffect implements TileEffect{
      * Adds numFood food tokens to the player.
      *
      * @param player the player to which the effect will be applied.
-     * @param context the current GameModel.
-     * @return whether the effect has been applied successfully to the player
      * @throws IllegalArgumentException {@inheritDoc}
      */
     @Override
-    public boolean execute(Player player, GameModel context) throws IllegalArgumentException{
-        if(player == null || context == null) throw new IllegalArgumentException();
+    public void execute(Player player) throws IllegalArgumentException{
+        if(player == null) throw new IllegalArgumentException();
 
         player.addFoodTokens(numFood);
-        return true;
     }
 }

@@ -39,15 +39,11 @@ public class TileSlot {
 
     /**
      * Apply the effects on the player, it needs to have a player or an IllegalArgumentException gets thrown.
-     * @param context the current GameModel
-     * @return if the effects has been applied successfully.
      * @throws IllegalStateException {@inheritDoc}
      */
-    protected boolean applyEffect(GameModel context) throws IllegalArgumentException, IllegalStateException {
-        if(context == null) throw new IllegalArgumentException();
+    protected void applyEffect() throws IllegalStateException {
         if(player == null) throw new IllegalStateException();
-
-        return tileEffect == null || tileEffect.execute(player,context);
+        tileEffect.execute(player);
     }
 
     /**
