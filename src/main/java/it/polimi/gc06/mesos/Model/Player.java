@@ -22,6 +22,10 @@ public class Player {
     private int topDrawNum;
     private int bottomDrawNum;
 
+    //TODO: check if this is really necessary
+    private GameModel gameModel;
+
+
     //CONSTRUCTOR
     public Player(String nickname, Color color) {
         this.nickname = nickname;
@@ -53,6 +57,17 @@ public class Player {
     protected void addCharacterCards(CharacterCard card){
         if (card == null) throw new IllegalArgumentException("Card cannot be null");
         this.characterDeck.add(card);
+
+        //TODO: check if this is really necessary,
+        // maybe we can do it in the game model when the card is added to the player.
+        // Adding this we can only use the addCharacterCards method instead of calling also the increase method avoiding errors
+        if (card.getCharacterType() == CharacterType.SHAMAN){
+            ShamanCard shaman = (ShamanCard) card;
+            increaseShamanStars(shaman.getStars());
+        }
+        else if(card.getCharacterType() == CharacterType.HUNTER) increaseHuntersCounter(1);
+        else if(card.getCharacterType() == CharacterType.ARTIST) increaseArtistsCounter(1);
+        else if(card.getCharacterType() == CharacterType.GATHERER) increaseGatherersCounter(1);
     }
 
     //BUILDING CARDS
@@ -63,24 +78,6 @@ public class Player {
     protected void addBuildingCards(BuildingCard card){
         if (card == null) throw new IllegalArgumentException("Card cannot be null");
         this.buildingDeck.add(card);
-    }
-
-    public int getTopDrawNum() {
-        return topDrawNum;
-    }
-
-    public void setTopDrawNum(int topDrawNum) throws IllegalArgumentException{
-        if(topDrawNum < 0) throw new IllegalArgumentException();
-        this.topDrawNum = topDrawNum;
-    }
-
-    public int getBottomDrawNum() {
-        return bottomDrawNum;
-    }
-
-    public void setBottomDrawNum(int bottomDrawNum) throws IllegalArgumentException{
-        if(bottomDrawNum < 0) throw new IllegalArgumentException();
-        this.bottomDrawNum = bottomDrawNum;
     }
 
     //FOOD TOKEN CARDS
@@ -123,20 +120,11 @@ public class Player {
         return this.color;
     }
 
+    //COUNTERS
+
+    //shaman stars
     protected int getShamanStars() {
         return this.shamanStars;
-    }
-
-     protected int getHuntersCounter() {
-        return this.huntersCounter;
-    }
-
-    protected int getArtistsCounter() {
-        return this.artistsCounter;
-    }
-
-    protected int getGatherersCounter() {
-        return this.gatherersCounter;
     }
 
     protected void increaseShamanStars(int amount) {
@@ -144,9 +132,19 @@ public class Player {
         this.shamanStars  += amount;
     }
 
+    //hunters
+    protected int getHuntersCounter() {
+        return this.huntersCounter;
+    }
+
     protected void increaseHuntersCounter(int amount) {
         if (amount < 0) throw new IllegalArgumentException("Amount must be non-negative");
         this.huntersCounter += amount;
+    }
+
+    //artists
+    protected int getArtistsCounter() {
+        return this.artistsCounter;
     }
 
     protected void increaseArtistsCounter(int amount) {
@@ -154,8 +152,45 @@ public class Player {
         this.artistsCounter += amount;
     }
 
+    //gatherer
+    protected int getGatherersCounter() {
+        return this.gatherersCounter;
+    }
+
     protected void increaseGatherersCounter(int amount) {
         if (amount < 0) throw new IllegalArgumentException("Amount must be non-negative");
         this.gatherersCounter += amount;
     }
+
+    //TOP DRAW NUM
+    public int getTopDrawNum() {
+        return topDrawNum;
+    }
+
+    public void setTopDrawNum(int topDrawNum) throws IllegalArgumentException{
+        if(topDrawNum < 0) throw new IllegalArgumentException();
+        this.topDrawNum = topDrawNum;
+    }
+
+    //BOTTOM DRAW NUM
+    public int getBottomDrawNum() {
+        return bottomDrawNum;
+    }
+
+    public void setBottomDrawNum(int bottomDrawNum) throws IllegalArgumentException{
+        if(bottomDrawNum < 0) throw new IllegalArgumentException();
+        this.bottomDrawNum = bottomDrawNum;
+    }
+
+    //TODO: check if this is really necessary
+    //GAME MODEL
+    protected GameModel getGameModel() {
+        return this.gameModel;
+    }
+
+    protected void setGameModel(GameModel gameModel) throws IllegalArgumentException{
+        if (gameModel == null) throw new IllegalArgumentException("Game model cannot be null");
+        this.gameModel = gameModel;
+    }
+
 }
