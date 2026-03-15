@@ -16,8 +16,9 @@ public class SustenanceEvent extends EventCard {
     @Override
     public void resolveEvent(Player player) {
 
-        // get total number of character cards of the player
         int totalCharacterCards = player.getCharacterDeck().size();
+        // get total number of character cards of the player
+
         // initialization gatherers count
         int gatherersCount = player.getGatherersCounter();
 

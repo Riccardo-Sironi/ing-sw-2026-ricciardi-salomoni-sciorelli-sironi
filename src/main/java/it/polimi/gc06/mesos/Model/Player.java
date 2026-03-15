@@ -2,6 +2,7 @@ package it.polimi.gc06.mesos.Model;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.EnumMap;
 
 public class Player {
 
@@ -9,15 +10,12 @@ public class Player {
     private int prestigeTokens;
     private int foodTokens;
 
-    private final ArrayList<CharacterCard> characterDeck;
+    private final EnumMap<CharacterType,ArrayList<CharacterCard>> characterDeck;
     private final ArrayList<BuildingCard> buildingDeck;
 
     private final Color color;
 
     private int shamanStars;
-    private int huntersCounter;
-    private int artistsCounter;
-    private int gatherersCounter;
 
     private int topDrawNum;
     private int bottomDrawNum;
@@ -31,9 +29,13 @@ public class Player {
         this.nickname = nickname;
         this.prestigeTokens = 0;
         this.foodTokens = 0;
-        this.characterDeck = new ArrayList<>();
+        this.characterDeck = new EnumMap<>(CharacterType.class);
         this.buildingDeck = new ArrayList<>();
         this.color = (color != null) ? color : Color.BLACK; //DA CAPIRE
+
+        for(CharacterType cType : CharacterType.values()) {
+            characterDeck.put(cType, new ArrayList<>());
+        }
 
         this.shamanStars = 0;
 
@@ -49,13 +51,13 @@ public class Player {
     }
 
     //CHARACTER CARDS
-    protected ArrayList<CharacterCard> getCharacterDeck(){
+    protected EnumMap<CharacterType,ArrayList<CharacterCard>> getCharacterDeck(){
         return this.characterDeck;
     }
 
     protected void addCharacterCards(CharacterCard card){
         if (card == null) throw new IllegalArgumentException("Card cannot be null");
-        this.characterDeck.add(card);
+        this.characterDeck.get(card.getCharacterType()).addFirst(card);
 
         if (card.getCharacterType() == CharacterType.SHAMAN){
             ShamanCard shaman = (ShamanCard) card;
@@ -129,12 +131,7 @@ public class Player {
     //hunters
 
     protected int getHuntersCounter() {
-        return this.huntersCounter;
-    }
-
-    protected void increaseHuntersCounter(int amount) {
-        if (amount < 0) throw new IllegalArgumentException("Amount must be non-negative");
-        this.huntersCounter += amount;
+        return this.characterDeck.get(CharacterType.HUNTER).size();
     }
 
     //artists
@@ -142,32 +139,27 @@ public class Player {
         return this.characterDeck.get(CharacterType.ARTIST).size();
     }
 
-    protected void increaseArtistsCounter(int amount) {
-        if (amount < 0) throw new IllegalArgumentException("Amount must be non-negative");
-        this.artistsCounter += amount;
-    }
-
     //gatherer
     protected int getGatherersCounter() {
-        return this.gatherersCounter;
+        return this.characterDeck.get(CharacterType.GATHERER).size();
     }
 
     //TOP DRAW NUM
-    public int getTopDrawNum() {
+    protected int getTopDrawNum() {
         return topDrawNum;
     }
 
-    public void setTopDrawNum(int topDrawNum) throws IllegalArgumentException{
+    protected void setTopDrawNum(int topDrawNum) throws IllegalArgumentException{
         if(topDrawNum < 0) throw new IllegalArgumentException();
         this.topDrawNum = topDrawNum;
     }
 
     //BOTTOM DRAW NUM
-    public int getBottomDrawNum() {
+    protected int getBottomDrawNum() {
         return bottomDrawNum;
     }
 
-    public void setBottomDrawNum(int bottomDrawNum) throws IllegalArgumentException{
+    protected void setBottomDrawNum(int bottomDrawNum) throws IllegalArgumentException{
         if(bottomDrawNum < 0) throw new IllegalArgumentException();
         this.bottomDrawNum = bottomDrawNum;
     }
