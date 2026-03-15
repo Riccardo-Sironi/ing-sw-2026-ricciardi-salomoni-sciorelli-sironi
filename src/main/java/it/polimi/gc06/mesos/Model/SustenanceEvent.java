@@ -1,6 +1,7 @@
 package it.polimi.gc06.mesos.Model;
 
 public class SustenanceEvent extends EventCard {
+
     private static final int DISCOUNT_PER_GATHERER = 3;
     private final int numPrestigeLoss;
 

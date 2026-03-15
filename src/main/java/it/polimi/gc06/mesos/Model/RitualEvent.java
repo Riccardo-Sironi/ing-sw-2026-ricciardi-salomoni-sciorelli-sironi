@@ -22,23 +22,30 @@ public class RitualEvent extends EventCard{
     }
 
     private void getStarsBound(GameModel model) {
-        int nCard = 0;
-        for (int i = 0; i < model.getPlayers().size(); i++) {
-            int starts = model.getPlayers().get(i).getShamanStars();
 
-            if(nCard > maxStars) maxStars = starts;
-            if(nCard < minStars || i == 0) minStars = starts;
+        for (int i = 0; i < model.getPlayers().size(); i++) {
+
+            int stars = model.getPlayers().get(i).getShamanStars();
+
+            if(i == 0) {
+                maxStars = stars;
+                minStars = stars;
+            }
+            else {
+                if (stars > maxStars) maxStars = stars;
+                if (stars < minStars) minStars = stars;
+            }
         }
     }
 
     @Override
     public void resolveEvent(Player player) {
         if(!hasBounds) {
-            hasBounds = true;
             getStarsBound(player.getGameModel());
+            hasBounds = true;
         }
 
         if(player.getShamanStars() == maxStars) player.addPrestigeTokens(numPrestigeGained);
-        if(player.getShamanStars() == minStars) player.addPrestigeTokens(numPrestigeLost);
+        if(player.getShamanStars() == minStars) player.removePrestigeTokens(numPrestigeLost);
     }
 }
