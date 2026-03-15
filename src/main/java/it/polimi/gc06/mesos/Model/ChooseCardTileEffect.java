@@ -13,7 +13,7 @@ public class ChooseCardTileEffect implements TileEffect{
     /**
      * Let the player draw the specified number of card from the top/bottom row.
      *
-     * @param player the player to which the effect will be applyed to.
+     * @param player the player to which the effect will be applied to.
      * @throws IllegalArgumentException {@inheritDoc}
      */
     @Override

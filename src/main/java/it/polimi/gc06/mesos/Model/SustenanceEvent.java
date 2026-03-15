@@ -1,5 +1,7 @@
 package it.polimi.gc06.mesos.Model;
 
+import java.util.ArrayList;
+
 public class SustenanceEvent extends EventCard {
 
     private static final int DISCOUNT_PER_GATHERER = 3;
