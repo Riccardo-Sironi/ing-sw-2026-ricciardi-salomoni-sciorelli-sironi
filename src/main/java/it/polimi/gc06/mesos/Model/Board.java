@@ -84,10 +84,10 @@ public class Board {
         if(model == null) {
             throw new IllegalArgumentException("Model cannot be null");
         }
-        if(model.getTribeCardsDeck() == null || model.getTribeCardsDeck().isEmpty()) {
+        if(model.getTribeCardsDeck() == null || model.getTribeCardsDeck().isEmpty() || model.getTribeCardsDeck().values().stream().allMatch(ArrayList::isEmpty)) {
             throw new IllegalArgumentException("Tribe cards deck cannot be null or empty");
         }
-        if(model.getBuildingCardsDecks() == null || model.getBuildingCardsDecks().isEmpty()) {
+        if(model.getBuildingCardsDecks() == null || model.getBuildingCardsDecks().isEmpty() || model.getBuildingCardsDecks().values().stream().allMatch(ArrayList::isEmpty)) {
             throw new IllegalArgumentException("Building cards decks cannot be null or empty");
         }
         if(model.getPlayers().size() < 2 || model.getPlayers().size() > 5) {
@@ -135,7 +135,7 @@ public class Board {
         if(model == null) {
             throw new IllegalArgumentException("Model cannot be null");
         }
-        if(model.getTribeCardsDeck() == null) {
+        if(model.getTribeCardsDeck() == null || model.getTribeCardsDeck().get(currentEra) == null) {
             throw new IllegalArgumentException("Tribe cards deck cannot be null");
         }
         if(model.getPlayers().size() < 2 || model.getPlayers().size() > 5) {
@@ -155,31 +155,34 @@ public class Board {
         }
 
         for (int i = 0; i < cardsToDraw; i++) {
-            if(model.getTribeCardsDeck().isEmpty()) {
+            // when we reach the end of the last era deck we need to add the final event cards to the top row
+            if(currentEra.equals(Era.ERA_III) && model.getTribeCardsDeck().get(currentEra).isEmpty()) {
+                isEndGame = true;
                 // if the deck is empty then we add to the top row the final event cards
                 topRow.addFirst(model.getFinalEventCards()[0]);
                 topRow.addFirst(model.getFinalEventCards()[1]);
-                isEndGame = true;
-
                 break;
             }
 
-            TribeCard removedCard = model.getTribeCardsDeck().removeFirst();
-
-            if(removedCard.getEra().ordinal() > currentEra.ordinal()) {
+            if(model.getTribeCardsDeck().get(currentEra).isEmpty()) {
                 newEraHasCome = true;
+                // increase the era
+                currentEra = currentEra.nextEra();
+                if (model.getTribeCardsDeck().get(currentEra) == null || model.getTribeCardsDeck().get(currentEra).isEmpty()) {
+                    throw new IllegalStateException("Tribe cards deck for new current era cannot be null or empty during top row population (after new era has come)");
+                }
             }
+
+            TribeCard removedCard = model.getTribeCardsDeck().get(currentEra).removeFirst();
+
             topRow.addFirst(removedCard);
         }
 
         if (newEraHasCome) {
-            // increase the era
-            currentEra = currentEra.nextEra();
             // move the buildings from previous era to the bottom buildings row
             moveBuildingsFromTopToBottom();
             // populate the top building cards space with the cards from deck of the new current era
             populateTopBuildings();
-
 
             // TODO : comunicare inizio nuova era ...
         }
@@ -201,7 +204,7 @@ public class Board {
         if(model == null) {
             throw new IllegalArgumentException("Model cannot be null");
         }
-        if(model.getTribeCardsDeck() == null || model.getTribeCardsDeck().isEmpty()) {
+        if(model.getTribeCardsDeck() == null || model.getTribeCardsDeck().isEmpty() || model.getTribeCardsDeck().values().stream().allMatch(ArrayList::isEmpty)) {
             throw new IllegalArgumentException("Tribe cards deck cannot be null or empty during bottom row initialization");
         }
         if(model.getPlayers().size() < 2 || model.getPlayers().size() > 5) {
@@ -215,10 +218,12 @@ public class Board {
         int maxTopRowSize = model.getPlayers().size() + 4;
 
         for (int i = 0; i < cardsToDraw; i++) {
-            if(model.getTribeCardsDeck().isEmpty()) {
+            // TODO  : we could force to pick Era.ERA_I cards instead
+            if(model.getTribeCardsDeck().get(currentEra).isEmpty()) {
                 throw new IllegalStateException("Tribe cards deck cannot be empty during bottom row initialization loop");
             }
-            TribeCard removedCard = model.getTribeCardsDeck().removeFirst();
+            // TODO  : we could force to pick Era.ERA_I cards instead
+            TribeCard removedCard = model.getTribeCardsDeck().get(currentEra).removeFirst();
 
             // check if the card is an event
             if (removedCard.isEventCard()) {

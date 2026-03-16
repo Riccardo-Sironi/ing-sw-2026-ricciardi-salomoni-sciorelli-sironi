@@ -10,9 +10,10 @@ public class GameModel implements GameInfo {
 
     private Board board;
 
-    private EnumMap<Era, List<BuildingCard>> buildingCardsDecks;
+    private EnumMap<Era, ArrayList<BuildingCard>> buildingCardsDecks;
 
-    private ArrayList<TribeCard> tribeCardsDeck;
+    //private ArrayList<TribeCard> tribeCardsDeck;
+    private EnumMap<Era, ArrayList<TribeCard>> tribeCardsDeck;
 
     private EventCard[] finalEventCards;
 
@@ -58,11 +59,11 @@ public class GameModel implements GameInfo {
         return turnOrderTile;
     }
 
-    public EnumMap<Era, List<BuildingCard>> getBuildingCardsDecks() {
+    public EnumMap<Era, ArrayList<BuildingCard>> getBuildingCardsDecks() {
         return buildingCardsDecks;
     }
 
-    protected ArrayList<TribeCard> getTribeCardsDeck() {
+    protected EnumMap<Era, ArrayList<TribeCard>> getTribeCardsDeck() {
         return tribeCardsDeck;
     }
 
