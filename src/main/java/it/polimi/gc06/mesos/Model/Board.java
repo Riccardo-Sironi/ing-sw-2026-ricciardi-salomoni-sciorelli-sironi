@@ -1,6 +1,5 @@
 package it.polimi.gc06.mesos.Model;
-import java.util.ArrayList;
-import java.util.EnumMap;
+import java.util.*;
 
 public class Board {
     private final ArrayList<TribeCard> topRow;
@@ -251,11 +250,21 @@ public class Board {
     }
 
     /**
-     * {@inheritDoc}
-     * Clear the bottom tribe cards row.
+     *
      */
-    protected void discardBottomRow() {
-         bottomRow.clear();
+    protected ArrayList<EventCard> cleanBottomRow() {
+        // we can safely cast the cards to event cards because we know that the bottom row can
+        // contain only character cards and event cards, and we are filtering only the event cards
+        ArrayList<EventCard> events = (ArrayList<EventCard>) bottomRow.stream()
+                .filter(TribeCard::isEventCard)
+                .map(card -> (EventCard) card)
+                .sorted(Comparator.comparing(EventCard::hasPriority).reversed())
+                .toList();
+
+        // discard bottom row
+        bottomRow.clear();
+
+        return events;
     }
 
     /**
