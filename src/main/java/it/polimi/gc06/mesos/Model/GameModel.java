@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 
-public class GameModel {
+public class GameModel implements GameInfo {
     private ArrayList<TileSlot> offerTrack;
     private TurnOrderTile turnOrderTile;
 
@@ -24,8 +24,31 @@ public class GameModel {
     public GameModel() {
     }
 
-    protected boolean startGame() {return true;};
-    protected boolean endGame() {return true;};
+    protected boolean startGame() {
+        return true;
+    }
+
+    protected boolean endGame() {
+        return true;
+    }
+
+    @Override
+    public int getMaxStars() {
+        // Functional approach to get the maximum number of shaman stars among all players. If there are no players, returns 0.
+        return players.stream()
+                .mapToInt(Player::getShamanStars)
+                .max()
+                .orElse(0);
+    }
+
+    @Override
+    public int getMinStars() {
+        // Functional approach to get the minimum number of shaman stars among all players. If there are no players, returns 0.
+        return players.stream()
+                .mapToInt(Player::getShamanStars)
+                .min()
+                .orElse(0);
+    }
 
     protected ArrayList<TileSlot> getOfferTrack() {
         return offerTrack;

@@ -9,20 +9,19 @@ public class Player {
     private final String nickname;
     private int prestigeTokens;
     private int foodTokens;
+    private int shamanStars;
 
-    private final EnumMap<CharacterType,ArrayList<CharacterCard>> characterDeck;
+    // Just like in real life, the player is able to know the state of the game.
+    // GameInfo must be transient in order to avoid serialization issues.
+    private transient GameInfo gameInfo;
+
+    private final EnumMap<CharacterType, ArrayList<CharacterCard>> characterDeck;
     private final ArrayList<BuildingCard> buildingDeck;
 
     private final Color color;
 
-    private int shamanStars;
-
     private int topDrawNum;
     private int bottomDrawNum;
-
-    //TODO: check if this is really necessary
-    private final GameModel gameModel;
-
 
     //CONSTRUCTOR
     public Player(String nickname, Color color, GameModel gameModel) {
@@ -33,20 +32,18 @@ public class Player {
         this.buildingDeck = new ArrayList<>();
         this.color = (color != null) ? color : Color.BLACK; //DA CAPIRE
 
-        for(CharacterType cType : CharacterType.values()) {
+        for (CharacterType cType : CharacterType.values()) {
             characterDeck.put(cType, new ArrayList<>());
         }
 
         this.shamanStars = 0;
-
         this.topDrawNum = 0;
         this.bottomDrawNum = 0;
 
-        this.gameModel = gameModel;
     }
 
     //NICKNAME
-    protected String getNickname(){
+    protected String getNickname() {
         return this.nickname;
     }
 
@@ -55,7 +52,7 @@ public class Player {
         return this.characterDeck;
     }
 
-    protected void addCharacterCards(CharacterCard card){
+    protected void addCharacterCards(CharacterCard card) {
         if (card == null) throw new IllegalArgumentException("Card cannot be null");
         this.characterDeck.get(card.getCharacterType()).addFirst(card);
 
@@ -66,28 +63,28 @@ public class Player {
     }
 
     //BUILDING CARDS
-    protected ArrayList<BuildingCard> getBuildingCards(){
+    protected ArrayList<BuildingCard> getBuildingCards() {
         return this.buildingDeck;
     }
 
-    protected void addBuildingCards(BuildingCard card){
+    protected void addBuildingCards(BuildingCard card) {
         if (card == null) throw new IllegalArgumentException("Card cannot be null");
         this.buildingDeck.add(card);
     }
 
     //FOOD TOKEN CARDS
-    protected int getFoodTokens(){
+    protected int getFoodTokens() {
         return this.foodTokens;
     }
 
-    protected void addFoodTokens(int amount){
+    protected void addFoodTokens(int amount) {
         if (amount < 0) throw new IllegalArgumentException("Amount must be non-negative");
         this.foodTokens += amount;
     }
 
     /*remove food tokens only if the player has them. otherwise is thrown an exception*/
-    protected void removeFoodTokens(int amount) throws IllegalStateException{
-        if(amount < 0) throw new IllegalArgumentException("Amount must be non-negative");
+    protected void removeFoodTokens(int amount) throws IllegalStateException {
+        if (amount < 0) throw new IllegalArgumentException("Amount must be non-negative");
         if ((this.foodTokens - amount) >= 0) {
             this.foodTokens -= amount;
         } else {
@@ -96,22 +93,23 @@ public class Player {
     }
 
     //PRESTIGE TOKEN CARDS
-    protected int getPrestigeTokens(){
+    protected int getPrestigeTokens() {
         return this.prestigeTokens;
     }
 
-    protected void addPrestigeTokens(int amount){
+    protected void addPrestigeTokens(int amount) {
         if (amount < 0) throw new IllegalArgumentException("Amount must be non-negative");
         this.prestigeTokens += amount;
     }
 
-    protected void removePrestigeTokens(int amount){
-        if(amount < 0) throw new IllegalArgumentException("Amount must be non-negative");
+    protected void removePrestigeTokens(int amount) {
+        if (amount < 0) throw new IllegalArgumentException("Amount must be non-negative");
         this.prestigeTokens -= amount;
     }
 
+
     //COLOR
-    protected Color getColor(){
+    protected Color getColor() {
         return this.color;
     }
 
@@ -124,7 +122,7 @@ public class Player {
 
     private void increaseShamanStars(int amount) {
         if (amount < 0) throw new IllegalArgumentException("Amount must be non-negative");
-        this.shamanStars  += amount;
+        this.shamanStars += amount;
     }
 
 
@@ -164,7 +162,14 @@ public class Player {
         this.bottomDrawNum = bottomDrawNum;
     }
 
-    protected GameModel getGameModel(){
-        return gameModel;
+    public void setEnvironment(GameInfo gameInfo) {
+        this.gameInfo = gameInfo;
+    }
+
+    public GameInfo getEnvironment() {
+        if (this.gameInfo == null) {
+            throw new IllegalStateException("Game Environment not available for player " + this.nickname);
+        }
+        return this.gameInfo;
     }
 }
