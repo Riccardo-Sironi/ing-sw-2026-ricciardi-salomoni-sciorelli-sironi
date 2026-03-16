@@ -9,8 +9,13 @@ public class SustenanceEvent extends EventCard {
 
     //CONSTRUCTOR
     public SustenanceEvent(Era era, int numPrestigeLoss) {
-        super(era,true);
+        super(era, true);
         this.numPrestigeLoss = numPrestigeLoss;
+    }
+
+    @Override
+    public void accept(TribeCardVisitor visitor) {
+        visitor.visit(this);
     }
 
     @Override

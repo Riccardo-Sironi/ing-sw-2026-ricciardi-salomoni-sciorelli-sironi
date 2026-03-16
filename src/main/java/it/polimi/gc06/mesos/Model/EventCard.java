@@ -1,7 +1,5 @@
 package it.polimi.gc06.mesos.Model;
 
-import java.util.ArrayList;
-
 public abstract class EventCard extends TribeCard {
     private final boolean hasPriority;
 

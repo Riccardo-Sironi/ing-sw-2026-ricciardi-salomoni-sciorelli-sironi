@@ -6,9 +6,15 @@ public class HuntEvent extends EventCard {
 
     //CONSTRUCTOR
     public HuntEvent(Era era, int numPrestigeGained) {
-        super(era,false);
+        super(era, false);
         this.numPrestigeGained = numPrestigeGained;
     }
+
+    @Override
+    public void accept(TribeCardVisitor visitor) {
+        visitor.visit(this);
+    }
+
 
     @Override
     public void resolveEvent(Player player) {

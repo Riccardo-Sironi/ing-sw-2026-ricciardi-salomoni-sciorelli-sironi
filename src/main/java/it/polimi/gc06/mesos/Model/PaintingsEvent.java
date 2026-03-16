@@ -8,10 +8,15 @@ public class PaintingsEvent extends EventCard {
 
     //CONSTRUCTOR
     public PaintingsEvent(Era era, int numPrestigeGained, int numPrestigeLost, int minNumberOfArtists) {
-        super(era,false);
+        super(era, false);
         this.numPrestigeGained = numPrestigeGained;
         this.numPrestigeLost = numPrestigeLost;
         this.minNumberOfArtists = minNumberOfArtists;
+    }
+
+    @Override
+    public void accept(TribeCardVisitor visitor) {
+        visitor.visit(this);
     }
 
     @Override

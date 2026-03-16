@@ -1,51 +1,30 @@
 package it.polimi.gc06.mesos.Model;
 
-public class RitualEvent extends EventCard{
+public class RitualEvent extends EventCard {
 
     private final int numPrestigeGained;
     private final int numPrestigeLost;
 
-    private boolean hasBounds;
-
-    private int minStars;
-    private int maxStars;
-
-    public RitualEvent(Era era, int numPrestigeGained, int numPrestigeLost){
-        super(era,false);
+    public RitualEvent(Era era, int numPrestigeGained, int numPrestigeLost) {
+        super(era, false);
         this.numPrestigeGained = numPrestigeGained;
+
+        // TODO Da Riguardare. Ha senso AGGIUNGERE un numero negativo? Potrebbe portare a confusione, forse meglio togliere con una funzione dedicata
         this.numPrestigeLost = numPrestigeLost;
 
-        this.minStars = 0;
-        this.maxStars = 0;
-
-        hasBounds = false;
     }
 
-    private void getStarsBound(GameModel model) {
-
-        for (int j = 0; j < model.getPlayers().size(); j++) {
-
-            int stars = model.getPlayers().get(j).getShamanStars();
-
-            if(j == 0) {
-                maxStars = stars;
-                minStars = stars;
-            }
-            else {
-                if (stars > maxStars) maxStars = stars;
-                if (stars < minStars) minStars = stars;
-            }
-        }
+    @Override
+    public void accept(TribeCardVisitor visitor) {
+        visitor.visit(this);
     }
 
     @Override
     public void resolveEvent(Player player) {
-        if(!hasBounds) {
-            getStarsBound(player.getGameModel());
-            hasBounds = true;
-        }
+        int maxStars = player.getEnvironment().getMaxStars();
+        int minStars = player.getEnvironment().getMinStars();
 
-        if(player.getShamanStars() == maxStars) player.addPrestigeTokens(numPrestigeGained);
-        if(player.getShamanStars() == minStars) player.removePrestigeTokens(numPrestigeLost);
+        if (player.getShamanStars() == maxStars) player.addPrestigeTokens(numPrestigeGained);
+        if (player.getShamanStars() == minStars) player.addPrestigeTokens(numPrestigeLost);
     }
 }
