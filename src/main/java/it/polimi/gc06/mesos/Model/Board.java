@@ -196,7 +196,7 @@ public class Board {
      * Populate the bottom row of tribe cards.
      * @param model Game model
      */
-    protected void populateBottomRow(GameModel model) {
+    private void populateBottomRow(GameModel model) {
         // this method is used mainly in the initialization process of the board which
         // means that the bottom row cannot contain event cards
 
@@ -271,7 +271,7 @@ public class Board {
      * {@inheritDoc}
      * Populate the top building cards row
      */
-    protected void populateTopBuildings() {
+    private void populateTopBuildings() {
         if (currentEra == null) {
             throw new IllegalStateException("Current era cannot be null when populating the top buildings row");
         }
@@ -291,7 +291,7 @@ public class Board {
      * {@inheritDoc}
      * Moves the building cards from the top row to the bottom row.
      */
-    protected void moveBuildingsFromTopToBottom() {
+    private void moveBuildingsFromTopToBottom() {
         bottomBuildings.clear();
         bottomBuildings.addAll(topBuildings);
         topBuildings.clear();
