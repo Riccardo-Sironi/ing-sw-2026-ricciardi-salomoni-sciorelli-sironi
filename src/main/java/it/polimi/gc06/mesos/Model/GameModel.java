@@ -1,5 +1,11 @@
 package it.polimi.gc06.mesos.Model;
 
+import it.polimi.gc06.mesos.Model.Cards.Buildings.BuildingCard;
+import it.polimi.gc06.mesos.Model.Cards.Events.EventCard;
+import it.polimi.gc06.mesos.Model.Cards.TribeCard;
+import it.polimi.gc06.mesos.Model.GameBoard.Board;
+import it.polimi.gc06.mesos.Model.GameTurnManager.TurnManager;
+
 import java.util.ArrayList;
 import java.util.EnumMap;
 
@@ -51,11 +57,11 @@ public class GameModel implements GameInfo {
         return buildingCardsDecks;
     }
 
-    protected EnumMap<Era, ArrayList<TribeCard>> getTribeCardsDeck() {
+    public EnumMap<Era, ArrayList<TribeCard>> getTribeCardsDeck() {
         return tribeCardsDeck;
     }
 
-    protected EventCard[] getFinalEventCards() {
+    public EventCard[] getFinalEventCards() {
         return finalEventCards;
     }
 
@@ -63,7 +69,7 @@ public class GameModel implements GameInfo {
         return board;
     }
 
-    protected ArrayList<Player> getPlayers() {
+    public ArrayList<Player> getPlayers() {
         return players;
     }
 

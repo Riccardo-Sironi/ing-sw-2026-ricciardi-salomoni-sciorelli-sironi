@@ -1,5 +1,11 @@
 package it.polimi.gc06.mesos.Model;
 
+import it.polimi.gc06.mesos.Model.Cards.Buildings.BuildingCard;
+import it.polimi.gc06.mesos.Model.Cards.Buildings.ModifierBuildingCard;
+import it.polimi.gc06.mesos.Model.Cards.Buildings.ObserverPairBuildingCard;
+import it.polimi.gc06.mesos.Model.Cards.Buildings.ObserverSetBuildingCard;
+import it.polimi.gc06.mesos.Model.Cards.Characters.*;
+
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -71,7 +77,7 @@ public class Player {
     }
 
     //CHARACTER CARDS
-    protected EnumMap<CharacterType, ArrayList<CharacterCard>> getCharacterDeck() {
+    public EnumMap<CharacterType, ArrayList<CharacterCard>> getCharacterDeck() {
         return this.characterDeck;
     }
 
@@ -91,7 +97,7 @@ public class Player {
     }
 
     //BUILDING CARDS
-    protected ArrayList<BuildingCard> getBuildingCards() {
+    public ArrayList<BuildingCard> getBuildingCards() {
         return this.buildingDeck;
     }
 
@@ -119,26 +125,26 @@ public class Player {
         }
     }
 
-    protected boolean hasSetBuildingCard() {
+    public boolean hasSetBuildingCard() {
         return charactersSets != null;
     }
 
-    protected boolean hasPairBuildingCard() {
+    public boolean hasPairBuildingCard() {
         return inventorPairs != null;
     }
 
     //FOOD TOKEN CARDS
-    protected int getFoodTokens() {
+    public int getFoodTokens() {
         return this.foodTokens;
     }
 
-    protected void addFoodTokens(int amount) {
+    public void addFoodTokens(int amount) {
         if (amount < 0) throw new IllegalArgumentException("Amount must be non-negative");
         this.foodTokens += amount;
     }
 
     /*remove food tokens only if the player has them. otherwise is thrown an exception*/
-    protected void removeFoodTokens(int amount) throws IllegalStateException {
+    public void removeFoodTokens(int amount) throws IllegalStateException {
         if (amount < 0) throw new IllegalArgumentException("Amount must be non-negative");
         if ((this.foodTokens - amount) >= 0) {
             this.foodTokens -= amount;
@@ -152,12 +158,12 @@ public class Player {
         return this.prestigeTokens;
     }
 
-    protected void addPrestigeTokens(int amount) {
+    public void addPrestigeTokens(int amount) {
         if (amount < 0) throw new IllegalArgumentException("Amount must be non-negative");
         this.prestigeTokens += amount;
     }
 
-    protected void removePrestigeTokens(int amount) {
+    public void removePrestigeTokens(int amount) {
         if (amount < 0) throw new IllegalArgumentException("Amount must be non-negative");
         this.prestigeTokens -= amount;
     }
@@ -171,11 +177,11 @@ public class Player {
     //COUNTERS
 
     //shaman stars
-    protected int getShamanStars() {
+    public int getShamanStars() {
         return this.shamanStars + (buildingDeck.contains(threeStarCard) ? 3 : 0);
     }
 
-    protected void increaseShamanStars(int amount) {
+    public void increaseShamanStars(int amount) {
         if (amount < 0) throw new IllegalArgumentException("Amount must be non-negative");
         this.shamanStars += amount;
     }
@@ -183,17 +189,17 @@ public class Player {
 
     //hunters
 
-    protected int getHuntersCounter() {
+    public int getHuntersCounter() {
         return this.characterDeck.get(CharacterType.HUNTER).size();
     }
 
     //artists
-    protected int getArtistsCounter() {
+    public int getArtistsCounter() {
         return this.characterDeck.get(CharacterType.ARTIST).size();
     }
 
     //gatherer
-    protected int getGatherersCounter() {
+    public int getGatherersCounter() {
         return this.characterDeck.get(CharacterType.GATHERER).size();
     }
 
@@ -202,7 +208,7 @@ public class Player {
         return topDrawNum;
     }
 
-    protected void setTopDrawNum(int topDrawNum) throws IllegalArgumentException {
+    public void setTopDrawNum(int topDrawNum) throws IllegalArgumentException {
         if (topDrawNum < 0) throw new IllegalArgumentException();
         this.topDrawNum = topDrawNum;
     }
@@ -212,7 +218,7 @@ public class Player {
         return bottomDrawNum;
     }
 
-    protected void setBottomDrawNum(int bottomDrawNum) throws IllegalArgumentException {
+    public void setBottomDrawNum(int bottomDrawNum) throws IllegalArgumentException {
         if (bottomDrawNum < 0) throw new IllegalArgumentException();
         this.bottomDrawNum = bottomDrawNum;
     }
@@ -255,12 +261,12 @@ public class Player {
         charactersSets.put(cType, charactersSets.get(cType) + 1);
     }
 
-    protected void decreaseCharactersSets() throws IllegalArgumentException, IllegalStateException {
+    public void decreaseCharactersSets() throws IllegalArgumentException, IllegalStateException {
         if (charactersSets == null) throw new IllegalStateException("Character sets have not been initialized");
         charactersSets.replaceAll((cType, count) -> count - 1);
     }
 
-    protected boolean hasCompletedSet() {
+    public boolean hasCompletedSet() {
         if (charactersSets == null) throw new IllegalStateException("Character sets have not been initialized");
         return charactersSets.values().stream().min(Integer::compareTo).orElse(0).equals(1);
     }
@@ -285,18 +291,18 @@ public class Player {
         inventorPairs.replaceAll((icon, count) -> count % 2);
     }
 
-    protected void increaseInventorPairs(InventionIcon icon) throws IllegalArgumentException {
+    public void increaseInventorPairs(InventionIcon icon) throws IllegalArgumentException {
         if (icon == null) throw new IllegalArgumentException("Icon cannot be null");
         if (inventorPairs == null) throw new IllegalStateException("Inventor pairs have not been initialized");
         inventorPairs.put(icon, inventorPairs.get(icon) + 1);
     }
 
-    protected void decreaseInventorPair() throws IllegalArgumentException {
+    public void decreaseInventorPair() throws IllegalArgumentException {
         if (inventorPairs == null) throw new IllegalStateException("Inventor pairs have not been initialized");
         inventorPairs.replaceAll((icon, count) -> count == 2 ? 0 : count);
     }
 
-    protected boolean hasCompletedPair() throws IllegalArgumentException, IllegalStateException {
+    public boolean hasCompletedPair() throws IllegalArgumentException, IllegalStateException {
         if (inventorPairs == null) throw new IllegalStateException("Inventor pairs have not been initialized");
         return inventorPairs.values().stream().anyMatch(count -> count == 2);
     }
