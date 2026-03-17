@@ -4,9 +4,6 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 
 public class GameModel implements GameInfo {
-    private ArrayList<TileSlot> offerTrack;
-    private TurnOrderTile turnOrderTile;
-
     private Board board;
 
     private EnumMap<Era, ArrayList<BuildingCard>> buildingCardsDecks;
@@ -50,15 +47,6 @@ public class GameModel implements GameInfo {
                 .orElse(0);
     }
 
-    protected ArrayList<TileSlot> getOfferTrack() {
-        return offerTrack;
-    }
-
-    protected TurnOrderTile getTurnOrderTile() {
-        return turnOrderTile;
-    }
-
-    //TODO implementa o getter separati o getter unificatore
     public EnumMap<Era, ArrayList<BuildingCard>> getBuildingCardsDecks() {
         return buildingCardsDecks;
     }
