@@ -11,12 +11,16 @@ public class Player {
     private int foodTokens;
     private int shamanStars;
 
+
     // Just like in real life, the player is able to know the state of the game.
     // GameInfo must be transient in order to avoid serialization issues.
     private transient GameInfo gameInfo;
 
     private final EnumMap<CharacterType, ArrayList<CharacterCard>> characterDeck;
     private final ArrayList<BuildingCard> buildingDeck;
+
+    private EnumMap<CharacterType, Integer> charachtersSets;
+    private EnumMap<InventionIcon, Integer> inventorPairs;
 
     private final ModifierBuildingCard threeStarCard;
 
@@ -174,5 +178,36 @@ public class Player {
             throw new IllegalStateException("Game Environment not available for player " + this.nickname);
         }
         return this.gameInfo;
+    }
+
+    protected void initCharactersSets() {
+        charachtersSets = new EnumMap<>(CharacterType.class);
+
+        // get the number of sets of cards already completed by the player, which is the minimum number of cards in each character type deck
+        int min = characterDeck.values().stream().mapToInt(ArrayList::size).min().orElse(0);
+
+        // for each charachter type we put the cards which are in excess of the minimum
+        // (so if the player has 3 hunters, 2 artists and 1 gatherer, the minimum is 1 and the map will contain 2 for hunters,
+        // 1 for artists and 0 for gatherers)
+        for (CharacterType cType : CharacterType.values()) {
+            charachtersSets.put(cType, characterDeck.get(cType).size() - min);
+        }
+    }
+
+    protected void initInventorPairs() {
+        inventorPairs = new EnumMap<>(InventionIcon.class);
+
+        for (InventionIcon icon : InventionIcon.values()) {
+            for (CharacterCard card : characterDeck.get(CharacterType.INVENTOR)) {
+                InventorCard temp = (InventorCard) card;
+
+                // it checks if the icon is already in the map, if it is it sum 1 to the value, otherwise it put 1 as value
+                inventorPairs.merge(icon, 1, Integer::sum);
+            }
+        }
+        // it replaces the value of each icon with the remainder of the division by 2,
+        // so if the player has an even number of pairs of that icon, the value will be 0 (no spare icon cards),
+        // otherwise it will be 1 (so we have a spare icon card that can be used to complete a pair)
+        inventorPairs.replaceAll((icon, count) -> count % 2);
     }
 }
