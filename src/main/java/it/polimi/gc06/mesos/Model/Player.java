@@ -43,6 +43,9 @@ public class Player {
             characterDeck.put(cType, new ArrayList<>());
         }
 
+        this.charachtersSets = null;
+        this.inventorPairs = null;
+
         this.shamanStars = 0;
         this.topDrawNum = 0;
         this.bottomDrawNum = 0;
@@ -66,6 +69,14 @@ public class Player {
         if (card.getCharacterType() == CharacterType.SHAMAN){
             ShamanCard shaman = (ShamanCard) card;
             increaseShamanStars(shaman.getStars());
+        }
+
+        if (charachtersSets != null) {
+            increaseCharactersSets(card.getCharacterType());
+        }
+        if(inventorPairs != null && card.getCharacterType() == CharacterType.INVENTOR){
+            InventorCard c = (InventorCard) card;
+            increaseInventorPairs(c.getIcon());
         }
     }
 
@@ -180,7 +191,10 @@ public class Player {
         return this.gameInfo;
     }
 
-    protected void initCharactersSets() {
+    // CHARACTER SETS
+    protected void initCharactersSets() throws IllegalStateException {
+        if (charachtersSets != null) throw new IllegalStateException("Character sets have already been initialized");
+
         charachtersSets = new EnumMap<>(CharacterType.class);
 
         // get the number of sets of cards already completed by the player, which is the minimum number of cards in each character type deck
@@ -194,7 +208,26 @@ public class Player {
         }
     }
 
-    protected void initInventorPairs() {
+    protected void increaseCharactersSets(CharacterType cType) throws IllegalArgumentException, IllegalStateException {
+        if (cType == null) throw new IllegalArgumentException("Character type cannot be null");
+        if (charachtersSets == null) throw new IllegalStateException("Character sets have not been initialized");
+        charachtersSets.put(cType, charachtersSets.get(cType) + 1);
+    }
+
+    protected void decreaseCharactersSets() throws IllegalArgumentException, IllegalStateException {
+        if (charachtersSets == null) throw new IllegalStateException("Character sets have not been initialized");
+        charachtersSets.replaceAll((cType, count) -> count - 1);
+    }
+
+    protected boolean hasCompletedSet() {
+        if (charachtersSets == null) throw new IllegalStateException("Character sets have not been initialized");
+        return charachtersSets.values().stream().min(Integer::compareTo).orElse(0).equals(1);
+    }
+
+    // INVENTOR PAIRS
+    protected void initInventorPairs() throws IllegalStateException {
+        if(inventorPairs != null) throw new IllegalStateException("Inventor pairs have already been initialized");
+
         inventorPairs = new EnumMap<>(InventionIcon.class);
 
         for (InventionIcon icon : InventionIcon.values()) {
@@ -209,5 +242,21 @@ public class Player {
         // so if the player has an even number of pairs of that icon, the value will be 0 (no spare icon cards),
         // otherwise it will be 1 (so we have a spare icon card that can be used to complete a pair)
         inventorPairs.replaceAll((icon, count) -> count % 2);
+    }
+
+    protected void increaseInventorPairs(InventionIcon icon) throws IllegalArgumentException {
+        if (icon == null) throw new IllegalArgumentException("Icon cannot be null");
+        if (inventorPairs == null) throw new IllegalStateException("Inventor pairs have not been initialized");
+        inventorPairs.put(icon, inventorPairs.get(icon) + 1);
+    }
+
+    protected void decreaseInventorPair() throws IllegalArgumentException {
+        if (inventorPairs == null) throw new IllegalStateException("Inventor pairs have not been initialized");
+        inventorPairs.replaceAll((icon, count) -> count == 2 ? 0 : count);
+    }
+
+    protected boolean hasCompletedPair() throws IllegalArgumentException, IllegalStateException {
+        if (inventorPairs == null) throw new IllegalStateException("Inventor pairs have not been initialized");
+        return inventorPairs.values().stream().anyMatch(count -> count == 2);
     }
 }
