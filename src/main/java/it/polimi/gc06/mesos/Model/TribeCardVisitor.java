@@ -3,15 +3,15 @@ package it.polimi.gc06.mesos.Model;
 public interface TribeCardVisitor {
 
     // Events
-    void visit(RitualEvent event);
+    void visit(RitualEvent ritual);
 
-    void visit(SustenanceEvent event);
+    void visit(SustenanceEvent sustenance);
 
-    void visit(HuntEvent event);
+    void visit(HuntEvent hunt);
 
-    void visit(PaintingsEvent event);
+    void visit(PaintingsEvent paintings);
 
-    // Characters (even if they do nothing, we need to handle them)
+    // Characters
     void visit(HunterCard card);
 
     void visit(ShamanCard card);

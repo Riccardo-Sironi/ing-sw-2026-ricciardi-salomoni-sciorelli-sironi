@@ -16,6 +16,7 @@ public class Player {
     // GameInfo must be transient in order to avoid serialization issues.
     private transient GameInfo gameInfo;
 
+    // TODO Vedere se riusciamo ad aggirare
     private final EnumMap<CharacterType, ArrayList<CharacterCard>> characterDeck;
     private final ArrayList<BuildingCard> buildingDeck;
 
@@ -24,13 +25,15 @@ public class Player {
 
     private final ModifierBuildingCard threeStarCard;
 
+    // TODO Rimuovere colore e gestire esternamente - Usiamo ENUM
     private final Color color;
 
+    // TODO Attenzione a non duplicare nel controller - vedre se si può completamente spostare
     private int topDrawNum;
     private int bottomDrawNum;
 
     //CONSTRUCTOR
-    public Player(String nickname, Color color, GameModel gameModel, ModifierBuildingCard threeStarCard) {
+    public Player(String nickname, Color color, ModifierBuildingCard threeStarCard) {
         this.nickname = nickname;
         this.threeStarCard = threeStarCard;
         this.prestigeTokens = 0;
@@ -58,7 +61,7 @@ public class Player {
     }
 
     //CHARACTER CARDS
-    protected EnumMap<CharacterType,ArrayList<CharacterCard>> getCharacterDeck(){
+    protected EnumMap<CharacterType, ArrayList<CharacterCard>> getCharacterDeck() {
         return this.characterDeck;
     }
 
@@ -66,7 +69,7 @@ public class Player {
         if (card == null) throw new IllegalArgumentException("Card cannot be null");
         this.characterDeck.get(card.getCharacterType()).addFirst(card);
 
-        if (card.getCharacterType() == CharacterType.SHAMAN){
+        if (card.getCharacterType() == CharacterType.SHAMAN) {
             ShamanCard shaman = (ShamanCard) card;
             increaseShamanStars(shaman.getStars());
         }
@@ -74,7 +77,7 @@ public class Player {
         if (charachtersSets != null) {
             increaseCharactersSets(card.getCharacterType());
         }
-        if(inventorPairs != null && card.getCharacterType() == CharacterType.INVENTOR){
+        if (inventorPairs != null && card.getCharacterType() == CharacterType.INVENTOR) {
             InventorCard c = (InventorCard) card;
             increaseInventorPairs(c.getIcon());
         }
@@ -88,6 +91,33 @@ public class Player {
     protected void addBuildingCards(BuildingCard card) {
         if (card == null) throw new IllegalArgumentException("Card cannot be null");
         this.buildingDeck.add(card);
+    }
+
+    protected void addBuildingCards(ObserverSetBuildingCard card) {
+
+        if (card == null) throw new IllegalArgumentException("Card cannot be null");
+        this.buildingDeck.add(card);
+        if (charachtersSets == null) {
+
+            initCharactersSets();
+        }
+    }
+
+    protected void addBuildingCards(ObserverPairBuildingCard card) {
+
+        if (card == null) throw new IllegalArgumentException("Card cannot be null");
+        this.buildingDeck.add(card);
+        if (inventorPairs == null) {
+            initInventorPairs();
+        }
+    }
+
+    protected boolean hasSetBuildingCard() {
+        return charachtersSets != null;
+    }
+
+    protected boolean hasPairBuildingCard() {
+        return inventorPairs != null;
     }
 
     //FOOD TOKEN CARDS
@@ -165,8 +195,8 @@ public class Player {
         return topDrawNum;
     }
 
-    protected void setTopDrawNum(int topDrawNum) throws IllegalArgumentException{
-        if(topDrawNum < 0) throw new IllegalArgumentException();
+    protected void setTopDrawNum(int topDrawNum) throws IllegalArgumentException {
+        if (topDrawNum < 0) throw new IllegalArgumentException();
         this.topDrawNum = topDrawNum;
     }
 
@@ -175,8 +205,8 @@ public class Player {
         return bottomDrawNum;
     }
 
-    protected void setBottomDrawNum(int bottomDrawNum) throws IllegalArgumentException{
-        if(bottomDrawNum < 0) throw new IllegalArgumentException();
+    protected void setBottomDrawNum(int bottomDrawNum) throws IllegalArgumentException {
+        if (bottomDrawNum < 0) throw new IllegalArgumentException();
         this.bottomDrawNum = bottomDrawNum;
     }
 
@@ -226,7 +256,7 @@ public class Player {
 
     // INVENTOR PAIRS
     protected void initInventorPairs() throws IllegalStateException {
-        if(inventorPairs != null) throw new IllegalStateException("Inventor pairs have already been initialized");
+        if (inventorPairs != null) throw new IllegalStateException("Inventor pairs have already been initialized");
 
         inventorPairs = new EnumMap<>(InventionIcon.class);
 

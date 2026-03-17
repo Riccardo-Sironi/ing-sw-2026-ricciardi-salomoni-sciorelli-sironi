@@ -12,7 +12,7 @@ public class TurnManager {
 
     final private TribeCardVisitor cardVisitor;
 
-    ///  The index of the active player in the turn order. It starts from 1!
+    ///  The index of the active player in the turn order
     private int activePlayerIndex;
 
     private int round;
