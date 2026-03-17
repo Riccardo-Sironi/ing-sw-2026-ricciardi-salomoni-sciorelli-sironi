@@ -9,8 +9,8 @@ public class Player {
     private final String nickname;
     private int prestigeTokens;
     private int foodTokens;
-    private int shamanStars;
 
+    private int shamanStars;
 
     // Just like in real life, the player is able to know the state of the game.
     // GameInfo must be transient in order to avoid serialization issues.
@@ -20,15 +20,20 @@ public class Player {
     private final EnumMap<CharacterType, ArrayList<CharacterCard>> characterDeck;
     private final ArrayList<BuildingCard> buildingDeck;
 
-    private EnumMap<CharacterType, Integer> charachtersSets;
+    private EnumMap<CharacterType, Integer> charactersSets;
     private EnumMap<InventionIcon, Integer> inventorPairs;
 
     private final ModifierBuildingCard threeStarCard;
 
+    private final DeckCardVisitor deckCardVisitor;
+    private final CharactersSetsVisitor charactersSetsVisitor;
+    private final InventorPairsVisitor inventorPairsVisitor;
+    private final ShamanVisitor shamanVisitor;
+
     // TODO Rimuovere colore e gestire esternamente - Usiamo ENUM
     private final Color color;
 
-    // TODO Attenzione a non duplicare nel controller - vedre se si può completamente spostare
+    // TODO Attenzione a non duplicare nel controller - vedrei se si può completamente spostare
     private int topDrawNum;
     private int bottomDrawNum;
 
@@ -46,13 +51,18 @@ public class Player {
             characterDeck.put(cType, new ArrayList<>());
         }
 
-        this.charachtersSets = null;
+        this.charactersSets = null;
         this.inventorPairs = null;
 
         this.shamanStars = 0;
+
         this.topDrawNum = 0;
         this.bottomDrawNum = 0;
 
+        deckCardVisitor = new DeckCardVisitor(this);
+        charactersSetsVisitor = new CharactersSetsVisitor(this);
+        inventorPairsVisitor = new InventorPairsVisitor(this);
+        shamanVisitor = new ShamanVisitor(this);
     }
 
     //NICKNAME
@@ -67,19 +77,16 @@ public class Player {
 
     protected void addCharacterCards(CharacterCard card) {
         if (card == null) throw new IllegalArgumentException("Card cannot be null");
-        this.characterDeck.get(card.getCharacterType()).addFirst(card);
 
-        if (card.getCharacterType() == CharacterType.SHAMAN) {
-            ShamanCard shaman = (ShamanCard) card;
-            increaseShamanStars(shaman.getStars());
-        }
+        card.accept(deckCardVisitor);
 
-        if (charachtersSets != null) {
-            increaseCharactersSets(card.getCharacterType());
+        card.accept(shamanVisitor);
+
+        if (charactersSets != null) {
+            card.accept(charactersSetsVisitor);
         }
-        if (inventorPairs != null && card.getCharacterType() == CharacterType.INVENTOR) {
-            InventorCard c = (InventorCard) card;
-            increaseInventorPairs(c.getIcon());
+        if (inventorPairs != null) {
+            card.accept(inventorPairsVisitor);
         }
     }
 
@@ -97,7 +104,7 @@ public class Player {
 
         if (card == null) throw new IllegalArgumentException("Card cannot be null");
         this.buildingDeck.add(card);
-        if (charachtersSets == null) {
+        if (charactersSets == null) {
 
             initCharactersSets();
         }
@@ -113,7 +120,7 @@ public class Player {
     }
 
     protected boolean hasSetBuildingCard() {
-        return charachtersSets != null;
+        return charactersSets != null;
     }
 
     protected boolean hasPairBuildingCard() {
@@ -168,7 +175,7 @@ public class Player {
         return this.shamanStars + (buildingDeck.contains(threeStarCard) ? 3 : 0);
     }
 
-    private void increaseShamanStars(int amount) {
+    protected void increaseShamanStars(int amount) {
         if (amount < 0) throw new IllegalArgumentException("Amount must be non-negative");
         this.shamanStars += amount;
     }
@@ -223,35 +230,39 @@ public class Player {
 
     // CHARACTER SETS
     protected void initCharactersSets() throws IllegalStateException {
-        if (charachtersSets != null) throw new IllegalStateException("Character sets have already been initialized");
+        if (charactersSets != null) throw new IllegalStateException("Character sets have already been initialized");
 
-        charachtersSets = new EnumMap<>(CharacterType.class);
+        charactersSets = new EnumMap<>(CharacterType.class);
 
         // get the number of sets of cards already completed by the player, which is the minimum number of cards in each character type deck
         int min = characterDeck.values().stream().mapToInt(ArrayList::size).min().orElse(0);
 
-        // for each charachter type we put the cards which are in excess of the minimum
+        // for each character type we put the cards which are in excess of the minimum
         // (so if the player has 3 hunters, 2 artists and 1 gatherer, the minimum is 1 and the map will contain 2 for hunters,
         // 1 for artists and 0 for gatherers)
         for (CharacterType cType : CharacterType.values()) {
-            charachtersSets.put(cType, characterDeck.get(cType).size() - min);
+            charactersSets.put(cType, characterDeck.get(cType).size() - min);
         }
+    }
+
+    public EnumMap<CharacterType, Integer> getCharactersSets() {
+        return charactersSets;
     }
 
     protected void increaseCharactersSets(CharacterType cType) throws IllegalArgumentException, IllegalStateException {
         if (cType == null) throw new IllegalArgumentException("Character type cannot be null");
-        if (charachtersSets == null) throw new IllegalStateException("Character sets have not been initialized");
-        charachtersSets.put(cType, charachtersSets.get(cType) + 1);
+        if (charactersSets == null) throw new IllegalStateException("Character sets have not been initialized");
+        charactersSets.put(cType, charactersSets.get(cType) + 1);
     }
 
     protected void decreaseCharactersSets() throws IllegalArgumentException, IllegalStateException {
-        if (charachtersSets == null) throw new IllegalStateException("Character sets have not been initialized");
-        charachtersSets.replaceAll((cType, count) -> count - 1);
+        if (charactersSets == null) throw new IllegalStateException("Character sets have not been initialized");
+        charactersSets.replaceAll((cType, count) -> count - 1);
     }
 
     protected boolean hasCompletedSet() {
-        if (charachtersSets == null) throw new IllegalStateException("Character sets have not been initialized");
-        return charachtersSets.values().stream().min(Integer::compareTo).orElse(0).equals(1);
+        if (charactersSets == null) throw new IllegalStateException("Character sets have not been initialized");
+        return charactersSets.values().stream().min(Integer::compareTo).orElse(0).equals(1);
     }
 
     // INVENTOR PAIRS

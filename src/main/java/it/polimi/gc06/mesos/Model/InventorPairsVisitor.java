@@ -1,10 +1,10 @@
 package it.polimi.gc06.mesos.Model;
 
-public class InventorPairVisitor implements TribeCardVisitor{
+public class InventorPairsVisitor implements TribeCardVisitor{
 
     private final Player player;
 
-    public InventorPairVisitor(Player player) {
+    public InventorPairsVisitor(Player player) {
         this.player = player;
     }
 

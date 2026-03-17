@@ -19,6 +19,4 @@ public abstract class TribeCard implements Card {
     protected Era getEra() {
         return era;
     }
-
-    
 }
