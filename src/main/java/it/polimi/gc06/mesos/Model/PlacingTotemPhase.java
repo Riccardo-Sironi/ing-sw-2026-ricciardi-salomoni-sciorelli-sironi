@@ -2,11 +2,8 @@ package it.polimi.gc06.mesos.Model;
 
 public class PlacingTotemPhase extends Phase {
 
-    public PlacingTotemPhase() {
-    }
-
     @Override
-    public void placeTotems(TurnManager turnManager) {
+    public void action(TurnManager turnManager) {
 
         for (Player p : turnManager.getPlayersOrder()) {
 
@@ -24,21 +21,6 @@ public class PlacingTotemPhase extends Phase {
         turnManager.setActivePlayerIndex(0);
         turnManager.setPhase(new OfferResolutionPhase());
 
-
     }
 
-    @Override
-    public void resolveOffers(TurnManager turnManager) {
-
-    }
-
-    @Override
-    public void resolveEvents(TurnManager turnManager) {
-
-    }
-
-    @Override
-    public void endOfRound(TurnManager turnManager, Player player) {
-
-    }
 }
