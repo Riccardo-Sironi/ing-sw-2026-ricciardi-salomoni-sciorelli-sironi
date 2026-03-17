@@ -1,6 +1,5 @@
-package it.polimi.gc06.mesos.Model.GameTurnManager;
+package it.polimi.gc06.mesos.Model.Cards.Buildings;
 
-import it.polimi.gc06.mesos.Model.Cards.Buildings.BuildingCard;
 import it.polimi.gc06.mesos.Model.Era;
 import it.polimi.gc06.mesos.Model.Player;
 
