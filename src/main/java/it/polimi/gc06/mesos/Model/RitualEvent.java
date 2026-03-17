@@ -4,14 +4,15 @@ public class RitualEvent extends EventCard {
 
     private final int numPrestigeGained;
     private final int numPrestigeLost;
+    private final ModifierBuildingCard noLossCard;
+    private final ModifierBuildingCard doubleWinCard;
 
-    public RitualEvent(Era era, int numPrestigeGained, int numPrestigeLost) {
+    public RitualEvent(Era era, int numPrestigeGained, int numPrestigeLost, ModifierBuildingCard noLossCard, ModifierBuildingCard doubleWinCard) {
         super(era, false);
         this.numPrestigeGained = numPrestigeGained;
-
-        // TODO Da Riguardare. Ha senso AGGIUNGERE un numero negativo? Potrebbe portare a confusione, forse meglio togliere con una funzione dedicata
         this.numPrestigeLost = numPrestigeLost;
-
+        this.noLossCard = noLossCard;
+        this.doubleWinCard = doubleWinCard;
     }
 
     @Override
@@ -24,7 +25,11 @@ public class RitualEvent extends EventCard {
         int maxStars = player.getEnvironment().getMaxStars();
         int minStars = player.getEnvironment().getMinStars();
 
-        if (player.getShamanStars() == maxStars) player.addPrestigeTokens(numPrestigeGained);
-        if (player.getShamanStars() == minStars) player.addPrestigeTokens(numPrestigeLost);
+        if (player.getShamanStars() == maxStars) {
+            player.addPrestigeTokens(player.getBuildingCards().contains(doubleWinCard) ? numPrestigeGained * 2 : numPrestigeGained);
+        }
+        if (player.getShamanStars() == minStars) {
+            player.removePrestigeTokens(player.getBuildingCards().contains(noLossCard) ? 0 : numPrestigeLost);
+        }
     }
 }

@@ -18,14 +18,17 @@ public class Player {
     private final EnumMap<CharacterType, ArrayList<CharacterCard>> characterDeck;
     private final ArrayList<BuildingCard> buildingDeck;
 
+    private final ModifierBuildingCard threeStarCard;
+
     private final Color color;
 
     private int topDrawNum;
     private int bottomDrawNum;
 
     //CONSTRUCTOR
-    public Player(String nickname, Color color, GameModel gameModel) {
+    public Player(String nickname, Color color, GameModel gameModel, ModifierBuildingCard threeStarCard) {
         this.nickname = nickname;
+        this.threeStarCard = threeStarCard;
         this.prestigeTokens = 0;
         this.foodTokens = 0;
         this.characterDeck = new EnumMap<>(CharacterType.class);
@@ -117,7 +120,7 @@ public class Player {
 
     //shaman stars
     protected int getShamanStars() {
-        return this.shamanStars;
+        return this.shamanStars + (buildingDeck.contains(threeStarCard) ? 3 : 0);
     }
 
     private void increaseShamanStars(int amount) {

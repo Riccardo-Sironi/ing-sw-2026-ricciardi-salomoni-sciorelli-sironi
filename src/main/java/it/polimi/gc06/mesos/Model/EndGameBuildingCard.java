@@ -6,13 +6,14 @@ public class EndGameBuildingCard extends BuildingCard{
 
     private final ToIntFunction<Player> prestigeEffect;
 
-    EndGameBuildingCard(Era era,int foodCost, int prestigeGained, ToIntFunction<Player> prestigeEffect){
+    EndGameBuildingCard(Era era, int foodCost, int prestigeGained, ToIntFunction<Player> prestigeEffect){
         super(era,foodCost,prestigeGained);
         this.prestigeEffect = prestigeEffect;
     }
 
-    public int getPrestigeBonus(Player owner) throws IllegalArgumentException{
+    @Override
+    public int getPrestigeGain(Player owner){
         if(owner == null) throw new IllegalArgumentException();
-        return prestigeEffect.applyAsInt(owner);
+        return prestigeEffect.applyAsInt(owner) + super.getPrestigeGain(owner);
     }
 }

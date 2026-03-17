@@ -31,7 +31,7 @@ public abstract class BuildingCard {
         return foodCost;
     }
 
-    public int getPrestigeGain() {
+    public int getPrestigeGain(Player owner) {
         return prestigeGain;
     }
 }

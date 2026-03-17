@@ -2,7 +2,6 @@ package it.polimi.gc06.mesos.Model;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
-import java.util.List;
 
 public class GameModel implements GameInfo {
     private ArrayList<TileSlot> offerTrack;
@@ -59,6 +58,7 @@ public class GameModel implements GameInfo {
         return turnOrderTile;
     }
 
+    //TODO implementa o getter separati o getter unificatore
     public EnumMap<Era, ArrayList<BuildingCard>> getBuildingCardsDecks() {
         return buildingCardsDecks;
     }
