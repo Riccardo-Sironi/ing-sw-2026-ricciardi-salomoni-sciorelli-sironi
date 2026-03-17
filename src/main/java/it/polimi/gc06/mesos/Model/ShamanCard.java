@@ -21,9 +21,4 @@ public class ShamanCard extends CharacterCard {
     public void accept(TribeCardVisitor visitor) {
         visitor.visit(this);
     }
-
-    @Override
-    protected CharacterType getCharacterType() {
-        return CharacterType.SHAMAN;
-    }
 }

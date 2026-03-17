@@ -22,9 +22,4 @@ public class BuilderCard extends CharacterCard {
     protected int getFoodDiscount() {
         return foodDiscount;
     }
-
-    @Override
-    protected CharacterType getCharacterType() {
-        return CharacterType.BUILDER;
-    }
 }

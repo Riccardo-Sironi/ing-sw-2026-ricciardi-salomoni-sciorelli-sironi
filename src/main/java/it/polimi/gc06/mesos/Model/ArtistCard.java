@@ -9,9 +9,4 @@ public class ArtistCard extends CharacterCard {
     public void accept(TribeCardVisitor visitor) {
         visitor.visit(this);
     }
-
-    @Override
-    protected CharacterType getCharacterType() {
-        return CharacterType.ARTIST;
-    }
 }
