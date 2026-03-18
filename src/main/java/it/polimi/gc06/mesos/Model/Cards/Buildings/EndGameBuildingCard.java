@@ -14,6 +14,12 @@ public class EndGameBuildingCard extends BuildingCard {
         this.prestigeEffect = prestigeEffect;
     }
 
+    /**
+     * Prestige getter.
+     *
+     * @param owner the owner of the card.
+     * @return the prestige gained at the end of the game.
+     */
     @Override
     public int getPrestigeGain(Player owner) {
         if (owner == null) throw new IllegalArgumentException();

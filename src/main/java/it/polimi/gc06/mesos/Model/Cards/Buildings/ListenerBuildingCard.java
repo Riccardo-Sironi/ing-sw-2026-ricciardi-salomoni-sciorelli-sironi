@@ -9,6 +9,7 @@ import java.util.function.Consumer;
 //rappresenta le due carte che ti danno cibo in base ai personaggi
 public class ListenerBuildingCard extends BuildingCard {
 
+    //TODO da togliere?
     private final Consumer<Player> effect;
 
     ListenerBuildingCard(Era era, int foodCost, int prestigeGained, Consumer<Player> effect) {
