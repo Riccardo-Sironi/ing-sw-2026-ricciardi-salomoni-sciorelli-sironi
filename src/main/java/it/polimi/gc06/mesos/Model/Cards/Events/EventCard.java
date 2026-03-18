@@ -5,16 +5,16 @@ import it.polimi.gc06.mesos.Model.Era;
 import it.polimi.gc06.mesos.Model.Player;
 
 public abstract class EventCard extends TribeCard {
-    private final boolean hasPriority;
+    private final boolean lastToBeResolved;
 
     //CONSTRUCTOR
-    public EventCard(Era era, boolean hasPriority) {
+    public EventCard(Era era, boolean lastToBeResolved) {
         super(era);
-        this.hasPriority = hasPriority;
+        this.lastToBeResolved = lastToBeResolved;
     }
 
-    public boolean hasPriority() {
-        return hasPriority;
+    public boolean isLastToBeResolved() {
+        return lastToBeResolved;
     }
 
     //RESOLVE
