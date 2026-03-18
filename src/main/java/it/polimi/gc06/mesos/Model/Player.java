@@ -17,11 +17,8 @@ public class Player {
 
     private int shamanStars;
 
-    // Just like in real life, the player is able to know the state of the game.
-    // GameInfo must be transient in order to avoid serialization issues.
-    private transient GameInfo gameInfo;
+    private transient GameInfo gameInfo; // GameInfo must be transient in order to avoid serialization issues.
 
-    // TODO Vedere se riusciamo ad aggirare
     private final EnumMap<CharacterType, ArrayList<CharacterCard>> characterDeck;
     private final ArrayList<BuildingCard> buildingDeck;
 
@@ -41,22 +38,22 @@ public class Player {
     private int topDrawNum;
     private int bottomDrawNum;
 
-    //CONSTRUCTOR
     public Player(String nickname, Color color, ModifierBuildingCard threeStarCard) {
         this.nickname = nickname;
         this.threeStarCard = threeStarCard;
-        this.prestigeTokens = 0;
-        this.foodTokens = 0;
-        this.characterDeck = new EnumMap<>(CharacterType.class);
-        this.buildingDeck = new ArrayList<>();
-        this.color = (color != null) ? color : Color.BLACK; //DA CAPIRE
 
-        for (CharacterType cType : CharacterType.values()) {
-            characterDeck.put(cType, new ArrayList<>());
-        }
+        this.characterDeck = new EnumMap<>(CharacterType.class);
+        java.util.Arrays.stream(CharacterType.values()).forEach(cType -> characterDeck.put(cType, new ArrayList<>()));
+
+        this.buildingDeck = new ArrayList<>();
+
+        this.color = color;
 
         this.charactersSets = null;
         this.inventorPairs = null;
+
+        this.prestigeTokens = 0;
+        this.foodTokens = 0;
 
         this.shamanStars = 0;
 
@@ -69,17 +66,34 @@ public class Player {
         shamanVisitor = new ShamanVisitor(this);
     }
 
-    //NICKNAME
+    /**
+     * Returns the nickname of the player.
+     *
+     * @return the string representing the player's nickname
+     */
     protected String getNickname() {
         return this.nickname;
     }
 
-    //CHARACTER CARDS
+    /**
+     * Returns the character deck of the player, which is a map that associates each character type
+     * with a list of character cards of that type.
+     *
+     * @return the enum map of the player's character deck arrays
+     */
     public EnumMap<CharacterType, ArrayList<CharacterCard>> getCharacterDeck() {
         return this.characterDeck;
     }
 
-    protected void addCharacterCards(CharacterCard card) {
+    /**
+     * Adds a character card to the player's character deck. The card is added to the list corresponding to its character
+     * type by using the visitor pattern. It handles the increment of the shaman stars and the update of the character
+     * sets and inventor pairs if the player has the corresponding building cards in their building deck.
+     *
+     * @param card the character card to be added to the player's character deck
+     * @throws IllegalArgumentException if the card is null
+     */
+    protected void addCharacterCards(CharacterCard card) throws IllegalArgumentException {
         if (card == null) throw new IllegalArgumentException("Card cannot be null");
 
         card.accept(deckCardVisitor);
@@ -94,27 +108,50 @@ public class Player {
         }
     }
 
-    //BUILDING CARDS
+    /**
+     * Returns the building deck of the player.
+     *
+     * @return the array list of the player's building deck
+     */
     public ArrayList<BuildingCard> getBuildingCards() {
         return this.buildingDeck;
     }
 
-    protected void addBuildingCards(BuildingCard card) {
+    /**
+     * Adds a building card to the player's building deck.
+     *
+     * @param card the building card to be added to the player's building deck
+     * @throws IllegalArgumentException if the card is null
+     */
+    protected void addBuildingCards(BuildingCard card) throws IllegalArgumentException {
         if (card == null) throw new IllegalArgumentException("Card cannot be null");
         this.buildingDeck.add(card);
     }
 
-    protected void addBuildingCards(ObserverSetBuildingCard card) {
+    /**
+     * Adds a set building card to the player's building deck. The overloaded method is called when the player picks the
+     * specific building card which takes tracks of character sets completed by the player.
+     *
+     * @param card the set building card to be added to the player's building deck
+     * @throws IllegalArgumentException if the card is null
+     */
+    protected void addBuildingCards(ObserverSetBuildingCard card) throws IllegalArgumentException {
 
         if (card == null) throw new IllegalArgumentException("Card cannot be null");
         this.buildingDeck.add(card);
         if (charactersSets == null) {
-
             initCharactersSets();
         }
     }
 
-    protected void addBuildingCards(ObserverPairBuildingCard card) {
+    /**
+     * Adds a pair building card to the player's building deck. The overloaded method is called when the player picks the
+     * specific building card which takes tracks of inventor pairs completed by the player.
+     *
+     * @param card the pair building card to be added to the player's building deck
+     * @throws IllegalArgumentException if the card is null
+     */
+    protected void addBuildingCards(ObserverPairBuildingCard card) throws IllegalArgumentException {
 
         if (card == null) throw new IllegalArgumentException("Card cannot be null");
         this.buildingDeck.add(card);
@@ -123,25 +160,53 @@ public class Player {
         }
     }
 
+    /**
+     * This method checks if the player has the character sets map initialized, which means that the player has picked
+     * the specific building card which takes tracks of character sets completed by the player.
+     *
+     * @return true if the player has the character sets map initialized, false otherwise
+     */
     public boolean hasSetBuildingCard() {
         return charactersSets != null;
     }
 
+    /**
+     * This method checks if the player has the inventor pairs map initialized, which means that the player has picked
+     * the specific building card which takes tracks of inventor pairs completed by the player.
+     *
+     * @return true if the player has the inventor pairs map initialized, false otherwise
+     */
     public boolean hasPairBuildingCard() {
         return inventorPairs != null;
     }
 
-    //FOOD TOKEN CARDS
+    /**
+     * Returns the number of food tokens the player has.
+     *
+     * @return the integer representing the number of food tokens the player has
+     */
     public int getFoodTokens() {
         return this.foodTokens;
     }
 
-    public void addFoodTokens(int amount) {
+    /**
+     * Adds food tokens to the player
+     *
+     * @param amount the integer value of food tokens to be added to the player
+     * @throws IllegalArgumentException if the amount of food tokens to be added is negative
+     */
+    public void addFoodTokens(int amount) throws IllegalArgumentException {
         if (amount < 0) throw new IllegalArgumentException("Amount must be non-negative");
         this.foodTokens += amount;
     }
 
-    /*remove food tokens only if the player has them. otherwise is thrown an exception*/
+    /**
+     * Removes food tokens from the player if the player has enough food tokens.
+     *
+     * @param amount the integer value of food tokens to be removed from the player
+     * @throws IllegalArgumentException if the amount of food tokens to be removed is negative
+     * @throws IllegalStateException    if the player does not have enough food tokens to be removed
+     */
     public void removeFoodTokens(int amount) throws IllegalStateException {
         if (amount < 0) throw new IllegalArgumentException("Amount must be non-negative");
         if ((this.foodTokens - amount) >= 0) {
@@ -151,88 +216,149 @@ public class Player {
         }
     }
 
-    //PRESTIGE TOKEN CARDS
+
+    /**
+     * Returns the number of prestige tokens the player has.
+     *
+     * @return the integer representing the number of prestige tokens the player has
+     */
     protected int getPrestigeTokens() {
         return this.prestigeTokens;
     }
 
-    public void addPrestigeTokens(int amount) {
+    /**
+     * Adds prestige tokens to the player.
+     *
+     * @param amount the integer value of prestige tokens to be added to the player
+     * @throws IllegalArgumentException if the amount of prestige tokens to be added is negative
+     */
+    public void addPrestigeTokens(int amount) throws IllegalArgumentException {
         if (amount < 0) throw new IllegalArgumentException("Amount must be non-negative");
         this.prestigeTokens += amount;
     }
 
-    public void removePrestigeTokens(int amount) {
+    /**
+     * Removes prestige tokens from the player if the player has enough prestige tokens.
+     *
+     * @param amount the integer value of prestige tokens to be removed from the player
+     * @throws IllegalArgumentException if the amount of prestige tokens to be removed is negative
+     * @throws IllegalStateException    if the player does not have enough prestige tokens to be removed
+     */
+    public void removePrestigeTokens(int amount) throws IllegalStateException {
         if (amount < 0) throw new IllegalArgumentException("Amount must be non-negative");
         this.prestigeTokens -= amount;
     }
 
-
-    //COLOR
+    /**
+     * Returns the color of the player.
+     *
+     * @return the enum value of the color of the player
+     */
     protected Color getPlayerColor() {
         return this.color;
     }
 
-    //COUNTERS
-
-    //shaman stars
+    /**
+     * Returns the number of shaman stars the player has, which is the sum of the shaman stars from the shaman cards
+     * in the player's character deck and the shaman stars from the three star building card if the player has it in
+     * their building deck.
+     *
+     * @return the integer representing the number of shaman stars the player has
+     */
     public int getShamanStars() {
         return this.shamanStars + (buildingDeck.contains(threeStarCard) ? 3 : 0);
     }
 
-    public void increaseShamanStars(int amount) {
+    /**
+     * Increases the number of shaman stars the player has by a certain amount.
+     *
+     * @param amount the integer value of shaman stars to be added to the player
+     * @throws IllegalArgumentException if the amount of shaman stars to be added is negative
+     */
+    public void increaseShamanStars(int amount) throws IllegalArgumentException {
         if (amount < 0) throw new IllegalArgumentException("Amount must be non-negative");
         this.shamanStars += amount;
     }
 
-
-    //hunters
-
+    /**
+     * Returns the number of hunter cards the player has in their character deck.
+     *
+     * @return the integer representing the number of hunter cards the player has in their character deck
+     */
     public int getHuntersCounter() {
         return this.characterDeck.get(CharacterType.HUNTER).size();
     }
 
-    //artists
+    /**
+     * Returns the number of artist cards the player has in their character deck.
+     *
+     * @return the integer representing the number of artist cards the player has in their character deck
+     */
     public int getArtistsCounter() {
         return this.characterDeck.get(CharacterType.ARTIST).size();
     }
 
-    //gatherer
+    /**
+     * Returns the number of gatherer cards the player has in their character deck.
+     *
+     * @return the integer representing the number of gatherer cards the player has in their character deck
+     */
     public int getGatherersCounter() {
         return this.characterDeck.get(CharacterType.GATHERER).size();
     }
 
-    //TOP DRAW NUM
+    /**
+     * Returns the number of inventor cards the player has in their character deck.
+     *
+     * @return the integer representing the number of inventor cards the player has in their character deck
+     */
     protected int getTopDrawNum() {
         return topDrawNum;
     }
 
+    // TODO : DA CAPIRE
     public void setTopDrawNum(int topDrawNum) throws IllegalArgumentException {
         if (topDrawNum < 0) throw new IllegalArgumentException();
         this.topDrawNum = topDrawNum;
     }
 
-    //BOTTOM DRAW NUM
+    // TODO : DA CAPIRE
     protected int getBottomDrawNum() {
         return bottomDrawNum;
     }
 
+    // TODO : DA CAPIRE
     public void setBottomDrawNum(int bottomDrawNum) throws IllegalArgumentException {
         if (bottomDrawNum < 0) throw new IllegalArgumentException();
         this.bottomDrawNum = bottomDrawNum;
     }
 
+    // TODO : SERVE?
     public void setEnvironment(GameInfo gameInfo) {
         this.gameInfo = gameInfo;
     }
 
-    public GameInfo getEnvironment() {
+    /**
+     * Returns the game environment of the player, which is the object that contains all the information about the game
+     * state.
+     *
+     * @return the GameInfo object representing the game environment of the player
+     * @throws IllegalStateException if the game environment is not available for the player
+     */
+    public GameInfo getEnvironment() throws IllegalStateException {
         if (this.gameInfo == null) {
             throw new IllegalStateException("Game Environment not available for player " + this.nickname);
         }
         return this.gameInfo;
     }
 
-    // CHARACTER SETS
+    /**
+     * This method initializes the character sets map of the player, which is a map that associates each character type
+     * with the number of complete sets of that character type the player has in their character deck. The method is called
+     * when the player picks the specific building card which takes tracks of character sets completed by the player.
+     *
+     * @throws IllegalStateException if the character sets map has already been initialized
+     */
     protected void initCharactersSets() throws IllegalStateException {
         if (charactersSets != null) throw new IllegalStateException("Character sets have already been initialized");
 

@@ -1,9 +1,9 @@
 package it.polimi.gc06.mesos.Model;
 
 public enum Color {
-        BLACK,
-        WHITE,
-        RED,
-        BLUE,
-        YELLOW,
+    WHITE,
+    RED,
+    BLUE,
+    YELLOW,
+    PURPLE
 }
