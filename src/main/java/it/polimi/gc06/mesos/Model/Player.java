@@ -6,7 +6,6 @@ import it.polimi.gc06.mesos.Model.Cards.Buildings.ObserverPairBuildingCard;
 import it.polimi.gc06.mesos.Model.Cards.Buildings.ObserverSetBuildingCard;
 import it.polimi.gc06.mesos.Model.Cards.Characters.*;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.EnumMap;
 
@@ -36,7 +35,6 @@ public class Player {
     private final InventorPairsVisitor inventorPairsVisitor;
     private final ShamanVisitor shamanVisitor;
 
-    // TODO Rimuovere colore e gestire esternamente - Usiamo ENUM
     private final Color color;
 
     // TODO Attenzione a non duplicare nel controller - vedrei se si può completamente spostare
@@ -170,7 +168,7 @@ public class Player {
 
 
     //COLOR
-    protected Color getColor() {
+    protected Color getPlayerColor() {
         return this.color;
     }
 
