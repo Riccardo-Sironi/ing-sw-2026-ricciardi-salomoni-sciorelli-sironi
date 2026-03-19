@@ -17,9 +17,10 @@ public abstract class TribeCard implements Card {
     public abstract boolean isEventCard();
 
     /**
-     * TODO : explain
+     * a visitor that will perform operations on this card.
+     * this method implements the double-dispatch mechanism for the Visitor pattern.
      *
-     * @param visitor
+     * @param visitor the visitor that will visit the card.
      */
     public abstract void accept(TribeCardVisitor visitor);
 
