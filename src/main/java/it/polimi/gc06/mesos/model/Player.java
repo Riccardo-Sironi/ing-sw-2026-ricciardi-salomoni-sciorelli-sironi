@@ -72,7 +72,7 @@ public class Player {
      *
      * @return the string representing the player's nickname
      */
-    protected String getNickname() {
+    public String getNickname() {
         return this.nickname;
     }
 

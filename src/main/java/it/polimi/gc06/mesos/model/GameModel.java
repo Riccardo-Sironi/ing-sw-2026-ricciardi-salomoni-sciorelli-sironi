@@ -65,7 +65,7 @@ public class GameModel implements GameInfo {
         return finalEventCards;
     }
 
-    protected Board getBoard() {
+    public Board getBoard() {
         return board;
     }
 

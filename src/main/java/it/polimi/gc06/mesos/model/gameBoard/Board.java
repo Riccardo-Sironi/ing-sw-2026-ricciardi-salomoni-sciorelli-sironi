@@ -43,7 +43,7 @@ public class Board {
      *
      * @return the array list of tribe cards in the top row.
      */
-    protected ArrayList<TribeCard> getTopRow() {
+    public ArrayList<TribeCard> getTopRow() {
         return topRow;
     }
 
@@ -63,7 +63,7 @@ public class Board {
      *
      * @return the array list of building cards in the top building space.
      */
-    protected ArrayList<BuildingCard> getTopBuildings() {
+    public ArrayList<BuildingCard> getTopBuildings() {
         return topBuildings;
     }
 
@@ -73,7 +73,7 @@ public class Board {
      *
      * @return the array list of building cards in the bottom building space.
      */
-    protected ArrayList<BuildingCard> getBottomBuildings() {
+    public ArrayList<BuildingCard> getBottomBuildings() {
         return bottomBuildings;
     }
 
@@ -83,7 +83,7 @@ public class Board {
      *
      * @return the enum map of building cards decks based on their Era.
      */
-    protected EnumMap<Era, ArrayList<BuildingCard>> getBuildingsDecks() {
+    public EnumMap<Era, ArrayList<BuildingCard>> getBuildingsDecks() {
         return buildingsDecks;
     }
 
@@ -93,7 +93,7 @@ public class Board {
      *
      * @return the enum value of current era.
      */
-    protected Era getCurrentEra() {
+    public Era getCurrentEra() {
         return currentEra;
     }
 
