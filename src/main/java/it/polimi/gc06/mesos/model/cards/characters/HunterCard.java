@@ -21,6 +21,12 @@ public class HunterCard extends CharacterCard {
         return hasFoodIcon; // TODO : ricordarsi di gestire questa logica quando implementiamo il pescaggio
     }
 
+    /**
+     * this method is used to accept a visitor that will visit
+     * the card and do some operations on it, depending on the type of visitor.
+     *
+     * @param visitor the visitor that will visit the card.
+     */
     @Override
     public void accept(TribeCardVisitor visitor) {
         visitor.visit(this);

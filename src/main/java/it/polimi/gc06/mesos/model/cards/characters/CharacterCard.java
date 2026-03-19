@@ -8,6 +8,11 @@ public abstract class CharacterCard extends TribeCard {
         super(era);
     }
 
+    /**
+     * this method is used to know if the card is an event card or not.
+     *
+     * @return false, because character cards are not event cards.
+     */
     @Override
     public boolean isEventCard() {
         return false;

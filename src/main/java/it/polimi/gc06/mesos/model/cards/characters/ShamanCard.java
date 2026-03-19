@@ -20,6 +20,12 @@ public class ShamanCard extends CharacterCard {
         return nStars;
     }
 
+    /**
+     * this method is used to accept a visitor that will visit
+     * the card and do some operations on it, depending on the type of visitor.
+     *
+     * @param visitor the visitor that will visit the card.
+     */
     @Override
     public void accept(TribeCardVisitor visitor) {
         visitor.visit(this);
