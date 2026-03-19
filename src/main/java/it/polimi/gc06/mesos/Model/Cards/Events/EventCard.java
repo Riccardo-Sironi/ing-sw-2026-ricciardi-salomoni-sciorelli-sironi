@@ -13,7 +13,7 @@ public abstract class EventCard extends TribeCard {
     }
 
     /**
-     * This method checks if the event card is the last to be resolved, in particular this should returrn true
+     * This method checks if the event card is the last to be resolved, in particular this should return true
      * only in the case we  are dealing with the sustenance event card or final event card.
      *
      * @return true if the event card is the last to be resolved in the turn, false otherwise

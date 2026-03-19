@@ -1,10 +1,10 @@
 package it.polimi.gc06.mesos.Model.Cards.Buildings;
 
-/*IDEA GENERALE
+/* TODO IDEA GENERALE
 Le building card vengono memorizzate sul Player e sul GameModel come tre diversi mazzetti in base
 alla tipologia della carta (magari i mazzetti divisi a loro volta nelle ere).
 Esiste comunque la classe building card per poter interagire in modo univoco con il cibo richiesto (può essere
-utile durante la scelta delle carte forse) e con il prestigio guadagnato (sicramente utile per gestire a
+utile durante la scelta delle carte forse) e con il prestigio guadagnato (sicuramente utile per gestire a
 fine partita il conteggio del prestigio)
  */
 

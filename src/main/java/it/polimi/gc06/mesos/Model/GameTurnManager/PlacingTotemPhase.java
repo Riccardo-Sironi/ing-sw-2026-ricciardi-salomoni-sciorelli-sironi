@@ -9,8 +9,8 @@ public class PlacingTotemPhase extends Phase {
 
         for (Player p : turnManager.getPlayersOrder()) {
 
-            // TODO Workaround temporaneo: Mettiamo sempre nello slot corrispondente all'activePlayerIndex
-            // TODO Mentre aspettiamo una vera e propria vestione dei player
+            // TODO Workaround temporaneo: Mettiamo sempre nello slot corrispondente al activePlayerIndex
+            // TODO Mentre aspettiamo una vera e propria gestione dei player
 
             turnManager.getOfferTrack().get(turnManager.getActivePlayerIndex()).setPlayer(p);
             turnManager.setActivePlayerIndex(turnManager.getActivePlayerIndex() + 1);
