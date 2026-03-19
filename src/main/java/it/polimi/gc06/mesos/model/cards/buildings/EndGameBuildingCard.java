@@ -18,6 +18,7 @@ public class EndGameBuildingCard extends BuildingCard {
      * Prestige getter.
      *
      * @param owner the owner of the card.
+     * @throws IllegalArgumentException if the owner is null.
      * @return the prestige gained at the end of the game.
      */
     @Override

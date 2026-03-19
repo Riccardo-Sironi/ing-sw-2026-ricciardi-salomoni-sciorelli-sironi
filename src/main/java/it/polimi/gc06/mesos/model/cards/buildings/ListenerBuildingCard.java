@@ -17,6 +17,11 @@ public class ListenerBuildingCard extends BuildingCard {
         this.effect = effect;
     }
 
+    /**
+     * Execute the effect of the card.
+     *
+     * @param owner the owner of the card.
+     */
     public void execute(Player owner) {
         if (owner != null) effect.accept(owner);
     }

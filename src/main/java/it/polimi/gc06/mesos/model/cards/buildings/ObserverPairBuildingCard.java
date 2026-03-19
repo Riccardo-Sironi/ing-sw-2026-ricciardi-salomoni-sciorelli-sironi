@@ -10,7 +10,13 @@ public class ObserverPairBuildingCard extends BuildingCard implements DrawObserv
     public ObserverPairBuildingCard(Era era, int foodCost, int prestigeGain) {
         super(era, foodCost, prestigeGain);
     }
-    
+
+
+    /**
+     * Update if player has completed a pair, if so he gets 2 food tokens and decrease the number of pairs completed by 1.
+     *
+     * @param player the player to update.
+     */
     @Override
     public void update(Player player) {
         if (player.hasCompletedPair()) {
