@@ -258,7 +258,7 @@ public class Board {
         int cardsToDraw = model.getPlayers().size() + 1;
         int maxTopRowSize = model.getPlayers().size() + 4;
 
-        for (int i = 0; i < cardsToDraw; i++) {
+        while (bottomRow.size() < cardsToDraw) {
             // TODO  : we could force to pick Era.ERA_I cards instead
             if (model.getTribeCardsDeck().get(currentEra).isEmpty()) {
                 throw new IllegalStateException("Tribe cards deck cannot be empty during bottom row initialization loop");
@@ -266,14 +266,12 @@ public class Board {
             // TODO  : we could force to pick Era.ERA_I cards instead
             TribeCard removedCard = model.getTribeCardsDeck().get(currentEra).removeFirst();
 
-            // check if the card is an event
             if (removedCard.isEventCard()) {
                 if (topRow.size() >= maxTopRowSize) {
                     //this happens just if we draw (4 + # players) event cards during this phase, which we hope is unlikely to happen
                     throw new IllegalStateException("Top row cannot contain more than " + maxTopRowSize + " cards during bottom row initialization");
                 }
                 topRow.addFirst(removedCard);
-                i--;
             } else {
                 bottomRow.addFirst(removedCard);
             }
@@ -370,7 +368,7 @@ public class Board {
             throw new IllegalArgumentException("Card not found in the top row");
         }
         if (card.isEventCard()) {
-            throw new IllegalArgumentException("Cannot remove an event card form top row");
+            throw new IllegalArgumentException("Cannot remove an event card from top row");
         }
 
         topRow.remove(card);
@@ -394,7 +392,7 @@ public class Board {
             throw new IllegalArgumentException("Card not found in the bottom row");
         }
         if (card.isEventCard()) {
-            throw new IllegalArgumentException("Cannot remove an event card form bottom row");
+            throw new IllegalArgumentException("Cannot remove an event card from bottom row");
         }
 
         bottomRow.remove(card);
@@ -407,8 +405,7 @@ public class Board {
      * remove it from the board.
      *
      * @param card the card to be removed from the top row.
-     * @throws IllegalArgumentException if the card is null, if the card is not found in the top buildings row or if the
-     *                                  card is an event card (which can't be picked from the player).
+     * @throws IllegalArgumentException if the card is null, if the card is not found in the top buildings row
      */
     public void removeBuildingCardFromTopRow(BuildingCard card) throws IllegalArgumentException {
         if (card == null) {
@@ -430,8 +427,7 @@ public class Board {
      * remove it from the board.
      *
      * @param card the card to be removed from the bottom row.
-     * @throws IllegalArgumentException if the card is null, if the card is not found in the bottom buildings row or if
-     *                                  the card is an event card (which can't be picked from the player).
+     * @throws IllegalArgumentException if the card is null, if the card is not found in the bottom buildings row
      */
     public void removeBuildingCardFromBottomRow(BuildingCard card) throws IllegalArgumentException {
         if (card == null) {

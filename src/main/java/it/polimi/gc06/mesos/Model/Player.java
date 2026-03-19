@@ -7,6 +7,7 @@ import it.polimi.gc06.mesos.Model.Cards.Buildings.ObserverSetBuildingCard;
 import it.polimi.gc06.mesos.Model.Cards.Characters.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumMap;
 
 public class Player {
@@ -130,7 +131,7 @@ public class Player {
 
     /**
      * Adds a set building card to the player's building deck. The overloaded method is called when the player picks the
-     * specific building card which takes tracks of character sets completed by the player.
+     * specific building card which keeps track of character sets completed by the player.
      *
      * @param card the set building card to be added to the player's building deck
      * @throws IllegalArgumentException if the card is null
@@ -146,7 +147,7 @@ public class Player {
 
     /**
      * Adds a pair building card to the player's building deck. The overloaded method is called when the player picks the
-     * specific building card which takes tracks of inventor pairs completed by the player.
+     * specific building card which keeps track of inventor pairs completed by the player.
      *
      * @param card the pair building card to be added to the player's building deck
      * @throws IllegalArgumentException if the card is null
@@ -162,7 +163,7 @@ public class Player {
 
     /**
      * This method checks if the player has the character sets map initialized, which means that the player has picked
-     * the specific building card which takes tracks of character sets completed by the player.
+     * the specific building card which keeps track of character sets completed by the player.
      *
      * @return true if the player has the character sets map initialized, false otherwise
      */
@@ -172,7 +173,7 @@ public class Player {
 
     /**
      * This method checks if the player has the inventor pairs map initialized, which means that the player has picked
-     * the specific building card which takes tracks of inventor pairs completed by the player.
+     * the specific building card which keeps track of inventor pairs completed by the player.
      *
      * @return true if the player has the inventor pairs map initialized, false otherwise
      */
@@ -209,11 +210,8 @@ public class Player {
      */
     public void removeFoodTokens(int amount) throws IllegalStateException {
         if (amount < 0) throw new IllegalArgumentException("Amount must be non-negative");
-        if ((this.foodTokens - amount) >= 0) {
-            this.foodTokens -= amount;
-        } else {
-            throw new IllegalStateException();
-        }
+        if ((this.foodTokens - amount) < 0) throw new IllegalStateException("Not enough food tokens to remove");
+        this.foodTokens -= amount;
     }
 
 
@@ -238,13 +236,13 @@ public class Player {
     }
 
     /**
-     * Removes prestige tokens from the player if the player has enough prestige tokens.
+     * Removes prestige tokens from the player. Prestige count on the player can be negative, so there is no check
+     * on the amount of prestige tokens to be removed.
      *
      * @param amount the integer value of prestige tokens to be removed from the player
      * @throws IllegalArgumentException if the amount of prestige tokens to be removed is negative
-     * @throws IllegalStateException    if the player does not have enough prestige tokens to be removed
      */
-    public void removePrestigeTokens(int amount) throws IllegalStateException {
+    public void removePrestigeTokens(int amount) throws IllegalArgumentException {
         if (amount < 0) throw new IllegalArgumentException("Amount must be non-negative");
         this.prestigeTokens -= amount;
     }
@@ -259,7 +257,7 @@ public class Player {
     }
 
     /**
-     * Returns the number of shaman stars the player has, which is the sum of the shaman stars from the shaman cards
+     * Returns the number of shaman stars the player has. It is the sum of the shaman stars from the shaman cards
      * in the player's character deck and the shaman stars from the three star building card if the player has it in
      * their building deck.
      *
@@ -307,18 +305,14 @@ public class Player {
         return this.characterDeck.get(CharacterType.GATHERER).size();
     }
 
-    /**
-     * Returns the number of inventor cards the player has in their character deck.
-     *
-     * @return the integer representing the number of inventor cards the player has in their character deck
-     */
+    // TODO : DA CAPIRE
     protected int getTopDrawNum() {
         return topDrawNum;
     }
 
     // TODO : DA CAPIRE
     public void setTopDrawNum(int topDrawNum) throws IllegalArgumentException {
-        if (topDrawNum < 0) throw new IllegalArgumentException();
+        if (topDrawNum < 0) throw new IllegalArgumentException("Amount must be non-negative");
         this.topDrawNum = topDrawNum;
     }
 
@@ -329,7 +323,7 @@ public class Player {
 
     // TODO : DA CAPIRE
     public void setBottomDrawNum(int bottomDrawNum) throws IllegalArgumentException {
-        if (bottomDrawNum < 0) throw new IllegalArgumentException();
+        if (bottomDrawNum < 0) throw new IllegalArgumentException("Amount must be non-negative");
         this.bottomDrawNum = bottomDrawNum;
     }
 
@@ -355,7 +349,7 @@ public class Player {
     /**
      * This method initializes the character sets map of the player, which is a map that associates each character type
      * with the number of complete sets of that character type the player has in their character deck. The method is called
-     * when the player picks the specific building card which takes tracks of character sets completed by the player.
+     * when the player picks the specific building card which keeps track of character sets completed by the player.
      *
      * @throws IllegalStateException if the character sets map has already been initialized
      */
@@ -375,59 +369,117 @@ public class Player {
         }
     }
 
+    /**
+     * Returns the character sets map of the player, which is a map that associates each character type with the number
+     * of characters of that type picked by the player after the map initialization.
+     *
+     * @return the enum map of the player's characters sets
+     */
     public EnumMap<CharacterType, Integer> getCharactersSets() {
         return charactersSets;
     }
 
+    /**
+     * This method increases the number of character sets of a specific character type by 1. It is called when
+     * the player picks a character card of that type after the character sets map has been initialized.
+     *
+     * @param cType the character type of which the number of character sets must be increased
+     * @throws IllegalArgumentException if the character type is null
+     * @throws IllegalStateException    if the character sets map has not been initialized
+     */
     protected void increaseCharactersSets(CharacterType cType) throws IllegalArgumentException, IllegalStateException {
         if (cType == null) throw new IllegalArgumentException("Character type cannot be null");
         if (charactersSets == null) throw new IllegalStateException("Character sets have not been initialized");
         charactersSets.put(cType, charactersSets.get(cType) + 1);
     }
 
-    public void decreaseCharactersSets() throws IllegalArgumentException, IllegalStateException {
+    /**
+     * This method decreases the number of character sets of all character types by 1. It is called when
+     * the player picks a character card of a specific type after the character sets map has been initialized and
+     * the player has completed at least one set of characters types.
+     *
+     * @throws IllegalStateException if the character sets map has not been initialized
+     */
+    public void decreaseCharactersSets() throws IllegalStateException {
         if (charactersSets == null) throw new IllegalStateException("Character sets have not been initialized");
         charactersSets.replaceAll((cType, count) -> count - 1);
     }
 
-    public boolean hasCompletedSet() {
+    /**
+     * This method checks if the player has completed at least one set of character types, which means that the minimum
+     * number of cards in each character type deck is at least 1.
+     *
+     * @return true if the player has completed at least one set of character types, false otherwise
+     * @throws IllegalStateException if the character sets map has not been initialized
+     */
+    public boolean hasCompletedSet() throws IllegalStateException {
         if (charactersSets == null) throw new IllegalStateException("Character sets have not been initialized");
-        return charactersSets.values().stream().min(Integer::compareTo).orElse(0).equals(1);
+        // if the map contains a value of 0, it means that there is at least one character type for which the player
+        // doesn't have picked any card5
+        return !charactersSets.containsValue(0);
     }
 
-    // INVENTOR PAIRS
+    /**
+     * This method initializes the inventor pairs map of the player, which is a map that associates each invention icon
+     * with the number of pairs of that icon the player has in their character deck. The method is called when the player
+     * picks the specific building card which keeps track of inventor pairs completed by the player.
+     *
+     * @throws IllegalStateException if the inventor pairs map has already been initialized
+     */
     protected void initInventorPairs() throws IllegalStateException {
         if (inventorPairs != null) throw new IllegalStateException("Inventor pairs have already been initialized");
 
         inventorPairs = new EnumMap<>(InventionIcon.class);
 
-        for (InventionIcon icon : InventionIcon.values()) {
-            for (CharacterCard card : characterDeck.get(CharacterType.INVENTOR)) {
-                InventorCard temp = (InventorCard) card;
+        // we initialize the map with all the icons and 0 pairs for each of them
+        Arrays.stream(InventionIcon.values()).forEach(icon -> inventorPairs.put(icon, 0));
 
-                // it checks if the icon is already in the map, if it is it sum 1 to the value, otherwise it put 1 as value
-                inventorPairs.merge(icon, 1, Integer::sum);
-            }
+        for (CharacterCard card : characterDeck.get(CharacterType.INVENTOR)) {
+            inventorPairs.merge(((InventorCard) card).getIcon(), 1, Integer::sum);
         }
+
         // it replaces the value of each icon with the remainder of the division by 2,
-        // so if the player has an even number of pairs of that icon, the value will be 0 (no spare icon cards),
+        // so if the player has an even count of cards of that icon, the value will be 0 (no spare icon cards).
         // otherwise it will be 1 (so we have a spare icon card that can be used to complete a pair)
         inventorPairs.replaceAll((icon, count) -> count % 2);
     }
 
-    public void increaseInventorPairs(InventionIcon icon) throws IllegalArgumentException {
+    /**
+     * This method increase the counter for the inventor pairs of a specific invention icon by 1. It is called when
+     * the player picks an inventor card with that icon after the inventor pairs map has been initialized.
+     *
+     * @param icon the invention icon of which the number of inventor pairs must be increased
+     * @throws IllegalArgumentException if the invention icon is null
+     * @throws IllegalStateException    if the inventor pairs map has not been initialized
+     */
+    public void increaseInventorPairs(InventionIcon icon) throws IllegalArgumentException, IllegalStateException {
         if (icon == null) throw new IllegalArgumentException("Icon cannot be null");
         if (inventorPairs == null) throw new IllegalStateException("Inventor pairs have not been initialized");
-        inventorPairs.put(icon, inventorPairs.get(icon) + 1);
+        inventorPairs.merge(icon, 1, Integer::sum);
     }
 
-    public void decreaseInventorPair() throws IllegalArgumentException {
+    /**
+     * This method decreases the counter for the inventor pairs that the player has completed. It checks the values of
+     * the map and if the value of an icon is 2 (so the player has completed a pair of that icon) it sets it to 0.
+     *
+     * @throws IllegalStateException if the inventor pairs map has not been initialized
+     */
+    public void decreaseInventorPair() throws IllegalStateException {
         if (inventorPairs == null) throw new IllegalStateException("Inventor pairs have not been initialized");
         inventorPairs.replaceAll((icon, count) -> count == 2 ? 0 : count);
     }
 
-    public boolean hasCompletedPair() throws IllegalArgumentException, IllegalStateException {
+    /**
+     * This method checks if the player has completed at least one pair of inventor cards, which means that at least
+     * one value in the inventor pairs map is 2.
+     *
+     * @return true if the player has completed at least one pair of inventor cards, false otherwise
+     * @throws IllegalStateException if the inventor pairs map has not been initialized
+     */
+    public boolean hasCompletedPair() throws IllegalStateException {
         if (inventorPairs == null) throw new IllegalStateException("Inventor pairs have not been initialized");
+        // we use .anyMatch() because this method is called every time the player picks an inventor card, so there should
+        // be at most one pair completed
         return inventorPairs.values().stream().anyMatch(count -> count == 2);
     }
 }
