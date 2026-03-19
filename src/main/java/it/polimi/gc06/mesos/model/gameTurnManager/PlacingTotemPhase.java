@@ -1,6 +1,9 @@
 package it.polimi.gc06.mesos.model.gameTurnManager;
 
+import it.polimi.gc06.mesos.gameExceptions.IllegalPhaseActionException;
 import it.polimi.gc06.mesos.model.Player;
+import it.polimi.gc06.mesos.model.gameBoard.TileSlot;
+
 
 public class PlacingTotemPhase extends Phase {
 
@@ -12,24 +15,17 @@ public class PlacingTotemPhase extends Phase {
      * @param turnManager the turn manager orchestrating the game flow.
      */
     @Override
-    public void action(TurnManager turnManager) {
+    public void placeTotem(TurnManager turnManager, Player player, TileSlot slot) throws IllegalPhaseActionException {
 
-        for (Player p : turnManager.getPlayersOrder()) {
-
-            // TODO Workaround temporaneo: Mettiamo sempre nello slot corrispondente al activePlayerIndex
-            // TODO Mentre aspettiamo una vera e propria gestione dei player
-
-            turnManager.getOfferTrack().get(turnManager.getActivePlayerIndex()).setPlayer(p);
-            turnManager.setActivePlayerIndex(turnManager.getActivePlayerIndex() + 1);
-            // Remove the player from the turn order, so that he won't be able to play again in this phase
-            turnManager.getPlayersOrder().removeFirst();
-
+        if (!slot.isEmpty()) {
+            throw new IllegalStateException("The slot is not empty!");
         }
 
-        // Turn has ended. Reset active player index and move to the next phase
-        turnManager.setActivePlayerIndex(0);
-        turnManager.setPhase(new OfferResolutionPhase());
+        // Remove the player from the turn order
+        turnManager.getPlayersOrder().removeFirst();
 
+        // TODO Come vogliamo gestire i totem? Appartengono ai player? SONO i player stessi?
+        slot.setPlayer(player);
     }
 
 }

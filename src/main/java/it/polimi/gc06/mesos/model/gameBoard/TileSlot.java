@@ -63,4 +63,14 @@ public class TileSlot {
         return p;
     }
 
+    /**
+     * Returns true if the tile has no player on it, false otherwise.
+     *
+     * @return whether the tile has a reference to a player or not
+     * @throws IllegalStateException {@inheritDoc}
+     */
+    public boolean isEmpty() {
+        return player == null;
+    }
+
 }
