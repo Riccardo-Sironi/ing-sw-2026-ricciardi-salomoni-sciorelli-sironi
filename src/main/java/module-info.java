@@ -9,18 +9,18 @@ module it.polimi.gc06.mesos {
 
     opens it.polimi.gc06.mesos to javafx.fxml;
     exports it.polimi.gc06.mesos;
-    exports it.polimi.gc06.mesos.Model;
-    opens it.polimi.gc06.mesos.Model to javafx.fxml;
-    exports it.polimi.gc06.mesos.Model.Cards;
-    opens it.polimi.gc06.mesos.Model.Cards to javafx.fxml;
-    exports it.polimi.gc06.mesos.Model.GameTurnManager;
-    opens it.polimi.gc06.mesos.Model.GameTurnManager to javafx.fxml;
-    exports it.polimi.gc06.mesos.Model.Cards.Events;
-    opens it.polimi.gc06.mesos.Model.Cards.Events to javafx.fxml;
-    exports it.polimi.gc06.mesos.Model.Cards.Characters;
-    opens it.polimi.gc06.mesos.Model.Cards.Characters to javafx.fxml;
-    exports it.polimi.gc06.mesos.Model.Cards.Buildings;
-    opens it.polimi.gc06.mesos.Model.Cards.Buildings to javafx.fxml;
-    exports it.polimi.gc06.mesos.Model.GameBoard;
-    opens it.polimi.gc06.mesos.Model.GameBoard to javafx.fxml;
+    exports it.polimi.gc06.mesos.model;
+    opens it.polimi.gc06.mesos.model to javafx.fxml;
+    exports it.polimi.gc06.mesos.model.cards;
+    opens it.polimi.gc06.mesos.model.cards to javafx.fxml;
+    exports it.polimi.gc06.mesos.model.gameTurnManager;
+    opens it.polimi.gc06.mesos.model.gameTurnManager to javafx.fxml;
+    exports it.polimi.gc06.mesos.model.cards.events;
+    opens it.polimi.gc06.mesos.model.cards.events to javafx.fxml;
+    exports it.polimi.gc06.mesos.model.cards.characters;
+    opens it.polimi.gc06.mesos.model.cards.characters to javafx.fxml;
+    exports it.polimi.gc06.mesos.model.cards.buildings;
+    opens it.polimi.gc06.mesos.model.cards.buildings to javafx.fxml;
+    exports it.polimi.gc06.mesos.model.gameBoard;
+    opens it.polimi.gc06.mesos.model.gameBoard to javafx.fxml;
 }
