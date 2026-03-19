@@ -7,6 +7,11 @@ public class EventResolutionPhase extends Phase {
 
     private final Board board;
 
+    /**
+     * this method constructs the event resolution phase with the specified game board.
+     *
+     * @param board the game board containing the cards to be resolved.
+     */
     public EventResolutionPhase(Board board) {
         this.board = board;
     }

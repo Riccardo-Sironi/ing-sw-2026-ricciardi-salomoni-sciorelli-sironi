@@ -12,6 +12,14 @@ public class OfferResolutionPhase extends Phase implements DrawSubject {
     public OfferResolutionPhase() {
     }
 
+    /**
+     * this method executes the offer resolution actions:
+     * resolves the effect of each occupied slot on the offer track,
+     * notifies building observers if the player meets special conditions
+     * and reorganizes the turn order tile.
+     *
+     * @param turnManager the turn manager controlling the flow of the game.
+     */
     @Override
     public void action(TurnManager turnManager) {
         for (TileSlot tileSlot : turnManager.getOfferTrack()) {
@@ -40,17 +48,32 @@ public class OfferResolutionPhase extends Phase implements DrawSubject {
         }
     }
 
-
+    /**
+     * this method adds an observer to be notified during the card drawing process.
+     *
+     * @param observer the observer to add.
+     */
     @Override
     public void addObserver(DrawObserver observer) {
         observers.add(observer);
     }
 
+    /**
+     * this method removes an observer from the notification list.
+     *
+     * @param observer the observer to remove.
+     */
     @Override
     public void removeObserver(DrawObserver observer) {
         observers.remove(observer);
     }
 
+    /**
+     * this method notifies all registered observers that
+     * a specific player has triggered an update.
+     *
+     * @param player the player who triggered the notification.
+     */
     @Override
     public void notifyObserverBuildings(Player player) {
         for (DrawObserver observer : observers) {

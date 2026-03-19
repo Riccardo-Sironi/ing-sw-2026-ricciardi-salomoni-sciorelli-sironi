@@ -4,6 +4,13 @@ import it.polimi.gc06.mesos.model.Player;
 
 public class PlacingTotemPhase extends Phase {
 
+    /**
+     * this method is used to execute the totem placement actions.
+     * it iterates through the players and assigns them to an offer track slot
+     * and transitions the game to the offer resolution phase.
+     *
+     * @param turnManager the turn manager orchestrating the game flow.
+     */
     @Override
     public void action(TurnManager turnManager) {
 
