@@ -27,14 +27,32 @@ public class GameModel implements GameInfo {
     public GameModel() {
     }
 
+    /**
+     * method that starts the game session
+     *
+     * @return true if the game started successfully.
+     * TODO: false otherwise.
+     */
     protected boolean startGame() {
         return true;
     }
 
+    /**
+     * method that ends the game session and triggers final scoring.
+     *
+     * @return true if the game started successfully.
+     * TODO: false otherwise.
+     */
     protected boolean endGame() {
         return true;
     }
 
+    /**
+     * this method retrieves the maximum number of shaman stars currently held by any player.
+     *
+     * @return the highest number of shaman stars among all players.
+     * if there are no players, returns 0
+     */
     @Override
     public int getMaxStars() {
         // Functional approach to get the maximum number of shaman stars among all players. If there are no players, returns 0.
@@ -44,6 +62,12 @@ public class GameModel implements GameInfo {
                 .orElse(0);
     }
 
+    /**
+     * this method retrieves the minimum number of shaman stars currently held by any player.
+     *
+     * @return the lowest number of shaman stars among all players.
+     * if there are no players, returns 0
+     */
     @Override
     public int getMinStars() {
         // Functional approach to get the minimum number of shaman stars among all players. If there are no players, returns 0.
@@ -53,26 +77,56 @@ public class GameModel implements GameInfo {
                 .orElse(0);
     }
 
+    /**
+     * this method retrieves the deck containing all building cards, categorized by Era.
+     *
+     * @return an EnumMap mapping each Era to its corresponding list of building cards.
+     */
     public EnumMap<Era, ArrayList<BuildingCard>> getBuildingCardsDecks() {
         return buildingCardsDecks;
     }
 
+    /**
+     * this method retrieves the deck containing all tribe cards, categorized by Era.
+     *
+     * @return an EnumMap mapping each Era to its corresponding list of tribe cards.
+     */
     public EnumMap<Era, ArrayList<TribeCard>> getTribeCardsDeck() {
         return tribeCardsDeck;
     }
 
+    /**
+     * this method retrieves the final event cards used at the end of the game.
+     *
+     * @return an array containing the 2 final event cards.
+     */
     public EventCard[] getFinalEventCards() {
         return finalEventCards;
     }
 
+    /**
+     * this method retrieves the physical game board.
+     *
+     * @return the board managing the cards currently in play.
+     */
     public Board getBoard() {
         return board;
     }
 
+    /**
+     * this method retrieves the list of players currently participating in the game.
+     *
+     * @return an ArrayList containing all players in the game.
+     */
     public ArrayList<Player> getPlayers() {
         return players;
     }
 
+    /**
+     * this method retrieves the turn manager responsible for orchetrating the game phases.
+     *
+     * @return the current TurnManager.
+     */
     public TurnManager getTurnManager() {
         return turnManager;
     }
