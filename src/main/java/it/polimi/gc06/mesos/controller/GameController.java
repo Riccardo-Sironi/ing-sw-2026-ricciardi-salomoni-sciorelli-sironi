@@ -25,7 +25,7 @@ public class GameController {
             // TODO : handle this
         }
 
-        model.getTurnManager().getPhase().action(model.getTurnManager()); // ???? how do we do this
+        model.getTurnManager().getPhase().placeTotem(model.getTurnManager(), model.getTurnManager().getActivePlayer(), tile);
     }
 
     public void handleCardPickTopRow(String playerNickname, TribeCard card) {
