@@ -19,7 +19,6 @@ public class HuntEvent extends EventCard {
         visitor.visit(this);
     }
 
-
     @Override
     public void resolveEvent(Player player) {
         /*initialization of hunters counter*/

@@ -14,7 +14,7 @@ public class ShamanCard extends CharacterCard {
     /**
      * This method is used to know how many stars the shaman card has.
      *
-     * @return the number of stars of the shaman card
+     * @return the integer number of stars of the shaman card
      */
     protected int getStars() {
         return nStars;

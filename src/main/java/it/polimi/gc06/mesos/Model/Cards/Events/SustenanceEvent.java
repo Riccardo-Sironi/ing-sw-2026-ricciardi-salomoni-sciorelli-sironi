@@ -9,7 +9,6 @@ public class SustenanceEvent extends EventCard {
     private static final int DISCOUNT_PER_GATHERER = 3;
     private final int numPrestigeLoss;
 
-    //CONSTRUCTOR
     public SustenanceEvent(Era era, int numPrestigeLoss) {
         super(era, true);
         this.numPrestigeLoss = numPrestigeLoss;

@@ -14,7 +14,7 @@ public class InventorCard extends CharacterCard {
     /**
      * This method is used to know which invention icon the card has.
      *
-     * @return invention icon of the card.
+     * @return invention icon enum value of the card.
      */
     public InventionIcon getIcon() {
         return icon;

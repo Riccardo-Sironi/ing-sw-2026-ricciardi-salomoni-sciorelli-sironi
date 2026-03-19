@@ -9,6 +9,7 @@ public class RitualEvent extends EventCard {
 
     private final int numPrestigeGained;
     private final int numPrestigeLost;
+    
     private final ModifierBuildingCard noLossCard;
     private final ModifierBuildingCard doubleWinCard;
 

@@ -18,10 +18,20 @@ public class BuilderCard extends CharacterCard {
         this.foodDiscount = foodDiscount;
     }
 
+    /**
+     * This method is used to know how many prestige points the card gives.
+     *
+     * @return the integer number of prestige points the card gives
+     */
     protected int getPrestige() {
         return prestige;
     }
 
+    /**
+     * This method is used to know how much food points the card gives as discount on buying buildings cards.
+     *
+     * @return the integer number of food points the card gives as discount
+     */
     protected int getFoodDiscount() {
         return foodDiscount;
     }

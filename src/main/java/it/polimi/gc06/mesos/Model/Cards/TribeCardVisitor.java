@@ -8,7 +8,6 @@ import it.polimi.gc06.mesos.Model.Cards.Events.SustenanceEvent;
 
 public interface TribeCardVisitor {
 
-    // Events
     void visit(RitualEvent ritual);
 
     void visit(SustenanceEvent sustenance);
@@ -17,7 +16,6 @@ public interface TribeCardVisitor {
 
     void visit(PaintingsEvent paintings);
 
-    // Characters
     void visit(HunterCard card);
 
     void visit(ShamanCard card);

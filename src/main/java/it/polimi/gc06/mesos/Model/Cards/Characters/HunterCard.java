@@ -12,12 +12,13 @@ public class HunterCard extends CharacterCard {
     }
 
     /**
-     * This method is used to know if the card has a food icon or not.
+     * This method is used to know if the card has a food icon or not. Food icon means that the card gives a food point
+     * to the player based on the number of hunters the player has (either with or without icon).
      *
      * @return true if the card has a food icon, false otherwise.
      */
     public boolean hasFoodIcon() {
-        return hasFoodIcon;
+        return hasFoodIcon; // TODO : ricordarsi di gestire questa logica quando implementiamo il pescaggio
     }
 
     @Override
