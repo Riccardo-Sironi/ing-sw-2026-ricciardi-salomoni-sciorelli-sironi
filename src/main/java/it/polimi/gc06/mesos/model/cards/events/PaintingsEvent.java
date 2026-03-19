@@ -17,11 +17,25 @@ public class PaintingsEvent extends EventCard {
         this.minNumberOfArtists = minNumberOfArtists;
     }
 
+    /**
+     * this method is used to accept a visitor that will visit the card and apply
+     * the effects of the card on the player that has chosen to resolve it.
+     *
+     * @param visitor the visitor that will visit the card.
+     */
     @Override
     public void accept(TribeCardVisitor visitor) {
         visitor.visit(this);
     }
 
+    /**
+     * this method is used to resolve the event card:
+     * takes the number of ARTISTS for every player and if it's greater than the minNumberOfArtists on the card
+     * remove prestige tokens from the player; otherwise add prestige tokens for every
+     * artist in the deck multiplied by the prestige on the card.
+     *
+     * @param player the player that is resolving the event
+     */
     @Override
     public void resolveEvent(Player player) {
         /*initialization of artist counter*/

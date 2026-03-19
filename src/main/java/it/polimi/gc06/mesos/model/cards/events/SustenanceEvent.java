@@ -14,11 +14,27 @@ public class SustenanceEvent extends EventCard {
         this.numPrestigeLoss = numPrestigeLoss;
     }
 
+    /**
+     * this method is used to accept a visitor that will visit the card and apply
+     * the effects of the card on the player that has chosen to resolve it.
+     *
+     * @param visitor the visitor that will visit the card.
+     */
     @Override
     public void accept(TribeCardVisitor visitor) {
         visitor.visit(this);
     }
 
+    /**
+     * this method is used to resolve the event card:
+     * it gets the total number of character cards of the player and initialize the gatherers counter
+     * and the required food. if the required food is greater than 0 it initializes the current food
+     * and if the player has enough food to pay it removes it; otherwise it removes food and initialize the
+     * unfed characters (remaining food that needs to be paid) and removes the prestige written on the card
+     * multiplied by the unfed characters.
+     *
+     * @param player the player that is resolving the event
+     */
     @Override
     public void resolveEvent(Player player) {
 

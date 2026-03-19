@@ -14,11 +14,25 @@ public class HuntEvent extends EventCard {
         this.numPrestigeGained = numPrestigeGained;
     }
 
+    /**
+     * this method is used to accept a visitor that will visit the card and apply
+     * the effects of the card on the player that has chosen to resolve it.
+     *
+     * @param visitor the visitor that will visit the card.
+     */
     @Override
     public void accept(TribeCardVisitor visitor) {
         visitor.visit(this);
     }
 
+    /**
+     * this method is used to resolve the event card:
+     * takes the number of HUNTERS for every player and if it's greater than 0 adds
+     * to the player that has chosen to resolve the card as many food tokens as the number
+     * of HUNTERS and as many prestige tokens as the number of HUNTERS multiplied by the prestige on the card.
+     *
+     * @param player the player that is resolving the event
+     */
     @Override
     public void resolveEvent(Player player) {
         /*initialization of hunters counter*/

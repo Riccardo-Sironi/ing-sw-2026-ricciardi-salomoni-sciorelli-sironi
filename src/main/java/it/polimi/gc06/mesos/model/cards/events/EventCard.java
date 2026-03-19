@@ -23,12 +23,18 @@ public abstract class EventCard extends TribeCard {
     }
 
     /**
-     * TODO : explain
+     * this method is used by the other event classes to resolve the event card,
+     * in particular it is used to apply the effects of the event card on the player that has chosen to resolve it.
      *
-     * @param player the player that has chosen to resolve the event card
+     * @param player the player that is resolving the event
      */
     public abstract void resolveEvent(Player player);
 
+    /**
+     * this method is used to know if the card is an event card or not.
+     *
+     * @return true, because this is the EventCard class.
+     */
     @Override
     public boolean isEventCard() {
         return true;
