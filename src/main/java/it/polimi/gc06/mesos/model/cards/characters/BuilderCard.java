@@ -38,7 +38,7 @@ public class BuilderCard extends CharacterCard {
      *
      * @return the integer number of food points the card gives as discount
      */
-    protected int getFoodDiscount() {
+    public int getFoodDiscount() {
         return foodDiscount;
     }
 }

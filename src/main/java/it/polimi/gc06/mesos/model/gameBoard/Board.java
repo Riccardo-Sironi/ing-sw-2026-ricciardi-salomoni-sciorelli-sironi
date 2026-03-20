@@ -1,6 +1,12 @@
 package it.polimi.gc06.mesos.model.gameBoard;
 
+import it.polimi.gc06.mesos.gameExceptions.IllegalGameActionException;
+import it.polimi.gc06.mesos.model.Player;
+import it.polimi.gc06.mesos.model.cards.BottomRowInitVisitor;
 import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
+import it.polimi.gc06.mesos.model.cards.characters.BuilderCard;
+import it.polimi.gc06.mesos.model.cards.characters.CharacterCard;
+import it.polimi.gc06.mesos.model.cards.characters.CharacterType;
 import it.polimi.gc06.mesos.model.cards.events.EventCard;
 import it.polimi.gc06.mesos.model.cards.TribeCard;
 import it.polimi.gc06.mesos.model.Era;
@@ -266,14 +272,10 @@ public class Board {
             // TODO  : we could force to pick Era.ERA_I cards instead
             TribeCard removedCard = model.getTribeCardsDeck().get(currentEra).removeFirst();
 
-            if (removedCard.isEventCard()) {
-                if (topRow.size() >= maxTopRowSize) {
-                    //this happens just if we draw (4 + # players) event cards during this phase, which we hope is unlikely to happen
-                    throw new IllegalStateException("Top row cannot contain more than " + maxTopRowSize + " cards during bottom row initialization");
-                }
-                topRow.addFirst(removedCard);
-            } else {
-                bottomRow.addFirst(removedCard);
+            try {
+                removedCard.accept(new BottomRowInitVisitor(bottomRow, topRow, maxTopRowSize));
+            } catch (IllegalStateException e) {
+                throw new IllegalStateException(e.getMessage(), e);
             }
         }
     }
@@ -351,94 +353,132 @@ public class Board {
     }
 
     /**
+     * This method is used to pick a card from the tor row of cards. It handles the selection of a forbidden card (event card)
+     * by the player and the selection of a character card, which is added to the player's hand and removed from the top row.
+     * It is used in the offer resolution phase, when the player can pick one of the cards from the top row.
      *
-     * Removes the specified card from the top row of tribe cards. It is used to pick a card from the top row during
-     * the offer resolution phase, when the player can pick one of the cards from the top row, and we need to
-     * remove it from the board.
-     *
-     * @param card the card to be removed from the top row.
-     * @throws IllegalArgumentException if the card is null, if the card is not found in the top row or if the card is
-     *                                  an event card (which can't be picked from the player).
+     * @param player the player who is picking the card from the top row.
+     * @param card   the card that the player is picking from the top row.
+     * @throws IllegalArgumentException if the player is null, if the card is null, if the card is not found in the top
+     *                                  row or if the card is an event card (which can't be picked from the player).
      */
-    public void removeTribeCardFromTopRow(TribeCard card) throws IllegalArgumentException {
+    public void pickCardFromTopRow(Player player, TribeCard card) throws IllegalArgumentException {
+    }
+
+    public void pickCardFromTopRow(Player player, CharacterCard card) throws IllegalArgumentException {
+        if (player == null) {
+            throw new IllegalArgumentException("Player cannot be null");
+        }
         if (card == null) {
             throw new IllegalArgumentException("Card cannot be null");
         }
         if (!topRow.contains(card)) {
             throw new IllegalArgumentException("Card not found in the top row");
         }
-        if (card.isEventCard()) {
-            throw new IllegalArgumentException("Cannot remove an event card from top row");
-        }
 
         topRow.remove(card);
+        player.addCharacterCards(card);
+    }
+
+    public void pickCardFromTopRow(Player player, EventCard card) throws IllegalArgumentException {
+        throw new IllegalArgumentException("Cannot remove an event card from top row");
     }
 
     /**
+     * This method is used to pick a card from the tor bottom of cards. It handles the selection of a forbidden card (event card)
+     * by the player and the selection of a character card, which is added to the player's hand and removed from the bottom row.
+     * It is used in the offer resolution phase, when the player can pick one of the cards from the bottom row.
      *
-     * Removes the specified card from the bottom row of tribe cards. It is used to pick a card from the bottom row during
-     * the event resolution phase, when the player can pick one of the cards from the bottom row, and we need to
-     * remove it from the board.
-     *
-     * @param card the card to be removed from the bottom row.
-     * @throws IllegalArgumentException if the card is null, if the card is not found in the bottom row or if the card is
-     *                                  an event card (which can't be picked from the player).
+     * @param player the player who is picking the card from the bottom row.
+     * @param card   the card that the player is picking from the bottom row.
+     * @throws IllegalArgumentException if the player is null, if the card is null, if the card is not found in the bottom
+     *                                  row or if the card is an event card (which can't be picked from the player).
      */
-    public void removeTribeCardFromBottomRow(TribeCard card) throws IllegalArgumentException {
+    public void pickCardFromBottomRow(Player player, TribeCard card) throws IllegalArgumentException {
+    }
+
+    public void pickCardFromBottomRow(Player player, CharacterCard card) throws IllegalArgumentException {
+        if (player == null) {
+            throw new IllegalArgumentException("Player cannot be null");
+        }
         if (card == null) {
             throw new IllegalArgumentException("Card cannot be null");
         }
         if (!bottomRow.contains(card)) {
             throw new IllegalArgumentException("Card not found in the bottom row");
         }
-        if (card.isEventCard()) {
-            throw new IllegalArgumentException("Cannot remove an event card from bottom row");
-        }
 
         bottomRow.remove(card);
+        player.addCharacterCards(card);
+    }
+
+    public void pickCardFromBottomRow(Player player, EventCard card) throws IllegalArgumentException {
+        throw new IllegalArgumentException("Cannot remove an event card from bottom row");
     }
 
     /**
+     * This method is used to buy a building card from the bottom row of building cards. It handles the buying logic,
+     * by checking if the player has enough food tokens to buy the building card (considering the possible discount
+     * from builder cards). It adds the building card to the player's hand and removes it from the top row of building
+     * cards. It is used in the offer resolution phase, when the player can buy one of the building cards from the top row.
      *
-     * Removes the specified card from the top row of buildings cards. It is used to pick a building card from the top
-     * row during the offer resolution phase, when the player decide to buy a building, and we need to
-     * remove it from the board.
-     *
-     * @param card the card to be removed from the top row.
-     * @throws IllegalArgumentException if the card is null, if the card is not found in the top buildings row
+     * @param player   the player who is buying the building card from the top row.
+     * @param building the building card that the player is buying from the top row.
+     * @throws IllegalArgumentException if the player ot the building card is null, if the building card is
+     *                                  not found in the top row of building cards or if the player does not have enough
+     *                                  food tokens to buy the building card.
      */
-    public void removeBuildingCardFromTopRow(BuildingCard card) throws IllegalArgumentException {
-        if (card == null) {
+    public void buyBuildingFromTopRow(Player player, BuildingCard building) throws IllegalArgumentException {
+        if (player == null) {
+            throw new IllegalArgumentException("Player cannot be null");
+        }
+        if (building == null) {
             throw new IllegalArgumentException("Building Card cannot be null");
         }
-        if (!topBuildings.contains(card)) {
+        if (!topBuildings.contains(building)) {
             throw new IllegalArgumentException("Card not found in the top buildings row");
         }
 
-        // TODO : the buying logic should be handled here ??
+        int finalCost = building.getFoodCost() - player.getBuildersDiscount();
 
-        topBuildings.remove(card);
+        if (finalCost > player.getFoodTokens()) {
+            throw new IllegalGameActionException("Player does not have enough food tokens to buy this building");
+        }
+
+        player.removeFoodTokens(finalCost);
+        topBuildings.remove(building);
+        player.addBuildingCards(building);
     }
 
+
     /**
+     * This method is used to buy a building card from the bottom row of building cards. It handles the buying logic,
+     * by checking if the player has enough food tokens to buy the building card (considering the possible discount
+     * from builder cards). It adds the building card to the player's hand and removes it from the bottom row of building
+     * cards. It is used in the offer resolution phase, when the player can buy one of the building cards from the bottom row.
      *
-     * Removes the specified card from the bottom row of buildings cards. It is used to pick a building card from the
-     * bottom row during the event resolution phase, when the player decide to buy a building, and we need to
-     * remove it from the board.
-     *
-     * @param card the card to be removed from the bottom row.
-     * @throws IllegalArgumentException if the card is null, if the card is not found in the bottom buildings row
+     * @param player   the player who is buying the building card from the bottom row.
+     * @param building the building card that the player is buying from the bottom row.
+     * @throws IllegalArgumentException if the player ot the building card is null, if the building card is
+     *                                  not found in the bottom row of building cards or if the player does not have enough
+     *                                  food tokens to buy the building card.
      */
-    public void removeBuildingCardFromBottomRow(BuildingCard card) throws IllegalArgumentException {
-        if (card == null) {
+    public void buyBuildingFromBottomRow(Player player, BuildingCard building) throws IllegalArgumentException {
+        if (building == null) {
             throw new IllegalArgumentException("Building Card cannot be null");
         }
-        if (!bottomBuildings.contains(card)) {
+        if (!bottomBuildings.contains(building)) {
             throw new IllegalArgumentException("Card not found in the bottom buildings row");
         }
 
-        // TODO : the buying logic should be handled here ??
+        int finalCost = building.getFoodCost() - player.getBuildersDiscount();
 
-        bottomBuildings.remove(card);
+        if (finalCost > player.getFoodTokens()) {
+            throw new IllegalGameActionException("Player does not have enough food tokens to buy this building");
+        }
+
+        player.removeFoodTokens(finalCost);
+        bottomBuildings.remove(building);
+        player.addBuildingCards(building);
     }
 }

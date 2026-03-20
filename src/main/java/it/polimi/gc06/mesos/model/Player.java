@@ -1,5 +1,6 @@
 package it.polimi.gc06.mesos.model;
 
+import it.polimi.gc06.mesos.gameExceptions.GameObjectNotFoundException;
 import it.polimi.gc06.mesos.model.cards.buildings.*;
 import it.polimi.gc06.mesos.model.cards.characters.*;
 import it.polimi.gc06.mesos.model.gameTurnManager.DrawObserverVisitor;
@@ -94,7 +95,7 @@ public class Player {
      * @param card the character card to be added to the player's character deck
      * @throws IllegalArgumentException if the card is null
      */
-    protected void addCharacterCards(CharacterCard card) throws IllegalArgumentException {
+    public void addCharacterCards(CharacterCard card) throws IllegalArgumentException {
         if (card == null) throw new IllegalArgumentException("Card cannot be null");
 
         card.accept(deckCardVisitor);
@@ -124,7 +125,7 @@ public class Player {
      * @param card the building card to be added to the player's building deck
      * @throws IllegalArgumentException if the card is null
      */
-    protected void addBuildingCards(BuildingCard card) throws IllegalArgumentException {
+    public void addBuildingCards(BuildingCard card) throws IllegalArgumentException {
         if (card == null) throw new IllegalArgumentException("Card cannot be null");
         this.buildingDeck.add(card);
     }
@@ -136,11 +137,11 @@ public class Player {
      * @param card the set building card to be added to the player's building deck
      * @throws IllegalArgumentException if the card is null
      */
-    protected void addBuildingCards(ObserverSetBuildingCard card) throws IllegalArgumentException {
+    public void addBuildingCards(ObserverSetBuildingCard card) throws IllegalArgumentException, GameObjectNotFoundException {
 
         if (card == null) throw new IllegalArgumentException("Card cannot be null");
         drawObserverVisitor.setObserver(card);
-        drawObserverVisitor.visit(gameInfo.getCurrentPhase()); //TODO se chiamato nella fase sbagliata lancia un eccezione non gestita, posso aggiungerla nel throw?
+        drawObserverVisitor.visit(gameInfo.getCurrentPhase());
         this.buildingDeck.add(card);
         if (charactersSets == null) {
             initCharactersSets();
@@ -154,11 +155,11 @@ public class Player {
      * @param card the pair building card to be added to the player's building deck
      * @throws IllegalArgumentException if the card is null
      */
-    protected void addBuildingCards(ObserverPairBuildingCard card) throws IllegalArgumentException {
+    public void addBuildingCards(ObserverPairBuildingCard card) throws IllegalArgumentException, GameObjectNotFoundException {
 
         if (card == null) throw new IllegalArgumentException("Card cannot be null");
         drawObserverVisitor.setObserver(card);
-        drawObserverVisitor.visit(gameInfo.getCurrentPhase()); //TODO se chiamato nella fase sbagliata lancia un eccezione non gestita, posso aggiungerla nel throw?
+        drawObserverVisitor.visit(gameInfo.getCurrentPhase());
         this.buildingDeck.add(card);
         if (inventorPairs == null) {
             initInventorPairs();
@@ -485,5 +486,15 @@ public class Player {
         // we use .anyMatch() because this method is called every time the player picks an inventor card, so there should
         // be at most one pair completed
         return inventorPairs.values().stream().anyMatch(count -> count == 2);
+    }
+
+    public int getBuildersDiscount() {
+        int foodDiscount = 0;
+
+        for (CharacterCard card : characterDeck.get(CharacterType.BUILDER)) {
+            BuilderCard temp = (BuilderCard) card;
+            foodDiscount += temp.getFoodDiscount();
+        }
+        return foodDiscount;
     }
 }

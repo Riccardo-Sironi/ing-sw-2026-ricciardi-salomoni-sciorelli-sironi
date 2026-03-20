@@ -5,6 +5,7 @@ import it.polimi.gc06.mesos.model.GameModel;
 import it.polimi.gc06.mesos.model.cards.TribeCard;
 import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
 import it.polimi.gc06.mesos.model.gameBoard.TileSlot;
+import it.polimi.gc06.mesos.model.gameTurnManager.OfferResolutionPhase;
 
 public class GameController {
     private GameModel model;
@@ -25,10 +26,16 @@ public class GameController {
         if (tile.getPlayer() != null) {
             // TODO : handle this
         }
+
         try {
             model.getTurnManager().getPhase().placeTotem(model.getTurnManager(), model.getTurnManager().getActivePlayer(), tile);
         } catch (IllegalPhaseActionException e) {
-            System.out.println(e.getMessage());
+            System.out.println(e.getMessage()); // TODO : communicate the error to the view
+        }
+
+        if (model.getTurnManager().getPlayersOrder().isEmpty()) {
+            model.getTurnManager().setRound(model.getTurnManager().getRound() + 1); // TODO : this should just be an increment not a set
+            model.getTurnManager().setPhase(new OfferResolutionPhase()); // TODO : should this be done like this?
         }
     }
 
