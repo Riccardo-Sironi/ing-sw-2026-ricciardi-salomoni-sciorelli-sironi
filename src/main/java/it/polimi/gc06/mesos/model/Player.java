@@ -1,10 +1,8 @@
 package it.polimi.gc06.mesos.model;
 
-import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
-import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingCard;
-import it.polimi.gc06.mesos.model.cards.buildings.ObserverPairBuildingCard;
-import it.polimi.gc06.mesos.model.cards.buildings.ObserverSetBuildingCard;
+import it.polimi.gc06.mesos.model.cards.buildings.*;
 import it.polimi.gc06.mesos.model.cards.characters.*;
+import it.polimi.gc06.mesos.model.gameTurnManager.DrawObserverVisitor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,6 +30,7 @@ public class Player {
     private final CharactersSetsVisitor charactersSetsVisitor;
     private final InventorPairsVisitor inventorPairsVisitor;
     private final ShamanVisitor shamanVisitor;
+    private final DrawObserverVisitor drawObserverVisitor;
 
     private final Color color;
 
@@ -65,6 +64,7 @@ public class Player {
         charactersSetsVisitor = new CharactersSetsVisitor(this);
         inventorPairsVisitor = new InventorPairsVisitor(this);
         shamanVisitor = new ShamanVisitor(this);
+        drawObserverVisitor = new DrawObserverVisitor();
     }
 
     /**
@@ -139,6 +139,8 @@ public class Player {
     protected void addBuildingCards(ObserverSetBuildingCard card) throws IllegalArgumentException {
 
         if (card == null) throw new IllegalArgumentException("Card cannot be null");
+        drawObserverVisitor.setObserver(card);
+        drawObserverVisitor.visit(gameInfo.getCurrentPhase()); //TODO se chiamato nella fase sbagliata lancia un eccezione non gestita, posso aggiungerla nel throw?
         this.buildingDeck.add(card);
         if (charactersSets == null) {
             initCharactersSets();
@@ -155,6 +157,8 @@ public class Player {
     protected void addBuildingCards(ObserverPairBuildingCard card) throws IllegalArgumentException {
 
         if (card == null) throw new IllegalArgumentException("Card cannot be null");
+        drawObserverVisitor.setObserver(card);
+        drawObserverVisitor.visit(gameInfo.getCurrentPhase()); //TODO se chiamato nella fase sbagliata lancia un eccezione non gestita, posso aggiungerla nel throw?
         this.buildingDeck.add(card);
         if (inventorPairs == null) {
             initInventorPairs();

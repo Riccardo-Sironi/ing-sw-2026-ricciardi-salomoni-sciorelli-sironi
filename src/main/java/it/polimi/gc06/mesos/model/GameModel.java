@@ -1,9 +1,11 @@
 package it.polimi.gc06.mesos.model;
 
+import it.polimi.gc06.mesos.gameExceptions.GameObjectNotFoundException;
 import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
 import it.polimi.gc06.mesos.model.cards.events.EventCard;
 import it.polimi.gc06.mesos.model.cards.TribeCard;
 import it.polimi.gc06.mesos.model.gameBoard.Board;
+import it.polimi.gc06.mesos.model.gameTurnManager.Phase;
 import it.polimi.gc06.mesos.model.gameTurnManager.TurnManager;
 
 import java.util.ArrayList;
@@ -75,6 +77,18 @@ public class GameModel implements GameInfo {
                 .mapToInt(Player::getShamanStars)
                 .min()
                 .orElse(0);
+    }
+
+    /**
+     * phase getter.
+     *
+     * @return the current game phase
+     */
+    @Override
+    public Phase getCurrentPhase() throws GameObjectNotFoundException {
+        Phase currentPhase = turnManager.getPhase();
+        if(currentPhase == null) throw new GameObjectNotFoundException("Phase not found.");
+        return currentPhase;
     }
 
     /**
