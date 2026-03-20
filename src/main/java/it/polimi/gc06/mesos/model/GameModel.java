@@ -87,7 +87,7 @@ public class GameModel implements GameInfo {
     @Override
     public Phase getCurrentPhase() throws GameObjectNotFoundException {
         Phase currentPhase = turnManager.getPhase();
-        if(currentPhase == null) throw new GameObjectNotFoundException("Phase not found.");
+        if (currentPhase == null) throw new GameObjectNotFoundException("Phase not found.");
         return currentPhase;
     }
 
@@ -137,7 +137,7 @@ public class GameModel implements GameInfo {
     }
 
     /**
-     * this method retrieves the turn manager responsible for orchetrating the game phases.
+     * this method retrieves the turn manager responsible for orchestrating the game phases.
      *
      * @return the current TurnManager.
      */

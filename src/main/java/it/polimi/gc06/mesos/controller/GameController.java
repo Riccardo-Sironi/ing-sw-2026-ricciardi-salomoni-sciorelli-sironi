@@ -1,5 +1,6 @@
 package it.polimi.gc06.mesos.controller;
 
+import it.polimi.gc06.mesos.gameExceptions.IllegalPhaseActionException;
 import it.polimi.gc06.mesos.model.GameModel;
 import it.polimi.gc06.mesos.model.cards.TribeCard;
 import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
@@ -24,8 +25,11 @@ public class GameController {
         if (tile.getPlayer() != null) {
             // TODO : handle this
         }
-
-        model.getTurnManager().getPhase().placeTotem(model.getTurnManager(), model.getTurnManager().getActivePlayer(), tile);
+        try {
+            model.getTurnManager().getPhase().placeTotem(model.getTurnManager(), model.getTurnManager().getActivePlayer(), tile);
+        } catch (IllegalPhaseActionException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     public void handleCardPickTopRow(String playerNickname, TribeCard card) {
