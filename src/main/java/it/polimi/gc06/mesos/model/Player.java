@@ -32,6 +32,7 @@ public class Player {
     private final InventorPairsVisitor inventorPairsVisitor;
     private final ShamanVisitor shamanVisitor;
     private final DrawObserverVisitor drawObserverVisitor;
+    private final HunterFoodIconVisitor hunterFoodIconVisitor;
 
     private final Color color;
 
@@ -66,6 +67,7 @@ public class Player {
         inventorPairsVisitor = new InventorPairsVisitor(this);
         shamanVisitor = new ShamanVisitor(this);
         drawObserverVisitor = new DrawObserverVisitor();
+        hunterFoodIconVisitor = new HunterFoodIconVisitor(this);
     }
 
     /**
@@ -98,9 +100,15 @@ public class Player {
     public void addCharacterCards(CharacterCard card) throws IllegalArgumentException {
         if (card == null) throw new IllegalArgumentException("Card cannot be null");
 
+        // add the card based on its character type
         card.accept(deckCardVisitor);
 
+        // checks if the card is a shaman card in order to update the shaman stars of the player
         card.accept(shamanVisitor);
+
+        // checks if the card is a hunter card in order to update the food tokens of the player
+        // if the card has the food icon
+        card.accept(hunterFoodIconVisitor);
 
         if (charactersSets != null) {
             card.accept(charactersSetsVisitor);

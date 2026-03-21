@@ -113,7 +113,7 @@ public class Board {
      *                                  if the final event cards are null or not 2.
      * @throws IllegalStateException    if the building cards deck for any era is empty during building decks initialization.
      */
-    protected void initBoard(GameModel model) throws IllegalArgumentException, IllegalStateException {
+    public void initBoard(GameModel model) throws IllegalArgumentException, IllegalStateException {
         if (model == null) {
             throw new IllegalArgumentException("Model cannot be null");
         }
@@ -353,7 +353,7 @@ public class Board {
     }
 
     /**
-     * This method is used to pick a card from the tor row of cards. It handles the selection of a forbidden card (event card)
+     * This method is used to pick a card from the top row of cards. It handles the selection of a forbidden card (event card)
      * by the player and the selection of a character card, which is added to the player's hand and removed from the top row.
      * It is used in the offer resolution phase, when the player can pick one of the cards from the top row.
      *
@@ -385,7 +385,7 @@ public class Board {
     }
 
     /**
-     * This method is used to pick a card from the tor bottom of cards. It handles the selection of a forbidden card (event card)
+     * This method is used to pick a card from the top bottom of cards. It handles the selection of a forbidden card (event card)
      * by the player and the selection of a character card, which is added to the player's hand and removed from the bottom row.
      * It is used in the offer resolution phase, when the player can pick one of the cards from the bottom row.
      *
@@ -424,7 +424,7 @@ public class Board {
      *
      * @param player   the player who is buying the building card from the top row.
      * @param building the building card that the player is buying from the top row.
-     * @throws IllegalArgumentException if the player ot the building card is null, if the building card is
+     * @throws IllegalArgumentException if the player or the building card is null, if the building card is
      *                                  not found in the top row of building cards or if the player does not have enough
      *                                  food tokens to buy the building card.
      */
@@ -459,11 +459,14 @@ public class Board {
      *
      * @param player   the player who is buying the building card from the bottom row.
      * @param building the building card that the player is buying from the bottom row.
-     * @throws IllegalArgumentException if the player ot the building card is null, if the building card is
+     * @throws IllegalArgumentException if the player or the building card is null, if the building card is
      *                                  not found in the bottom row of building cards or if the player does not have enough
      *                                  food tokens to buy the building card.
      */
     public void buyBuildingFromBottomRow(Player player, BuildingCard building) throws IllegalArgumentException {
+        if (player == null) {
+            throw new IllegalArgumentException("Player cannot be null");
+        }
         if (building == null) {
             throw new IllegalArgumentException("Building Card cannot be null");
         }
