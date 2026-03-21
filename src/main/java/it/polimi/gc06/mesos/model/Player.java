@@ -1,7 +1,10 @@
 package it.polimi.gc06.mesos.model;
 
 import it.polimi.gc06.mesos.gameExceptions.GameObjectNotFoundException;
-import it.polimi.gc06.mesos.model.cards.buildings.*;
+import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
+import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingCard;
+import it.polimi.gc06.mesos.model.cards.buildings.ObserverPairBuildingCard;
+import it.polimi.gc06.mesos.model.cards.buildings.ObserverSetBuildingCard;
 import it.polimi.gc06.mesos.model.cards.characters.*;
 import it.polimi.gc06.mesos.model.gameTurnManager.DrawObserverVisitor;
 
@@ -318,23 +321,19 @@ public class Player {
         return this.characterDeck.get(CharacterType.GATHERER).size();
     }
 
-    // TODO : DA CAPIRE
-    protected int getTopDrawNum() {
+    public int getTopDrawNum() {
         return topDrawNum;
     }
 
-    // TODO : DA CAPIRE
     public void setTopDrawNum(int topDrawNum) throws IllegalArgumentException {
         if (topDrawNum < 0) throw new IllegalArgumentException("Amount must be non-negative");
         this.topDrawNum = topDrawNum;
     }
 
-    // TODO : DA CAPIRE
-    protected int getBottomDrawNum() {
+    public int getBottomDrawNum() {
         return bottomDrawNum;
     }
 
-    // TODO : DA CAPIRE
     public void setBottomDrawNum(int bottomDrawNum) throws IllegalArgumentException {
         if (bottomDrawNum < 0) throw new IllegalArgumentException("Amount must be non-negative");
         this.bottomDrawNum = bottomDrawNum;

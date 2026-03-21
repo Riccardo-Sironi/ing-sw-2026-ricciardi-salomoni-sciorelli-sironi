@@ -23,4 +23,5 @@ module it.polimi.gc06.mesos {
     opens it.polimi.gc06.mesos.model.cards.buildings to javafx.fxml;
     exports it.polimi.gc06.mesos.model.gameBoard;
     opens it.polimi.gc06.mesos.model.gameBoard to javafx.fxml;
+    exports it.polimi.gc06.mesos.gameExceptions;
 }

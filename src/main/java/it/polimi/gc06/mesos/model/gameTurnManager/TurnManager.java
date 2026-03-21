@@ -5,15 +5,16 @@ import it.polimi.gc06.mesos.model.gameBoard.TileSlot;
 import it.polimi.gc06.mesos.model.gameBoard.TurnOrderTile;
 import it.polimi.gc06.mesos.model.Player;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class TurnManager {
 
-    final private ArrayList<Player> playersOrder;
+    final private List<Player> playersOrder;
+    private Player currentPlayer;
     private Phase phase;
 
     final private TurnOrderTile turnOrderTile;
-    final private ArrayList<TileSlot> offerTrack;
+    final private List<TileSlot> offerTrack;
 
     final private TribeCardVisitor cardVisitor;
 
@@ -22,9 +23,10 @@ public class TurnManager {
 
     private int round;
 
-    public TurnManager(ArrayList<Player> playersOrder, Phase phase, TurnOrderTile turnOrderTile, int round, ArrayList<TileSlot> offerTrack, TribeCardVisitor cardVisitor) {
+    public TurnManager(List<Player> playersOrder, TurnOrderTile turnOrderTile, int round, List<TileSlot> offerTrack, TribeCardVisitor cardVisitor) {
         this.playersOrder = playersOrder;
-        this.phase = phase;
+        this.currentPlayer = playersOrder.getFirst();
+        this.phase = new PlacingTotemPhase();
         this.turnOrderTile = turnOrderTile;
         this.activePlayerIndex = 0;
         this.round = round;
@@ -101,6 +103,15 @@ public class TurnManager {
         return playersOrder.get(activePlayerIndex);
     }
 
+    public void checkIsCurrentPlayer(Player player) throws IllegalAccessError {
+        if (!player.equals(currentPlayer)) {
+            throw new IllegalAccessError("It's not your turn yet!");
+        }
+    }
+
+    public void nextTurn() throws IllegalAccessError {
+
+    }
 
     /**
      * {@inheritDoc}
@@ -116,7 +127,7 @@ public class TurnManager {
      *
      * @return the current player order
      */
-    public ArrayList<Player> getPlayersOrder() {
+    public List<Player> getPlayersOrder() {
         return playersOrder;
     }
 
@@ -143,7 +154,7 @@ public class TurnManager {
      *
      * @return the offer track of the game
      */
-    public ArrayList<TileSlot> getOfferTrack() {
+    public List<TileSlot> getOfferTrack() {
         return offerTrack;
     }
 

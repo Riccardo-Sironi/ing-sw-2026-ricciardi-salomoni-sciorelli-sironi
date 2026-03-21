@@ -18,7 +18,7 @@ public class PlacingTotemPhase extends Phase {
     public void placeTotem(TurnManager turnManager, Player player, TileSlot slot) throws IllegalPhaseActionException {
 
         if (!slot.isEmpty()) {
-            throw new IllegalStateException("The slot is not empty!");
+            throw new IllegalPhaseActionException("The slot is not empty!");
         }
 
         // Remove the player from the turn order

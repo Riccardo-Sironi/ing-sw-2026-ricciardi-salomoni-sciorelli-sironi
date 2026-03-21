@@ -45,6 +45,8 @@ public class TileSlot {
      *
      * @throws IllegalStateException {@inheritDoc}
      */
+
+    // TODO Questo Metodo dovrà modificare il player cambiando gli attributi topDrawNum e bottomDrawNum
     public void applyEffect() throws IllegalStateException {
         if (player == null) throw new IllegalStateException();
         tileEffect.execute(player);

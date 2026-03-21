@@ -2,6 +2,7 @@ package it.polimi.gc06.mesos.model.gameTurnManager;
 
 import it.polimi.gc06.mesos.gameExceptions.IllegalPhaseActionException;
 import it.polimi.gc06.mesos.model.Player;
+import it.polimi.gc06.mesos.model.cards.characters.CharacterCard;
 import it.polimi.gc06.mesos.model.gameBoard.TileSlot;
 
 public abstract class Phase {
@@ -18,7 +19,7 @@ public abstract class Phase {
         throw new IllegalPhaseActionException("You can't place a totem in this phase!");
     }
 
-    public void resolveOffer(TurnManager turnManager, Player player) throws IllegalPhaseActionException {
+    public void startPlayerOfferResolution(TurnManager turnManager, Player player, TileSlot tileSlot) throws IllegalPhaseActionException {
         throw new IllegalPhaseActionException("You can't resolve an offer in this phase!");
     }
 
@@ -26,8 +27,16 @@ public abstract class Phase {
         throw new IllegalPhaseActionException("You can't resolve an event in this phase!");
     }
 
-    public void endOfRound(TurnManager turnManager) throws IllegalPhaseActionException {
+    public void endOfRound(TurnManager turnManager, Player player) throws IllegalPhaseActionException {
         throw new IllegalPhaseActionException("You can't end the round in this phase!");
+    }
+
+    public void pickCardFromTop(TurnManager tm, Player player, CharacterCard card) throws IllegalPhaseActionException {
+        throw new IllegalPhaseActionException("You cannot draw yet!");
+    }
+
+    public void pickCardFromBottom(TurnManager tm, Player player, CharacterCard card) throws IllegalPhaseActionException {
+        throw new IllegalPhaseActionException("You cannot draw yet!");
     }
 
 }

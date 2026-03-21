@@ -1,7 +1,9 @@
 package it.polimi.gc06.mesos.model.gameTurnManager;
 
-import it.polimi.gc06.mesos.model.gameBoard.TileSlot;
+import it.polimi.gc06.mesos.gameExceptions.IllegalPhaseActionException;
 import it.polimi.gc06.mesos.model.Player;
+import it.polimi.gc06.mesos.model.cards.characters.CharacterCard;
+import it.polimi.gc06.mesos.model.gameBoard.TileSlot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,40 +14,62 @@ public class OfferResolutionPhase extends Phase implements DrawSubject {
     public OfferResolutionPhase() {
     }
 
-    /**
-     * this method executes the offer resolution actions:
-     * resolves the effect of each occupied slot on the offer track,
-     * notifies building observers if the player meets special conditions
-     * and reorganizes the turn order tile.
-     *
-     * @param turnManager the turn manager controlling the flow of the game.
-     */
     @Override
-    public void action(TurnManager turnManager) {
-        for (TileSlot tileSlot : turnManager.getOfferTrack()) {
-            Player player = tileSlot.getPlayer();
-            if (player != null) {
-                // Either draw or add food tokens, depending on the tile
-                tileSlot.applyEffect();
+    public void startPlayerOfferResolution(TurnManager turnManager, Player player, TileSlot tileSlot) throws IllegalPhaseActionException {
 
-                // If the player owns one of the two buildings that update on draw
-                // ( completed set or two inventors with the same icon), notify the observers
-                if (player.hasSetBuildingCard() || player.hasPairBuildingCard()) {
-                    notifyObserverBuildings(player);
-                }
+        if (turnManager.getNextPlayer() != player) {
+            throw new IllegalPhaseActionException("It's not your turn yet!");
+        }
 
+        tileSlot.applyEffect();
 
-                // Add the player back on the turn order, place him on the order tile and remove him from the offer track
-                turnManager.getPlayersOrder().addLast(player);
-                Player oldPlayer = tileSlot.removePlayer();
-                for (TileSlot orderTile : turnManager.getTurnOrderTile().slots()) {
-                    if (orderTile.getPlayer() == null) {
-                        orderTile.setPlayer(oldPlayer);
-                        break;
-                    }
-                }
+        // If the player owns one of the two buildings that update on draw
+        // ( completed set or two inventors with the same icon), notify the observers
+        if (player.hasSetBuildingCard() || player.hasPairBuildingCard()) {
+            notifyObserverBuildings(player);
+        }
+    }
+
+    @Override
+    public void pickCardFromBottom(TurnManager turnManager, Player player, CharacterCard card) throws IllegalPhaseActionException {
+        if (turnManager.getNextPlayer() != player) {
+            throw new IllegalPhaseActionException("It's not your turn yet!");
+        }
+        if (player.getBottomDrawNum() <= 0) {
+            throw new IllegalPhaseActionException("You can't draw from the bottom row anymore!");
+        }
+
+        player.setBottomDrawNum(player.getBottomDrawNum() - 1);
+        checkIfPlayerIsFinished(turnManager, player);
+    }
+
+    @Override
+    public void pickCardFromTop(TurnManager turnManager, Player player, CharacterCard card) throws IllegalPhaseActionException {
+        if (turnManager.getNextPlayer() != player) {
+            throw new IllegalPhaseActionException("It's not your turn yet!");
+        }
+
+        if (player.getTopDrawNum() <= 0) {
+            throw new IllegalPhaseActionException("You can't draw from the top row anymore!");
+        }
+
+        player.setTopDrawNum(player.getTopDrawNum() - 1);
+    }
+
+    private void checkIfPlayerIsFinished(TurnManager turnManager, Player player) throws IllegalPhaseActionException {
+        if (player.getBottomDrawNum() == 0 && player.getTopDrawNum() == 0) {
+            TileSlot playerSlot = turnManager.getOfferTrack().getPlayerSlot(player);
+            playerSlot.removePlayer();
+        }
+
+        for (TileSlot orderTile : turnManager.getTurnOrderTile().slots()) {
+            if (orderTile.getPlayer() == null) {
+                orderTile.setPlayer(player);
+                break;
             }
         }
+
+        turnManager.advanceResolutionTurn();
     }
 
     /**
