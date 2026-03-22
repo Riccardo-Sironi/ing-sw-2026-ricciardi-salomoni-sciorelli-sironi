@@ -86,7 +86,7 @@ public class OfferResolutionPhase extends Phase {
         // TODO Chiedere al Prof. Viene gestita dal Controller oppure viene gestita dalle fasi stesse?
         // TODO In teoria non c'è nessuna richiesta del Player
         if (board.isOfferTrackEmpty()) {
-            turnManager.setPhase(new EventResolutionPhase(board.cleanBottomRow().getFirst()));
+            turnManager.setPhase(new EventResolutionPhase(board));
         }
     }
 }

@@ -25,7 +25,7 @@ public abstract class Phase {
         throw new IllegalPhaseActionException("You can't resolve an offer in this phase!");
     }
 
-    public void resolveEvent(TurnManager turnManager) throws IllegalPhaseActionException {
+    public void resolveEvent(TurnManager turnManager, Board board) throws IllegalPhaseActionException {
         throw new IllegalPhaseActionException("You can't resolve an event in this phase!");
     }
 
