@@ -40,7 +40,7 @@ public class Board implements DrawSubject {
         // TODO Gestire creazione TurnOrderTiel e OfferTrack
         this.turnOrderTile = new TurnOrderTile(new ArrayList<>());
         this.offerTrack = new ArrayList<>();
-        
+
         topRow = new ArrayList<>();
         bottomRow = new ArrayList<>();
 
@@ -422,6 +422,7 @@ public class Board implements DrawSubject {
             throw new IllegalArgumentException("Card not found in the top row");
         }
 
+        observers.forEach(observer -> observer.update(player));
         topRow.remove(card);
         player.addCharacterCards(card);
     }
@@ -454,6 +455,7 @@ public class Board implements DrawSubject {
             throw new IllegalArgumentException("Card not found in the bottom row");
         }
 
+        observers.forEach(observer -> observer.update(player));
         bottomRow.remove(card);
         player.addCharacterCards(card);
     }

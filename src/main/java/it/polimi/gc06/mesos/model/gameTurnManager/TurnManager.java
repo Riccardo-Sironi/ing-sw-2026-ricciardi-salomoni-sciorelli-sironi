@@ -1,9 +1,9 @@
 package it.polimi.gc06.mesos.model.gameTurnManager;
 
+import it.polimi.gc06.mesos.model.Player;
 import it.polimi.gc06.mesos.model.cards.TribeCardVisitor;
 import it.polimi.gc06.mesos.model.gameBoard.TileSlot;
 import it.polimi.gc06.mesos.model.gameBoard.TurnOrderTile;
-import it.polimi.gc06.mesos.model.Player;
 
 import java.util.List;
 
@@ -12,9 +12,6 @@ public class TurnManager {
     final private List<Player> playersOrder;
     private Player currentPlayer;
     private Phase phase;
-
-    final private TurnOrderTile turnOrderTile;
-    final private List<TileSlot> offerTrack;
 
     final private TribeCardVisitor cardVisitor;
 
@@ -27,10 +24,8 @@ public class TurnManager {
         this.playersOrder = playersOrder;
         this.currentPlayer = playersOrder.getFirst();
         this.phase = new PlacingTotemPhase();
-        this.turnOrderTile = turnOrderTile;
         this.activePlayerIndex = 0;
         this.round = round;
-        this.offerTrack = offerTrack;
         this.cardVisitor = cardVisitor;
     }
 
@@ -66,14 +61,6 @@ public class TurnManager {
         this.activePlayerIndex = activePlayerIndex;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @return the turn order tile of the game
-     */
-    public TurnOrderTile getTurnOrderTile() {
-        return turnOrderTile;
-    }
 
     /**
      * {@inheritDoc}
@@ -149,13 +136,5 @@ public class TurnManager {
         return activePlayerIndex;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @return the offer track of the game
-     */
-    public List<TileSlot> getOfferTrack() {
-        return offerTrack;
-    }
 
 }

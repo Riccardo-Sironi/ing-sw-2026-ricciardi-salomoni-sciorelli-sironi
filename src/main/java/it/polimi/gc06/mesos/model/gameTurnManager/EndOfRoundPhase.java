@@ -1,21 +1,12 @@
 package it.polimi.gc06.mesos.model.gameTurnManager;
 
-import it.polimi.gc06.mesos.model.cards.events.EventCard;
-import it.polimi.gc06.mesos.model.gameBoard.Board;
+import it.polimi.gc06.mesos.gameExceptions.IllegalPhaseActionException;
 import it.polimi.gc06.mesos.model.GameModel;
-import it.polimi.gc06.mesos.model.Player;
+import it.polimi.gc06.mesos.model.gameBoard.Board;
 
-public class EndOfRoundPhase {
+public class EndOfRoundPhase extends Phase {
 
-    private final Board board;
-
-    /**
-     * this method constructs the end of round phase with the specified game board.
-     *
-     * @param board the game board to interact with during this phase.
-     */
-    public EndOfRoundPhase(Board board) {
-        this.board = board;
+    public EndOfRoundPhase() {
     }
 
     /**
@@ -25,15 +16,21 @@ public class EndOfRoundPhase {
      *
      * @param turnManager the turn manager controlling the flow of the game.
      */
-    public void action(TurnManager turnManager) {
-        for (EventCard event : board.cleanBottomRow()) {
-            for (Player player : turnManager.getPlayersOrder()) {
-                event.resolveEvent(player);
-            }
-        }
+    public void endOfRound(TurnManager turnManager, Board board, GameModel gameModel) throws IllegalPhaseActionException {
+
         board.moveFromTopToBottom();
-        // TODO Remove Context
-        board.populateTopRow(new GameModel());
+
+        // TODO Remove Game model? We need it to get the decks and stuff. Check Board
+        board.populateTopRow(gameModel);
+
+        turnManager.setRound(turnManager.getRound() + 1);
+
+        // TODO Check whether game is over
+        if (board.isEndGame()) {
+            // TODO Go to EndGame Phase
+            return;
+        }
+
     }
 
 

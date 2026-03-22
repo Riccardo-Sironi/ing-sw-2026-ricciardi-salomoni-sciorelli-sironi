@@ -50,4 +50,5 @@ public abstract class BuildingCard {
     public int getPrestigeGain(Player owner) {
         return prestigeGain;
     }
+
 }
