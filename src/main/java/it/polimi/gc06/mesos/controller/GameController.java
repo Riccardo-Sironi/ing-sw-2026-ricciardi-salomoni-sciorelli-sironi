@@ -10,7 +10,7 @@ import it.polimi.gc06.mesos.model.gameTurnManager.OfferResolutionPhase;
 import it.polimi.gc06.mesos.model.gameTurnManager.TurnManager;
 
 public class GameController {
-    private GameModel model;
+    private final GameModel model;
 
     public GameController(GameModel model) {
         this.model = model;
@@ -18,6 +18,11 @@ public class GameController {
 
     public GameModel getModel() {
         return model;
+    }
+
+    public void handleGameInitialization() {
+        // TODO : understand what we should do here
+        model.startGame();
     }
 
     public void handleTotemOfferTilePlacement(String playerNickname, TileSlot tile) {
@@ -44,7 +49,7 @@ public class GameController {
         }
 
         TurnManager turnManager = model.getTurnManager();
-        
+
         try {
             turnManager.getPhase().pickCardFromTop(turnManager, turnManager.getActivePlayer(), card);
         } catch (IllegalPhaseActionException e) {

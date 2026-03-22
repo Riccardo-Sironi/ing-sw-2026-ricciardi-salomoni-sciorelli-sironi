@@ -6,27 +6,40 @@ import it.polimi.gc06.mesos.model.cards.events.EventCard;
 import it.polimi.gc06.mesos.model.cards.TribeCard;
 import it.polimi.gc06.mesos.model.gameBoard.Board;
 import it.polimi.gc06.mesos.model.gameTurnManager.Phase;
-import it.polimi.gc06.mesos.model.gameTurnManager.PlacingTotemPhase;
 import it.polimi.gc06.mesos.model.gameTurnManager.TurnManager;
 
 import java.util.*;
 
 public class GameModel implements GameInfo {
-    private Board board;
+    private final Board board;
 
-    private EnumMap<Era, ArrayList<BuildingCard>> buildingCardsDecks;
+    private final EnumMap<Era, ArrayList<BuildingCard>> buildingCardsDecks;
 
-    //private ArrayList<TribeCard> tribeCardsDeck;
-    private EnumMap<Era, ArrayList<TribeCard>> tribeCardsDeck;
+    private final EnumMap<Era, ArrayList<TribeCard>> tribeCardsDeck;
 
-    private EventCard[] finalEventCards;
+    private final EventCard[] finalEventCards;
 
-    private ArrayList<Player> players;
+    private final ArrayList<Player> players;
 
-    private TurnManager turnManager;
-
+    private final TurnManager turnManager;
 
     public GameModel() {
+        // TODO NOTE : this is just the skeleton, but wondering if we should have a method called by the controller
+        // that fills the lists and maps with the correct number of objects based on player quantity.
+
+        // TODO : first thing is to initialize the players (and assign them the starting food tokens according to the player order ?).
+        this.players = new ArrayList<>();
+
+        // TODO : init the decks with the cards from the json files.
+        this.buildingCardsDecks = new EnumMap<>(Era.class);
+        this.tribeCardsDeck = new EnumMap<>(Era.class);
+        this.finalEventCards = new EventCard[2];
+
+        // TODO : after the decks initialization we have to create the board and initialize it.
+        this.board = new Board();
+
+        // TODO : after the board initialization we have to create the turn manager and initialize it with the first phase (PlacingTotemPhase) and the list of players.
+        this.turnManager = new TurnManager(); // the parameters here are not clear yet (except for the list of players)
     }
 
     /**
@@ -35,7 +48,9 @@ public class GameModel implements GameInfo {
      * @return true if the game started successfully.
      * TODO: false otherwise.
      */
-    protected boolean startGame() {
+    public boolean startGame() {
+        // TODO : we should fill all the decks here and other initialization stuff (like board init)
+
         if (players.size() < 2 || players.size() > 5) {
             return false;
         }
@@ -44,13 +59,16 @@ public class GameModel implements GameInfo {
 
         //TODO: passare al turn manager la lista dei giocatori shuffolata.
 
-        for(int i = 0; i < players.size(); i++){
+        for (int i = 0; i < players.size(); i++) {
             Player p = players.get(i);
-            if (i == 0){ p.addFoodTokens(2); }
-            else if (i == 1 || i == 2){ p.addFoodTokens(3); }
-            else if (i == 3 || i == 4) { p.addFoodTokens(4); }
+            if (i == 0) {
+                p.addFoodTokens(2);
+            } else if (i == 1 || i == 2) {
+                p.addFoodTokens(3);
+            } else if (i == 3 || i == 4) {
+                p.addFoodTokens(4);
+            }
         }
-
 
         return true;
     }
@@ -61,7 +79,7 @@ public class GameModel implements GameInfo {
      * @return true if the game ended successfully.
      * TODO: false otherwise.
      */
-    protected boolean endGame() {
+    public boolean endGame() {
         //TODO: method to count final prestige tokens (considering builders, inventors...)
 
         players.sort(Comparator.comparing(Player::getPrestigeTokens)
