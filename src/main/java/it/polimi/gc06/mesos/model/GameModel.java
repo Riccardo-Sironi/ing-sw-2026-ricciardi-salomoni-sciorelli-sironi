@@ -1,6 +1,7 @@
 package it.polimi.gc06.mesos.model;
 
 import it.polimi.gc06.mesos.gameExceptions.GameObjectNotFoundException;
+import it.polimi.gc06.mesos.model.cards.TribeCardVisitor;
 import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
 import it.polimi.gc06.mesos.model.cards.events.EventCard;
 import it.polimi.gc06.mesos.model.cards.TribeCard;
@@ -46,18 +47,37 @@ public class GameModel implements GameInfo {
      * method that starts the game session
      *
      * @return true if the game started successfully.
-     * TODO: false otherwise.
+     * otherwise return false.
      */
     public boolean startGame() {
         // TODO : we should fill all the decks here and other initialization stuff (like board init)
 
-        if (players.size() < 2 || players.size() > 5) {
+        if ((players.size() < 2 || players.size() > 5) /*|| se la parita è già iniziata*/) {
             return false;
         }
 
-        Collections.shuffle(this.players);
+        setupPlayersOrderAndFood();
+
+        setupDecksAndBoard();
 
         //TODO: passare al turn manager la lista dei giocatori shuffolata.
+//        this.turnManager = new TurnManager(
+//               da implementare
+//        )
+
+
+
+        return true;
+    }
+
+    /**
+     * this method shuffles the list of players to determine the player order and assigns the starting
+     * food tokens based on their position in the order.
+     *
+     */
+    private void setupPlayersOrderAndFood(){
+
+        Collections.shuffle(this.players);
 
         for (int i = 0; i < players.size(); i++) {
             Player p = players.get(i);
@@ -70,7 +90,14 @@ public class GameModel implements GameInfo {
             }
         }
 
-        return true;
+    }
+
+    /**
+     * this method is used to create the decks
+     * TODO: logic of setupDecksAndBoard() method.
+     */
+    private void setupDecksAndBoard(){
+
     }
 
     /**
