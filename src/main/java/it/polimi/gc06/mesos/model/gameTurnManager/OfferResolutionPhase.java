@@ -73,16 +73,20 @@ public class OfferResolutionPhase extends Phase {
         if (player.getBottomDrawNum() == 0 && player.getTopDrawNum() == 0) {
             TileSlot playerSlot = board.getOfferTrackPlayerSlot(player);
             playerSlot.removePlayer();
-        }
 
-        for (TileSlot orderTile : board.getTurnOrderTile().slots()) {
-            if (orderTile.getPlayer() == null) {
-                orderTile.setPlayer(player);
-                break;
+            for (TileSlot orderTile : board.getTurnOrderTile().slots()) {
+                if (orderTile.getPlayer() == null) {
+                    orderTile.setPlayer(player);
+                    turnManager.getPlayersOrder().addLast(player);
+                    break;
+                }
             }
         }
 
-        turnManager.advanceResolutionTurn();
+        // TODO Chiedere al Prof. Viene gestita dal Controller oppure viene gestita dalle fasi stesse?
+        // TODO In teoria non c'è nessuna richiesta del Player
+        if (board.isOfferTrackEmpty()) {
+            turnManager.setPhase(new EventResolutionPhase(board.cleanBottomRow().getFirst()));
+        }
     }
-
 }

@@ -135,6 +135,6 @@ public class TurnManager {
     protected int getActivePlayerIndex() {
         return activePlayerIndex;
     }
-
+    
 
 }

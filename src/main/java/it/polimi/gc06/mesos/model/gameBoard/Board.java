@@ -148,6 +148,15 @@ public class Board implements DrawSubject {
         return currentEra;
     }
 
+    public boolean isOfferTrackEmpty() {
+        for (TileSlot slot : offerTrack) {
+            if (slot.getPlayer() != null) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     /**
      *
      * Initialize the board with the cards from the model.
