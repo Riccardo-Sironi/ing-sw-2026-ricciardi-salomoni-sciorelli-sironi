@@ -305,7 +305,8 @@ public class Board {
         ArrayList<EventCard> events = bottomRow.stream()
                 .filter(TribeCard::isEventCard)
                 .map(card -> (EventCard) card)
-                .sorted(Comparator.comparing(EventCard::isLastToBeResolved))
+                .sorted(Comparator.comparing(EventCard::isLastToBeResolved)
+                        .thenComparing(EventCard::getEra))
                 .collect(Collectors.toCollection(ArrayList::new));
 
         // discard bottom row

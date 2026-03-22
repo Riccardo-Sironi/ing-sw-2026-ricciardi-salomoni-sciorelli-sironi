@@ -29,7 +29,7 @@ public abstract class TribeCard implements Card {
      *
      * @return the era enum value of the card
      */
-    protected Era getEra() {
+    public Era getEra() {
         return era;
     }
 }
