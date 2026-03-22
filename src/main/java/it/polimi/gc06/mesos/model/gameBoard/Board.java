@@ -1,15 +1,15 @@
 package it.polimi.gc06.mesos.model.gameBoard;
 
 import it.polimi.gc06.mesos.gameExceptions.IllegalGameActionException;
+import it.polimi.gc06.mesos.model.Era;
+import it.polimi.gc06.mesos.model.GameModel;
 import it.polimi.gc06.mesos.model.Player;
 import it.polimi.gc06.mesos.model.cards.BottomRowInitVisitor;
-import it.polimi.gc06.mesos.model.cards.events.EventListVisitor;
+import it.polimi.gc06.mesos.model.cards.TribeCard;
 import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
 import it.polimi.gc06.mesos.model.cards.characters.CharacterCard;
 import it.polimi.gc06.mesos.model.cards.events.EventCard;
-import it.polimi.gc06.mesos.model.cards.TribeCard;
-import it.polimi.gc06.mesos.model.Era;
-import it.polimi.gc06.mesos.model.GameModel;
+import it.polimi.gc06.mesos.model.cards.events.EventListVisitor;
 import it.polimi.gc06.mesos.model.gameTurnManager.DrawObserver;
 import it.polimi.gc06.mesos.model.gameTurnManager.DrawSubject;
 
@@ -28,11 +28,19 @@ public class Board implements DrawSubject {
 
     private final EnumMap<Era, ArrayList<BuildingCard>> buildingsDecks;
 
+    final private TurnOrderTile turnOrderTile;
+    final private List<TileSlot> offerTrack;
+
     private Era currentEra;
 
     private final List<DrawObserver> observers = new CopyOnWriteArrayList<>();
 
     public Board() {
+
+        // TODO Gestire creazione TurnOrderTiel e OfferTrack
+        this.turnOrderTile = new TurnOrderTile(new ArrayList<>());
+        this.offerTrack = new ArrayList<>();
+        
         topRow = new ArrayList<>();
         bottomRow = new ArrayList<>();
 
@@ -45,6 +53,39 @@ public class Board implements DrawSubject {
         }
 
         currentEra = Era.ERA_I;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return the turn order tile of the game
+     */
+    public TurnOrderTile getTurnOrderTile() {
+        return turnOrderTile;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return the offer track of the game
+     */
+    public List<TileSlot> getOfferTrack() {
+        return offerTrack;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return the player's slot in the offer track
+     */
+    public TileSlot getOfferTrackPlayerSlot(Player player) {
+        for (TileSlot slot : offerTrack) {
+            if (slot.getPlayer().equals(player))
+                return slot;
+        }
+        return null;
     }
 
     /**
@@ -429,11 +470,12 @@ public class Board implements DrawSubject {
      *
      * @param player   the player who is buying the building card from the top row.
      * @param building the building card that the player is buying from the top row.
-     * @throws IllegalArgumentException if the player or the building card is null, if the building card is
-     *                                  not found in the top row of building cards or if the player does not have enough
-     *                                  food tokens to buy the building card.
+     * @throws IllegalArgumentException   if the player or the building card is null, if the building card is
+     *                                    not found in the top row of building cards or if the player does not have enough
+     *                                    food tokens to buy the building card
+     * @throws IllegalGameActionException if the player does not have enough food tokens to buy the building card.
      */
-    public void buyBuildingFromTopRow(Player player, BuildingCard building) throws IllegalArgumentException {
+    public void buyBuildingFromTopRow(Player player, BuildingCard building) throws IllegalArgumentException, IllegalGameActionException {
         if (player == null) {
             throw new IllegalArgumentException("Player cannot be null");
         }
@@ -464,11 +506,11 @@ public class Board implements DrawSubject {
      *
      * @param player   the player who is buying the building card from the bottom row.
      * @param building the building card that the player is buying from the bottom row.
-     * @throws IllegalArgumentException if the player or the building card is null, if the building card is
-     *                                  not found in the bottom row of building cards or if the player does not have enough
-     *                                  food tokens to buy the building card.
+     * @throws IllegalArgumentException   if the player or the building card is null, if the building card is
+     *                                    not found in the bottom row of building cards
+     * @throws IllegalGameActionException if the player does not have enough food tokens to buy the building card.
      */
-    public void buyBuildingFromBottomRow(Player player, BuildingCard building) throws IllegalArgumentException {
+    public void buyBuildingFromBottomRow(Player player, BuildingCard building) throws IllegalArgumentException, IllegalGameActionException {
         if (player == null) {
             throw new IllegalArgumentException("Player cannot be null");
         }
@@ -498,7 +540,7 @@ public class Board implements DrawSubject {
      */
     @Override
     public void addObserver(DrawObserver observer) {
-        if (!observers.contains(observer)){
+        if (!observers.contains(observer)) {
             observers.add(observer);
         }
     }

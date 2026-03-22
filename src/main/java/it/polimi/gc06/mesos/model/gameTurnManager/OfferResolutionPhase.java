@@ -1,15 +1,14 @@
 package it.polimi.gc06.mesos.model.gameTurnManager;
 
+import it.polimi.gc06.mesos.gameExceptions.IllegalGameActionException;
 import it.polimi.gc06.mesos.gameExceptions.IllegalPhaseActionException;
 import it.polimi.gc06.mesos.model.Player;
+import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
 import it.polimi.gc06.mesos.model.cards.characters.CharacterCard;
+import it.polimi.gc06.mesos.model.gameBoard.Board;
 import it.polimi.gc06.mesos.model.gameBoard.TileSlot;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class OfferResolutionPhase extends Phase implements DrawSubject {
-    private final List<DrawObserver> observers = new ArrayList<>();
+public class OfferResolutionPhase extends Phase {
 
     public OfferResolutionPhase() {
     }
@@ -23,46 +22,60 @@ public class OfferResolutionPhase extends Phase implements DrawSubject {
 
         tileSlot.applyEffect();
 
-        // If the player owns one of the two buildings that update on draw
-        // ( completed set or two inventors with the same icon), notify the observers
-        if (player.hasSetBuildingCard() || player.hasPairBuildingCard()) {
-            notifyObserverBuildings(player);
-        }
+        // TODO Notify Buildings on Draw
     }
 
     @Override
-    public void pickCardFromBottom(TurnManager turnManager, Player player, CharacterCard card) throws IllegalPhaseActionException {
-        if (turnManager.getNextPlayer() != player) {
-            throw new IllegalPhaseActionException("It's not your turn yet!");
-        }
+    public void pickCardFromBottom(TurnManager turnManager, Player player, CharacterCard card, Board board) throws IllegalPhaseActionException, IllegalArgumentException {
+
         if (player.getBottomDrawNum() <= 0) {
             throw new IllegalPhaseActionException("You can't draw from the bottom row anymore!");
         }
 
+        board.pickCardFromBottomRow(player, card);
         player.setBottomDrawNum(player.getBottomDrawNum() - 1);
-        checkIfPlayerIsFinished(turnManager, player);
+        checkIfPlayerIsFinished(turnManager, player, board);
     }
 
     @Override
-    public void pickCardFromTop(TurnManager turnManager, Player player, CharacterCard card) throws IllegalPhaseActionException {
-        if (turnManager.getNextPlayer() != player) {
-            throw new IllegalPhaseActionException("It's not your turn yet!");
-        }
+    public void pickCardFromTop(TurnManager turnManager, Player player, CharacterCard card, Board board) throws IllegalPhaseActionException {
 
         if (player.getTopDrawNum() <= 0) {
             throw new IllegalPhaseActionException("You can't draw from the top row anymore!");
         }
 
+        board.pickCardFromTopRow(player, card);
         player.setTopDrawNum(player.getTopDrawNum() - 1);
+        checkIfPlayerIsFinished(turnManager, player, board);
     }
 
-    private void checkIfPlayerIsFinished(TurnManager turnManager, Player player) throws IllegalPhaseActionException {
+    public void pickCardFromTop(TurnManager turnManager, Player player, BuildingCard card, Board board) throws IllegalPhaseActionException, IllegalArgumentException, IllegalGameActionException {
+        if (player.getTopDrawNum() <= 0) {
+            throw new IllegalPhaseActionException("You can't draw from the top row anymore!");
+        }
+
+        board.buyBuildingFromTopRow(player, card);
+        player.setTopDrawNum(player.getTopDrawNum() - 1);
+        checkIfPlayerIsFinished(turnManager, player, board);
+    }
+
+    public void pickCardFromBottom(TurnManager turnManager, Player player, BuildingCard card, Board board) throws IllegalPhaseActionException, IllegalArgumentException, IllegalGameActionException {
+        if (player.getBottomDrawNum() <= 0) {
+            throw new IllegalPhaseActionException("You can't draw from the top row anymore!");
+        }
+
+        board.buyBuildingFromBottomRow(player, card);
+        player.setBottomDrawNum(player.getTopDrawNum() - 1);
+        checkIfPlayerIsFinished(turnManager, player, board);
+    }
+
+    private void checkIfPlayerIsFinished(TurnManager turnManager, Player player, Board board) throws IllegalPhaseActionException {
         if (player.getBottomDrawNum() == 0 && player.getTopDrawNum() == 0) {
-            TileSlot playerSlot = turnManager.getOfferTrack().getPlayerSlot(player);
+            TileSlot playerSlot = board.getOfferTrackPlayerSlot(player);
             playerSlot.removePlayer();
         }
 
-        for (TileSlot orderTile : turnManager.getTurnOrderTile().slots()) {
+        for (TileSlot orderTile : board.getTurnOrderTile().slots()) {
             if (orderTile.getPlayer() == null) {
                 orderTile.setPlayer(player);
                 break;
@@ -71,39 +84,5 @@ public class OfferResolutionPhase extends Phase implements DrawSubject {
 
         turnManager.advanceResolutionTurn();
     }
-
-    /**
-     * this method adds an observer to be notified during the card drawing process.
-     *
-     * @param observer the observer to add.
-     */
-    @Override
-    public void addObserver(DrawObserver observer) {
-        observers.add(observer);
-    }
-
-    /**
-     * this method removes an observer from the notification list.
-     *
-     * @param observer the observer to remove.
-     */
-    @Override
-    public void removeObserver(DrawObserver observer) {
-        observers.remove(observer);
-    }
-
-    /**
-     * this method notifies all registered observers that
-     * a specific player has triggered an update.
-     *
-     * @param player the player who triggered the notification.
-     */
-    @Override
-    public void notifyObserverBuildings(Player player) {
-        for (DrawObserver observer : observers) {
-            observer.update(player);
-        }
-    }
-
 
 }

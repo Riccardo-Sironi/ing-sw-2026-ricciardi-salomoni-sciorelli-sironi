@@ -2,7 +2,9 @@ package it.polimi.gc06.mesos.model.gameTurnManager;
 
 import it.polimi.gc06.mesos.gameExceptions.IllegalPhaseActionException;
 import it.polimi.gc06.mesos.model.Player;
+import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
 import it.polimi.gc06.mesos.model.cards.characters.CharacterCard;
+import it.polimi.gc06.mesos.model.gameBoard.Board;
 import it.polimi.gc06.mesos.model.gameBoard.TileSlot;
 
 public abstract class Phase {
@@ -23,7 +25,7 @@ public abstract class Phase {
         throw new IllegalPhaseActionException("You can't resolve an offer in this phase!");
     }
 
-    public void resolveEvent(TurnManager turnManager, Player player) throws IllegalPhaseActionException {
+    public void resolveEvent(TurnManager turnManager) throws IllegalPhaseActionException {
         throw new IllegalPhaseActionException("You can't resolve an event in this phase!");
     }
 
@@ -31,11 +33,19 @@ public abstract class Phase {
         throw new IllegalPhaseActionException("You can't end the round in this phase!");
     }
 
-    public void pickCardFromTop(TurnManager tm, Player player, CharacterCard card) throws IllegalPhaseActionException {
+    public void pickCardFromTop(TurnManager turnManager, Player player, CharacterCard card, Board board) throws IllegalPhaseActionException, IllegalArgumentException {
         throw new IllegalPhaseActionException("You cannot draw yet!");
     }
 
-    public void pickCardFromBottom(TurnManager tm, Player player, CharacterCard card) throws IllegalPhaseActionException {
+    public void pickCardFromBottom(TurnManager turnManager, Player player, CharacterCard card, Board board) throws IllegalPhaseActionException, IllegalArgumentException {
+        throw new IllegalPhaseActionException("You cannot draw yet!");
+    }
+
+    public void pickCardFromTop(TurnManager turnManager, Player player, BuildingCard card, Board board) throws IllegalPhaseActionException, IllegalArgumentException {
+        throw new IllegalPhaseActionException("You cannot draw yet!");
+    }
+
+    public void pickCardFromBottom(TurnManager turnManager, Player player, BuildingCard card, Board board) throws IllegalPhaseActionException, IllegalArgumentException {
         throw new IllegalPhaseActionException("You cannot draw yet!");
     }
 
