@@ -10,12 +10,16 @@ import it.polimi.gc06.mesos.model.cards.events.EventCard;
 import it.polimi.gc06.mesos.model.cards.TribeCard;
 import it.polimi.gc06.mesos.model.Era;
 import it.polimi.gc06.mesos.model.GameModel;
+import it.polimi.gc06.mesos.model.gameTurnManager.DrawObserver;
+import it.polimi.gc06.mesos.model.gameTurnManager.DrawSubject;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.EnumMap;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
-public class Board {
+public class Board implements DrawSubject {
     private final ArrayList<TribeCard> topRow;
     private final ArrayList<TribeCard> bottomRow;
 
@@ -25,6 +29,8 @@ public class Board {
     private final EnumMap<Era, ArrayList<BuildingCard>> buildingsDecks;
 
     private Era currentEra;
+
+    private final List<DrawObserver> observers = new CopyOnWriteArrayList<>();
 
     public Board() {
         topRow = new ArrayList<>();
@@ -482,5 +488,43 @@ public class Board {
         player.removeFoodTokens(finalCost);
         bottomBuildings.remove(building);
         player.addBuildingCards(building);
+    }
+
+    /**
+     * this method is used to add an observer to be notified during the card drawing process.
+     * It checks if the observer is already in the list
+     *
+     * @param observer the observer to add.
+     */
+    @Override
+    public void addObserver(DrawObserver observer) {
+        if (!observers.contains(observer)){
+            observers.add(observer);
+        }
+    }
+
+    /**
+     * this method is used to remove an observer from the notification list.
+     *
+     * @param observer the observer to remove.
+     */
+    @Override
+    public void removeObserver(DrawObserver observer) {
+        observers.remove(observer);
+    }
+
+    /**
+     * this method is used to notify the observers during the card drawing process.
+     * It is called when a player picks a card from the top or bottom row,
+     * to notify the observers of the change in the player's hand and the possible effects of the card picked.
+     *
+     * @param player the player who is picking the card from the top or bottom row, to notify
+     *               the observers of the change in the player's hand and the possible effects of the card picked.
+     */
+    @Override
+    public void notifyObserverBuildings(Player player) {
+        for (DrawObserver observer : observers) {
+            observer.update(player);
+        }
     }
 }
