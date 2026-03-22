@@ -8,14 +8,7 @@ public abstract class TribeCard implements Card {
     public TribeCard(Era era) {
         this.era = era;
     }
-
-    /**
-     * This method is used to know if the card is an event card or a character card.
-     *
-     * @return true if the card is an event card, false if it is a character card
-     */
-    public abstract boolean isEventCard();
-
+    
     /**
      * a visitor that will perform operations on this card.
      * this method implements the double-dispatch mechanism for the Visitor pattern.

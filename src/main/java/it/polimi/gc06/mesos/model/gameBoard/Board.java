@@ -3,10 +3,9 @@ package it.polimi.gc06.mesos.model.gameBoard;
 import it.polimi.gc06.mesos.gameExceptions.IllegalGameActionException;
 import it.polimi.gc06.mesos.model.Player;
 import it.polimi.gc06.mesos.model.cards.BottomRowInitVisitor;
+import it.polimi.gc06.mesos.model.cards.events.EventListVisitor;
 import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
-import it.polimi.gc06.mesos.model.cards.characters.BuilderCard;
 import it.polimi.gc06.mesos.model.cards.characters.CharacterCard;
-import it.polimi.gc06.mesos.model.cards.characters.CharacterType;
 import it.polimi.gc06.mesos.model.cards.events.EventCard;
 import it.polimi.gc06.mesos.model.cards.TribeCard;
 import it.polimi.gc06.mesos.model.Era;
@@ -15,7 +14,6 @@ import it.polimi.gc06.mesos.model.GameModel;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.EnumMap;
-import java.util.stream.Collectors;
 
 public class Board {
     private final ArrayList<TribeCard> topRow;
@@ -300,14 +298,14 @@ public class Board {
      * @return the list of event cards removed from the bottom row, sorted by priority.
      */
     public ArrayList<EventCard> cleanBottomRow() {
-        // we can safely cast the cards to event cards because we know that the bottom row can
-        // contain only character cards and event cards, and we are filtering only the event cards
-        ArrayList<EventCard> events = bottomRow.stream()
-                .filter(TribeCard::isEventCard)
-                .map(card -> (EventCard) card)
-                .sorted(Comparator.comparing(EventCard::isLastToBeResolved)
-                        .thenComparing(EventCard::getEra))
-                .collect(Collectors.toCollection(ArrayList::new));
+        ArrayList<EventCard> events = new ArrayList<>();
+        EventListVisitor visitor = new EventListVisitor(events);
+
+        for (TribeCard card : bottomRow) {
+            card.accept(visitor);
+        }
+
+        events.sort(Comparator.comparing(EventCard::isLastToBeResolved).thenComparing(EventCard::getEra));
 
         // discard bottom row
         bottomRow.clear();

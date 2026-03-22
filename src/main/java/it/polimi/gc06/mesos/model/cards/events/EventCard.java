@@ -29,14 +29,4 @@ public abstract class EventCard extends TribeCard {
      * @param player the player that is resolving the event
      */
     public abstract void resolveEvent(Player player);
-
-    /**
-     * this method is used to know if the card is an event card or not.
-     *
-     * @return true, because this is the EventCard class.
-     */
-    @Override
-    public boolean isEventCard() {
-        return true;
-    }
 }
