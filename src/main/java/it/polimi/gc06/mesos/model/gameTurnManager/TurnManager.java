@@ -41,7 +41,7 @@ public class TurnManager {
      * Sets the current phase of the game. This method should be used to change the phase of the game, and it should be called by the phases themselves when they want to move to the next phase.
      *
      */
-    protected void setPhase(Phase phase) {
+    public void setPhase(Phase phase) {
 
         // TODO: Add throw
         this.phase = phase;

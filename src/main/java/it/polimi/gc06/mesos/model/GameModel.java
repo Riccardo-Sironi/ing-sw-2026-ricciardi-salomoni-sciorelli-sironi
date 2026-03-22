@@ -6,10 +6,10 @@ import it.polimi.gc06.mesos.model.cards.events.EventCard;
 import it.polimi.gc06.mesos.model.cards.TribeCard;
 import it.polimi.gc06.mesos.model.gameBoard.Board;
 import it.polimi.gc06.mesos.model.gameTurnManager.Phase;
+import it.polimi.gc06.mesos.model.gameTurnManager.PlacingTotemPhase;
 import it.polimi.gc06.mesos.model.gameTurnManager.TurnManager;
 
-import java.util.ArrayList;
-import java.util.EnumMap;
+import java.util.*;
 
 public class GameModel implements GameInfo {
     private Board board;
@@ -36,16 +36,36 @@ public class GameModel implements GameInfo {
      * TODO: false otherwise.
      */
     protected boolean startGame() {
+        if (players.size() < 2 || players.size() > 5) {
+            return false;
+        }
+
+        Collections.shuffle(this.players);
+
+        //TODO: passare al turn manager la lista dei giocatori shuffolata.
+
+        for(int i = 0; i < players.size(); i++){
+            Player p = players.get(i);
+            if (i == 0){ p.addFoodTokens(2); }
+            else if (i == 1 || i == 2){ p.addFoodTokens(3); }
+            else if (i == 3 || i == 4) { p.addFoodTokens(4); }
+        }
+
         return true;
     }
 
     /**
      * method that ends the game session and triggers final scoring.
      *
-     * @return true if the game started successfully.
+     * @return true if the game ended successfully.
      * TODO: false otherwise.
      */
     protected boolean endGame() {
+        //TODO: method to count final prestige tokens (considering builders, inventors...)
+
+        players.sort(Comparator.comparing(Player::getPrestigeTokens)
+                .thenComparing(Player::getFoodTokens)
+                .reversed());
         return true;
     }
 

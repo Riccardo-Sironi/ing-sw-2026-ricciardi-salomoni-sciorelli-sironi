@@ -236,7 +236,7 @@ public class Player {
      *
      * @return the integer representing the number of prestige tokens the player has
      */
-    protected int getPrestigeTokens() {
+    public int getPrestigeTokens() {
         return this.prestigeTokens;
     }
 
