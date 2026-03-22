@@ -32,11 +32,6 @@ public class GameController {
         } catch (IllegalPhaseActionException e) {
             System.out.println(e.getMessage()); // TODO : communicate the error to the view
         }
-
-        if (model.getTurnManager().getPlayersOrder().isEmpty()) {
-            model.getTurnManager().setRound(model.getTurnManager().getRound() + 1); // TODO : this should just be an increment not a set
-            model.getTurnManager().setPhase(new OfferResolutionPhase()); // TODO : should this be done like this?
-        }
     }
 
     public void handleCardPickTopRow(String playerNickname, TribeCard card) {
