@@ -6,6 +6,7 @@ import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
 import it.polimi.gc06.mesos.model.cards.events.EventCard;
 import it.polimi.gc06.mesos.model.cards.TribeCard;
 import it.polimi.gc06.mesos.model.gameBoard.Board;
+import it.polimi.gc06.mesos.model.gameTurnManager.DrawObserver;
 import it.polimi.gc06.mesos.model.gameTurnManager.Phase;
 import it.polimi.gc06.mesos.model.gameTurnManager.TurnManager;
 
@@ -145,15 +146,15 @@ public class GameModel implements GameInfo {
     }
 
     /**
-     * phase getter.
+     * this method is used to add an observer to the board
+     * to be notified during the card drawing process.
+     * It checks if the observer is already in the list
      *
-     * @return the current game phase
+     * @param observer the observer to add.
      */
     @Override
-    public Phase getCurrentPhase() throws GameObjectNotFoundException {
-        Phase currentPhase = turnManager.getPhase();
-        if (currentPhase == null) throw new GameObjectNotFoundException("Phase not found.");
-        return currentPhase;
+    public void addObserver(DrawObserver observer) {
+        board.addObserver(observer);
     }
 
     /**
