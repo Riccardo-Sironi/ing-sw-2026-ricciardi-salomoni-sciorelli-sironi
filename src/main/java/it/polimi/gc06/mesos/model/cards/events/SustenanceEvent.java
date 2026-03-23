@@ -3,15 +3,28 @@ package it.polimi.gc06.mesos.model.cards.events;
 import it.polimi.gc06.mesos.model.cards.TribeCardVisitor;
 import it.polimi.gc06.mesos.model.Era;
 import it.polimi.gc06.mesos.model.Player;
+import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingCard;
 
 public class SustenanceEvent extends EventCard {
 
-    private static final int DISCOUNT_PER_GATHERER = 3;
+    private static final int defaultGathererDiscount = 3;
     private final int numPrestigeLoss;
 
-    public SustenanceEvent(Era era, int numPrestigeLoss) {
+    private final ModifierBuildingCard gathererDiscountCard;
+    private final ModifierBuildingCard artistDiscountCard;
+    private final ModifierBuildingCard inventorDiscountCard;
+
+    public SustenanceEvent(Era era,
+                           int numPrestigeLoss,
+                           ModifierBuildingCard gathererDiscountCard,
+                           ModifierBuildingCard artistDiscountCard,
+                           ModifierBuildingCard inventorDiscountCard)
+    {
         super(era, true);
         this.numPrestigeLoss = numPrestigeLoss;
+        this.gathererDiscountCard = gathererDiscountCard;
+        this.artistDiscountCard = artistDiscountCard;
+        this.inventorDiscountCard = inventorDiscountCard;
     }
 
     /**
@@ -38,16 +51,11 @@ public class SustenanceEvent extends EventCard {
     @Override
     public void resolveEvent(Player player) {
 
-        int totalCharacterCards = player.getCharacterDeck().size();
         // get total number of character cards of the player
-
-        // initialization gatherers count
-        int gatherersCount = player.getGatherersCounter();
-
-        // initialization of required food (adding the gatherer discount)
-        int requiredFood = Math.max(totalCharacterCards - (gatherersCount * DISCOUNT_PER_GATHERER), 0);
+        int requiredFood = getRequiredFood(player);
 
         if (requiredFood > 0) {
+
             // initialization of current food (food player has)
             int currentFood = player.getFoodTokens();
 
@@ -55,6 +63,7 @@ public class SustenanceEvent extends EventCard {
             if (currentFood >= requiredFood) {
                 player.removeFoodTokens(requiredFood);
             }
+
             // otherwise remove food and...
             else {
                 player.removeFoodTokens(currentFood);
@@ -66,5 +75,30 @@ public class SustenanceEvent extends EventCard {
                 player.removePrestigeTokens(unpaidFood * numPrestigeLoss);
             }
         }
+    }
+
+    private int getRequiredFood(Player player) {
+        int totalCharacterCards = player.getCharacterDeck().size();
+
+        // initialization gatherers count
+        int gatherersCount = player.getGatherersCounter();
+        // initialization artists count
+        int artistsCount = player.getArtistsCounter();
+        // initialization artists count
+        int inventorsCount = player.getInventorsCounter();
+
+        // initialization of required food (adding the gatherer discount)
+        int requiredFood = Math.max(totalCharacterCards - (gatherersCount * defaultGathererDiscount), 0);
+
+        if (player.getBuildingCards().contains(gathererDiscountCard)) {
+            requiredFood = Math.max((requiredFood - gatherersCount), 0);
+        }
+        if (player.getBuildingCards().contains(artistDiscountCard)){
+            requiredFood = Math.max((requiredFood - artistsCount), 0);
+        }
+        if (player.getBuildingCards().contains(inventorDiscountCard)) {
+            requiredFood = Math.max((requiredFood - inventorsCount), 0);
+        }
+        return requiredFood;
     }
 }
