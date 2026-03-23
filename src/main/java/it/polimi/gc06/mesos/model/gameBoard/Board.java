@@ -28,17 +28,17 @@ public class Board implements DrawSubject {
 
     private final EnumMap<Era, ArrayList<BuildingCard>> buildingsDecks;
 
-    final private TurnOrderTile turnOrderTile;
+    private TurnOrderTile turnOrderTile;
     final private List<TileSlot> offerTrack;
 
     private Era currentEra;
 
+    private boolean isEndGame;
+
     private final List<DrawObserver> observers = new CopyOnWriteArrayList<>();
 
     public Board() {
-
-        // TODO Gestire creazione TurnOrderTiel e OfferTrack
-        this.turnOrderTile = new TurnOrderTile(new ArrayList<>());
+        this.turnOrderTile = null; // TODO : we should use a factory or a builder, we are working on a solution
         this.offerTrack = new ArrayList<>();
 
         topRow = new ArrayList<>();
@@ -53,11 +53,12 @@ public class Board implements DrawSubject {
         }
 
         currentEra = Era.ERA_I;
+        isEndGame = false;
     }
 
 
     /**
-     * {@inheritDoc}
+     * Returns the turn order tile of the game, which contains the players in the order of their turns.
      *
      * @return the turn order tile of the game
      */
@@ -66,9 +67,10 @@ public class Board implements DrawSubject {
     }
 
     /**
-     * {@inheritDoc}
+     * Returns the offer track of the game, which slots has different effects on the players based on their position
+     * in the track.
      *
-     * @return the offer track of the game
+     * @return the tile slots array that compose the offer track of the game
      */
     public List<TileSlot> getOfferTrack() {
         return offerTrack;
@@ -76,7 +78,7 @@ public class Board implements DrawSubject {
 
 
     /**
-     * {@inheritDoc}
+     * Returns the player's slot in the offer track, if the player is in the offer track, null otherwise.
      *
      * @return the player's slot in the offer track
      */
@@ -90,7 +92,7 @@ public class Board implements DrawSubject {
 
     /**
      *
-     * Return the top row of tribe cards.
+     * Returns the top row of tribe cards.
      *
      * @return the array list of tribe cards in the top row.
      */
@@ -100,7 +102,7 @@ public class Board implements DrawSubject {
 
     /**
      *
-     * Return the bottom row of tribe cards.
+     * Returns the bottom row of tribe cards.
      *
      * @return the array list of tribe cards in the bottom row.
      */
@@ -110,7 +112,7 @@ public class Board implements DrawSubject {
 
     /**
      *
-     * Return the top row of building cards.
+     * Returns the top row of building cards.
      *
      * @return the array list of building cards in the top building space.
      */
@@ -184,6 +186,8 @@ public class Board implements DrawSubject {
             throw new IllegalArgumentException("Final event cards cannot be null and there must be 2 of them");
         }
 
+        int nPlayers = model.getPlayers().size();
+
         // create the decks of buildings cards
         // the rules specify the number of the buildings on the top row based on the number of player and Era,
         // which are respectively the columns and the rows of the matrix.
@@ -191,13 +195,55 @@ public class Board implements DrawSubject {
 
 
         for (Era era : Era.values()) {
-            for (int j = 0; j < nBuildings[model.getPlayers().size() - 2][era.ordinal()]; j++) {
+            for (int j = 0; j < nBuildings[nPlayers - 2][era.ordinal()]; j++) {
                 if (model.getBuildingCardsDecks().get(era) == null || model.getBuildingCardsDecks().get(era).isEmpty()) {
-                    throw new IllegalStateException("Building cards deck for era " + era + " cannot be null or empty during building decks initialization");
+                    throw new IllegalStateException("Building cards deck for era " + era + " cannot be null or empty " +
+                            "during building decks initialization");
                 }
-                buildingsDecks.get(era).addFirst(model.getBuildingCardsDecks().get(era).removeFirst());
+                buildingsDecks.get(era).addLast(model.getBuildingCardsDecks().get(era).removeLast());
             }
         }
+
+        // TODO : turn order tile init : !!!! THIS SHOULD BE DONE WITH THE JSON THIS IS JUST A PROTOTYPE !!!!
+        ArrayList<TileSlot> turnOrderSlots = new ArrayList<>();
+
+        switch (nPlayers) {
+            case 2:
+                turnOrderSlots.add(0, new TileSlot(new FoodTileEffect(1)));
+                turnOrderSlots.add(1, new TileSlot(new RemoveFoodTileEffect()));
+                break;
+            case 3:
+                turnOrderSlots.add(0, new TileSlot(new FoodTileEffect(2)));
+                turnOrderSlots.add(1, new TileSlot(null));
+                turnOrderSlots.add(2, new TileSlot(new RemoveFoodTileEffect()));
+                break;
+            case 4:
+                turnOrderSlots.add(0, new TileSlot(new FoodTileEffect(2)));
+                turnOrderSlots.add(1, new TileSlot(new FoodTileEffect(1)));
+                turnOrderSlots.add(2, new TileSlot(null));
+                turnOrderSlots.add(3, new TileSlot(new RemoveFoodTileEffect()));
+                break;
+            case 5:
+                turnOrderSlots.add(0, new TileSlot(new FoodTileEffect(3)));
+                turnOrderSlots.add(1, new TileSlot(new FoodTileEffect(1)));
+                turnOrderSlots.add(2, new TileSlot(null));
+                turnOrderSlots.add(3, new TileSlot(null));
+                turnOrderSlots.add(4, new TileSlot(new RemoveFoodTileEffect()));
+                break;
+            default:
+                throw new IllegalArgumentException("Number of players must be between 2 and 5");
+        }
+
+        turnOrderTile = new TurnOrderTile(turnOrderSlots);
+
+        // offer track init
+        if (nPlayers == 5) offerTrack.addFirst(new TileSlot(new FoodTileEffect(3)));
+        offerTrack.add(new TileSlot(new ChooseCardTileEffect(0, 1)));
+        offerTrack.add(new TileSlot(new ChooseCardTileEffect(1, 0)));
+        if (nPlayers > 2) offerTrack.add(new TileSlot(new ChooseCardTileEffect(0, 2)));
+        offerTrack.add(new TileSlot(new ChooseCardTileEffect(1, 1)));
+        offerTrack.add(new TileSlot(new ChooseCardTileEffect(2, 0)));
+        if (nPlayers > 3) offerTrack.addLast(new TileSlot(new ChooseCardTileEffect(2, 1)));
 
         // first and only initialization of bottom row tribe cards
         populateBottomRow(model);
@@ -239,7 +285,6 @@ public class Board implements DrawSubject {
         }
 
         boolean newEraHasCome = false;
-        boolean isEndGame = false;
 
         int cardsToDraw = model.getPlayers().size() + 4 - topRow.size();
 
@@ -252,23 +297,22 @@ public class Board implements DrawSubject {
             if (currentEra.equals(Era.ERA_III) && model.getTribeCardsDeck().get(currentEra).isEmpty()) {
                 isEndGame = true;
                 // if the deck is empty then we add to the top row the final event cards
-                topRow.addFirst(model.getFinalEventCards()[0]);
-                topRow.addFirst(model.getFinalEventCards()[1]);
+                topRow.addLast(model.getFinalEventCards()[0]);
+                topRow.addLast(model.getFinalEventCards()[1]);
                 break;
             }
 
             if (model.getTribeCardsDeck().get(currentEra).isEmpty()) {
                 newEraHasCome = true;
-                // increase the era
                 currentEra = currentEra.nextEra();
                 if (model.getTribeCardsDeck().get(currentEra) == null || model.getTribeCardsDeck().get(currentEra).isEmpty()) {
                     throw new IllegalStateException("Tribe cards deck for new current era cannot be null or empty during top row population (after new era has come)");
                 }
             }
 
-            TribeCard removedCard = model.getTribeCardsDeck().get(currentEra).removeFirst();
+            TribeCard removedCard = model.getTribeCardsDeck().get(currentEra).removeLast();
 
-            topRow.addFirst(removedCard);
+            topRow.addLast(removedCard);
         }
 
         if (newEraHasCome) {
@@ -324,7 +368,7 @@ public class Board implements DrawSubject {
                 throw new IllegalStateException("Tribe cards deck cannot be empty during bottom row initialization loop");
             }
             // TODO  : we could force to pick Era.ERA_I cards instead
-            TribeCard removedCard = model.getTribeCardsDeck().get(currentEra).removeFirst();
+            TribeCard removedCard = model.getTribeCardsDeck().get(currentEra).removeLast();
 
             try {
                 removedCard.accept(new BottomRowInitVisitor(bottomRow, topRow, maxTopRowSize));
@@ -541,6 +585,10 @@ public class Board implements DrawSubject {
         player.removeFoodTokens(finalCost);
         bottomBuildings.remove(building);
         player.addBuildingCards(building);
+    }
+
+    public boolean isEndGame() {
+        return isEndGame;
     }
 
     /**

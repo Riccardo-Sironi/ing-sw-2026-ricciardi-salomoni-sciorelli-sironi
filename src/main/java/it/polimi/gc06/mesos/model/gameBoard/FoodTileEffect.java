@@ -5,13 +5,7 @@ import it.polimi.gc06.mesos.model.Player;
 public class FoodTileEffect implements TileEffect {
 
     private final int numFood;
-
-    /**
-     * Applies the effect to the player.
-     *
-     * @param numFood represents the number of food tokens added to the player.
-     * @throws IllegalArgumentException {@inheritDoc}
-     */
+    
     FoodTileEffect(int numFood) throws IllegalArgumentException {
         if (numFood <= 0) throw new IllegalArgumentException();
         this.numFood = numFood;
