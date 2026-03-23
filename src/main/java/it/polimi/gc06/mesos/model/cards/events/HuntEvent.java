@@ -3,15 +3,19 @@ package it.polimi.gc06.mesos.model.cards.events;
 import it.polimi.gc06.mesos.model.cards.TribeCardVisitor;
 import it.polimi.gc06.mesos.model.Era;
 import it.polimi.gc06.mesos.model.Player;
+import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingCard;
 
 public class HuntEvent extends EventCard {
 
     private final int numPrestigeGained;
 
+    private final ModifierBuildingCard prestigeAndFoodGainCard;
+
     //CONSTRUCTOR
-    public HuntEvent(Era era, int numPrestigeGained) {
+    public HuntEvent(Era era, int numPrestigeGained, ModifierBuildingCard prestigeAndFoodGainCard) {
         super(era, false);
         this.numPrestigeGained = numPrestigeGained;
+        this.prestigeAndFoodGainCard = prestigeAndFoodGainCard;
     }
 
     /**
@@ -38,12 +42,13 @@ public class HuntEvent extends EventCard {
         /*initialization of hunters counter*/
         int huntersCount = player.getHuntersCounter();
 
+
         if (huntersCount > 0) {
             /*add food tokens for every hunter in the deck*/
-            player.addFoodTokens(huntersCount);
+            player.addFoodTokens(player.getBuildingCards().contains(prestigeAndFoodGainCard) ? huntersCount * 2 : huntersCount);
 
             /*add prestige tokens for every hunter in the deck multiplied by the prestige on the card*/
-            player.addPrestigeTokens(huntersCount * numPrestigeGained);
+            player.addPrestigeTokens(player.getBuildingCards().contains(prestigeAndFoodGainCard) ? (huntersCount * (numPrestigeGained + 1)) : huntersCount * numPrestigeGained);
         }
     }
 }
