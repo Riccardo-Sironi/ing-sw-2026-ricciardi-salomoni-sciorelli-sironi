@@ -40,7 +40,7 @@ public class GameModel implements GameInfo {
         this.board = new Board();
 
         // TODO : after the board initialization we have to create the turn manager and initialize it with the first phase (PlacingTotemPhase) and the list of players.
-        this.turnManager = new TurnManager(); // the parameters here are not clear yet (except for the list of players)
+        this.turnManager = new TurnManager(players, board.getTurnOrderTile(), 0, board.getOfferTrack(), null); // the parameters here are not clear yet (except for the list of players)
     }
 
     /**
@@ -66,7 +66,6 @@ public class GameModel implements GameInfo {
 //        )
 
 
-
         return true;
     }
 
@@ -75,7 +74,7 @@ public class GameModel implements GameInfo {
      * food tokens based on their position in the order.
      *
      */
-    private void setupPlayersOrderAndFood(){
+    private void setupPlayersOrderAndFood() {
 
         Collections.shuffle(this.players);
 
@@ -96,7 +95,7 @@ public class GameModel implements GameInfo {
      * this method is used to create the decks
      * TODO: logic of setupDecksAndBoard() method.
      */
-    private void setupDecksAndBoard(){
+    private void setupDecksAndBoard() {
 
     }
 

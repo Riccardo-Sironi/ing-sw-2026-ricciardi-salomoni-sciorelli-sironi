@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Board implements DrawSubject {
     private final ArrayList<TribeCard> topRow;
@@ -35,7 +34,7 @@ public class Board implements DrawSubject {
 
     private boolean isEndGame;
 
-    private final List<DrawObserver> observers = new CopyOnWriteArrayList<>();
+    private final ArrayList<DrawObserver> observers;
 
     public Board() {
         this.turnOrderTile = null; // TODO : we should use a factory or a builder, we are working on a solution
@@ -46,6 +45,8 @@ public class Board implements DrawSubject {
 
         topBuildings = new ArrayList<>();
         bottomBuildings = new ArrayList<>();
+
+        observers = new ArrayList<>();
 
         buildingsDecks = new EnumMap<>(Era.class);
         for (Era era : Era.values()) {
