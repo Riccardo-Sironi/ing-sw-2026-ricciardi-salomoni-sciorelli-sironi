@@ -25,20 +25,22 @@ public class GameController {
     }
 
     public void handleTotemOfferTilePlacement(String playerNickname, TileSlot tile) {
-        if (!model.getTurnManager().getActivePlayer().getNickname().equals(playerNickname)) {
-            // TODO : handle this
-        }
-
-        if (tile.getPlayer() != null) {
-            // TODO : handle this
-        }
-
         TurnManager turnManager = model.getTurnManager();
 
         try {
-            turnManager.getPhase().placeTotem(turnManager, turnManager.getActivePlayer(), tile);
+            Player activePlayer = turnManager.getActivePlayer();
+
+            if (!activePlayer.getNickname().equals(playerNickname)) {
+                throw new IllegalPhaseActionException("It is not " + playerNickname + " turn !");
+            }
+
+            if (tile.getPlayer() != null) {
+                throw new IllegalPhaseActionException("The tile is already occupied !");
+            }
+
+            turnManager.getPhase().placeTotem(turnManager, activePlayer, tile);
         } catch (IllegalPhaseActionException e) {
-            System.out.println(e.getMessage()); // TODO : communicate the error to the view
+            System.err.println("Error for " + playerNickname + ": " + e.getMessage()); // TODO : communicate the error to the view
         }
     }
 
@@ -48,37 +50,13 @@ public class GameController {
         try {
             Player activePlayer = turnManager.getActivePlayer();
             if (!activePlayer.getNickname().equals(playerNickname)) {
-                throw new IllegalPhaseActionException("Non è il tuo turno!");
+                throw new IllegalPhaseActionException("It's not " + playerNickname + " turn !");
             }
             turnManager.getPhase().pickCardFromTop(turnManager, activePlayer, card, model.getBoard());
 
         } catch (IllegalPhaseActionException | IllegalArgumentException e) {
-            System.err.println("Errore per " + playerNickname + ": " + e.getMessage());
+            System.err.println("Error for " + playerNickname + ": " + e.getMessage());
             // TODO: Inviare un pacchetto di Errore al Client
-        }
-    }
-
-    public void handleCardPickBottomRow(String playerNickname, BuildingCard card) {
-        if (!model.getTurnManager().getActivePlayer().getNickname().equals(playerNickname)) {
-            // TODO : handle this
-        }
-
-        try {
-            // TODO : we need the phase method to pick a building card
-        } catch (IllegalPhaseActionException e) {
-            System.out.println(e.getMessage()); // TODO : communicate the error to the view
-        }
-    }
-
-    public void handleCardPickTopRow(String playerNickname, BuildingCard card) {
-        if (!model.getTurnManager().getActivePlayer().getNickname().equals(playerNickname)) {
-            // TODO : handle this
-        }
-
-        try {
-            // TODO : we need the phase method to pick a building card
-        } catch (IllegalPhaseActionException e) {
-            System.out.println(e.getMessage()); // TODO : communicate the error to the view
         }
     }
 
@@ -87,13 +65,45 @@ public class GameController {
         try {
             Player activePlayer = turnManager.getActivePlayer();
             if (!activePlayer.getNickname().equals(playerNickname)) {
-                throw new IllegalPhaseActionException("Non è il tuo turno!");
+                throw new IllegalPhaseActionException("It's not " + playerNickname + " turn !");
             }
             turnManager.getPhase().pickCardFromBottom(turnManager, activePlayer, card, model.getBoard());
 
         } catch (IllegalPhaseActionException | IllegalArgumentException e) {
-            System.err.println("Errore per " + playerNickname + ": " + e.getMessage());
+            System.err.println("Error for " + playerNickname + ": " + e.getMessage());
             // TODO: Inviare un pacchetto di Errore al Client
+        }
+    }
+
+    public void handleCardPickBottomRow(String playerNickname, BuildingCard card) {
+        TurnManager turnManager = model.getTurnManager();
+
+        try {
+            Player activePlayer = turnManager.getActivePlayer();
+
+            if (!activePlayer.getNickname().equals(playerNickname)) {
+                throw new IllegalPhaseActionException("It's not " + playerNickname + " turn !");
+            }
+
+            turnManager.getPhase().pickCardFromBottom(turnManager, activePlayer, card, model.getBoard());
+        } catch (IllegalPhaseActionException | IllegalArgumentException e) {
+            System.err.println("Error for " + playerNickname + ": " + e.getMessage()); // TODO : communicate the error to the view
+        }
+    }
+
+    public void handleCardPickTopRow(String playerNickname, BuildingCard card) {
+        TurnManager turnManager = model.getTurnManager();
+
+        try {
+            Player activePlayer = turnManager.getActivePlayer();
+
+            if (!activePlayer.getNickname().equals(playerNickname)) {
+                throw new IllegalPhaseActionException("It's not " + playerNickname + " turn !");
+            }
+
+            turnManager.getPhase().pickCardFromTop(turnManager, activePlayer, card, model.getBoard());
+        } catch (IllegalPhaseActionException | IllegalArgumentException e) {
+            System.err.println("Error for " + playerNickname + ": " + e.getMessage()); // TODO : communicate the error to the view
         }
     }
 }
