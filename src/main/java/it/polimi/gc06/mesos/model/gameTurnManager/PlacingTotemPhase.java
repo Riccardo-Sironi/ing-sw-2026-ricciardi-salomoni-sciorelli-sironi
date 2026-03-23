@@ -5,7 +5,6 @@ import it.polimi.gc06.mesos.model.Player;
 import it.polimi.gc06.mesos.model.gameBoard.TileSlot;
 
 
-public class PlacingTotemPhase extends Phase {
     /**
      * this method is used to execute the totem placement actions.
      * it iterates through the players and assigns them to an offer track slot

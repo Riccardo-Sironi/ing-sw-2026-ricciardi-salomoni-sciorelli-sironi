@@ -10,8 +10,6 @@ import it.polimi.gc06.mesos.model.gameBoard.TileSlot;
 
 public class OfferResolutionPhase extends Phase {
 
-    public OfferResolutionPhase() {
-    }
 
     @Override
     public void startPlayerOfferResolution(TurnManager turnManager, Player player, TileSlot tileSlot) throws IllegalPhaseActionException {
@@ -61,7 +59,7 @@ public class OfferResolutionPhase extends Phase {
 
     public void pickCardFromBottom(TurnManager turnManager, Player player, BuildingCard card, Board board) throws IllegalPhaseActionException, IllegalArgumentException, IllegalGameActionException {
         if (player.getBottomDrawNum() <= 0) {
-            throw new IllegalPhaseActionException("You can't draw from the top row anymore!");
+            throw new IllegalPhaseActionException("You can't draw from the bottom row anymore!");
         }
 
         board.buyBuildingFromBottomRow(player, card);
