@@ -316,6 +316,15 @@ public class Player {
         return this.characterDeck.get(CharacterType.GATHERER).size();
     }
 
+    /**
+     * Returns the number of inventor cards the player has in their character deck.
+     *
+     * @return the integer representing the number of inventor cards the player has in their character deck
+     */
+    public int getInventorsCounter() {
+        return this.characterDeck.get(CharacterType.INVENTOR).size();
+    }
+
     public int getTopDrawNum() {
         return topDrawNum;
     }
