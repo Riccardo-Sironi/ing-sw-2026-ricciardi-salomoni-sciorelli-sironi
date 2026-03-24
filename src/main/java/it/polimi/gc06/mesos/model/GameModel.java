@@ -27,6 +27,18 @@ public class GameModel implements GameInfo {
 
     private final TurnManager turnManager;
 
+    /**
+     * for testing purpose only!
+     */
+    public GameModel(Board board, EnumMap<Era, ArrayList<BuildingCard>> buildingCardsDecks, EnumMap<Era, ArrayList<TribeCard>> tribeCardsDeck, EventCard[] finalEventCards, ArrayList<Player> players, TurnManager turnManager) {
+        this.board = board;
+        this.buildingCardsDecks = buildingCardsDecks;
+        this.tribeCardsDeck = tribeCardsDeck;
+        this.finalEventCards = finalEventCards;
+        this.players = players;
+        this.turnManager = turnManager;
+    }
+
     public GameModel() {
         // TODO NOTE : this is just the skeleton, but wondering if we should have a method called by the controller
         // that fills the lists and maps with the correct number of objects based on player quantity.
