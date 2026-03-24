@@ -14,7 +14,7 @@ module it.polimi.gc06.mesos {
     exports it.polimi.gc06.mesos.model.cards;
     opens it.polimi.gc06.mesos.model.cards to javafx.fxml;
     exports it.polimi.gc06.mesos.model.gameTurnManager;
-    opens it.polimi.gc06.mesos.model.gameTurnManager to javafx.fxml;
+    opens it.polimi.gc06.mesos.model.gameTurnManager to javafx.fxml, org.mockito;
     exports it.polimi.gc06.mesos.model.cards.events;
     opens it.polimi.gc06.mesos.model.cards.events to javafx.fxml;
     exports it.polimi.gc06.mesos.model.cards.characters;
