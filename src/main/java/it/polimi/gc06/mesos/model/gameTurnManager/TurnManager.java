@@ -15,20 +15,15 @@ public class TurnManager {
 
     final private TribeCardVisitor cardVisitor;
 
-    ///  The index of the active player in the turn order
-    private int activePlayerIndex;
-
     private int round;
 
     public TurnManager(List<Player> playersOrder, TurnOrderTile turnOrderTile, int round, List<TileSlot> offerTrack, TribeCardVisitor cardVisitor) {
         this.playersOrder = playersOrder;
         this.currentPlayer = playersOrder.getFirst();
         this.phase = new PlacingTotemPhase();
-        this.activePlayerIndex = 0;
         this.round = round;
         this.cardVisitor = cardVisitor;
     }
-
 
     /**
      * {@inheritDoc}
@@ -42,7 +37,6 @@ public class TurnManager {
         this.phase = phase;
     }
 
-
     /**
      * {@inheritDoc}
      * <p>
@@ -50,26 +44,6 @@ public class TurnManager {
      */
     public void setRound(int round) {
         this.round = round;
-    }
-
-    /**
-     * {@inheritDoc}
-     * <p>
-     * Sets the current player index in the turn order.
-     */
-    public void setActivePlayerIndex(int activePlayerIndex) {
-        this.activePlayerIndex = activePlayerIndex;
-    }
-
-
-    /**
-     * {@inheritDoc}
-     *
-     * @return the next player in the turn order
-     */
-
-    protected Player getNextPlayer() {
-        return playersOrder.getFirst();
     }
 
     /**
@@ -87,13 +61,7 @@ public class TurnManager {
      * @return the active player
      */
     public Player getActivePlayer() {
-        return playersOrder.get(activePlayerIndex);
-    }
-
-    public void checkIsCurrentPlayer(Player player) throws IllegalAccessError {
-        if (!player.equals(currentPlayer)) {
-            throw new IllegalAccessError("It's not your turn yet!");
-        }
+        return playersOrder.getFirst();
     }
 
     public void nextTurn() throws IllegalAccessError {
@@ -126,15 +94,4 @@ public class TurnManager {
     public int getRound() {
         return round;
     }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @return the index of the active player in the turn order
-     */
-    protected int getActivePlayerIndex() {
-        return activePlayerIndex;
-    }
-    
-
 }
