@@ -10,21 +10,28 @@ import it.polimi.gc06.mesos.model.gameBoard.TileSlot;
 
 public class OfferResolutionPhase extends Phase {
 
+    private boolean isStarted = false;
 
     @Override
     public void startPlayerOfferResolution(TurnManager turnManager, Player player, TileSlot tileSlot) throws IllegalPhaseActionException {
 
-        if (turnManager.getNextPlayer() != player) {
+        if (turnManager.getActivePlayer() != player) {
             throw new IllegalPhaseActionException("It's not your turn yet!");
         }
 
         tileSlot.applyEffect();
+
+        isStarted = true;
 
         // TODO Notify Buildings on Draw
     }
 
     @Override
     public void pickCardFromBottom(TurnManager turnManager, Player player, CharacterCard card, Board board) throws IllegalPhaseActionException, IllegalArgumentException {
+
+        if (!isStarted) {
+            throw new IllegalPhaseActionException("You have to start the offer resolution phase first!");
+        }
 
         if (player.getBottomDrawNum() <= 0) {
             throw new IllegalPhaseActionException("You can't draw from the bottom row anymore!");
@@ -38,6 +45,10 @@ public class OfferResolutionPhase extends Phase {
     @Override
     public void pickCardFromTop(TurnManager turnManager, Player player, CharacterCard card, Board board) throws IllegalPhaseActionException {
 
+        if (!isStarted) {
+            throw new IllegalPhaseActionException("You have to start the offer resolution phase first!");
+        }
+
         if (player.getTopDrawNum() <= 0) {
             throw new IllegalPhaseActionException("You can't draw from the top row anymore!");
         }
@@ -48,6 +59,11 @@ public class OfferResolutionPhase extends Phase {
     }
 
     public void pickCardFromTop(TurnManager turnManager, Player player, BuildingCard card, Board board) throws IllegalPhaseActionException, IllegalArgumentException, IllegalGameActionException {
+
+        if (!isStarted) {
+            throw new IllegalPhaseActionException("You have to start the offer resolution phase first!");
+        }
+
         if (player.getTopDrawNum() <= 0) {
             throw new IllegalPhaseActionException("You can't draw from the top row anymore!");
         }
@@ -58,6 +74,11 @@ public class OfferResolutionPhase extends Phase {
     }
 
     public void pickCardFromBottom(TurnManager turnManager, Player player, BuildingCard card, Board board) throws IllegalPhaseActionException, IllegalArgumentException, IllegalGameActionException {
+
+        if (!isStarted) {
+            throw new IllegalPhaseActionException("You have to start the offer resolution phase first!");
+        }
+
         if (player.getBottomDrawNum() <= 0) {
             throw new IllegalPhaseActionException("You can't draw from the bottom row anymore!");
         }
@@ -68,6 +89,11 @@ public class OfferResolutionPhase extends Phase {
     }
 
     private void checkIfPlayerIsFinished(TurnManager turnManager, Player player, Board board) throws IllegalPhaseActionException {
+
+        if (!isStarted) {
+            throw new IllegalPhaseActionException("You have to start the offer resolution phase first!");
+        }
+
         if (player.getBottomDrawNum() == 0 && player.getTopDrawNum() == 0) {
             TileSlot playerSlot = board.getOfferTrackPlayerSlot(player);
             playerSlot.removePlayer();
@@ -80,7 +106,7 @@ public class OfferResolutionPhase extends Phase {
                 }
             }
 
-            
+
         }
 
         // TODO Chiedere al Prof. Viene gestita dal Controller oppure viene gestita dalle fasi stesse?
