@@ -27,7 +27,7 @@ public class Board implements DrawSubject {
 
     private final EnumMap<Era, ArrayList<BuildingCard>> buildingsDecks;
 
-    private TurnOrderTile turnOrderTile;
+    final private TurnOrderTile turnOrderTile;
     final private List<TileSlot> offerTrack;
 
     private Era currentEra;
@@ -37,7 +37,7 @@ public class Board implements DrawSubject {
     private final ArrayList<DrawObserver> observers;
 
     public Board() {
-        this.turnOrderTile = null; // TODO : we should use a factory or a builder, we are working on a solution
+        this.turnOrderTile = new TurnOrderTile(new ArrayList<>());
         this.offerTrack = new ArrayList<>();
 
         topRow = new ArrayList<>();
@@ -205,37 +205,33 @@ public class Board implements DrawSubject {
             }
         }
 
-        // TODO : turn order tile init : !!!! THIS SHOULD BE DONE WITH THE JSON THIS IS JUST A PROTOTYPE !!!!
-        ArrayList<TileSlot> turnOrderSlots = new ArrayList<>();
-
+        // TODO : turn order tile init : !!!! THIS SHOULD BE DONE WITH THE JSON THIS IS JUST A PROTOTYPE !!!
         switch (nPlayers) {
             case 2:
-                turnOrderSlots.add(0, new TileSlot(new FoodTileEffect(1)));
-                turnOrderSlots.add(1, new TileSlot(new RemoveFoodTileEffect()));
+                turnOrderTile.addSlot(0, new TileSlot(new FoodTileEffect(1)));
+                turnOrderTile.addSlot(1, new TileSlot(new RemoveFoodTileEffect()));
                 break;
             case 3:
-                turnOrderSlots.add(0, new TileSlot(new FoodTileEffect(2)));
-                turnOrderSlots.add(1, new TileSlot(null));
-                turnOrderSlots.add(2, new TileSlot(new RemoveFoodTileEffect()));
+                turnOrderTile.addSlot(0, new TileSlot(new FoodTileEffect(2)));
+                turnOrderTile.addSlot(1, new TileSlot(null));
+                turnOrderTile.addSlot(2, new TileSlot(new RemoveFoodTileEffect()));
                 break;
             case 4:
-                turnOrderSlots.add(0, new TileSlot(new FoodTileEffect(2)));
-                turnOrderSlots.add(1, new TileSlot(new FoodTileEffect(1)));
-                turnOrderSlots.add(2, new TileSlot(null));
-                turnOrderSlots.add(3, new TileSlot(new RemoveFoodTileEffect()));
+                turnOrderTile.addSlot(0, new TileSlot(new FoodTileEffect(2)));
+                turnOrderTile.addSlot(1, new TileSlot(new FoodTileEffect(1)));
+                turnOrderTile.addSlot(2, new TileSlot(null));
+                turnOrderTile.addSlot(3, new TileSlot(new RemoveFoodTileEffect()));
                 break;
             case 5:
-                turnOrderSlots.add(0, new TileSlot(new FoodTileEffect(3)));
-                turnOrderSlots.add(1, new TileSlot(new FoodTileEffect(1)));
-                turnOrderSlots.add(2, new TileSlot(null));
-                turnOrderSlots.add(3, new TileSlot(null));
-                turnOrderSlots.add(4, new TileSlot(new RemoveFoodTileEffect()));
+                turnOrderTile.addSlot(0, new TileSlot(new FoodTileEffect(3)));
+                turnOrderTile.addSlot(1, new TileSlot(new FoodTileEffect(1)));
+                turnOrderTile.addSlot(2, new TileSlot(null));
+                turnOrderTile.addSlot(3, new TileSlot(null));
+                turnOrderTile.addSlot(4, new TileSlot(new RemoveFoodTileEffect()));
                 break;
             default:
                 throw new IllegalArgumentException("Number of players must be between 2 and 5");
         }
-
-        turnOrderTile = new TurnOrderTile(turnOrderSlots);
 
         // offer track init
         if (nPlayers == 5) offerTrack.addFirst(new TileSlot(new FoodTileEffect(3)));

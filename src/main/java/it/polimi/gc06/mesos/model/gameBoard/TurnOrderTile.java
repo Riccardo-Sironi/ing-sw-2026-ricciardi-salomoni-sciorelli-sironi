@@ -18,6 +18,10 @@ public record TurnOrderTile(ArrayList<TileSlot> slots) {
         if (slots == null || slots.isEmpty()) throw new IllegalArgumentException();
     }
 
+    public void addSlot(int index, TileSlot slot) {
+        slots.add(index, slot);
+    }
+
     /**
      * Returns the player on the nth tile.
      *
