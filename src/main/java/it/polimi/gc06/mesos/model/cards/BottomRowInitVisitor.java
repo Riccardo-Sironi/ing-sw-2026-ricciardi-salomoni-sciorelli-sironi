@@ -22,7 +22,7 @@ public class BottomRowInitVisitor implements TribeCardVisitor {
             //this happens just if we draw (4 + # players) event cards during this phase, which we hope is unlikely to happen
             throw new IllegalStateException("Top row cannot contain more than " + maxTopRowSize + " cards during bottom row initialization");
         }
-        topRow.addFirst(ritual);
+        topRow.addLast(ritual);
     }
 
     @Override
@@ -31,7 +31,7 @@ public class BottomRowInitVisitor implements TribeCardVisitor {
             //this happens just if we draw (4 + # players) event cards during this phase, which we hope is unlikely to happen
             throw new IllegalStateException("Top row cannot contain more than " + maxTopRowSize + " cards during bottom row initialization");
         }
-        topRow.addFirst(sustenance);
+        topRow.addLast(sustenance);
     }
 
     @Override
@@ -40,7 +40,7 @@ public class BottomRowInitVisitor implements TribeCardVisitor {
             //this happens just if we draw (4 + # players) event cards during this phase, which we hope is unlikely to happen
             throw new IllegalStateException("Top row cannot contain more than " + maxTopRowSize + " cards during bottom row initialization");
         }
-        topRow.addFirst(hunt);
+        topRow.addLast(hunt);
     }
 
     @Override
@@ -49,37 +49,37 @@ public class BottomRowInitVisitor implements TribeCardVisitor {
             //this happens just if we draw (4 + # players) event cards during this phase, which we hope is unlikely to happen
             throw new IllegalStateException("Top row cannot contain more than " + maxTopRowSize + " cards during bottom row initialization");
         }
-        topRow.addFirst(paintings);
+        topRow.addLast(paintings);
     }
 
     @Override
     public void visit(HunterCard card) {
-        bottomRow.addFirst(card);
+        bottomRow.addLast(card);
     }
 
     @Override
     public void visit(ShamanCard card) {
-        bottomRow.addFirst(card);
+        bottomRow.addLast(card);
     }
 
     @Override
     public void visit(ArtistCard card) {
-        bottomRow.addFirst(card);
+        bottomRow.addLast(card);
     }
 
     @Override
     public void visit(BuilderCard card) {
-        bottomRow.addFirst(card);
+        bottomRow.addLast(card);
     }
 
     @Override
     public void visit(InventorCard card) {
-        bottomRow.addFirst(card);
+        bottomRow.addLast(card);
     }
 
     @Override
     public void visit(GathererCard card) {
-        bottomRow.addFirst(card);
+        bottomRow.addLast(card);
     }
 
     @Override

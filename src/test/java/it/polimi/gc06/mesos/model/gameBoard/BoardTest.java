@@ -1,114 +1,104 @@
 package it.polimi.gc06.mesos.model.gameBoard;
 
-import it.polimi.gc06.mesos.model.Color;
-import it.polimi.gc06.mesos.model.Era;
-import it.polimi.gc06.mesos.model.GameModel;
-import it.polimi.gc06.mesos.model.Player;
+import it.polimi.gc06.mesos.model.*;
 import it.polimi.gc06.mesos.model.cards.TribeCard;
-import it.polimi.gc06.mesos.model.cards.TribeCardVisitor;
 import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
-import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingCard;
-import it.polimi.gc06.mesos.model.cards.characters.CharacterCard;
-import it.polimi.gc06.mesos.model.cards.characters.GathererCard;
-import it.polimi.gc06.mesos.model.cards.characters.HunterCard;
-import it.polimi.gc06.mesos.model.cards.events.*;
-import it.polimi.gc06.mesos.model.gameTurnManager.TurnManager;
+import it.polimi.gc06.mesos.model.cards.events.EventCard;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
-import java.sql.Array;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.EnumMap;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 class BoardTest {
 
-    //da modificare in base a necessità, sono stati forniti degli esempi di utilizzo
-    private void initBoardTestBlueprint() {
+    private Board board;
+    private GameModel modelMock;
 
-        final int numOfDummyBuildings = 21;
-        final int numOfDummyCharacters = 84;
-        final int numOfDummyEvents = 10;
+    // Supporto per i dati finti
+    private ArrayList<Player> players;
+    private EnumMap<Era, ArrayList<TribeCard>> tribeDecks;
+    private EnumMap<Era, ArrayList<BuildingCard>> buildingDecks;
+    private EventCard[] finalEvents;
 
+    @BeforeEach
+    void setUp() {
+        board = new Board();
+        modelMock = mock(GameModel.class);
 
-        Board board = new Board();
+        // 1. Setup Giocatori (minimo 2 per passare i controlli di initBoard)
+        players = new ArrayList<>();
+        players.add(mock(Player.class));
+        players.add(mock(Player.class));
 
-        EnumMap<Era, ArrayList<BuildingCard>> buildingDeck = new EnumMap<Era, ArrayList<BuildingCard>>(Era.class);
-        //aggiunta building cards
-        BuildingCard dummyBuilding = new ModifierBuildingCard(null,0,0);
-        for(int i = 0; i < numOfDummyBuildings; i++ ) buildingDeck.get(Era.ERA_I).add(dummyBuilding);
+        // 2. Setup Decks Tribù (almeno una carta per Era I per la bottom row)
+        tribeDecks = new EnumMap<>(Era.class);
+        for (Era era : Era.values()) {
+            ArrayList<TribeCard> deck = new ArrayList<>();
+            // Aggiungiamo un numero sufficiente di carte mockate
+            for (int i = 0; i < 99; i++) {
+                deck.add(mock(TribeCard.class));
+            }
+            tribeDecks.put(era, deck);
+        }
 
-        EnumMap<Era, ArrayList<TribeCard>> tribeDeck  = new EnumMap<Era, ArrayList<TribeCard>>(Era.class);;
-        //aggiunta tribe cards
-        CharacterCard dummyCharacter = new GathererCard(null);
-        EventCard dummyEvent = new HuntEvent(null,0,null);
-        for(int i = 0; i < numOfDummyCharacters; i++ ) tribeDeck.get(Era.ERA_I).add(dummyCharacter);
-        for(int i = 0; i < numOfDummyEvents; i++ ) tribeDeck.get(Era.ERA_I).add(dummyEvent);
-        //Collections.shuffle(tribeDeck.get(Era.ERA_I));
+        // 3. Setup Decks Edifici
+        buildingDecks = new EnumMap<>(Era.class);
+        for (Era era : Era.values()) {
+            ArrayList<BuildingCard> deck = new ArrayList<>();
+            for (int i = 0; i < 99; i++) {
+                deck.add(mock(BuildingCard.class));
+            }
+            buildingDecks.put(era, deck);
+        }
 
-        EventCard[] finalEvents = new EventCard[2];
-        finalEvents[0]=new RitualEvent(Era.ERA_III,15,7,null, null);
-        finalEvents[1]=new SustenanceEvent(null,3,null,null,null);
+        // 4. Setup Eventi Finali
+        finalEvents = new EventCard[]{ mock(EventCard.class), mock(EventCard.class) };
 
-        ArrayList<Player> players = new ArrayList<Player>();
-        ModifierBuildingCard threeStarCard = new ModifierBuildingCard(Era.ERA_II,6,4);
-        //Aggiunta player
-        players.add(new Player("BLUE", Color.BLUE,threeStarCard));
-        players.add(new Player("RED", Color.RED,threeStarCard));
-        players.add(new Player("PURPLE", Color.PURPLE,threeStarCard));
-        players.add(new Player("WHITE", Color.WHITE,threeStarCard));
-        players.add(new Player("YELLOW", Color.YELLOW,threeStarCard));
-
-        TurnManager turnManager = new TurnManager(players,null,0,null,null);
-
-        GameModel model = new GameModel(board,buildingDeck,tribeDeck,finalEvents,players,turnManager);
-
-        board.initBoard(model);
-
+        // Istruiamo il mock a restituire questi oggetti
+        when(modelMock.getPlayers()).thenReturn(players);
+        when(modelMock.getTribeCardsDeck()).thenReturn(tribeDecks);
+        when(modelMock.getBuildingCardsDecks()).thenReturn(buildingDecks);
+        when(modelMock.getFinalEventCards()).thenReturn(finalEvents);
     }
 
     @Test
-    void initBoard(){
-        final int numOfDummyBuildings = 21;
-        final int numOfDummyCharacters = 84;
-        final int numOfDummyEvents = 10;
+    void testInitBoardSuccess() {
+        // Esecuzione
+        assertDoesNotThrow(() -> board.initBoard(modelMock));
 
+        // Verifiche post-inizializzazione
 
-        Board board = new Board();
+        // La riga inferiore (bottomRow) deve contenere nPlayers + 1 carte
+        assertEquals(players.size() + 1, board.getBottomRow().size(),
+                "La bottom row dovrebbe avere n+1 carte");
 
-        EnumMap<Era, ArrayList<BuildingCard>> buildingDeck = new EnumMap<Era, ArrayList<BuildingCard>>(Era.class);
-        //aggiunta building cards
-        BuildingCard dummyBuilding = new ModifierBuildingCard(null,0,0);
-        for(int i = 0; i < numOfDummyBuildings; i++ ) buildingDeck.get(Era.ERA_I).add(dummyBuilding);
+        // Verifichiamo che la TurnOrderTile sia stata creata
+        assertNotNull(board.getTurnOrderTile(), "La TurnOrderTile non dovrebbe essere null");
 
-        EnumMap<Era, ArrayList<TribeCard>> tribeDeck  = new EnumMap<Era, ArrayList<TribeCard>>(Era.class);;
-        //aggiunta tribe cards
-        CharacterCard dummyCharacter = new GathererCard(null);
-        EventCard dummyEvent = new HuntEvent(null,0,null);
-        for(int i = 0; i < numOfDummyCharacters; i++ ) tribeDeck.get(Era.ERA_I).add(dummyCharacter);
-        for(int i = 0; i < numOfDummyEvents; i++ ) tribeDeck.get(Era.ERA_I).add(dummyEvent);
-        //Collections.shuffle(tribeDeck.get(Era.ERA_I));
+        // Verifichiamo che l'Offer Track sia stata popolata (es. per 2 giocatori)
+        assertFalse(board.getOfferTrack().isEmpty());
 
-        EventCard[] finalEvents = new EventCard[2];
-        finalEvents[0]=new RitualEvent(Era.ERA_III,15,7,null, null);
-        finalEvents[1]=new SustenanceEvent(null,3,null,null,null);
-
-        ArrayList<Player> players = new ArrayList<Player>();
-        ModifierBuildingCard threeStarCard = new ModifierBuildingCard(Era.ERA_II,6,4);
-        //Aggiunta player
-        players.add(new Player("BLUE", Color.BLUE,threeStarCard));
-        players.add(new Player("RED", Color.RED,threeStarCard));
-        players.add(new Player("PURPLE", Color.PURPLE,threeStarCard));
-        players.add(new Player("WHITE", Color.WHITE,threeStarCard));
-        players.add(new Player("YELLOW", Color.YELLOW,threeStarCard));
-
-        TurnManager turnManager = new TurnManager(players,null,0,null,null);
-
-        GameModel model = new GameModel(board,buildingDeck,tribeDeck,finalEvents,players,turnManager);
-
-        board.initBoard(model);
+        // Verifichiamo che l'era iniziale sia ERA_I
+        assertEquals(Era.ERA_I, board.getCurrentEra());
     }
 
+    @Test
+    void testInitBoardThrowsExceptionWhenModelIsNull() {
+        assertThrows(IllegalArgumentException.class, () -> board.initBoard(null));
+    }
 
+    @Test
+    void testInitBoardThrowsExceptionWhenPlayersInsufficient() {
+        // Setup con un solo giocatore (illegale secondo i tuoi controlli)
+        players.clear();
+        players.add(mock(Player.class));
+
+        assertThrows(IllegalArgumentException.class, () -> board.initBoard(modelMock));
+    }
 }

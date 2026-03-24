@@ -346,7 +346,7 @@ public class Board implements DrawSubject {
         if (model == null) {
             throw new IllegalArgumentException("Model cannot be null");
         }
-        if (model.getTribeCardsDeck() == null || model.getTribeCardsDeck().isEmpty() || model.getTribeCardsDeck().values().stream().allMatch(ArrayList::isEmpty)) {
+        if (model.getTribeCardsDeck() == null || model.getTribeCardsDeck().isEmpty() || model.getTribeCardsDeck().values().stream().anyMatch(ArrayList::isEmpty)) {
             throw new IllegalArgumentException("Tribe cards deck cannot be null or empty during bottom row initialization");
         }
         if (model.getPlayers().size() < 2 || model.getPlayers().size() > 5) {

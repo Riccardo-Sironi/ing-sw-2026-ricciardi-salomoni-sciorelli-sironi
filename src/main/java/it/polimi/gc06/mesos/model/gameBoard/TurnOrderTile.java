@@ -15,7 +15,7 @@ public record TurnOrderTile(ArrayList<TileSlot> slots) {
      * @throws IllegalArgumentException {@inheritDoc}
      */
     public TurnOrderTile {
-        if (slots == null || slots.isEmpty()) throw new IllegalArgumentException();
+        if (slots == null) throw new IllegalArgumentException();
     }
 
     public void addSlot(int index, TileSlot slot) {
