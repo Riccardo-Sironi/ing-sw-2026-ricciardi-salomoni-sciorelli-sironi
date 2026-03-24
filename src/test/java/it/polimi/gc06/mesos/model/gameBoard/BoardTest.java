@@ -3,17 +3,21 @@ package it.polimi.gc06.mesos.model.gameBoard;
 import it.polimi.gc06.mesos.model.*;
 import it.polimi.gc06.mesos.model.cards.TribeCard;
 import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
+import it.polimi.gc06.mesos.model.cards.characters.GathererCard;
 import it.polimi.gc06.mesos.model.cards.events.EventCard;
+import it.polimi.gc06.mesos.model.cards.events.SustenanceEvent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+
 
 class BoardTest {
 
@@ -41,9 +45,13 @@ class BoardTest {
         for (Era era : Era.values()) {
             ArrayList<TribeCard> deck = new ArrayList<>();
             // Aggiungiamo un numero sufficiente di carte mockate
-            for (int i = 0; i < 99; i++) {
-                deck.add(mock(TribeCard.class));
+            for (int i = 0; i < 20; i++) {
+                deck.add(mock(GathererCard.class));
             }
+            for (int i = 0; i < 20; i++) {
+                deck.add(mock(SustenanceEvent.class));
+            }
+            Collections.shuffle(deck);
             tribeDecks.put(era, deck);
         }
 
