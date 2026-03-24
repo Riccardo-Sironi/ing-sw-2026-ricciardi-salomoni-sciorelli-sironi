@@ -476,7 +476,7 @@ public class Board implements DrawSubject {
             throw new IllegalArgumentException("Card not found in the top row");
         }
 
-        observers.forEach(observer -> observer.update(player));
+        notifyObserverBuildings(player);
         topRow.remove(card);
         player.addCharacterCards(card);
     }
@@ -509,7 +509,7 @@ public class Board implements DrawSubject {
             throw new IllegalArgumentException("Card not found in the bottom row");
         }
 
-        observers.forEach(observer -> observer.update(player));
+        notifyObserverBuildings(player);
         bottomRow.remove(card);
         player.addCharacterCards(card);
     }
@@ -625,8 +625,6 @@ public class Board implements DrawSubject {
      */
     @Override
     public void notifyObserverBuildings(Player player) {
-        for (DrawObserver observer : observers) {
-            observer.update(player);
-        }
+        observers.forEach(observer -> observer.update(player));
     }
 }

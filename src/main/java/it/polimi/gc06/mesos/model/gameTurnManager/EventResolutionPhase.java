@@ -8,14 +8,11 @@ import java.util.ArrayList;
 
 public class EventResolutionPhase extends Phase {
 
-    private final Board board;
-
     /**
      * this method constructs the event resolution phase with the specified game board.
      *
      */
-    public EventResolutionPhase(Board board) {
-        this.board = board;
+    public EventResolutionPhase() {
     }
 
     public void resolveEvent(TurnManager turnManager, Board board) throws IllegalPhaseActionException {

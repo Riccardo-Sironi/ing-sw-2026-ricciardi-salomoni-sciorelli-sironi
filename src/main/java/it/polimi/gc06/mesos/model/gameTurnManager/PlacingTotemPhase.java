@@ -4,6 +4,7 @@ import it.polimi.gc06.mesos.gameExceptions.IllegalPhaseActionException;
 import it.polimi.gc06.mesos.model.Player;
 import it.polimi.gc06.mesos.model.gameBoard.TileSlot;
 
+public class PlacingTotemPhase extends Phase {
 
     /**
      * this method is used to execute the totem placement actions.
