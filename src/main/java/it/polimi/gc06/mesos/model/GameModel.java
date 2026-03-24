@@ -55,7 +55,7 @@ public class GameModel implements GameInfo {
         this.board = new Board();
 
         // TODO : after the board initialization we have to create the turn manager and initialize it with the first phase (PlacingTotemPhase) and the list of players.
-        this.turnManager = new TurnManager(players, board.getTurnOrderTile(), 0, board.getOfferTrack(), null); // the parameters here are not clear yet (except for the list of players)
+        this.turnManager = new TurnManager(players, board.getTurnOrderTile(), 0, board.getOfferTrack(), null, null); // the parameters here are not clear yet (except for the list of players)
     }
 
     /**

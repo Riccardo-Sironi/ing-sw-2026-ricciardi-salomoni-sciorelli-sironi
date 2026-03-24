@@ -1,12 +1,68 @@
 package it.polimi.gc06.mesos.model.gameTurnManager;
 
+import it.polimi.gc06.mesos.gameExceptions.IllegalGameActionException;
 import it.polimi.gc06.mesos.gameExceptions.IllegalPhaseActionException;
 import it.polimi.gc06.mesos.model.GameModel;
+import it.polimi.gc06.mesos.model.Player;
+import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
+import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingCard;
+import it.polimi.gc06.mesos.model.cards.characters.CharacterCard;
 import it.polimi.gc06.mesos.model.gameBoard.Board;
+import it.polimi.gc06.mesos.model.gameBoard.TileSlot;
+
+import java.util.ArrayList;
 
 public class EndOfRoundPhase extends Phase {
 
-    public EndOfRoundPhase() {
+    private boolean isStarted;
+
+    public EndOfRoundPhase(ModifierBuildingCard pickFromTopCard) {
+        this.isStarted = false;
+    }
+
+    public void startEndOfRound(TurnManager turnManager, ArrayList<Player> players, TileSlot tileSlot) throws IllegalPhaseActionException {
+
+        players.forEach((Player player) -> player.setTopDrawNum(player.getBuildingCards().contains(turnManager.getPickFromTopCard()) ? 1 : 0));
+        isStarted = true;
+
+    }
+
+    public void pickCardFromTop(TurnManager turnManager, Player player, CharacterCard card, Board board) throws IllegalPhaseActionException {
+
+        if (!isStarted) {
+            throw new IllegalPhaseActionException("You have to start the offer resolution phase first!");
+        }
+
+        if (player.getTopDrawNum() <= 0) {
+            throw new IllegalPhaseActionException("You can't draw from the top row anymore!");
+        }
+
+        board.pickCardFromTopRow(player, card);
+        player.setTopDrawNum(player.getTopDrawNum() - 1);
+        checkIfPlayerIsFinished(turnManager, player, board);
+    }
+
+    public void pickCardFromTop(TurnManager turnManager, Player player, BuildingCard card, Board board) throws IllegalPhaseActionException, IllegalArgumentException, IllegalGameActionException {
+
+        if (!isStarted) {
+            throw new IllegalPhaseActionException("You have to start the offer resolution phase first!");
+        }
+
+        if (player.getTopDrawNum() <= 0) {
+            throw new IllegalPhaseActionException("You can't draw from the top row anymore!");
+        }
+
+        board.buyBuildingFromTopRow(player, card);
+        player.setTopDrawNum(player.getTopDrawNum() - 1);
+        checkIfPlayerIsFinished(turnManager, player, board);
+    }
+
+    private void checkIfPlayerIsFinished(TurnManager turnManager, Player player, Board board) throws IllegalPhaseActionException {
+
+        if (!isStarted) {
+            throw new IllegalPhaseActionException("You have to start the offer resolution phase first!");
+        }
+
     }
 
     /**
