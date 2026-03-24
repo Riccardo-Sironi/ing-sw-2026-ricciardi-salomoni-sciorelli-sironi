@@ -10,6 +10,9 @@ public class BottomRowInitVisitor implements TribeCardVisitor {
     ArrayList<TribeCard> topRow;
     int maxTopRowSize;
 
+    // TODO : qui dobbiamo gestire il caso (REMOTO) in cui durante l'init della board vengono pescate tante carte evento
+    // quante a riempire tutta la top row prima di finire l'init della bottom (assurdo)
+
     public BottomRowInitVisitor(ArrayList<TribeCard> bottomRow, ArrayList<TribeCard> topRow, int maxTopRowSize) {
         this.bottomRow = bottomRow;
         this.topRow = topRow;

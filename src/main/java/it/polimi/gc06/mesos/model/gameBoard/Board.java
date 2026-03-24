@@ -360,11 +360,9 @@ public class Board implements DrawSubject {
         int maxTopRowSize = model.getPlayers().size() + 4;
 
         while (bottomRow.size() < cardsToDraw) {
-            // TODO  : we could force to pick Era.ERA_I cards instead
             if (model.getTribeCardsDeck().get(currentEra).isEmpty()) {
                 throw new IllegalStateException("Tribe cards deck cannot be empty during bottom row initialization loop");
             }
-            // TODO  : we could force to pick Era.ERA_I cards instead
             TribeCard removedCard = model.getTribeCardsDeck().get(currentEra).removeLast();
 
             try {

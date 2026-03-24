@@ -4,10 +4,13 @@ import it.polimi.gc06.mesos.model.*;
 import it.polimi.gc06.mesos.model.cards.TribeCard;
 import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
 import it.polimi.gc06.mesos.model.cards.characters.GathererCard;
+import it.polimi.gc06.mesos.model.cards.characters.ShamanCard;
 import it.polimi.gc06.mesos.model.cards.events.EventCard;
+import it.polimi.gc06.mesos.model.cards.events.RitualEvent;
 import it.polimi.gc06.mesos.model.cards.events.SustenanceEvent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import java.util.ArrayList;
@@ -46,10 +49,10 @@ class BoardTest {
             ArrayList<TribeCard> deck = new ArrayList<>();
             // Aggiungiamo un numero sufficiente di carte mockate
             for (int i = 0; i < 20; i++) {
-                deck.add(mock(GathererCard.class));
+                deck.add(new GathererCard(era));
             }
             for (int i = 0; i < 20; i++) {
-                deck.add(mock(SustenanceEvent.class));
+                deck.add(new RitualEvent(era, 1, 0, null, null));
             }
             Collections.shuffle(deck);
             tribeDecks.put(era, deck);
@@ -66,7 +69,7 @@ class BoardTest {
         }
 
         // 4. Setup Eventi Finali
-        finalEvents = new EventCard[]{ mock(EventCard.class), mock(EventCard.class) };
+        finalEvents = new EventCard[]{mock(EventCard.class), mock(EventCard.class)};
 
         // Istruiamo il mock a restituire questi oggetti
         when(modelMock.getPlayers()).thenReturn(players);
