@@ -171,6 +171,14 @@ public class GameModel implements GameInfo {
         board.addObserver(observer);
     }
 
+    @Override
+    public int getNumPlayerMaxStars() {
+        int maxStars = this.getMaxStars();
+        return (int) players.stream()
+                .filter(p -> p.getShamanStars() == maxStars)
+                .count();
+    }
+
     /**
      * this method retrieves the deck containing all building cards, categorized by Era.
      *

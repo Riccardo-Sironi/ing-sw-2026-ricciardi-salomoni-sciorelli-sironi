@@ -10,4 +10,6 @@ public interface GameInfo {
     int getMinStars();
 
     void addObserver(DrawObserver observer);
+
+    int getNumPlayerMaxStars();
 }

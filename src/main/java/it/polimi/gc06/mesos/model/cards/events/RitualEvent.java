@@ -48,10 +48,17 @@ public class RitualEvent extends EventCard {
         int minStars = player.getEnvironment().getMinStars();
 
         if (player.getShamanStars() == maxStars) {
-            player.addPrestigeTokens(player.getBuildingCards().contains(doubleWinCard) ? numPrestigeGained * 2 : numPrestigeGained);
+
+                /*player is the only one to has the max stars      &&          player has the doubleWinCard*/
+            if(player.getEnvironment().getNumPlayerMaxStars() == 1 && player.getBuildingCards().contains(doubleWinCard)) {
+                player.addPrestigeTokens(numPrestigeGained *2);
+            } else { player.addPrestigeTokens(numPrestigeGained); }
+
         }
+
         if (player.getShamanStars() == minStars) {
             player.removePrestigeTokens(player.getBuildingCards().contains(noLossCard) ? 0 : numPrestigeLost);
         }
     }
+
 }
