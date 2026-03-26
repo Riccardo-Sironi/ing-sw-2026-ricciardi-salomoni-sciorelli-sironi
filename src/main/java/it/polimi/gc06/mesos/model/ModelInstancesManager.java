@@ -10,6 +10,7 @@ public class ModelInstancesManager {
         //loads other resources from JSON
         //instantiates GameModel object
 
+        return null;
     }
 
 }
