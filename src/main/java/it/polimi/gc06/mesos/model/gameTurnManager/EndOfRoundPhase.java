@@ -16,7 +16,7 @@ public class EndOfRoundPhase extends Phase {
 
     private boolean isStarted;
 
-    public EndOfRoundPhase(ModifierBuildingCard pickFromTopCard) {
+    public EndOfRoundPhase() {
         this.isStarted = false;
     }
 

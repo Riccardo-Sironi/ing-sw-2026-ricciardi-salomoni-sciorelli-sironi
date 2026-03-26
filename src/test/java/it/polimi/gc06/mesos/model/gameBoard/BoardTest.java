@@ -3,6 +3,7 @@ package it.polimi.gc06.mesos.model.gameBoard;
 import it.polimi.gc06.mesos.model.*;
 import it.polimi.gc06.mesos.model.cards.TribeCard;
 import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
+import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingCard;
 import it.polimi.gc06.mesos.model.cards.characters.GathererCard;
 import it.polimi.gc06.mesos.model.cards.characters.ShamanCard;
 import it.polimi.gc06.mesos.model.cards.events.EventCard;
@@ -35,7 +36,7 @@ class BoardTest {
 
     @BeforeEach
     void setUp() {
-        board = new Board();
+        board = new Board(mock(ModifierBuildingCard.class));
         modelMock = mock(GameModel.class);
 
         // 1. Setup Giocatori (minimo 2 per passare i controlli di initBoard)
