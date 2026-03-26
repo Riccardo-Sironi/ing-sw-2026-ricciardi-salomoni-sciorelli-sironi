@@ -6,6 +6,7 @@ module it.polimi.gc06.mesos {
     requires org.kordamp.bootstrapfx.core;
     requires java.desktop;
     requires java.compiler;
+    requires com.fasterxml.jackson.databind;
 
     opens it.polimi.gc06.mesos to javafx.fxml;
     exports it.polimi.gc06.mesos;
