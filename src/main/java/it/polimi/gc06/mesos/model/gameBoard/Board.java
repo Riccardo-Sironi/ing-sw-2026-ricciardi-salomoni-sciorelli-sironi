@@ -208,23 +208,23 @@ public class Board implements DrawSubject {
         // TODO : turn order tile init : !!!! THIS SHOULD BE DONE WITH THE JSON THIS IS JUST A PROTOTYPE !!!
         switch (nPlayers) {
             case 2:
-                turnOrderTile.addSlot(0, new TileSlot(new FoodTileEffect(1)));
+                turnOrderTile.addSlot(0, new TileSlot(new FoodTileEffect(1, null)));
                 turnOrderTile.addSlot(1, new TileSlot(new RemoveFoodTileEffect()));
                 break;
             case 3:
-                turnOrderTile.addSlot(0, new TileSlot(new FoodTileEffect(2)));
+                turnOrderTile.addSlot(0, new TileSlot(new FoodTileEffect(2, null)));
                 turnOrderTile.addSlot(1, new TileSlot(null));
                 turnOrderTile.addSlot(2, new TileSlot(new RemoveFoodTileEffect()));
                 break;
             case 4:
-                turnOrderTile.addSlot(0, new TileSlot(new FoodTileEffect(2)));
-                turnOrderTile.addSlot(1, new TileSlot(new FoodTileEffect(1)));
+                turnOrderTile.addSlot(0, new TileSlot(new FoodTileEffect(2, null)));
+                turnOrderTile.addSlot(1, new TileSlot(new FoodTileEffect(1, null)));
                 turnOrderTile.addSlot(2, new TileSlot(null));
                 turnOrderTile.addSlot(3, new TileSlot(new RemoveFoodTileEffect()));
                 break;
             case 5:
-                turnOrderTile.addSlot(0, new TileSlot(new FoodTileEffect(3)));
-                turnOrderTile.addSlot(1, new TileSlot(new FoodTileEffect(1)));
+                turnOrderTile.addSlot(0, new TileSlot(new FoodTileEffect(3, null)));
+                turnOrderTile.addSlot(1, new TileSlot(new FoodTileEffect(1, null)));
                 turnOrderTile.addSlot(2, new TileSlot(null));
                 turnOrderTile.addSlot(3, new TileSlot(null));
                 turnOrderTile.addSlot(4, new TileSlot(new RemoveFoodTileEffect()));
@@ -234,7 +234,7 @@ public class Board implements DrawSubject {
         }
 
         // offer track init
-        if (nPlayers == 5) offerTrack.addFirst(new TileSlot(new FoodTileEffect(3)));
+        if (nPlayers == 5) offerTrack.addFirst(new TileSlot(new FoodTileEffect(3, null)));
         offerTrack.add(new TileSlot(new ChooseCardTileEffect(0, 1)));
         offerTrack.add(new TileSlot(new ChooseCardTileEffect(1, 0)));
         if (nPlayers > 2) offerTrack.add(new TileSlot(new ChooseCardTileEffect(0, 2)));
