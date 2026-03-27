@@ -177,13 +177,15 @@ public class Board implements DrawSubject {
      * @throws IllegalStateException    if the building cards deck for any era is empty during building decks initialization.
      */
     public void initBoard(GameModel model) throws IllegalArgumentException, IllegalStateException {
+        // TODO : separate the throws to check coverage
+
         if (model == null) {
             throw new IllegalArgumentException("Model cannot be null");
         }
-        if (model.getTribeCardsDeck() == null || model.getTribeCardsDeck().isEmpty() || model.getTribeCardsDeck().values().stream().allMatch(ArrayList::isEmpty)) {
+        if (model.getTribeCardsDeck() == null || model.getTribeCardsDeck().isEmpty() || model.getTribeCardsDeck().values().stream().anyMatch(deck -> deck == null || deck.isEmpty())) {
             throw new IllegalArgumentException("Tribe cards deck cannot be null or empty");
         }
-        if (model.getBuildingCardsDecks() == null || model.getBuildingCardsDecks().isEmpty() || model.getBuildingCardsDecks().values().stream().allMatch(ArrayList::isEmpty)) {
+        if (model.getBuildingCardsDecks() == null || model.getBuildingCardsDecks().isEmpty() || model.getBuildingCardsDecks().values().stream().anyMatch(deck -> deck == null || deck.isEmpty())) {
             throw new IllegalArgumentException("Building cards decks cannot be null or empty");
         }
         if (model.getPlayers().size() < 2 || model.getPlayers().size() > 5) {
@@ -203,10 +205,6 @@ public class Board implements DrawSubject {
 
         for (Era era : Era.values()) {
             for (int j = 0; j < nBuildings[nPlayers - 2][era.ordinal()]; j++) {
-                if (model.getBuildingCardsDecks().get(era) == null || model.getBuildingCardsDecks().get(era).isEmpty()) {
-                    throw new IllegalStateException("Building cards deck for era " + era + " cannot be null or empty " +
-                            "during building decks initialization");
-                }
                 buildingsDecks.get(era).addLast(model.getBuildingCardsDecks().get(era).removeLast());
             }
         }

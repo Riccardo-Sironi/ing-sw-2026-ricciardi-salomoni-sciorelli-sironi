@@ -5,19 +5,14 @@ import it.polimi.gc06.mesos.model.cards.TribeCard;
 import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
 import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingCard;
 import it.polimi.gc06.mesos.model.cards.characters.GathererCard;
-import it.polimi.gc06.mesos.model.cards.characters.ShamanCard;
 import it.polimi.gc06.mesos.model.cards.events.EventCard;
 import it.polimi.gc06.mesos.model.cards.events.RitualEvent;
-import it.polimi.gc06.mesos.model.cards.events.SustenanceEvent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -86,12 +81,16 @@ class BoardTest {
 
         // Verifiche post-inizializzazione
 
-        // La riga inferiore (bottomRow) deve contenere nPlayers + 1 carte
         assertEquals(players.size() + 1, board.getBottomRow().size(),
                 "La bottom row dovrebbe avere n+1 carte");
 
-        // Verifichiamo che la TurnOrderTile sia stata creata
+        assertEquals(players.size() + 4, board.getTopRow().size(),
+                "La top row dovrebbe avere n+4 carte");
+
         assertNotNull(board.getTurnOrderTile(), "La TurnOrderTile non dovrebbe essere null");
+
+        assertFalse(board.getTopBuildings().isEmpty(), "Top buildings space should have cards");
+        assertTrue(board.getBottomBuildings().isEmpty(), "Bottom buildings space should be empty at initialization");
 
         // Verifichiamo che l'Offer Track sia stata popolata (es. per 2 giocatori)
         assertFalse(board.getOfferTrack().isEmpty());
@@ -106,11 +105,72 @@ class BoardTest {
     }
 
     @Test
-    void testInitBoardThrowsExceptionWhenPlayersInsufficient() {
-        // Setup con un solo giocatore (illegale secondo i tuoi controlli)
+    void testInitBoardThrowsExceptionWhenPlayersInsufficientOrMoreThenExpected() {
+        // Setup con un solo giocatore
         players.clear();
         players.add(mock(Player.class));
 
         assertThrows(IllegalArgumentException.class, () -> board.initBoard(modelMock));
+
+        players.clear();
+
+        for (int i = 0; i < 6; i++) {
+            players.add(mock(Player.class));
+        }
+        assertThrows(IllegalArgumentException.class, () -> board.initBoard(modelMock));
     }
+
+    @Test
+    void testInitBoardThrowsExceptionWhenTribeDecksInsufficient() {
+        // Setup con decks di tribù vuoti
+        for (Era era : Era.values()) {
+            tribeDecks.put(era, new ArrayList<>());
+        }
+
+        assertThrows(IllegalArgumentException.class, () -> board.initBoard(modelMock));
+    }
+
+    @Test
+    void testInitBoardThrowsExceptionWhenTribeDecksNull() {
+        // Setup con decks di tribù null
+        for (Era era : Era.values()) {
+            tribeDecks.put(era, null);
+        }
+
+        assertThrows(IllegalArgumentException.class, () -> board.initBoard(modelMock));
+    }
+
+    @Test
+    void testInitBoardThrowsExceptionWhenBuildingDecksInsufficient() {
+        // Setup con decks di edifici vuoti
+        for (Era era : Era.values()) {
+            buildingDecks.put(era, new ArrayList<>());
+        }
+
+        assertThrows(IllegalArgumentException.class, () -> board.initBoard(modelMock));
+    }
+
+    @Test
+    void testInitBoardThrowsExceptionWhenBuildingDecksNull() {
+        // Setup con decks di edifici null
+        for (Era era : Era.values()) {
+            buildingDecks.put(era, null);
+        }
+
+        assertThrows(IllegalArgumentException.class, () -> board.initBoard(modelMock));
+    }
+
+    @Test
+    void testInitBoardThrowsExceptionWhenFinalEventsInsufficient() {
+        // Setup con eventi finali nulli
+        when(modelMock.getFinalEventCards()).thenReturn(null);
+
+        assertThrows(IllegalArgumentException.class, () -> board.initBoard(modelMock));
+
+        // Setup con eventi finali insufficienti
+        when(modelMock.getFinalEventCards()).thenReturn(new EventCard[]{mock(EventCard.class)});
+
+        assertThrows(IllegalArgumentException.class, () -> board.initBoard(modelMock));
+    }
+
 }
