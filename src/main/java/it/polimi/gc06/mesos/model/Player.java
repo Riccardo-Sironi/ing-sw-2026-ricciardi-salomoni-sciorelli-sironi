@@ -508,4 +508,17 @@ public class Player {
         }
         return foodDiscount;
     }
+
+    /**
+     * Returns the total prestige gained from builder cards (the amount written in the bottom-right corner).
+     */
+    public int getBuildersPrestige(){
+        int prestigeGained = 0;
+
+        for (CharacterCard card : characterDeck.get(CharacterType.BUILDER)) {
+            BuilderCard temp = (BuilderCard) card;
+            prestigeGained += temp.getPrestige();
+        }
+        return prestigeGained;
+    }
 }

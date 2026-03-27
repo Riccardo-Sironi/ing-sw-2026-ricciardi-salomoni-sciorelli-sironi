@@ -29,7 +29,7 @@ public class BuilderCard extends CharacterCard {
      *
      * @return the integer number of prestige points the card gives
      */
-    protected int getPrestige() {
+    public int getPrestige() {
         return prestige;
     }
 

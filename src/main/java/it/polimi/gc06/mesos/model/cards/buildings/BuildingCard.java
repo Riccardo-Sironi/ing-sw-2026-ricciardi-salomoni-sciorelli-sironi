@@ -1,26 +1,19 @@
 package it.polimi.gc06.mesos.model.cards.buildings;
 
-/* TODO IDEA GENERALE
-Le building card vengono memorizzate sul Player e sul GameModel come tre diversi mazzetti in base
-alla tipologia della carta (magari i mazzetti divisi a loro volta nelle ere).
-Esiste comunque la classe building card per poter interagire in modo univoco con il cibo richiesto (può essere
-utile durante la scelta delle carte forse) e con il prestigio guadagnato (sicuramente utile per gestire a
-fine partita il conteggio del prestigio)
- */
-
 import it.polimi.gc06.mesos.model.Era;
 import it.polimi.gc06.mesos.model.Player;
+import it.polimi.gc06.mesos.model.cards.Card;
 
-public abstract class BuildingCard {
+public abstract class BuildingCard implements Card {
 
-    private final Era era;
-    private final int foodCost;
-    private final int prestigeGain;
+    private Era era;
+    private int foodCost;
+    private int prestigeGain;
 
-    public BuildingCard(Era era, int foodCost, int prestigeGain) {
-        this.era = era;
-        this.foodCost = foodCost;
-        this.prestigeGain = prestigeGain;
+    public BuildingCard(){
+        era = null;
+        foodCost = -1;
+        prestigeGain = -1;
     }
 
     /**
@@ -51,4 +44,42 @@ public abstract class BuildingCard {
         return prestigeGain;
     }
 
+    /**
+     * Era setter. This should be called only once.
+     *
+     * @param era the era of the card.
+     * @throws IllegalStateException gets thrown if this setter is called more than once.
+     * @throws IllegalArgumentException if the era is null
+     */
+    public void setEra(Era era) throws IllegalStateException, IllegalArgumentException{
+        if(era == null) throw new IllegalArgumentException();
+        if(this.era != null) throw new IllegalStateException("Setter has been already called");
+        this.era = era;
+    }
+
+    /**
+     * FoodCost setter. This should be called only once.
+     *
+     * @param foodCost the food cost of the card.
+     * @throws IllegalStateException gets thrown if this setter is called more than once.
+     * @throws IllegalArgumentException if the food cost is negative
+     */
+    public void setFoodCost(int foodCost) throws IllegalStateException, IllegalArgumentException{
+        if(foodCost < 0) throw new IllegalArgumentException();
+        if(this.foodCost >= 0) throw new IllegalStateException("Setter has been already called");
+        this.foodCost = foodCost;
+    }
+
+    /**
+     * PrestigeGain setter. This should be called only once.
+     *
+     * @param prestigeGain the prestige gained by the card at the end of the game.
+     * @throws IllegalStateException gets thrown if this setter is called more than once.
+     * @throws IllegalArgumentException if the prestigeGain is negative
+     */
+    public void setPrestigeGain(int prestigeGain) throws IllegalStateException, IllegalArgumentException{
+        if(prestigeGain < 0) throw new IllegalArgumentException();
+        if(this.prestigeGain >= 0) throw new IllegalStateException("Setter has been already called");
+        this.prestigeGain = prestigeGain;
+    }
 }

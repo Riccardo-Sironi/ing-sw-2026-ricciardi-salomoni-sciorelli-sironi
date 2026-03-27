@@ -6,12 +6,6 @@ import it.polimi.gc06.mesos.model.Player;
 
 public class ObserverPairBuildingCard extends BuildingCard implements DrawObserver {
 
-
-    public ObserverPairBuildingCard(Era era, int foodCost, int prestigeGain) {
-        super(era, foodCost, prestigeGain);
-    }
-
-
     /**
      * Update if player has completed a pair, if so he gets 2 food tokens and decrease the number of pairs completed by 1.
      *
