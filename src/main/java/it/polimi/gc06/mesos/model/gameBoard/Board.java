@@ -14,10 +14,7 @@ import it.polimi.gc06.mesos.model.cards.events.EventListVisitor;
 import it.polimi.gc06.mesos.model.gameTurnManager.DrawObserver;
 import it.polimi.gc06.mesos.model.gameTurnManager.DrawSubject;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.EnumMap;
-import java.util.List;
+import java.util.*;
 
 public class Board implements DrawSubject {
     private final ArrayList<TribeCard> topRow;
@@ -177,17 +174,34 @@ public class Board implements DrawSubject {
      * @throws IllegalStateException    if the building cards deck for any era is empty during building decks initialization.
      */
     public void initBoard(GameModel model) throws IllegalArgumentException, IllegalStateException {
-        // TODO : separate the throws to check coverage
-
         if (model == null) {
             throw new IllegalArgumentException("Model cannot be null");
         }
-        if (model.getTribeCardsDeck() == null || model.getTribeCardsDeck().isEmpty() || model.getTribeCardsDeck().values().stream().anyMatch(deck -> deck == null || deck.isEmpty())) {
-            throw new IllegalArgumentException("Tribe cards deck cannot be null or empty");
+        if (model.getTribeCardsDeck() == null) {
+            throw new IllegalArgumentException("Tribe cards deck cannot be null");
         }
-        if (model.getBuildingCardsDecks() == null || model.getBuildingCardsDecks().isEmpty() || model.getBuildingCardsDecks().values().stream().anyMatch(deck -> deck == null || deck.isEmpty())) {
-            throw new IllegalArgumentException("Building cards decks cannot be null or empty");
+        if (model.getTribeCardsDeck().isEmpty()) {
+            throw new IllegalArgumentException("Tribe cards deck enumap cannot be empty from keys");
         }
+        if (model.getTribeCardsDeck().values().stream().anyMatch(Objects::isNull)) {
+            throw new IllegalArgumentException("Tribe cards deck for each era cannot be null");
+        }
+        if (model.getTribeCardsDeck().values().stream().anyMatch(ArrayList::isEmpty)) {
+            throw new IllegalArgumentException("Tribe cards deck for each era cannot be empty");
+        }
+        if (model.getBuildingCardsDecks() == null) {
+            throw new IllegalArgumentException("Building cards decks cannot be null");
+        }
+        if (model.getBuildingCardsDecks().isEmpty()) {
+            throw new IllegalArgumentException("Building cards decks enumap cannot be empty from keys");
+        }
+        if (model.getBuildingCardsDecks().values().stream().anyMatch(Objects::isNull)) {
+            throw new IllegalArgumentException("Building cards deck for each era cannot be null");
+        }
+        if (model.getBuildingCardsDecks().values().stream().anyMatch(ArrayList::isEmpty)) {
+            throw new IllegalArgumentException("Building cards deck for each era cannot be empty");
+        }
+
         if (model.getPlayers().size() < 2 || model.getPlayers().size() > 5) {
             throw new IllegalArgumentException("Number of players must be between 2 and 5");
         }
@@ -234,7 +248,6 @@ public class Board implements DrawSubject {
                 turnOrderTile.addSlot(4, new TileSlot(new RemoveFoodTileEffect()));
                 break;
             default:
-                throw new IllegalArgumentException("Number of players must be between 2 and 5");
         }
 
         // offer track init

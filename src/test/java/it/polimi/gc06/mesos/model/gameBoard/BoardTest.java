@@ -44,10 +44,10 @@ class BoardTest {
         for (Era era : Era.values()) {
             ArrayList<TribeCard> deck = new ArrayList<>();
             // Aggiungiamo un numero sufficiente di carte mockate
-            for (int i = 0; i < 20; i++) {
+            for (int i = 0; i < 84; i++) {
                 deck.add(new GathererCard(era));
             }
-            for (int i = 0; i < 20; i++) {
+            for (int i = 0; i < 10; i++) {
                 deck.add(new RitualEvent(era, 1, 0, null, null));
             }
             Collections.shuffle(deck);
@@ -121,6 +121,38 @@ class BoardTest {
     }
 
     @Test
+    void testInitBoardThrowsExceptionWhenTribeCardsDeckNUll() {
+        // Setup con decks di tribù null
+        when(modelMock.getTribeCardsDeck()).thenReturn(null);
+
+        assertThrows(IllegalArgumentException.class, () -> board.initBoard(modelMock));
+    }
+
+    @Test
+    void testInitBoardThrowsExceptionWhenBuildingCardsDecksNull() {
+        // Setup con decks di edifici null
+        when(modelMock.getBuildingCardsDecks()).thenReturn(null);
+
+        assertThrows(IllegalArgumentException.class, () -> board.initBoard(modelMock));
+    }
+
+    @Test
+    void testInitBoardThrowsExceptionWhenTribeCardsDeckEmpty() {
+        // Setup con decks di tribù vuoti
+        when(modelMock.getTribeCardsDeck()).thenReturn(new EnumMap<>(Era.class));
+
+        assertThrows(IllegalArgumentException.class, () -> board.initBoard(modelMock));
+    }
+
+    @Test
+    void testInitBoardThrowsExceptionWhenBuildingCardsDecksEmpty() {
+        // Setup con decks di edifici vuoti
+        when(modelMock.getBuildingCardsDecks()).thenReturn(new EnumMap<>(Era.class));
+
+        assertThrows(IllegalArgumentException.class, () -> board.initBoard(modelMock));
+    }
+
+    @Test
     void testInitBoardThrowsExceptionWhenTribeDecksInsufficient() {
         // Setup con decks di tribù vuoti
         for (Era era : Era.values()) {
@@ -173,4 +205,38 @@ class BoardTest {
         assertThrows(IllegalArgumentException.class, () -> board.initBoard(modelMock));
     }
 
+    @Test
+    void testInitBoardOfferTrackInit() {
+        for (int i = 2; i < 6; i++) {
+            board = new Board(mock(ModifierBuildingCard.class));
+            board.getBottomRow().clear();
+            board.getTopRow().clear();
+            players.clear();
+            for (int j = 0; j < i; j++) {
+                players.add(mock(Player.class));
+            }
+
+            when(modelMock.getPlayers()).thenReturn(players);
+
+            board.initBoard(modelMock);
+
+            switch (players.size()) {
+                case 2:
+                    assertEquals(4, board.getOfferTrack().size(), "for 2 players, the Offer Track should have 4 tiles");
+                    break;
+                case 3:
+                    assertEquals(5, board.getOfferTrack().size(), "for 3 players, the Offer Track should have 5 tiles");
+                    break;
+                case 4:
+                    assertEquals(6, board.getOfferTrack().size(), "for 4 players, the Offer Track should have 6 tiles");
+                    break;
+                case 5:
+                    assertEquals(7, board.getOfferTrack().size(), "for 5 players, the Offer Track should have 7 tiles");
+                    break;
+
+                default:
+                    fail("Numero di giocatori non previsto per il test");
+            }
+        }
+    }
 }
