@@ -58,6 +58,7 @@ public class OfferResolutionPhase extends Phase {
         checkIfPlayerIsFinished(turnManager, player, board);
     }
 
+
     public void pickCardFromTop(TurnManager turnManager, Player player, BuildingCard card, Board board) throws IllegalPhaseActionException, IllegalArgumentException, IllegalGameActionException {
 
         if (!isStarted) {
@@ -84,7 +85,7 @@ public class OfferResolutionPhase extends Phase {
         }
 
         board.buyBuildingFromBottomRow(player, card);
-        player.setBottomDrawNum(player.getTopDrawNum() - 1);
+        player.setBottomDrawNum(player.getBottomDrawNum() - 1);
         checkIfPlayerIsFinished(turnManager, player, board);
     }
 

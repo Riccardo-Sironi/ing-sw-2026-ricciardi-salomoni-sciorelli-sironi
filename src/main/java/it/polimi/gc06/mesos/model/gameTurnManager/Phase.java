@@ -4,6 +4,7 @@ import it.polimi.gc06.mesos.gameExceptions.IllegalPhaseActionException;
 import it.polimi.gc06.mesos.model.Player;
 import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
 import it.polimi.gc06.mesos.model.cards.characters.CharacterCard;
+import it.polimi.gc06.mesos.model.cards.events.EventCard;
 import it.polimi.gc06.mesos.model.gameBoard.Board;
 import it.polimi.gc06.mesos.model.gameBoard.TileSlot;
 
@@ -49,4 +50,11 @@ public abstract class Phase {
         throw new IllegalPhaseActionException("You cannot draw yet!");
     }
 
+    public void pickCardFromBottom(TurnManager turnManager, Player player, EventCard card, Board board) throws IllegalPhaseActionException, IllegalArgumentException {
+        throw new IllegalPhaseActionException("You can't pick Event Cards during the Offer Resolution Phase!");
+    }
+
+    public void pickCardFromTop(TurnManager turnManager, Player player, EventCard card, Board board) throws IllegalPhaseActionException, IllegalArgumentException {
+        throw new IllegalPhaseActionException("You can't pick Event Cards during the Offer Resolution Phase!");
+    }
 }
