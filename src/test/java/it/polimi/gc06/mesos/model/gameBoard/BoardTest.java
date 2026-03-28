@@ -3,10 +3,10 @@ package it.polimi.gc06.mesos.model.gameBoard;
 import it.polimi.gc06.mesos.model.*;
 import it.polimi.gc06.mesos.model.cards.TribeCard;
 import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
+import it.polimi.gc06.mesos.model.cards.buildings.EndGameBuildingCard;
 import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingCard;
 import it.polimi.gc06.mesos.model.cards.characters.GathererCard;
 import it.polimi.gc06.mesos.model.cards.characters.HunterCard;
-import it.polimi.gc06.mesos.model.cards.characters.ShamanCard;
 import it.polimi.gc06.mesos.model.cards.events.EventCard;
 import it.polimi.gc06.mesos.model.cards.events.PaintingsEvent;
 import it.polimi.gc06.mesos.model.cards.events.RitualEvent;
@@ -38,12 +38,12 @@ class BoardTest {
         board = new Board(mock(ModifierBuildingCard.class));
         modelMock = mock(GameModel.class);
 
-        // 1. Setup Giocatori (minimo 2 per passare i controlli di initBoard)
+        // setup players (at least 2)
         players = new ArrayList<>();
         players.add(mock(Player.class));
         players.add(mock(Player.class));
 
-        // 2. Setup Decks Tribù (almeno una carta per Era I per la bottom row)
+        // setup tribe decks
         tribeDecks = new EnumMap<>(Era.class);
         for (Era era : Era.values()) {
             ArrayList<TribeCard> deck = new ArrayList<>();
@@ -58,20 +58,20 @@ class BoardTest {
             tribeDecks.put(era, deck);
         }
 
-        // 3. Setup Decks Edifici
+        // setup building decks
         buildingDecks = new EnumMap<>(Era.class);
         for (Era era : Era.values()) {
             ArrayList<BuildingCard> deck = new ArrayList<>();
-            for (int i = 0; i < 99; i++) {
-                deck.add(mock(BuildingCard.class));
+            for (int i = 0; i < 100; i++) {
+                deck.add(new EndGameBuildingCard());
             }
             buildingDecks.put(era, deck);
         }
 
-        // 4. Setup Eventi Finali
-        finalEvents = new EventCard[]{mock(EventCard.class), mock(EventCard.class)};
+        // final events
+        finalEvents = new EventCard[]{new SustenanceEvent(Era.ERA_III, 1, null, null, null),
+                new RitualEvent(Era.ERA_III, 1, 0, null, null)};
 
-        // Istruiamo il mock a restituire questi oggetti
         when(modelMock.getPlayers()).thenReturn(players);
         when(modelMock.getTribeCardsDeck()).thenReturn(tribeDecks);
         when(modelMock.getBuildingCardsDecks()).thenReturn(buildingDecks);
@@ -79,11 +79,38 @@ class BoardTest {
     }
 
     @Test
-    void testInitBoardSuccess() {
-        // Esecuzione
-        assertDoesNotThrow(() -> board.initBoard(modelMock));
+    void testGetOfferTrackPlayerSlotSuccess() {
+        board.initBoard(modelMock);
 
-        // Verifiche post-inizializzazione
+        Player p1 = mock(Player.class);
+        int p1Index = 2;
+        board.getOfferTrack().get(p1Index).setPlayer(p1);
+
+        assertEquals(board.getOfferTrackPlayerSlot(p1), board.getOfferTrack().get(p1Index),
+                "it should return the offer track slot occupied by the player");
+    }
+
+    @Test
+    void testGetOfferTrackPlayerSlotPlayerNotInTrack() {
+        board.initBoard(modelMock);
+
+        Player p1 = mock(Player.class);
+        assertNull(board.getOfferTrackPlayerSlot(p1), "it should return null if the player is not in the offer track");
+    }
+
+    @Test
+    void testIsOfferTrackEmptyReturnFalseWhenPlayerPresent() {
+        board.initBoard(modelMock);
+
+        Player p = mock(Player.class);
+        board.getOfferTrack().getFirst().setPlayer(p);
+
+        assertFalse(board.isOfferTrackEmpty(), "it should return false if there is at least one player in the offer track");
+    }
+
+    @Test
+    void testInitBoardSuccess() {
+        assertDoesNotThrow(() -> board.initBoard(modelMock));
 
         assertEquals(players.size() + 1, board.getBottomRow().size(),
                 "La bottom row dovrebbe avere n+1 carte");
@@ -96,11 +123,14 @@ class BoardTest {
         assertFalse(board.getTopBuildings().isEmpty(), "Top buildings space should have cards");
         assertTrue(board.getBottomBuildings().isEmpty(), "Bottom buildings space should be empty at initialization");
 
-        // Verifichiamo che l'Offer Track sia stata popolata (es. per 2 giocatori)
+        assertEquals(board.getBuildingsDecks().size(), Era.values().length, "There should be a building deck for each era");
+        assertTrue(board.getBuildingsDecks().get(board.getCurrentEra()).isEmpty(), "There should be a building deck for each era");
+
         assertFalse(board.getOfferTrack().isEmpty());
 
-        // Verifichiamo che l'era iniziale sia ERA_I
         assertEquals(Era.ERA_I, board.getCurrentEra());
+
+        assertTrue(board.isOfferTrackEmpty(), "Offer track should be empty after initialization");
     }
 
     @Test
@@ -110,7 +140,6 @@ class BoardTest {
 
     @Test
     void testInitBoardThrowsExceptionWhenPlayersInsufficientOrMoreThenExpected() {
-        // Setup con un solo giocatore
         players.clear();
         players.add(mock(Player.class));
 
@@ -126,7 +155,6 @@ class BoardTest {
 
     @Test
     void testInitBoardThrowsExceptionWhenTribeCardsDeckNUll() {
-        // Setup con decks di tribù null
         when(modelMock.getTribeCardsDeck()).thenReturn(null);
 
         assertThrows(IllegalArgumentException.class, () -> board.initBoard(modelMock));
@@ -134,7 +162,6 @@ class BoardTest {
 
     @Test
     void testInitBoardThrowsExceptionWhenBuildingCardsDecksNull() {
-        // Setup con decks di edifici null
         when(modelMock.getBuildingCardsDecks()).thenReturn(null);
 
         assertThrows(IllegalArgumentException.class, () -> board.initBoard(modelMock));
@@ -142,7 +169,6 @@ class BoardTest {
 
     @Test
     void testInitBoardThrowsExceptionWhenTribeCardsDeckEmpty() {
-        // Setup con decks di tribù vuoti
         when(modelMock.getTribeCardsDeck()).thenReturn(new EnumMap<>(Era.class));
 
         assertThrows(IllegalArgumentException.class, () -> board.initBoard(modelMock));
@@ -150,7 +176,6 @@ class BoardTest {
 
     @Test
     void testInitBoardThrowsExceptionWhenBuildingCardsDecksEmpty() {
-        // Setup con decks di edifici vuoti
         when(modelMock.getBuildingCardsDecks()).thenReturn(new EnumMap<>(Era.class));
 
         assertThrows(IllegalArgumentException.class, () -> board.initBoard(modelMock));
@@ -158,7 +183,6 @@ class BoardTest {
 
     @Test
     void testInitBoardThrowsExceptionWhenTribeDecksInsufficient() {
-        // Setup con decks di tribù vuoti
         for (Era era : Era.values()) {
             tribeDecks.put(era, new ArrayList<>());
         }
@@ -168,7 +192,6 @@ class BoardTest {
 
     @Test
     void testInitBoardThrowsExceptionWhenTribeDecksNull() {
-        // Setup con decks di tribù null
         for (Era era : Era.values()) {
             tribeDecks.put(era, null);
         }
@@ -178,7 +201,6 @@ class BoardTest {
 
     @Test
     void testInitBoardThrowsExceptionWhenBuildingDecksInsufficient() {
-        // Setup con decks di edifici vuoti
         for (Era era : Era.values()) {
             buildingDecks.put(era, new ArrayList<>());
         }
@@ -188,7 +210,6 @@ class BoardTest {
 
     @Test
     void testInitBoardThrowsExceptionWhenBuildingDecksNull() {
-        // Setup con decks di edifici null
         for (Era era : Era.values()) {
             buildingDecks.put(era, null);
         }
@@ -198,7 +219,6 @@ class BoardTest {
 
     @Test
     void testInitBoardThrowsExceptionWhenFinalEventsInsufficient() {
-        // Setup con eventi finali nulli
         when(modelMock.getFinalEventCards()).thenReturn(null);
 
         assertThrows(IllegalArgumentException.class, () -> board.initBoard(modelMock));
@@ -505,5 +525,18 @@ class BoardTest {
         ArrayList<EventCard> eventCards = board.cleanBottomRow();
 
         assertTrue(eventCards.isEmpty(), "Cleaning an already empty bottom row should return an empty list");
+    }
+
+    @Test
+    void testPopulateTopBuildingsSuccess() {
+        board.initBoard(modelMock);
+        assertFalse(board.getTopBuildings().isEmpty(),
+                "top buildings space should be populated at initialization, so it should not be empty");
+    }
+
+    @Test
+    void testPopulateTopBuildingsThrowExceptionCurrentEraDeckNull() {
+        // we are missing the initialization of the board, which is the situation in which this method is expected to be called, so the current era deck will be empty
+        assertThrows(IllegalStateException.class, () -> board.populateTopBuildings());
     }
 }

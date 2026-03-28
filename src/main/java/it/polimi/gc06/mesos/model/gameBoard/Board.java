@@ -88,7 +88,7 @@ public class Board implements DrawSubject {
      */
     public TileSlot getOfferTrackPlayerSlot(Player player) {
         for (TileSlot slot : offerTrack) {
-            if (slot.getPlayer().equals(player))
+            if (Objects.equals(slot.getPlayer(), player))
                 return slot;
         }
         return null;
@@ -445,13 +445,7 @@ public class Board implements DrawSubject {
      * @throws IllegalStateException if the current era is null, if the buildings decks are null or if the building cards
      *                               deck for the current era is empty.
      */
-    private void populateTopBuildings() throws IllegalStateException {
-        if (currentEra == null) {
-            throw new IllegalStateException("Current era cannot be null when populating the top buildings row");
-        }
-        if (buildingsDecks == null || buildingsDecks.get(currentEra) == null) {
-            throw new IllegalStateException("Buildings decks cannot be null when populating the top buildings row");
-        }
+    void populateTopBuildings() throws IllegalStateException {
         if (buildingsDecks.get(currentEra).isEmpty()) {
             throw new IllegalStateException("Building cards deck for current era cannot be empty when populating the top buildings row");
         }
