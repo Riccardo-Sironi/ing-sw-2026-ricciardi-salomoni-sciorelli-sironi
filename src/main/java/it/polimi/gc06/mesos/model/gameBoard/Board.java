@@ -183,25 +183,31 @@ public class Board implements DrawSubject {
         if (model.getTribeCardsDeck().isEmpty()) {
             throw new IllegalArgumentException("Tribe cards deck enumap cannot be empty from keys");
         }
-        if (model.getTribeCardsDeck().values().stream().anyMatch(Objects::isNull)) {
-            throw new IllegalArgumentException("Tribe cards deck for each era cannot be null");
+        for (Era era : Era.values()) {
+            if (model.getTribeCardsDeck().get(era) == null) {
+                throw new IllegalArgumentException("Tribe cards deck for era " + era + " cannot be null");
+            }
+            if (model.getTribeCardsDeck().get(era).isEmpty()) {
+                throw new IllegalArgumentException("Tribe cards deck for " + era + " era cannot be empty");
+            }
         }
-        if (model.getTribeCardsDeck().values().stream().anyMatch(ArrayList::isEmpty)) {
-            throw new IllegalArgumentException("Tribe cards deck for each era cannot be empty");
-        }
+
         if (model.getBuildingCardsDecks() == null) {
             throw new IllegalArgumentException("Building cards decks cannot be null");
         }
         if (model.getBuildingCardsDecks().isEmpty()) {
             throw new IllegalArgumentException("Building cards decks enumap cannot be empty from keys");
         }
-        if (model.getBuildingCardsDecks().values().stream().anyMatch(Objects::isNull)) {
-            throw new IllegalArgumentException("Building cards deck for each era cannot be null");
-        }
-        if (model.getBuildingCardsDecks().values().stream().anyMatch(ArrayList::isEmpty)) {
-            throw new IllegalArgumentException("Building cards deck for each era cannot be empty");
-        }
 
+        for (Era era : Era.values()) {
+            if (model.getBuildingCardsDecks().get(era) == null) {
+                throw new IllegalArgumentException("Building cards deck for era " + era + " cannot be null");
+            }
+            if (model.getBuildingCardsDecks().get(era).isEmpty()) {
+                throw new IllegalArgumentException("Building cards deck for " + era + " era cannot be empty");
+            }
+        }
+        
         if (model.getPlayers().size() < 2 || model.getPlayers().size() > 5) {
             throw new IllegalArgumentException("Number of players must be between 2 and 5");
         }
