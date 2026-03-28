@@ -1,0 +1,9 @@
+[
+  {
+    "class": "EndGameBuildingCard",
+    "era": "ERA_I",
+    "foodCost": 1,
+    "prestigeGain": 2,
+    "prestigeEffect": "COUNT_INVENTORS"
+  }
+]

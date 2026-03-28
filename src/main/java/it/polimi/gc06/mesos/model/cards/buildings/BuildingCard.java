@@ -45,7 +45,7 @@ public abstract class BuildingCard implements Card {
     }
 
     /**
-     * Era setter. This should be called only once.
+     * Era setter. This should be called only once during initialization.
      *
      * @param era the era of the card.
      * @throws IllegalStateException gets thrown if this setter is called more than once.
@@ -58,7 +58,7 @@ public abstract class BuildingCard implements Card {
     }
 
     /**
-     * FoodCost setter. This should be called only once.
+     * FoodCost setter. This should be called only once during initialization.
      *
      * @param foodCost the food cost of the card.
      * @throws IllegalStateException gets thrown if this setter is called more than once.
@@ -71,7 +71,7 @@ public abstract class BuildingCard implements Card {
     }
 
     /**
-     * PrestigeGain setter. This should be called only once.
+     * PrestigeGain setter. This should be called only once during initialization.
      *
      * @param prestigeGain the prestige gained by the card at the end of the game.
      * @throws IllegalStateException gets thrown if this setter is called more than once.

@@ -12,7 +12,6 @@ import it.polimi.gc06.mesos.model.cards.characters.*;
 )
 @JsonSubTypes({
         @JsonSubTypes.Type(value = EndGameBuildingCard.class, name = "EndGameBuildingCard"),
-        @JsonSubTypes.Type(value = ModifierBuildingCard.class, name = "ModifierBuildingCard"),
         @JsonSubTypes.Type(value = ObserverPairBuildingCard.class, name = "ObserverPairBuildingCard"),
         @JsonSubTypes.Type(value = ObserverSetBuildingCard.class, name = "ObserverSetBuildingCard"),
         @JsonSubTypes.Type(value = ArtistCard.class, name = "ArtistCard"),
