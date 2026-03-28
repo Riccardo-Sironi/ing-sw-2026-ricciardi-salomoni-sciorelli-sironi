@@ -288,8 +288,11 @@ public class Board implements DrawSubject {
         if (model == null) {
             throw new IllegalArgumentException("Model cannot be null");
         }
-        if (model.getTribeCardsDeck() == null || model.getTribeCardsDeck().get(currentEra) == null) {
+        if (model.getTribeCardsDeck() == null) {
             throw new IllegalArgumentException("Tribe cards deck cannot be null");
+        }
+        if (model.getTribeCardsDeck().get(currentEra) == null) {
+            throw new IllegalArgumentException("Tribe cards deck for current era cannot be null");
         }
         if (model.getPlayers().size() < 2 || model.getPlayers().size() > 5) {
             throw new IllegalArgumentException("Number of players must be between 2 and 5");
@@ -301,6 +304,10 @@ public class Board implements DrawSubject {
         boolean newEraHasCome = false;
 
         int cardsToDraw = model.getPlayers().size() + 4 - topRow.size();
+
+        if (cardsToDraw == 0) {
+            throw new IllegalStateException("Top row is already full during top row population");
+        }
 
         if (cardsToDraw < 0) {
             throw new IllegalStateException("Cards to draw cannot be negative during top row population");
@@ -356,7 +363,7 @@ public class Board implements DrawSubject {
      *                                  deck is empty during the loop or if the top row is full while we try to
      *                                  initialize the bottom row.
      */
-    private void populateBottomRow(GameModel model) throws IllegalArgumentException, IllegalStateException {
+    void populateBottomRow(GameModel model) throws IllegalArgumentException, IllegalStateException {
         // this method is used mainly in the initialization process of the board which
         // means that the bottom row cannot contain event cards
 
@@ -410,19 +417,23 @@ public class Board implements DrawSubject {
      * @return the list of event cards removed from the bottom row, sorted by priority.
      */
     public ArrayList<EventCard> cleanBottomRow() {
-        ArrayList<EventCard> events = new ArrayList<>();
-        EventListVisitor visitor = new EventListVisitor(events);
+        if (!bottomRow.isEmpty()) {
+            ArrayList<EventCard> events = new ArrayList<>();
+            EventListVisitor visitor = new EventListVisitor(events);
 
-        for (TribeCard card : bottomRow) {
-            card.accept(visitor);
+            for (TribeCard card : bottomRow) {
+                card.accept(visitor);
+            }
+
+            events.sort(Comparator.comparing(EventCard::isLastToBeResolved).thenComparing(EventCard::getEra));
+
+            // discard bottom row
+            bottomRow.clear();
+
+            return events;
         }
 
-        events.sort(Comparator.comparing(EventCard::isLastToBeResolved).thenComparing(EventCard::getEra));
-
-        // discard bottom row
-        bottomRow.clear();
-
-        return events;
+        return new ArrayList<>();
     }
 
     /**
