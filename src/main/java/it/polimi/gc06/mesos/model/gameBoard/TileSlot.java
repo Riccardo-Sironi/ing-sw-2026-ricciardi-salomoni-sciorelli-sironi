@@ -11,7 +11,6 @@ public class TileSlot {
      * TileSlot constructor.
      *
      * @param tileEffect effect applied on the player on player positioning, it can be null if no effect needs to be applied.
-     * @throws IllegalArgumentException {@inheritDoc}
      */
     public TileSlot(TileEffect tileEffect) {
         this.tileEffect = tileEffect;
@@ -42,6 +41,7 @@ public class TileSlot {
 
     /**
      * Apply the effects on the player, it needs to have a player or an IllegalArgumentException gets thrown.
+     * If a null effect is loaded nothing happens.
      *
      * @throws IllegalStateException {@inheritDoc}
      */
@@ -49,7 +49,7 @@ public class TileSlot {
     // TODO Questo Metodo dovrà modificare il player cambiando gli attributi topDrawNum e bottomDrawNum
     public void applyEffect() throws IllegalStateException {
         if (player == null) throw new IllegalStateException();
-        tileEffect.execute(player);
+        if (tileEffect != null) tileEffect.execute(player);
     }
 
     /**
