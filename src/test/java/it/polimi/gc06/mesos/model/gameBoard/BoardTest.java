@@ -5,6 +5,8 @@ import it.polimi.gc06.mesos.model.cards.TribeCard;
 import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
 import it.polimi.gc06.mesos.model.cards.buildings.EndGameBuildingCard;
 import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingCard;
+import it.polimi.gc06.mesos.model.cards.characters.CharacterCard;
+import it.polimi.gc06.mesos.model.cards.characters.CharacterType;
 import it.polimi.gc06.mesos.model.cards.characters.GathererCard;
 import it.polimi.gc06.mesos.model.cards.characters.HunterCard;
 import it.polimi.gc06.mesos.model.cards.events.EventCard;
@@ -538,5 +540,89 @@ class BoardTest {
     void testPopulateTopBuildingsThrowExceptionCurrentEraDeckNull() {
         // we are missing the initialization of the board, which is the situation in which this method is expected to be called, so the current era deck will be empty
         assertThrows(IllegalStateException.class, () -> board.populateTopBuildings());
+    }
+
+    @Test
+    void testPickCardFromTopRowSuccess() {
+        Player p = new Player("TestPlayer", Color.RED, null);
+
+        HunterCard card = new HunterCard(Era.ERA_I, true);
+        board.getTopRow().addFirst(card);
+
+        int initialTopRowSize = board.getTopRow().size();
+
+        board.pickCardFromTopRow(p, card);
+
+        assertEquals(initialTopRowSize - 1, board.getTopRow().size(),
+                "Picking a card from the top row should decrease its size by one");
+        // we know that the card is a HunterCard, so it should be added to the player's character deck
+        assertTrue(p.getCharacterDeck().get(CharacterType.HUNTER).contains(card), " The picked card should be added to the player's character deck");
+    }
+
+    @Test
+    void testPickCardFromTopRowThrowExceptionWhenPlayerNull() {
+        assertThrows(IllegalArgumentException.class, () -> board.pickCardFromTopRow(null, new HunterCard(Era.ERA_I, true)));
+    }
+
+    @Test
+    void testPickCardFromTopRowThrowExceptionWhenCardNull() {
+        HunterCard card = null;
+        assertThrows(IllegalArgumentException.class, () -> board.pickCardFromTopRow(mock(Player.class), card));
+    }
+
+    @Test
+    void testPickCardFromTopRowThrowExceptionWhenCardNotInTopRow() {
+        HunterCard card = new HunterCard(Era.ERA_I, true);
+        assertThrows(IllegalArgumentException.class, () -> board.pickCardFromTopRow(mock(Player.class), card));
+    }
+
+    @Test
+    void testPickCardFromTopRowThrowExceptionWhenCardIsEvent() {
+        SustenanceEvent card = new SustenanceEvent(Era.ERA_I, 1, null, null, null);
+        board.getTopRow().addFirst(card);
+
+        assertThrows(IllegalArgumentException.class, () -> board.pickCardFromTopRow(mock(Player.class), card));
+    }
+
+    @Test
+    void testPickCardBottomRowSuccess() {
+        Player p = new Player("TestPlayer", Color.RED, null);
+
+        HunterCard card = new HunterCard(Era.ERA_I, true);
+        board.getBottomRow().addFirst(card);
+
+        int initialBottomRowSize = board.getBottomRow().size();
+
+        board.pickCardFromBottomRow(p, card);
+
+        assertEquals(initialBottomRowSize - 1, board.getBottomRow().size(),
+                "Picking a card from the bottom row should decrease its size by one");
+        // we know that the card is a HunterCard, so it should be added to the player's character deck
+        assertTrue(p.getCharacterDeck().get(CharacterType.HUNTER).contains(card), "The picked card should be added to the player's character deck");
+    }
+
+    @Test
+    void testPickCardFromBottomRowThrowExceptionWhenPlayerNull() {
+        assertThrows(IllegalArgumentException.class, () -> board.pickCardFromBottomRow(null, new HunterCard(Era.ERA_I, true)));
+    }
+
+    @Test
+    void testPickCardFromBottomRowThrowExceptionWhenCardNull() {
+        HunterCard card = null;
+        assertThrows(IllegalArgumentException.class, () -> board.pickCardFromBottomRow(mock(Player.class), card));
+    }
+
+    @Test
+    void testPickCardFromBottomRowThrowExceptionWhenCardNotInBottomRow() {
+        HunterCard card = new HunterCard(Era.ERA_I, true);
+        assertThrows(IllegalArgumentException.class, () -> board.pickCardFromBottomRow(mock(Player.class), card));
+    }
+
+    @Test
+    void testPickCardFromBottomRowThrowExceptionWhenCardIsEvent() {
+        SustenanceEvent card = new SustenanceEvent(Era.ERA_I, 1, null, null, null);
+        board.getBottomRow().addFirst(card);
+
+        assertThrows(IllegalArgumentException.class, () -> board.pickCardFromBottomRow(mock(Player.class), card));
     }
 }

@@ -207,7 +207,7 @@ public class Board implements DrawSubject {
                 throw new IllegalArgumentException("Building cards deck for " + era + " era cannot be empty");
             }
         }
-        
+
         if (model.getPlayers().size() < 2 || model.getPlayers().size() > 5) {
             throw new IllegalArgumentException("Number of players must be between 2 and 5");
         }
@@ -570,9 +570,19 @@ public class Board implements DrawSubject {
             throw new IllegalGameActionException("Player does not have enough food tokens to buy this building");
         }
 
-        player.removeFoodTokens(finalCost);
-        topBuildings.remove(building);
-        player.addBuildingCards(building);
+
+        /*
+         * The try-catch block catches IllegalStateException from operations that modify player and board state.
+         * If removeFoodTokens succeeds but addBuildingCards throws an exception, the building is removed from
+         * topBuildings but not added to the player, leaving the game state inconsistent. Consider implementing
+         * proper transaction semantics or rollback mechanisms to ensure atomicity of this operation.*/
+        try {
+            player.removeFoodTokens(finalCost);
+            topBuildings.remove(building);
+            player.addBuildingCards(building);
+        } catch (IllegalStateException e) {
+            throw new IllegalGameActionException(e.getMessage());
+        }
     }
 
 
