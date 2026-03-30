@@ -10,7 +10,7 @@ import it.polimi.gc06.mesos.model.cards.events.SustenanceEvent;
 
 public class HunterFoodIconVisitor implements TribeCardVisitor {
 
-    private Player player;
+    private final Player player;
 
     public HunterFoodIconVisitor(Player player) {
         this.player = player;
