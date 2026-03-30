@@ -58,7 +58,7 @@ public class OfferResolutionPhase extends Phase {
         checkIfPlayerIsFinished(turnManager, player, board);
     }
 
-
+    @Override
     public void pickCardFromTop(TurnManager turnManager, Player player, BuildingCard card, Board board) throws IllegalPhaseActionException, IllegalArgumentException, IllegalGameActionException {
 
         if (!isStarted) {

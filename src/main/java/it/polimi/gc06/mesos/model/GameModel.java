@@ -1,13 +1,10 @@
 package it.polimi.gc06.mesos.model;
 
-import it.polimi.gc06.mesos.gameExceptions.GameObjectNotFoundException;
 import it.polimi.gc06.mesos.model.cards.TribeCard;
 import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
-import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingCard;
 import it.polimi.gc06.mesos.model.cards.events.EventCard;
 import it.polimi.gc06.mesos.model.gameBoard.Board;
 import it.polimi.gc06.mesos.model.gameTurnManager.DrawObserver;
-import it.polimi.gc06.mesos.model.gameTurnManager.Phase;
 import it.polimi.gc06.mesos.model.gameTurnManager.TurnManager;
 
 import java.util.ArrayList;
@@ -57,7 +54,7 @@ public class GameModel implements GameInfo {
         this.board = new Board(null);
 
         // TODO : after the board initialization we have to create the turn manager and initialize it with the first phase (PlacingTotemPhase) and the list of players.
-        this.turnManager = new TurnManager(players, board.getTurnOrderTile(), 0, board.getOfferTrack(), null, null); // the parameters here are not clear yet (except for the list of players)
+        this.turnManager = new TurnManager(players, null, null); // the parameters here are not clear yet (except for the list of players)
     }
 
     /**

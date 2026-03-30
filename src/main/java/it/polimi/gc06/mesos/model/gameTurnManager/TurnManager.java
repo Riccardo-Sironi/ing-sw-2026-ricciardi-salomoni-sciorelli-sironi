@@ -3,8 +3,6 @@ package it.polimi.gc06.mesos.model.gameTurnManager;
 import it.polimi.gc06.mesos.model.Player;
 import it.polimi.gc06.mesos.model.cards.TribeCardVisitor;
 import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingCard;
-import it.polimi.gc06.mesos.model.gameBoard.TileSlot;
-import it.polimi.gc06.mesos.model.gameBoard.TurnOrderTile;
 
 import java.util.List;
 
@@ -20,12 +18,12 @@ public class TurnManager {
 
     private final ModifierBuildingCard pickFromTopCard;
 
-    public TurnManager(List<Player> playersOrder, TurnOrderTile turnOrderTile, int round, List<TileSlot> offerTrack, TribeCardVisitor cardVisitor, ModifierBuildingCard pickFromTopCard) {
+    public TurnManager(List<Player> playersOrder, TribeCardVisitor cardVisitor, ModifierBuildingCard pickFromTopCard) {
         this.playersOrder = playersOrder;
         this.currentPlayer = playersOrder.getFirst();
         this.pickFromTopCard = pickFromTopCard;
         this.phase = new PlacingTotemPhase();
-        this.round = round;
+        this.round = 0;
         this.cardVisitor = cardVisitor;
     }
 
