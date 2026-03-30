@@ -1,5 +1,6 @@
 package it.polimi.gc06.mesos.model.cards.buildings;
 
+import it.polimi.gc06.mesos.model.Era;
 import it.polimi.gc06.mesos.model.Player;
 
 import java.util.function.ToIntFunction;
@@ -7,6 +8,15 @@ import java.util.function.ToIntFunction;
 public class EndGameBuildingCard extends BuildingCard {
 
     private ToIntFunction<Player> prestigeEffect;
+
+    /**
+     * @param prestigeEffect please use standard function in enum EndGameBuildingFunction
+     * For testing purpose only!
+     */
+    public EndGameBuildingCard(Era era, int prestigeGain, int foodCost, ToIntFunction<Player> prestigeEffect) {
+        super(era, prestigeGain, foodCost);
+        this.prestigeEffect = prestigeEffect;
+    }
 
     public EndGameBuildingCard(){
         super();

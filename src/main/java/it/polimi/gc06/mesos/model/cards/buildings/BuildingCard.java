@@ -10,6 +10,15 @@ public abstract class BuildingCard implements Card {
     private int foodCost;
     private int prestigeGain;
 
+    /**
+     * For testing purpose only!
+     */
+    public BuildingCard(Era era, int prestigeGain, int foodCost) {
+        this.era = era;
+        this.prestigeGain = prestigeGain;
+        this.foodCost = foodCost;
+    }
+
     public BuildingCard(){
         era = null;
         foodCost = -1;
