@@ -395,11 +395,8 @@ public class Board implements DrawSubject {
             }
             TribeCard removedCard = model.getTribeCardsDeck().get(currentEra).removeLast();
 
-            try {
-                removedCard.accept(new BottomRowInitVisitor(bottomRow, topRow, maxTopRowSize));
-            } catch (IllegalStateException e) {
-                throw new IllegalStateException(e.getMessage(), e);
-            }
+            removedCard.accept(new BottomRowInitVisitor(bottomRow, topRow, maxTopRowSize));
+
         }
     }
 
@@ -576,13 +573,11 @@ public class Board implements DrawSubject {
          * If removeFoodTokens succeeds but addBuildingCards throws an exception, the building is removed from
          * topBuildings but not added to the player, leaving the game state inconsistent. Consider implementing
          * proper transaction semantics or rollback mechanisms to ensure atomicity of this operation.*/
-        try {
-            player.removeFoodTokens(finalCost);
-            topBuildings.remove(building);
-            player.addBuildingCards(building);
-        } catch (IllegalStateException e) {
-            throw new IllegalGameActionException(e.getMessage());
-        }
+
+        player.removeFoodTokens(finalCost);
+        topBuildings.remove(building);
+        player.addBuildingCards(building);
+
     }
 
 
@@ -630,11 +625,14 @@ public class Board implements DrawSubject {
      *
      * @param observer the observer to add.
      */
-    @Override
     public void addObserver(DrawObserver observer) {
-        if (!observers.contains(observer)) {
-            observers.add(observer);
+        if (observer == null) {
+            throw new IllegalArgumentException("Observer cannot be null");
         }
+        if (observers.contains(observer)) {
+            throw new IllegalArgumentException("Observer already exists in the observers list");
+        }
+        observers.add(observer);
     }
 
     /**
@@ -642,9 +640,18 @@ public class Board implements DrawSubject {
      *
      * @param observer the observer to remove.
      */
-    @Override
     public void removeObserver(DrawObserver observer) {
+        if (observer == null) {
+            throw new IllegalArgumentException("Observer cannot be null");
+        }
+        if (!observers.contains(observer)) {
+            throw new IllegalArgumentException("Observer not found in the observers list");
+        }
         observers.remove(observer);
+    }
+
+    public ArrayList<DrawObserver> getObservers() {
+        return observers;
     }
 
     /**

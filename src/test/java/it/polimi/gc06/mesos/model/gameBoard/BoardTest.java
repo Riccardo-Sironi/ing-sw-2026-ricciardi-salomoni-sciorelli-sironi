@@ -1,11 +1,11 @@
 package it.polimi.gc06.mesos.model.gameBoard;
 
+import it.polimi.gc06.mesos.gameExceptions.IllegalGameActionException;
 import it.polimi.gc06.mesos.model.*;
 import it.polimi.gc06.mesos.model.cards.TribeCard;
 import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
-import it.polimi.gc06.mesos.model.cards.buildings.EndGameBuildingCard;
 import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingCard;
-import it.polimi.gc06.mesos.model.cards.characters.CharacterCard;
+import it.polimi.gc06.mesos.model.cards.buildings.ObserverPairBuildingCard;
 import it.polimi.gc06.mesos.model.cards.characters.CharacterType;
 import it.polimi.gc06.mesos.model.cards.characters.GathererCard;
 import it.polimi.gc06.mesos.model.cards.characters.HunterCard;
@@ -65,7 +65,7 @@ class BoardTest {
         for (Era era : Era.values()) {
             ArrayList<BuildingCard> deck = new ArrayList<>();
             for (int i = 0; i < 100; i++) {
-                deck.add(new EndGameBuildingCard());
+                deck.add(new ModifierBuildingCard());
             }
             buildingDecks.put(era, deck);
         }
@@ -531,7 +531,7 @@ class BoardTest {
 
     @Test
     void testPopulateTopBuildingsSuccess() {
-        board.initBoard(modelMock);
+        assertDoesNotThrow(() -> board.initBoard(modelMock));
         assertFalse(board.getTopBuildings().isEmpty(),
                 "top buildings space should be populated at initialization, so it should not be empty");
     }
@@ -551,7 +551,7 @@ class BoardTest {
 
         int initialTopRowSize = board.getTopRow().size();
 
-        board.pickCardFromTopRow(p, card);
+        assertDoesNotThrow(() -> board.pickCardFromTopRow(p, card));
 
         assertEquals(initialTopRowSize - 1, board.getTopRow().size(),
                 "Picking a card from the top row should decrease its size by one");
@@ -585,6 +585,11 @@ class BoardTest {
     }
 
     @Test
+    void testPickCardFromTopRowWhenTribeCard() {
+        assertDoesNotThrow(() -> board.pickCardFromTopRow(mock(Player.class), mock(TribeCard.class)));
+    }
+
+    @Test
     void testPickCardBottomRowSuccess() {
         Player p = new Player("TestPlayer", Color.RED, null);
 
@@ -593,7 +598,7 @@ class BoardTest {
 
         int initialBottomRowSize = board.getBottomRow().size();
 
-        board.pickCardFromBottomRow(p, card);
+        assertDoesNotThrow(() -> board.pickCardFromBottomRow(p, card));
 
         assertEquals(initialBottomRowSize - 1, board.getBottomRow().size(),
                 "Picking a card from the bottom row should decrease its size by one");
@@ -624,5 +629,163 @@ class BoardTest {
         board.getBottomRow().addFirst(card);
 
         assertThrows(IllegalArgumentException.class, () -> board.pickCardFromBottomRow(mock(Player.class), card));
+    }
+
+    @Test
+    void testPickCardFromBottomRowWhenTribeCard() {
+        assertDoesNotThrow(() -> board.pickCardFromBottomRow(mock(Player.class), mock(TribeCard.class)));
+    }
+
+    @Test
+    void testPickCardFromBottomRowThrowExceptionWhenCardIsEventAndBottomRowHasMultipleCards() {
+        SustenanceEvent card = new SustenanceEvent(Era.ERA_I, 1, null, null, null);
+        board.getBottomRow().addFirst(card);
+        assertDoesNotThrow(() -> board.getBottomRow().addFirst(new HunterCard(Era.ERA_I, true)));
+
+        assertThrows(IllegalArgumentException.class, () -> board.pickCardFromBottomRow(mock(Player.class), card));
+    }
+
+    @Test
+    void testByBuildingFromTopRowSuccess() {
+        int foodTokensBeforePurchase = 20;
+        int foodCost = 5;
+        Player p = new Player("TestPlayer", Color.RED, null);
+        p.addFoodTokens(foodTokensBeforePurchase);
+        ModifierBuildingCard card = new ModifierBuildingCard();
+        card.setFoodCost(foodCost);
+
+        board.getTopBuildings().addLast(card);
+
+        assertDoesNotThrow(() -> board.buyBuildingFromTopRow(p, card));
+        assertTrue(p.getBuildingCards().contains(card), "The bought building should be added to the player's owned buildings");
+        assertEquals(foodTokensBeforePurchase - foodCost, p.getFoodTokens(), "The player should have spent food tokens to buy the building");
+        assertFalse(board.getTopBuildings().contains(card), "The bought building should be removed from the top buildings space");
+    }
+
+    @Test
+    void testByBuildingFromTopRowUnsuccess() {
+        int foodTokensBeforePurchase = 3;
+        int foodCost = 5;
+        Player p = new Player("TestPlayer", Color.RED, null);
+        p.addFoodTokens(foodTokensBeforePurchase);
+        ModifierBuildingCard card = new ModifierBuildingCard();
+        card.setFoodCost(foodCost);
+
+        board.getTopBuildings().addLast(card);
+
+        assertThrows(IllegalGameActionException.class, () -> board.buyBuildingFromTopRow(p, card), "Buying a building without enough food tokens should throw an exception");
+        assertFalse(p.getBuildingCards().contains(card), "The building should not be added to the player's owned buildings if the purchase was unsuccessful");
+        assertEquals(foodTokensBeforePurchase, p.getFoodTokens(), "The player should not have spent any food tokens if the purchase was unsuccessful");
+        assertTrue(board.getTopBuildings().contains(card), "The building should remain in the top buildings space if the purchase was unsuccessful");
+    }
+
+    @Test
+    void testBuyBuildingFromTopRowThrowExceptionWhenPlayerNull() {
+        assertThrows(IllegalArgumentException.class, () -> board.buyBuildingFromTopRow(null, null));
+    }
+
+    @Test
+    void testBuyBuildingFromTopRowThrowExceptionWhenCardNull() {
+        assertThrows(IllegalArgumentException.class, () -> board.buyBuildingFromTopRow(mock(Player.class), null));
+    }
+
+    @Test
+    void testBuyBuildingFromTopRowThrowExceptionWhenCardNotInTopBuildings() {
+        Player p = new Player("TestPlayer", Color.RED, null);
+        ModifierBuildingCard card = new ModifierBuildingCard();
+
+        assertThrows(IllegalArgumentException.class, () -> board.buyBuildingFromTopRow(p, card));
+    }
+
+    @Test
+    void testBuyBuildingFromBottomRowSuccess() {
+        int foodTokensBeforePurchase = 20;
+        int foodCost = 5;
+        Player p = new Player("TestPlayer", Color.RED, null);
+        p.addFoodTokens(foodTokensBeforePurchase);
+        ModifierBuildingCard card = new ModifierBuildingCard();
+        card.setFoodCost(foodCost);
+
+        board.getBottomBuildings().addLast(card);
+
+        assertDoesNotThrow(() -> board.buyBuildingFromBottomRow(p, card));
+        assertTrue(p.getBuildingCards().contains(card), "The bought building should be added to the player's owned buildings");
+        assertEquals(foodTokensBeforePurchase - foodCost, p.getFoodTokens(), "The player should have spent food tokens to buy the building");
+        assertFalse(board.getBottomBuildings().contains(card), "The bought building should be removed from the bottom buildings space");
+    }
+
+    @Test
+    void testBuyBuildingFromBottomRowUnsuccess() {
+        int foodTokensBeforePurchase = 3;
+        int foodCost = 5;
+        Player p = new Player("TestPlayer", Color.RED, null);
+        p.addFoodTokens(foodTokensBeforePurchase);
+        ModifierBuildingCard card = new ModifierBuildingCard();
+        card.setFoodCost(foodCost);
+
+        board.getBottomBuildings().addLast(card);
+
+        assertThrows(IllegalGameActionException.class, () -> board.buyBuildingFromBottomRow(p, card), "Buying a building without enough food tokens should throw an exception");
+        assertFalse(p.getBuildingCards().contains(card), "The building should not be added to the player's owned buildings if the purchase was unsuccessful");
+        assertEquals(foodTokensBeforePurchase, p.getFoodTokens(), "The player should not have spent any food tokens if the purchase was unsuccessful");
+        assertTrue(board.getBottomBuildings().contains(card), "The building should remain in the bottom buildings space if the purchase was unsuccessful");
+    }
+
+    @Test
+    void testBuyBuildingFromBottomRowThrowExceptionWhenPlayerNull() {
+        assertThrows(IllegalArgumentException.class, () -> board.buyBuildingFromBottomRow(null, null));
+    }
+
+    @Test
+    void testBuyBuildingFromBottomRowThrowExceptionWhenCardNull() {
+        assertThrows(IllegalArgumentException.class, () -> board.buyBuildingFromBottomRow(mock(Player.class), null));
+    }
+
+    @Test
+    void testBuyBuildingFromBottomRowThrowExceptionWhenCardNotInBottomBuildings() {
+        Player p = new Player("TestPlayer", Color.RED, null);
+        ModifierBuildingCard card = new ModifierBuildingCard();
+
+        assertThrows(IllegalArgumentException.class, () -> board.buyBuildingFromBottomRow(p, card));
+    }
+
+    @Test
+    void testAddObserverSuccess() {
+        ObserverPairBuildingCard observerPairBuildingCard = new ObserverPairBuildingCard();
+        assertDoesNotThrow(() -> board.addObserver(observerPairBuildingCard), "Adding a valid observer should not throw an exception");
+        assertTrue(board.getObservers().contains(observerPairBuildingCard), "The added observer should be present in the board's observers list");
+    }
+
+    @Test
+    void testAddObserverThrowExceptionWhenObserverNull() {
+        assertThrows(IllegalArgumentException.class, () -> board.addObserver(null), "Adding a null observer should throw an exception");
+    }
+
+    @Test
+    void testAddObserverWhenObserverAddedPreviously() {
+        ObserverPairBuildingCard observerPairBuildingCard = new ObserverPairBuildingCard();
+        board.addObserver(observerPairBuildingCard);
+
+        assertThrows(IllegalArgumentException.class, () -> board.addObserver(observerPairBuildingCard), "Adding the same observer twice should throw an exception");
+    }
+
+    @Test
+    void testRemoveObserverSuccess() {
+        ObserverPairBuildingCard observerPairBuildingCard = new ObserverPairBuildingCard();
+        board.addObserver(observerPairBuildingCard);
+
+        assertDoesNotThrow(() -> board.removeObserver(observerPairBuildingCard), "Removing an existing observer should not throw an exception");
+        assertFalse(board.getObservers().contains(observerPairBuildingCard), "The removed observer should no longer be present in the board's observers list");
+    }
+
+    @Test
+    void testRemoveObserverThrowExceptionWhenObserverNull() {
+        assertThrows(IllegalArgumentException.class, () -> board.removeObserver(null), "Removing a null observer should throw an exception");
+    }
+
+    @Test
+    void testRemoveObserverWhenObserverNotAddedPreviously() {
+        ObserverPairBuildingCard observerPairBuildingCard = new ObserverPairBuildingCard();
+        assertThrows(IllegalArgumentException.class, () -> board.removeObserver(observerPairBuildingCard), "Removing an observer that was never added should throw an exception");
     }
 }
