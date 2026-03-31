@@ -24,4 +24,7 @@ public interface TileEffect {
      * @throws IllegalArgumentException {@inheritDoc}
      */
     void execute(Player player) throws IllegalArgumentException;
+
+    public void accept(TileEffectVisitor visitor);
+
 }

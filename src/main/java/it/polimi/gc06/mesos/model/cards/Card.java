@@ -23,4 +23,5 @@ import it.polimi.gc06.mesos.model.cards.characters.*;
 })
 
 public interface Card {
+    public void accept(CardVisitor visitor);
 }

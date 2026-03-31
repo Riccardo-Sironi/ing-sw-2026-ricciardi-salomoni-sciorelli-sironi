@@ -8,7 +8,7 @@ public abstract class TribeCard implements Card {
     public TribeCard(Era era) {
         this.era = era;
     }
-    
+
     /**
      * a visitor that will perform operations on this card.
      * this method implements the double-dispatch mechanism for the Visitor pattern.

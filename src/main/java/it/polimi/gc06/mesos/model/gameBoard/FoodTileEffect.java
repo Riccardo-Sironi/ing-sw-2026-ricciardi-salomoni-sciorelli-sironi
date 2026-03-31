@@ -34,4 +34,13 @@ public class FoodTileEffect implements TileEffect {
 
         player.addFoodTokens(player.getBuildingCards().contains(foodBonusCard) ? numFood + 1 : numFood);
     }
+
+    /**
+     * this method is used to accept a visitor that will visit the effect and apply
+     * the contextualized action of the visitor.
+     *
+     * @param visitor the visitor that will visit the card.
+     */
+    @Override
+    public void accept(TileEffectVisitor visitor) {visitor.visit(this);}
 }

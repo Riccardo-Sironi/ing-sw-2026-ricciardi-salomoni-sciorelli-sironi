@@ -6,7 +6,6 @@ import it.polimi.gc06.mesos.model.Color;
 import it.polimi.gc06.mesos.model.GameModel;
 import it.polimi.gc06.mesos.model.Player;
 import it.polimi.gc06.mesos.model.cards.Card;
-import it.polimi.gc06.mesos.model.cards.TribeCardVisitor;
 import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingCard;
 import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingsRegistry;
 import it.polimi.gc06.mesos.model.gameBoard.Board;
@@ -44,7 +43,7 @@ public class ModelInstancesManager {
 
         //sorts cards into EnumMaps for GameModel & injects registry when needed (with visitor)
         InstanceSorterCardVisitor sorter = new InstanceSorterCardVisitor(registry);
-        cards.forEach(sorter::visit);
+        cards.forEach(x->x.accept(sorter));
 
         //creates players
         ArrayList<Player> players = new ArrayList<Player>();
@@ -58,7 +57,7 @@ public class ModelInstancesManager {
 
         //inject registry in each tile (with visitor)
         TileEffectRegistryAssigner registryAssigner = new TileEffectRegistryAssigner(registry);
-        turnOrderTile.slots().forEach((slot)->registryAssigner.visit(slot.getTileEffect()));
+        turnOrderTile.slots().forEach((slot)->slot.getTileEffect().accept(registryAssigner));
         //eventual null values will be mapped to visit(TileEffect) which does nothing, so it's not a problem
 
         //load offer track
