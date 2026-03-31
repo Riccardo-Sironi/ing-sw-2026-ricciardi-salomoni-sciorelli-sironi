@@ -1,0 +1,52 @@
+{
+  "2": [
+    {
+      "tileEffect": { "class": "FoodTileEffect", "numFood": 1 }
+    },
+    {
+      "tileEffect": { "class": "RemoveFoodTileEffect" }
+    }
+  ],
+  "3": [
+    {
+      "tileEffect": { "class": "FoodTileEffect", "numFood": 2 }
+    },
+    {
+      "tileEffect": null
+    },
+    {
+      "tileEffect": { "class": "RemoveFoodTileEffect" }
+    }
+  ],
+  "4": [
+    {
+      "tileEffect": { "class": "FoodTileEffect", "numFood": 2 }
+    },
+    {
+      "tileEffect": { "class": "FoodTileEffect", "numFood": 1 }
+    },
+    {
+      "tileEffect": null
+    },
+    {
+      "tileEffect": { "class": "RemoveFoodTileEffect" }
+    }
+  ],
+  "5": [
+    {
+      "tileEffect": { "class": "FoodTileEffect", "numFood": 3 }
+    },
+    {
+      "tileEffect": { "class": "FoodTileEffect", "numFood": 1 }
+    },
+    {
+      "tileEffect": null
+    },
+    {
+      "tileEffect": null
+    },
+    {
+      "tileEffect": { "class": "RemoveFoodTileEffect" }
+    }
+  ]
+}

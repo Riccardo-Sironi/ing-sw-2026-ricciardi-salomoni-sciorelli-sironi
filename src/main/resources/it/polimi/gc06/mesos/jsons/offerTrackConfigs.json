@@ -1,0 +1,32 @@
+{
+  "2": [
+    {"tileEffect": { "class": "ChooseCardTileEffect", "numOfTopCards": 0, "numOfBottomCards": 1 }},
+    {"tileEffect": { "class": "ChooseCardTileEffect", "numOfTopCards": 1, "numOfBottomCards": 0 }},
+    {"tileEffect": { "class": "ChooseCardTileEffect", "numOfTopCards": 1, "numOfBottomCards": 1 }},
+    {"tileEffect": { "class": "ChooseCardTileEffect", "numOfTopCards": 2, "numOfBottomCards": 0 }}
+  ],
+  "3": [
+    {"tileEffect": { "class": "ChooseCardTileEffect", "numOfTopCards": 0, "numOfBottomCards": 1 }},
+    {"tileEffect": { "class": "ChooseCardTileEffect", "numOfTopCards": 1, "numOfBottomCards": 0 }},
+    {"tileEffect": { "class": "ChooseCardTileEffect", "numOfTopCards": 0, "numOfBottomCards": 2 }},
+    {"tileEffect": { "class": "ChooseCardTileEffect", "numOfTopCards": 1, "numOfBottomCards": 1 }},
+    {"tileEffect": { "class": "ChooseCardTileEffect", "numOfTopCards": 2, "numOfBottomCards": 0 }}
+  ],
+  "4": [
+    {"tileEffect": { "class": "ChooseCardTileEffect", "numOfTopCards": 0, "numOfBottomCards": 1 }},
+    {"tileEffect": { "class": "ChooseCardTileEffect", "numOfTopCards": 1, "numOfBottomCards": 0 }},
+    {"tileEffect": { "class": "ChooseCardTileEffect", "numOfTopCards": 0, "numOfBottomCards": 2 }},
+    {"tileEffect": { "class": "ChooseCardTileEffect", "numOfTopCards": 1, "numOfBottomCards": 1 }},
+    {"tileEffect": { "class": "ChooseCardTileEffect", "numOfTopCards": 2, "numOfBottomCards": 0 }},
+    {"tileEffect": { "class": "ChooseCardTileEffect", "numOfTopCards": 2, "numOfBottomCards": 1 }}
+  ],
+  "5": [
+    {"tileEffect": { "class": "FoodTileEffect", "numFood": 3}},
+    {"tileEffect": { "class": "ChooseCardTileEffect", "numOfTopCards": 0, "numOfBottomCards": 1 }},
+    {"tileEffect": { "class": "ChooseCardTileEffect", "numOfTopCards": 1, "numOfBottomCards": 0 }},
+    {"tileEffect": { "class": "ChooseCardTileEffect", "numOfTopCards": 0, "numOfBottomCards": 2 }},
+    {"tileEffect": { "class": "ChooseCardTileEffect", "numOfTopCards": 1, "numOfBottomCards": 1 }},
+    {"tileEffect": { "class": "ChooseCardTileEffect", "numOfTopCards": 2, "numOfBottomCards": 0 }},
+    {"tileEffect": { "class": "ChooseCardTileEffect", "numOfTopCards": 2, "numOfBottomCards": 1 }}
+  ]
+}

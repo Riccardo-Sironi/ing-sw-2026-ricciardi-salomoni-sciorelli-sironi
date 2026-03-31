@@ -1,0 +1,13 @@
+package it.polimi.gc06.mesos.model.cards.buildings;
+
+public enum ModifierBuildingRegistryKey {
+    PICK_FROM_TOP,
+    TILE_FOOD_BONUS,
+    SUSTENANCE_GATHERER_DISCOUNT,
+    SUSTENANCE_ARTIST_DISCOUNT,
+    SUSTENANCE_INVENTOR_DISCOUNT,
+    RITUAL_NO_LOSS_CARD,
+    RITUAL_DOUBLE_WIN_CARD,
+    PAINTING_FOOD_GAIN_CARD,
+    HUNT_PRESTIGE_AND_FOOD_GAIN_CARD
+}

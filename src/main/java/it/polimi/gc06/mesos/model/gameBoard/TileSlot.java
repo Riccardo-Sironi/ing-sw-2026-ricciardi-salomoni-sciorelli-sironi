@@ -5,15 +5,22 @@ import it.polimi.gc06.mesos.model.Player;
 public class TileSlot {
 
     private Player player;
-    private final TileEffect tileEffect;
+    private TileEffect tileEffect;
 
     /**
      * TileSlot constructor.
      *
      * @param tileEffect effect applied on the player on player positioning, it can be null if no effect needs to be applied.
      */
+    //TODO remove
+    @Deprecated
     public TileSlot(TileEffect tileEffect) {
         this.tileEffect = tileEffect;
+        this.player = null;
+    }
+
+    public TileSlot(){
+        this.tileEffect = null;
         this.player = null;
     }
 
@@ -37,6 +44,25 @@ public class TileSlot {
         if (player == null) throw new IllegalArgumentException();
         if (this.player != null) throw new IllegalStateException();
         this.player = player;
+    }
+
+    /**
+     * Set the effect on the tile.
+     * This method should be called only during initialization.
+     *
+     * @param tileEffect the tile effect.
+     */
+    public void setTileEffect(TileEffect tileEffect) {
+        this.tileEffect = tileEffect;
+    }
+
+    /**
+     * Gets the effect on the tile.
+     *
+     * @return the tile effect.
+     */
+    public TileEffect getTileEffect(){
+        return tileEffect;
     }
 
     /**

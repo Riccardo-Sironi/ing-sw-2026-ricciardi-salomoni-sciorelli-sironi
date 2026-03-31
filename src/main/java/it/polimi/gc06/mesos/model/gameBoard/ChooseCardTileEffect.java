@@ -4,11 +4,35 @@ import it.polimi.gc06.mesos.model.Player;
 
 public class ChooseCardTileEffect implements TileEffect {
 
-    private final int numOfTopCards;
-    private final int numOfBottomCards;
+    private int numOfTopCards;
+    private int numOfBottomCards;
 
+    /**
+     * For testing purpose only!
+     */
     public ChooseCardTileEffect(int numOfTopCards, int numOfBottomCards) {
         this.numOfTopCards = numOfTopCards;
+        this.numOfBottomCards = numOfBottomCards;
+    }
+
+    public ChooseCardTileEffect(){
+        numOfBottomCards = 0;
+        numOfTopCards = 0;
+    }
+
+    /**
+     * NumOfTopCards setter.This method should be use only once during initialization.
+     * @param numOfTopCards the number of cards the player can draw from the top row.
+     */
+    public void setNumOfTopCards(int numOfTopCards) {
+        this.numOfTopCards = numOfTopCards;
+    }
+
+    /**
+     * NumOfBottomCards setter. This method should be use only once during initialization.
+     * @param numOfBottomCards the number of cards the player can draw from the bottom row.
+     */
+    public void setNumOfBottomCards(int numOfBottomCards) {
         this.numOfBottomCards = numOfBottomCards;
     }
 

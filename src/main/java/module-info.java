@@ -25,4 +25,6 @@ module it.polimi.gc06.mesos {
     exports it.polimi.gc06.mesos.model.gameBoard;
     opens it.polimi.gc06.mesos.model.gameBoard to javafx.fxml;
     exports it.polimi.gc06.mesos.gameExceptions;
+    exports it.polimi.gc06.mesos.model.InstancesManager;
+    opens it.polimi.gc06.mesos.model.InstancesManager to javafx.fxml;
 }

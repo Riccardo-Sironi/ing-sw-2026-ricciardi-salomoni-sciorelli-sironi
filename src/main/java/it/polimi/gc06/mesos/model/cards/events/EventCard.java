@@ -3,9 +3,12 @@ package it.polimi.gc06.mesos.model.cards.events;
 import it.polimi.gc06.mesos.model.cards.TribeCard;
 import it.polimi.gc06.mesos.model.Era;
 import it.polimi.gc06.mesos.model.Player;
+import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingsRegistry;
 
 public abstract class EventCard extends TribeCard {
+
     private final boolean lastToBeResolved;
+    private ModifierBuildingsRegistry buildingsRegistry;
 
     public EventCard(Era era, boolean lastToBeResolved) {
         super(era);
@@ -29,4 +32,26 @@ public abstract class EventCard extends TribeCard {
      * @param player the player that is resolving the event
      */
     public abstract void resolveEvent(Player player);
+
+
+    /**
+     * sets the registry of the event card
+     *
+     * @param registry the modifierBuildingCardRegistry
+     * @throws IllegalArgumentException if the registry passed is null
+     */
+    public void setRegistry(ModifierBuildingsRegistry registry) throws IllegalArgumentException{
+        if(registry == null) throw new IllegalArgumentException();
+        buildingsRegistry = registry;
+    }
+
+    /**
+     *  Returns the building registry of the modifier building cards
+     *  This method should only be used by cards that extends EventCard
+     *
+     * @return the building registry.
+     */
+    protected ModifierBuildingsRegistry getRegistry(){
+        return buildingsRegistry;
+    }
 }
