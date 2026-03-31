@@ -499,6 +499,16 @@ public class Player {
         return inventorPairs.values().stream().anyMatch(count -> count == 2);
     }
 
+    /**
+     * Returns the inventor pairs map of the player, which is a map that associates each invention icon with the number
+     * of pairs of that icon the player has in their character deck after the inventor pairs map has been initialized.
+     *
+     * @return the enum map of the player's inventor pairs
+     */
+    public EnumMap<InventionIcon, Integer> getInventorPairs() {
+        return inventorPairs;
+    }
+
     public int getBuildersDiscount() {
         int foodDiscount = 0;
 
@@ -512,7 +522,7 @@ public class Player {
     /**
      * Returns the total prestige gained from builder cards (the amount written in the bottom-right corner).
      */
-    public int getBuildersPrestige(){
+    public int getBuildersPrestige() {
         int prestigeGained = 0;
 
         for (CharacterCard card : characterDeck.get(CharacterType.BUILDER)) {
