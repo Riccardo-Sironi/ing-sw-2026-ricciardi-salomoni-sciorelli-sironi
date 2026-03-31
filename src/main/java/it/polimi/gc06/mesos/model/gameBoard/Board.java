@@ -6,6 +6,7 @@ import it.polimi.gc06.mesos.model.GameModel;
 import it.polimi.gc06.mesos.model.Player;
 import it.polimi.gc06.mesos.model.cards.BottomRowInitVisitor;
 import it.polimi.gc06.mesos.model.cards.TribeCard;
+import it.polimi.gc06.mesos.model.cards.buildings.AddToBuildingsVisitor;
 import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
 import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingCard;
 import it.polimi.gc06.mesos.model.cards.characters.CharacterCard;
@@ -576,8 +577,7 @@ public class Board implements DrawSubject {
 
         player.removeFoodTokens(finalCost);
         topBuildings.remove(building);
-        player.addBuildingCards(building);
-
+        building.accept(new AddToBuildingsVisitor(player));
     }
 
 
@@ -612,7 +612,7 @@ public class Board implements DrawSubject {
 
         player.removeFoodTokens(finalCost);
         bottomBuildings.remove(building);
-        player.addBuildingCards(building);
+        building.accept(new AddToBuildingsVisitor(player));
     }
 
     public boolean isEndGame() {
