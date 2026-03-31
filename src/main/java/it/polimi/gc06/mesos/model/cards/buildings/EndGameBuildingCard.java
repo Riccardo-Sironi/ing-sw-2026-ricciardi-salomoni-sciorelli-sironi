@@ -11,14 +11,14 @@ public class EndGameBuildingCard extends BuildingCard {
 
     /**
      * @param prestigeEffect please use standard function in enum EndGameBuildingFunction
-     * For testing purpose only!
+     *                       For testing purpose only!
      */
     public EndGameBuildingCard(Era era, int prestigeGain, int foodCost, ToIntFunction<Player> prestigeEffect) {
         super(era, prestigeGain, foodCost);
         this.prestigeEffect = prestigeEffect;
     }
 
-    public EndGameBuildingCard(){
+    public EndGameBuildingCard() {
         super();
         prestigeEffect = null;
     }
@@ -27,8 +27,8 @@ public class EndGameBuildingCard extends BuildingCard {
      * Prestige getter.
      *
      * @param owner the owner of the card.
-     * @throws IllegalArgumentException if the owner is null.
      * @return the prestige gained at the end of the game.
+     * @throws IllegalArgumentException if the owner is null.
      */
     @Override
     public int getPrestigeGain(Player owner) {
@@ -40,13 +40,17 @@ public class EndGameBuildingCard extends BuildingCard {
      * PrestigeEffect setter. This should be called only once.
      *
      * @param prestigeEffect the prestige gained by the card at the end of the game (represented by an enum for JSON extraction).
-     * @throws IllegalStateException gets thrown if this setter is called more than once.
+     * @throws IllegalStateException    gets thrown if this setter is called more than once.
      * @throws IllegalArgumentException if the prestigeEffect is negative
      */
-    public void setPrestigeEffect(EndGameBuildingFunction prestigeEffect) throws IllegalStateException, IllegalArgumentException{
-        if(prestigeEffect == null) throw new IllegalArgumentException();
-        if(this.prestigeEffect != null) throw new IllegalStateException("Setter has been already called");
+    public void setPrestigeEffect(EndGameBuildingFunction prestigeEffect) throws IllegalStateException, IllegalArgumentException {
+        if (prestigeEffect == null) throw new IllegalArgumentException();
+        if (this.prestigeEffect != null) throw new IllegalStateException("Setter has been already called");
         this.prestigeEffect = prestigeEffect;
     }
 
+    @Override
+    public void accept(BuildingCardVisitor visitor) {
+        visitor.visit(this);
+    }
 }

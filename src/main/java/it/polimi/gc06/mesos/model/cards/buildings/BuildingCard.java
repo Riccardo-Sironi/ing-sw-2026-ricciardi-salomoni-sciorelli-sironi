@@ -19,7 +19,7 @@ public abstract class BuildingCard implements Card {
         this.foodCost = foodCost;
     }
 
-    public BuildingCard(){
+    public BuildingCard() {
         era = null;
         foodCost = -1;
         prestigeGain = -1;
@@ -57,12 +57,12 @@ public abstract class BuildingCard implements Card {
      * Era setter. This should be called only once during initialization.
      *
      * @param era the era of the card.
-     * @throws IllegalStateException gets thrown if this setter is called more than once.
+     * @throws IllegalStateException    gets thrown if this setter is called more than once.
      * @throws IllegalArgumentException if the era is null
      */
-    public void setEra(Era era) throws IllegalStateException, IllegalArgumentException{
-        if(era == null) throw new IllegalArgumentException();
-        if(this.era != null) throw new IllegalStateException("Setter has been already called");
+    public void setEra(Era era) throws IllegalStateException, IllegalArgumentException {
+        if (era == null) throw new IllegalArgumentException();
+        if (this.era != null) throw new IllegalStateException("Setter has been already called");
         this.era = era;
     }
 
@@ -70,12 +70,12 @@ public abstract class BuildingCard implements Card {
      * FoodCost setter. This should be called only once during initialization.
      *
      * @param foodCost the food cost of the card.
-     * @throws IllegalStateException gets thrown if this setter is called more than once.
+     * @throws IllegalStateException    gets thrown if this setter is called more than once.
      * @throws IllegalArgumentException if the food cost is negative
      */
-    public void setFoodCost(int foodCost) throws IllegalStateException, IllegalArgumentException{
-        if(foodCost < 0) throw new IllegalArgumentException();
-        if(this.foodCost >= 0) throw new IllegalStateException("Setter has been already called");
+    public void setFoodCost(int foodCost) throws IllegalStateException, IllegalArgumentException {
+        if (foodCost < 0) throw new IllegalArgumentException();
+        if (this.foodCost >= 0) throw new IllegalStateException("Setter has been already called");
         this.foodCost = foodCost;
     }
 
@@ -83,12 +83,20 @@ public abstract class BuildingCard implements Card {
      * PrestigeGain setter. This should be called only once during initialization.
      *
      * @param prestigeGain the prestige gained by the card at the end of the game.
-     * @throws IllegalStateException gets thrown if this setter is called more than once.
+     * @throws IllegalStateException    gets thrown if this setter is called more than once.
      * @throws IllegalArgumentException if the prestigeGain is negative
      */
-    public void setPrestigeGain(int prestigeGain) throws IllegalStateException, IllegalArgumentException{
-        if(prestigeGain < 0) throw new IllegalArgumentException();
-        if(this.prestigeGain >= 0) throw new IllegalStateException("Setter has been already called");
+    public void setPrestigeGain(int prestigeGain) throws IllegalStateException, IllegalArgumentException {
+        if (prestigeGain < 0) throw new IllegalArgumentException();
+        if (this.prestigeGain >= 0) throw new IllegalStateException("Setter has been already called");
         this.prestigeGain = prestigeGain;
     }
+
+    /**
+     * a visitor that will perform operations on this card.
+     * this method implements the double-dispatch mechanism for the Visitor pattern.
+     *
+     * @param visitor the visitor that will visit the card.
+     */
+    public abstract void accept(BuildingCardVisitor visitor);
 }

@@ -19,4 +19,8 @@ public class ObserverPairBuildingCard extends BuildingCard implements DrawObserv
         }
     }
 
+    @Override
+    public void accept(BuildingCardVisitor visitor) {
+        visitor.visit(this);
+    }
 }

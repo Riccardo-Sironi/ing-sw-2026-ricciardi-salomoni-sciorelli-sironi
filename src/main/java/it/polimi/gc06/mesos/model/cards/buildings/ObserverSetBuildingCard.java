@@ -14,4 +14,8 @@ public class ObserverSetBuildingCard extends BuildingCard implements DrawObserve
         }
     }
 
+    @Override
+    public void accept(BuildingCardVisitor visitor) {
+        visitor.visit(this);
+    }
 }
