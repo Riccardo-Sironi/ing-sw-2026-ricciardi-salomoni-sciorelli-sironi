@@ -1,9 +1,6 @@
 package it.polimi.gc06.mesos.model;
 
-import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
-import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingCard;
-import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingsRegistry;
-import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingRegistryKey;
+import it.polimi.gc06.mesos.model.cards.buildings.*;
 import it.polimi.gc06.mesos.model.cards.events.HuntEvent;
 import org.junit.jupiter.api.*;
 
@@ -71,15 +68,16 @@ class PlayerTest {
 
     // --- ENVIRONMENT TESTS
 
-//    @Test
-//    void testGetEnvironmentSuccess(){
-//        player.getEnvironment(mockGameInfo);
-//
-//        assertDoesNotThrow(() -> {
-//            GameInfo retrievedInfo = player.getEnvironment();
-//            assertEquals(mockGameInfo, retrievedInfo, "getEnvironment should return the mocked GameInfo");
-//        });
-//    }
+    @Test
+    void testGetEnvironmentSuccess(){
+        player.setEnvironment(mockGameInfo);
+
+        assertDoesNotThrow(() -> {
+            GameInfo retrievedInfo = player.getEnvironment();
+            assertEquals(mockGameInfo, retrievedInfo,
+                    "getEnvironment should return the mocked GameInfo");
+        });
+    }
 
     @Test
     void testGetEnvironmentThrowsExceptionWhenNull(){
@@ -101,6 +99,14 @@ class PlayerTest {
     }
 
     @Test
+    void testAddFoodTokensZero() {
+        assertDoesNotThrow(() -> player.addFoodTokens(0));
+
+        assertEquals(0, player.getFoodTokens(),
+                "FOOD TOKENS should remain 0 after adding 0");
+    }
+
+    @Test
     void testAddFoodTokensThrowsExceptionWhenNegative() {
         assertThrows(IllegalArgumentException.class, () -> player.addFoodTokens(-3),
                 "NEGATIVE FOOD should throw IllegalArgumentException");
@@ -113,6 +119,14 @@ class PlayerTest {
 
         assertEquals(2, player.getFoodTokens(),
                 "FOOD TOKENS should be 2");
+    }
+
+    @Test
+    void testRemoveFoodTokensZero() {
+        assertDoesNotThrow(() -> player.removeFoodTokens(0));
+
+        assertEquals(0, player.getFoodTokens(),
+                "FOOD TOKENS should remain 0 after removing 0");
     }
 
     @Test
@@ -141,6 +155,14 @@ class PlayerTest {
     }
 
     @Test
+    void testAddPrestigeTokensZero() {
+        assertDoesNotThrow(() -> player.addPrestigeTokens(0));
+
+        assertEquals(0, player.getPrestigeTokens(),
+                "PRESTIGE TOKENS should remain 0 after adding 0");
+    }
+
+    @Test
     void testAddPrestigeTokensThrowsExceptionWhenNegative() {
         assertThrows(IllegalArgumentException.class, () -> player.addPrestigeTokens(-3),
                 "NEGATIVE PRESTIGE TOKENS should throw IllegalArgumentException when added");
@@ -153,6 +175,14 @@ class PlayerTest {
 
         assertEquals(-5, player.getPrestigeTokens(),
                 "PRESTIGE TOKENS should be -5");
+    }
+
+    @Test
+    void testRemovePrestigeTokensZero() {
+        assertDoesNotThrow(() -> player.removePrestigeTokens(0));
+
+        assertEquals(0, player.getPrestigeTokens(),
+                "PRESTIGE TOKENS should remain 0 after adding 0");
     }
 
     @Test
@@ -223,7 +253,7 @@ class PlayerTest {
     // --- BUILDING CARDS TESTS
 
     @Test
-    void testAddBuildingCardSuccess(){
+    void testAddNormalBuildingCardSuccess(){
         BuildingCard mockBuildingCard = mock(BuildingCard.class);
 
         assertDoesNotThrow(() -> player.addBuildingCards(mockBuildingCard));
@@ -234,9 +264,50 @@ class PlayerTest {
     }
 
     @Test
-    void testAddBuildingCardThrowsExceptionWhenNull(){
-        BuildingCard nullBuildingCard = null;
+    void testAddNormalBuildingCardThrowsExceptionWhenNull(){
         assertThrows(IllegalArgumentException.class, () -> player.addBuildingCards((BuildingCard) null),
                 "NULL BUILDING CARD should throw IllegalArgumentException");
+    }
+
+    @Test
+    void testAddObserverSetBuildingCardSuccess(){
+        player.setEnvironment(mockGameInfo);
+        ObserverSetBuildingCard mockObserverSetCard = mock(ObserverSetBuildingCard.class);
+
+        assertDoesNotThrow(() -> player.addBuildingCards(mockObserverSetCard));
+
+        assertTrue(player.getBuildingCards().contains(mockObserverSetCard),
+                "deck should now contain the mockObserverSetCard");
+        assertTrue(player.hasSetBuildingCard(),
+                "player should have set building initialized");
+
+        assertDoesNotThrow(() -> verify(mockGameInfo, times(1)).addObserver(mockObserverSetCard));
+    }
+
+    @Test
+    void testAddObserverSetBuildingCardThrowsExceptionWhenNull(){
+        assertThrows(IllegalArgumentException.class, () -> player.addBuildingCards((ObserverSetBuildingCard) null),
+                "NULL OBSERVER SET BUILDING CARD should throw IllegalArgumentException");
+    }
+
+    @Test
+    void testAddObserverPairBuildingCardSuccess(){
+        player.setEnvironment(mockGameInfo);
+        ObserverSetBuildingCard mockObserverPairCard = mock(ObserverSetBuildingCard.class);
+
+        assertDoesNotThrow(() -> player.addBuildingCards(mockObserverPairCard));
+
+        assertTrue(player.getBuildingCards().contains(mockObserverPairCard),
+                "deck should now contain the mockObserverPairCard");
+        assertTrue(player.hasSetBuildingCard(),
+                "player should now contain the mockObserverPairCard");
+
+        assertDoesNotThrow(() -> verify(mockGameInfo, times(1)).addObserver(mockObserverPairCard));
+    }
+
+    @Test
+    void testAddObserverPairBuildingCardThrowsExceptionWhenNull(){
+        assertThrows(IllegalArgumentException.class, () -> player.addBuildingCards((ObserverPairBuildingCard) null),
+                "NULL OBSERVER PAIR BUILDING CARD should throw IllegalArgumentException");
     }
 }
