@@ -6,9 +6,7 @@ import it.polimi.gc06.mesos.model.GameModel;
 import it.polimi.gc06.mesos.model.Player;
 import it.polimi.gc06.mesos.model.cards.BottomRowInitVisitor;
 import it.polimi.gc06.mesos.model.cards.TribeCard;
-import it.polimi.gc06.mesos.model.cards.buildings.AddToBuildingsVisitor;
-import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
-import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingCard;
+import it.polimi.gc06.mesos.model.cards.buildings.*;
 import it.polimi.gc06.mesos.model.cards.characters.CharacterCard;
 import it.polimi.gc06.mesos.model.cards.events.EventCard;
 import it.polimi.gc06.mesos.model.cards.events.EventListVisitor;
@@ -35,14 +33,10 @@ public class Board implements DrawSubject {
 
     private final ArrayList<DrawObserver> observers;
 
-    private final ModifierBuildingCard foodBonusCard;
+    public Board(TurnOrderTile turnOrderTile, List<TileSlot> offerTrack) {
 
-    public Board(ModifierBuildingCard foodBonusCard) {
-
-        this.foodBonusCard = foodBonusCard;
-
-        this.turnOrderTile = new TurnOrderTile(new ArrayList<>());
-        this.offerTrack = new ArrayList<>();
+        this.turnOrderTile = turnOrderTile;
+        this.offerTrack = offerTrack;
 
         topRow = new ArrayList<>();
         bottomRow = new ArrayList<>();
@@ -229,42 +223,6 @@ public class Board implements DrawSubject {
                 buildingsDecks.get(era).addLast(model.getBuildingCardsDecks().get(era).removeLast());
             }
         }
-
-        // TODO : turn order tile init : !!!! THIS SHOULD BE DONE WITH THE JSON THIS IS JUST A PROTOTYPE !!!
-        switch (nPlayers) {
-            case 2:
-                turnOrderTile.addSlot(0, new TileSlot(new FoodTileEffect(1, foodBonusCard)));
-                turnOrderTile.addSlot(1, new TileSlot(new RemoveFoodTileEffect()));
-                break;
-            case 3:
-                turnOrderTile.addSlot(0, new TileSlot(new FoodTileEffect(2, foodBonusCard)));
-                turnOrderTile.addSlot(1, new TileSlot(null));
-                turnOrderTile.addSlot(2, new TileSlot(new RemoveFoodTileEffect()));
-                break;
-            case 4:
-                turnOrderTile.addSlot(0, new TileSlot(new FoodTileEffect(2, foodBonusCard)));
-                turnOrderTile.addSlot(1, new TileSlot(new FoodTileEffect(1, foodBonusCard)));
-                turnOrderTile.addSlot(2, new TileSlot(null));
-                turnOrderTile.addSlot(3, new TileSlot(new RemoveFoodTileEffect()));
-                break;
-            case 5:
-                turnOrderTile.addSlot(0, new TileSlot(new FoodTileEffect(3, foodBonusCard)));
-                turnOrderTile.addSlot(1, new TileSlot(new FoodTileEffect(1, foodBonusCard)));
-                turnOrderTile.addSlot(2, new TileSlot(null));
-                turnOrderTile.addSlot(3, new TileSlot(null));
-                turnOrderTile.addSlot(4, new TileSlot(new RemoveFoodTileEffect()));
-                break;
-            default:
-        }
-
-        // offer track init
-        if (nPlayers == 5) offerTrack.addFirst(new TileSlot(new FoodTileEffect(3, foodBonusCard)));
-        offerTrack.add(new TileSlot(new ChooseCardTileEffect(0, 1)));
-        offerTrack.add(new TileSlot(new ChooseCardTileEffect(1, 0)));
-        if (nPlayers > 2) offerTrack.add(new TileSlot(new ChooseCardTileEffect(0, 2)));
-        offerTrack.add(new TileSlot(new ChooseCardTileEffect(1, 1)));
-        offerTrack.add(new TileSlot(new ChooseCardTileEffect(2, 0)));
-        if (nPlayers > 3) offerTrack.addLast(new TileSlot(new ChooseCardTileEffect(2, 1)));
 
         // first and only initialization of bottom row tribe cards
         populateBottomRow(model);

@@ -4,21 +4,17 @@ import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingCard;
 import it.polimi.gc06.mesos.model.cards.TribeCardVisitor;
 import it.polimi.gc06.mesos.model.Era;
 import it.polimi.gc06.mesos.model.Player;
+import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingRegistryKey;
 
 public class RitualEvent extends EventCard {
 
     private final int numPrestigeGained;
     private final int numPrestigeLost;
-    
-    private final ModifierBuildingCard noLossCard;
-    private final ModifierBuildingCard doubleWinCard;
 
-    public RitualEvent(Era era, int numPrestigeGained, int numPrestigeLost, ModifierBuildingCard noLossCard, ModifierBuildingCard doubleWinCard) {
+    public RitualEvent(Era era, int numPrestigeGained, int numPrestigeLost) {
         super(era, false);
         this.numPrestigeGained = numPrestigeGained;
         this.numPrestigeLost = numPrestigeLost;
-        this.noLossCard = noLossCard;
-        this.doubleWinCard = doubleWinCard;
     }
 
     /**
@@ -50,14 +46,18 @@ public class RitualEvent extends EventCard {
         if (player.getShamanStars() == maxStars) {
 
                 /*player is the only one to has the max stars      &&          player has the doubleWinCard*/
-            if(player.getEnvironment().getNumPlayerMaxStars() == 1 && player.getBuildingCards().contains(doubleWinCard)) {
+            if(player.getEnvironment().getNumPlayerMaxStars() == 1 && player.getBuildingCards().contains(
+                    getRegistry().get(ModifierBuildingRegistryKey.RITUAL_DOUBLE_WIN_CARD)
+            )) {
                 player.addPrestigeTokens(numPrestigeGained *2);
             } else { player.addPrestigeTokens(numPrestigeGained); }
 
         }
 
         if (player.getShamanStars() == minStars) {
-            player.removePrestigeTokens(player.getBuildingCards().contains(noLossCard) ? 0 : numPrestigeLost);
+            player.removePrestigeTokens(player.getBuildingCards().contains(
+                    getRegistry().get(ModifierBuildingRegistryKey.RITUAL_NO_LOSS_CARD)
+            ) ? 0 : numPrestigeLost);
         }
     }
 

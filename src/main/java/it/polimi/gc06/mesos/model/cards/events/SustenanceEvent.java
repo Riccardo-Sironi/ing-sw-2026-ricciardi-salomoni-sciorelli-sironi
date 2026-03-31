@@ -4,27 +4,17 @@ import it.polimi.gc06.mesos.model.cards.TribeCardVisitor;
 import it.polimi.gc06.mesos.model.Era;
 import it.polimi.gc06.mesos.model.Player;
 import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingCard;
+import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingRegistryKey;
 
 public class SustenanceEvent extends EventCard {
 
     private static final int defaultGathererDiscount = 3;
     private final int numPrestigeLoss;
 
-    private final ModifierBuildingCard gathererDiscountCard;
-    private final ModifierBuildingCard artistDiscountCard;
-    private final ModifierBuildingCard inventorDiscountCard;
-
-    public SustenanceEvent(Era era,
-                           int numPrestigeLoss,
-                           ModifierBuildingCard gathererDiscountCard,
-                           ModifierBuildingCard artistDiscountCard,
-                           ModifierBuildingCard inventorDiscountCard)
+    public SustenanceEvent(Era era, int numPrestigeLoss)
     {
         super(era, true);
         this.numPrestigeLoss = numPrestigeLoss;
-        this.gathererDiscountCard = gathererDiscountCard;
-        this.artistDiscountCard = artistDiscountCard;
-        this.inventorDiscountCard = inventorDiscountCard;
     }
 
     /**
@@ -90,13 +80,19 @@ public class SustenanceEvent extends EventCard {
         // initialization of required food (adding the gatherer discount)
         int requiredFood = Math.max(totalCharacterCards - (gatherersCount * defaultGathererDiscount), 0);
 
-        if (player.getBuildingCards().contains(gathererDiscountCard)) {
+        if (player.getBuildingCards().contains(
+                getRegistry().get(ModifierBuildingRegistryKey.SUSTENANCE_GATHERER_DISCOUNT)
+        )) {
             requiredFood = Math.max((requiredFood - gatherersCount), 0);
         }
-        if (player.getBuildingCards().contains(artistDiscountCard)){
+        if (player.getBuildingCards().contains(
+                getRegistry().get(ModifierBuildingRegistryKey.SUSTENANCE_ARTIST_DISCOUNT)
+        )){
             requiredFood = Math.max((requiredFood - artistsCount), 0);
         }
-        if (player.getBuildingCards().contains(inventorDiscountCard)) {
+        if (player.getBuildingCards().contains(
+                getRegistry().get(ModifierBuildingRegistryKey.SUSTENANCE_INVENTOR_DISCOUNT)
+        )) {
             requiredFood = Math.max((requiredFood - inventorsCount), 0);
         }
         return requiredFood;

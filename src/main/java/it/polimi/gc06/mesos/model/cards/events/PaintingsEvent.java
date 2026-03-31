@@ -4,6 +4,7 @@ import it.polimi.gc06.mesos.model.cards.TribeCardVisitor;
 import it.polimi.gc06.mesos.model.Era;
 import it.polimi.gc06.mesos.model.Player;
 import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingCard;
+import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingRegistryKey;
 
 public class PaintingsEvent extends EventCard {
 
@@ -11,14 +12,11 @@ public class PaintingsEvent extends EventCard {
     private final int numPrestigeLost;
     private final int minNumberOfArtists;
 
-    private final ModifierBuildingCard foodGainCard;
-
-    public PaintingsEvent(Era era, int numPrestigeGained, int numPrestigeLost, int minNumberOfArtists, ModifierBuildingCard foodGainCard) {
+    public PaintingsEvent(Era era, int numPrestigeGained, int numPrestigeLost, int minNumberOfArtists) {
         super(era, false);
         this.numPrestigeGained = numPrestigeGained;
         this.numPrestigeLost = numPrestigeLost;
         this.minNumberOfArtists = minNumberOfArtists;
-        this.foodGainCard = foodGainCard;
     }
 
     /**
@@ -54,7 +52,7 @@ public class PaintingsEvent extends EventCard {
             player.addPrestigeTokens(artistCount * numPrestigeGained);
         }
 
-        if (player.getBuildingCards().contains(foodGainCard)) {
+        if (player.getBuildingCards().contains(getRegistry().get(ModifierBuildingRegistryKey.PAINTING_FOOD_GAIN_CARD))) {
             player.addFoodTokens(artistCount);
         } else {
             player.addFoodTokens(0);

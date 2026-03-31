@@ -1,10 +1,7 @@
 package it.polimi.gc06.mesos.model;
 
 import it.polimi.gc06.mesos.gameExceptions.GameObjectNotFoundException;
-import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
-import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingCard;
-import it.polimi.gc06.mesos.model.cards.buildings.ObserverPairBuildingCard;
-import it.polimi.gc06.mesos.model.cards.buildings.ObserverSetBuildingCard;
+import it.polimi.gc06.mesos.model.cards.buildings.*;
 import it.polimi.gc06.mesos.model.cards.characters.*;
 
 import java.util.ArrayList;
@@ -41,9 +38,9 @@ public class Player {
     private int topDrawNum;
     private int bottomDrawNum;
 
-    public Player(String nickname, Color color, ModifierBuildingCard threeStarCard) {
+    public Player(String nickname, Color color, ModifierBuildingsRegistry registry) {
         this.nickname = nickname;
-        this.threeStarCard = threeStarCard;
+        this.threeStarCard = registry.get(ModifierBuildingRegistryKey.RITUAL_THREE_STAR_CARD);
 
         this.characterDeck = new EnumMap<>(CharacterType.class);
         java.util.Arrays.stream(CharacterType.values()).forEach(cType -> characterDeck.put(cType, new ArrayList<>()));

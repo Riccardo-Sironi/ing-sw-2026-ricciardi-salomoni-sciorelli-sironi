@@ -38,13 +38,6 @@ public class ModelInstancesManager {
         modifierCards = mapper.readValue(input, new TypeReference<List<ModifierBuildingCard>>() {});
 
         //register modifierBuildingCards in registry
-        /*
-        * TODO add registry to classes that needs it, right now it is necessary for:
-        *  - each event card (DONE, it just needs to be used in the subclasses)
-        *  - the TurnManager
-        *  - Player class
-        *  - FoodTileEffect (mostly done)
-        * */
         ModifierBuildingsRegistry registry = new ModifierBuildingsRegistry();
         modifierCards.forEach(registry::register);
         cards.addAll(modifierCards);
@@ -74,12 +67,10 @@ public class ModelInstancesManager {
         List<TileSlot> offerTrack = offerTrackConfig.get(String.valueOf(numOfPlayers));
 
         //creates TurnManager
-        TurnManager turnManager = new TurnManager(new ArrayList<>(players),
-                turnOrderTile,
-                registry);
+        TurnManager turnManager = new TurnManager(new ArrayList<>(players), registry);
 
         //set up Board & GameModel
-        Board board= new Board(registry, turnOrderTile, offerTrack);
+        Board board= new Board(turnOrderTile, offerTrack);
         GameModel model = new GameModel(board,
                 sorter.getBuildingCards(),
                 sorter.getTribeCards(),

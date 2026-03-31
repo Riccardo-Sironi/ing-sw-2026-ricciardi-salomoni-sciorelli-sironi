@@ -3,6 +3,8 @@ package it.polimi.gc06.mesos.model.gameTurnManager;
 import it.polimi.gc06.mesos.model.Player;
 import it.polimi.gc06.mesos.model.cards.TribeCardVisitor;
 import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingCard;
+import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingRegistryKey;
+import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingsRegistry;
 
 import java.util.List;
 
@@ -12,19 +14,16 @@ public class TurnManager {
     private Player currentPlayer;
     private Phase phase;
 
-    final private TribeCardVisitor cardVisitor;
-
     private int round;
 
     private final ModifierBuildingCard pickFromTopCard;
 
-    public TurnManager(List<Player> playersOrder, TribeCardVisitor cardVisitor, ModifierBuildingCard pickFromTopCard) {
+    public TurnManager(List<Player> playersOrder, ModifierBuildingsRegistry registry) {
         this.playersOrder = playersOrder;
         this.currentPlayer = playersOrder.getFirst();
-        this.pickFromTopCard = pickFromTopCard;
+        this.pickFromTopCard = registry.get(ModifierBuildingRegistryKey.PICK_FROM_TOP);
         this.phase = new PlacingTotemPhase();
         this.round = 0;
-        this.cardVisitor = cardVisitor;
     }
 
     /**
@@ -46,15 +45,6 @@ public class TurnManager {
      */
     public void setRound(int round) {
         this.round = round;
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @return the card visitor
-     */
-    protected TribeCardVisitor getCardVisitor() {
-        return cardVisitor;
     }
 
     /**

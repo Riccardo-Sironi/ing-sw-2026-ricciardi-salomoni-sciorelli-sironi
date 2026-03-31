@@ -4,18 +4,16 @@ import it.polimi.gc06.mesos.model.cards.TribeCardVisitor;
 import it.polimi.gc06.mesos.model.Era;
 import it.polimi.gc06.mesos.model.Player;
 import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingCard;
+import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingRegistryKey;
 
 public class HuntEvent extends EventCard {
 
     private final int numPrestigeGained;
 
-    private final ModifierBuildingCard prestigeAndFoodGainCard;
-
     //CONSTRUCTOR
-    public HuntEvent(Era era, int numPrestigeGained, ModifierBuildingCard prestigeAndFoodGainCard) {
+    public HuntEvent(Era era, int numPrestigeGained) {
         super(era, false);
         this.numPrestigeGained = numPrestigeGained;
-        this.prestigeAndFoodGainCard = prestigeAndFoodGainCard;
     }
 
     /**
@@ -42,13 +40,16 @@ public class HuntEvent extends EventCard {
         /*initialization of hunters counter*/
         int huntersCount = player.getHuntersCounter();
 
-
         if (huntersCount > 0) {
             /*add food tokens for every hunter in the deck*/
-            player.addFoodTokens(player.getBuildingCards().contains(prestigeAndFoodGainCard) ? huntersCount * 2 : huntersCount);
+            player.addFoodTokens(player.getBuildingCards().contains(
+                    getRegistry().get(ModifierBuildingRegistryKey.HUNT_PRESTIGE_AND_FOOD_GAIN_CARD)
+            ) ? huntersCount * 2 : huntersCount);
 
             /*add prestige tokens for every hunter in the deck multiplied by the prestige on the card*/
-            player.addPrestigeTokens(player.getBuildingCards().contains(prestigeAndFoodGainCard) ? (huntersCount * (numPrestigeGained + 1)) : huntersCount * numPrestigeGained);
+            player.addPrestigeTokens(player.getBuildingCards().contains(
+                    getRegistry().get(ModifierBuildingRegistryKey.HUNT_PRESTIGE_AND_FOOD_GAIN_CARD)
+            ) ? (huntersCount * (numPrestigeGained + 1)) : huntersCount * numPrestigeGained);
         }
     }
 }
