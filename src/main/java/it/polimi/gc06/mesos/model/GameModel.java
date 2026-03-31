@@ -37,25 +37,27 @@ public class GameModel implements GameInfo {
         this.turnManager = turnManager;
     }
 
+    /*
     public GameModel() {
-        // TODO NOTE : this is just the skeleton, but wondering if we should have a method called by the controller
+        //this is just the skeleton, but wondering if we should have a method called by the controller
         // that fills the lists and maps with the correct number of objects based on player quantity.
 
-        // TODO : first thing is to initialize the players (and assign them the starting food tokens according to the player order ?).
+        //first thing is to initialize the players (and assign them the starting food tokens according to the player order ?).
         this.players = new ArrayList<>();
 
-        // TODO : init the decks with the cards from the json files.
+        //init the decks with the cards from the json files.
         this.buildingCardsDecks = new EnumMap<>(Era.class);
         this.tribeCardsDeck = new EnumMap<>(Era.class);
         this.finalEventCards = new EventCard[2];
 
-        // TODO : after the decks initialization we have to create the board and initialize it.
-        // TODO : Add actual Modifer Building Card
+        //after the decks initialization we have to create the board and initialize it.
+        //Add actual Modifer Building Card
         this.board = new Board(null);
 
-        // TODO : after the board initialization we have to create the turn manager and initialize it with the first phase (PlacingTotemPhase) and the list of players.
+        //after the board initialization we have to create the turn manager and initialize it with the first phase (PlacingTotemPhase) and the list of players.
         this.turnManager = new TurnManager(players, null, null); // the parameters here are not clear yet (except for the list of players)
     }
+    */
 
     /**
      * method that starts the game session

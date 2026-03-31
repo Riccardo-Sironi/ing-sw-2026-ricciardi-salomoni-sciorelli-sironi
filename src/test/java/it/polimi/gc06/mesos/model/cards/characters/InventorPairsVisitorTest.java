@@ -34,7 +34,7 @@ class InventorPairsVisitorTest {
         ObserverPairBuildingCard observerPairBuildingCard = new ObserverPairBuildingCard();
         observerPairBuildingCard.setFoodCost(0);
 
-        Board board = new Board(null);
+        Board board = new Board(null,null);
         board.getTopBuildings().add(observerPairBuildingCard);
         board.buyBuildingFromTopRow(player, observerPairBuildingCard);
 
