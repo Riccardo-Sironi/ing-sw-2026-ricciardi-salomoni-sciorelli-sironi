@@ -69,7 +69,7 @@ public class RitualEventTest {
     @Test
     void testAccept_With_NullVisitor() {
         assertThrows(NullPointerException.class, () -> {
-            ritualEvent.accept(null);
+            ritualEvent.accept((TribeCardVisitor) null);
         });
     }
 
