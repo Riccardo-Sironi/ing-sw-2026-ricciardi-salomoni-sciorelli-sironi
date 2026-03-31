@@ -22,7 +22,7 @@ class PlayerTest {
         mockGameInfo = mock(GameInfo.class);
 
         // 2. Setup Player
-        player = new Player("TestUser", Color.RED, mockThreeStarCard);
+        player = new Player("TestUser", Color.RED, null);
     }
 
     @Test

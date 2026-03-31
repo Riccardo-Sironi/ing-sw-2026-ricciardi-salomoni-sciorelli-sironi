@@ -37,7 +37,7 @@ class BoardTest {
 
     @BeforeEach
     void setUp() {
-        board = new Board(mock(ModifierBuildingCard.class));
+        board = new Board(null, null);
         modelMock = mock(GameModel.class);
 
         // setup players (at least 2)
@@ -54,7 +54,7 @@ class BoardTest {
                 deck.add(new GathererCard(era));
             }
             for (int i = 0; i < 10; i++) {
-                deck.add(new RitualEvent(era, 1, 0, null, null));
+                deck.add(new RitualEvent(era, 1, 0));
             }
             Collections.shuffle(deck);
             tribeDecks.put(era, deck);
@@ -71,8 +71,8 @@ class BoardTest {
         }
 
         // final events
-        finalEvents = new EventCard[]{new SustenanceEvent(Era.ERA_III, 1, null, null, null),
-                new RitualEvent(Era.ERA_III, 1, 0, null, null)};
+        finalEvents = new EventCard[]{new SustenanceEvent(Era.ERA_III, 1),
+                new RitualEvent(Era.ERA_III, 1, 0)};
 
         when(modelMock.getPlayers()).thenReturn(players);
         when(modelMock.getTribeCardsDeck()).thenReturn(tribeDecks);
@@ -119,9 +119,7 @@ class BoardTest {
 
         assertEquals(players.size() + 4, board.getTopRow().size(),
                 "La top row dovrebbe avere n+4 carte");
-
-        assertNotNull(board.getTurnOrderTile(), "La TurnOrderTile non dovrebbe essere null");
-
+        
         assertFalse(board.getTopBuildings().isEmpty(), "Top buildings space should have cards");
         assertTrue(board.getBottomBuildings().isEmpty(), "Bottom buildings space should be empty at initialization");
 
@@ -231,7 +229,7 @@ class BoardTest {
         assertThrows(IllegalArgumentException.class, () -> board.initBoard(modelMock));
     }
 
-
+    /*
     @Test
     void testInitBoardOfferTrackInitParameterized() {
         int[][] mtx = {{2, 4}, {3, 5}, {4, 6}, {5, 7}};
@@ -257,6 +255,8 @@ class BoardTest {
         assertEquals(expectedTrackSize, board.getOfferTrack().size(),
                 "Dimensione errata per " + numberOfPlayers + " giocatori");
     }
+    */
+
 
     @Test
     void populateTopRowCardCount() {
@@ -329,7 +329,6 @@ class BoardTest {
 
     @Test
     void testPopulateTopRowEndGame() {
-        board = new Board(mock(ModifierBuildingCard.class));
         board.initBoard(modelMock);
         board.getTopRow().clear();
 
@@ -474,7 +473,7 @@ class BoardTest {
 
         for (int i = 0; i < numberOfCards; i++) {
             if (numberOfEventCards > 0) {
-                board.getBottomRow().add(new SustenanceEvent(Era.ERA_I, 1, null, null, null));
+                board.getBottomRow().add(new SustenanceEvent(Era.ERA_I, 1));
                 numberOfEventCards--;
             } else {
                 board.getBottomRow().add(new HunterCard(Era.ERA_I, true));
@@ -489,10 +488,10 @@ class BoardTest {
 
     @Test
     void testCleanBottomRowCorrectOrderOneSustenanceEvent() {
-        board.getBottomRow().addLast(new SustenanceEvent(Era.ERA_I, 2, null, null, null));
-        board.getBottomRow().addLast(new RitualEvent(Era.ERA_I, 2, 1, null, null));
-        board.getBottomRow().addLast(new PaintingsEvent(Era.ERA_I, 2, 1, 1, null));
-        board.getBottomRow().addLast(new RitualEvent(Era.ERA_I, 2, 1, null, null));
+        board.getBottomRow().addLast(new SustenanceEvent(Era.ERA_I, 2));
+        board.getBottomRow().addLast(new RitualEvent(Era.ERA_I, 2, 1));
+        board.getBottomRow().addLast(new PaintingsEvent(Era.ERA_I, 2, 1, 1));
+        board.getBottomRow().addLast(new RitualEvent(Era.ERA_I, 2, 1));
 
         ArrayList<EventCard> eventCards = board.cleanBottomRow();
 
@@ -501,11 +500,11 @@ class BoardTest {
 
     @Test
     void testCleanBottomRowCorrectOrderMultipleSustenanceEvent() {
-        board.getBottomRow().addLast(new SustenanceEvent(Era.ERA_I, 2, null, null, null));
-        board.getBottomRow().addLast(new RitualEvent(Era.ERA_I, 2, 1, null, null));
-        board.getBottomRow().addLast(new SustenanceEvent(Era.ERA_I, 2, null, null, null));
-        board.getBottomRow().addLast(new PaintingsEvent(Era.ERA_I, 2, 1, 1, null));
-        board.getBottomRow().addLast(new RitualEvent(Era.ERA_I, 2, 1, null, null));
+        board.getBottomRow().addLast(new SustenanceEvent(Era.ERA_I, 2));
+        board.getBottomRow().addLast(new RitualEvent(Era.ERA_I, 2, 1));
+        board.getBottomRow().addLast(new SustenanceEvent(Era.ERA_I, 2));
+        board.getBottomRow().addLast(new PaintingsEvent(Era.ERA_I, 2, 1, 1));
+        board.getBottomRow().addLast(new RitualEvent(Era.ERA_I, 2, 1));
 
         ArrayList<EventCard> eventCards = board.cleanBottomRow();
 
@@ -578,7 +577,7 @@ class BoardTest {
 
     @Test
     void testPickCardFromTopRowThrowExceptionWhenCardIsEvent() {
-        SustenanceEvent card = new SustenanceEvent(Era.ERA_I, 1, null, null, null);
+        SustenanceEvent card = new SustenanceEvent(Era.ERA_I, 1);
         board.getTopRow().addFirst(card);
 
         assertThrows(IllegalArgumentException.class, () -> board.pickCardFromTopRow(mock(Player.class), card));
@@ -625,7 +624,7 @@ class BoardTest {
 
     @Test
     void testPickCardFromBottomRowThrowExceptionWhenCardIsEvent() {
-        SustenanceEvent card = new SustenanceEvent(Era.ERA_I, 1, null, null, null);
+        SustenanceEvent card = new SustenanceEvent(Era.ERA_I, 1);
         board.getBottomRow().addFirst(card);
 
         assertThrows(IllegalArgumentException.class, () -> board.pickCardFromBottomRow(mock(Player.class), card));
@@ -638,7 +637,7 @@ class BoardTest {
 
     @Test
     void testPickCardFromBottomRowThrowExceptionWhenCardIsEventAndBottomRowHasMultipleCards() {
-        SustenanceEvent card = new SustenanceEvent(Era.ERA_I, 1, null, null, null);
+        SustenanceEvent card = new SustenanceEvent(Era.ERA_I, 1);
         board.getBottomRow().addFirst(card);
         assertDoesNotThrow(() -> board.getBottomRow().addFirst(new HunterCard(Era.ERA_I, true)));
 

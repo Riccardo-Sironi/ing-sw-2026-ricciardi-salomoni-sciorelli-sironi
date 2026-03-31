@@ -40,7 +40,7 @@ public class RitualEventTest {
     void setUp(TestInfo testInfo) {
         mockNoLossCard = mock(ModifierBuildingCard.class);
         mockDoubleWinCard = mock(ModifierBuildingCard.class);
-        ritualEvent = new RitualEvent(Era.ERA_II, numPrestigeGained, numPrestigeLost, mockNoLossCard, mockDoubleWinCard);
+        ritualEvent = new RitualEvent(Era.ERA_II, numPrestigeGained, numPrestigeLost);
 
         player = mock(Player.class);
         gameInfo = mock(GameInfo.class);
@@ -204,7 +204,7 @@ public class RitualEventTest {
 
     @Test
     void testResolveEvent_NullModifierCardsInConstructor_DoesNotThrowWhenNoCards() {
-        RitualEvent nullModifierEvent = new RitualEvent(Era.ERA_I, 4, 3, null, null);
+        RitualEvent nullModifierEvent = new RitualEvent(Era.ERA_I, 4, 3);
 
         when(gameInfo.getMaxStars()).thenReturn(10);
         when(gameInfo.getMinStars()).thenReturn(0);

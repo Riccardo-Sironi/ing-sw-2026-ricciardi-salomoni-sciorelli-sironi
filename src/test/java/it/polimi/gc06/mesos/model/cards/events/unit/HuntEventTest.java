@@ -34,7 +34,7 @@ public class HuntEventTest {
     @BeforeEach
     void setUp(TestInfo testInfo) {
         mockBuildingCard = mock(ModifierBuildingCard.class);
-        huntEvent = new HuntEvent(Era.ERA_I, prestigeGain, mockBuildingCard);
+        huntEvent = new HuntEvent(Era.ERA_I, prestigeGain);
         player = mock(Player.class);
         System.out.println("--- [START] " + testInfo.getDisplayName() + " ---");
     }
@@ -93,7 +93,7 @@ public class HuntEventTest {
 
     @Test
     void testResolveEvent_NullModifierCardInConstructor() {
-        HuntEvent nullModifierEvent = new HuntEvent(Era.ERA_II, prestigeGain, null);
+        HuntEvent nullModifierEvent = new HuntEvent(Era.ERA_II, prestigeGain);
         int huntersCount = 1;
         when(player.getHuntersCounter()).thenReturn(huntersCount);
         when(player.getBuildingCards()).thenReturn(new ArrayList<>());
@@ -107,7 +107,7 @@ public class HuntEventTest {
 
     @Test
     void testResolveEvent_ZeroPrestigeGain() {
-        HuntEvent zeroPrestigeEvent = new HuntEvent(Era.ERA_I, 0, mockBuildingCard);
+        HuntEvent zeroPrestigeEvent = new HuntEvent(Era.ERA_I, 0);
         int huntersCount = 3;
         when(player.getHuntersCounter()).thenReturn(huntersCount);
         when(player.getBuildingCards()).thenReturn(new ArrayList<>());
