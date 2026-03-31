@@ -149,7 +149,7 @@ public class HuntEventTest {
         // The visitor should not be null, thus, a NullPointerException is expected when trying to accept a null visitor
         // In order to enforce this, the parameter is marked as @NotNull, throwing a compile warning if a null visitor is passed.
         assertThrows(NullPointerException.class, () -> {
-            huntEvent.accept(null);
+            huntEvent.accept((TribeCardVisitor) null);
         });
     }
 }
