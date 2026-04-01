@@ -2,7 +2,6 @@ package it.polimi.gc06.mesos.model;
 
 import it.polimi.gc06.mesos.model.cards.buildings.*;
 import it.polimi.gc06.mesos.model.cards.characters.*;
-import it.polimi.gc06.mesos.model.cards.events.HuntEvent;
 import org.junit.jupiter.api.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -12,7 +11,7 @@ class PlayerTest {
 
     private Player player;
 
-    //
+
     private ModifierBuildingCard mockThreeStarCard;
     private GameInfo mockGameInfo;
     private ModifierBuildingsRegistry mockModifierRegistry;
@@ -35,14 +34,14 @@ class PlayerTest {
 
     @BeforeEach
     void setUp(TestInfo testInfo) {
-        // 1. Inizializzazione dei Mock
+        // 1. Mock's Initialization
         mockThreeStarCard = mock(ModifierBuildingCard.class);
         mockGameInfo = mock(GameInfo.class);
         mockModifierRegistry = mock(ModifierBuildingsRegistry.class);
 
         when(mockModifierRegistry.get(ModifierBuildingRegistryKey.RITUAL_THREE_STAR_CARD)).thenReturn(mockThreeStarCard);
 
-        // 2. Setup Player
+        // 2. Player's Setup
         player = new Player("TestUser", Color.RED, mockModifierRegistry);
 
         System.out.println("[START] " + testInfo.getDisplayName());
@@ -70,7 +69,7 @@ class PlayerTest {
     // --- ENVIRONMENT TESTS
 
     @Test
-    void testGetEnvironmentSuccess(){
+    void testGetEnvironmentSuccess() {
         player.setEnvironment(mockGameInfo);
 
         assertDoesNotThrow(() -> {
@@ -81,9 +80,19 @@ class PlayerTest {
     }
 
     @Test
-    void testGetEnvironmentThrowsExceptionWhenNull(){
+    void testGetEnvironmentThrowsExceptionWhenNull() {
         assertThrows(IllegalStateException.class, () -> player.getEnvironment(),
                 "getEnvironment should throw IllegalStateException when environment is null");
+    }
+
+    @Test
+    void testInitMethodsThrowExceptionIfAlreadyInitialized() {
+        player.setEnvironment(mockGameInfo);
+        player.addBuildingCards(mock(ObserverSetBuildingCard.class));
+        player.addBuildingCards(mock(ObserverPairBuildingCard.class));
+
+        assertThrows(IllegalStateException.class, () -> player.initCharactersSets());
+        assertThrows(IllegalStateException.class, () -> player.initInventorPairs());
     }
 
 
@@ -226,7 +235,7 @@ class PlayerTest {
     // --- SHAMAN STARS TESTS
 
     @Test
-    void testIncreaseShamanStarsSuccess(){
+    void testIncreaseShamanStarsSuccess() {
         assertDoesNotThrow(() -> player.increaseShamanStars(2));
         player.increaseShamanStars(3);
 
@@ -235,13 +244,13 @@ class PlayerTest {
     }
 
     @Test
-    void testIncreaseShamanStarsThrowsExeptionWhenNegative() {
+    void testIncreaseShamanStarsThrowsExceptionWhenNegative() {
         assertThrows(IllegalArgumentException.class, () -> player.increaseShamanStars(-1),
                 "NEGATIVE SHAMAN STARS should throw IllegalArgumentException");
     }
 
     @Test
-    void testGetShamanStarsWithThreeStarCardModifier(){
+    void testGetShamanStarsWithThreeStarCardModifier() {
         player.increaseShamanStars(2);
         player.addBuildingCards(mockThreeStarCard);
 
@@ -254,7 +263,7 @@ class PlayerTest {
     // --- BUILDING CARDS TESTS
 
     @Test
-    void testAddNormalBuildingCardSuccess(){
+    void testAddNormalBuildingCardSuccess() {
         BuildingCard mockBuildingCard = mock(BuildingCard.class);
 
         assertDoesNotThrow(() -> player.addBuildingCards(mockBuildingCard));
@@ -265,13 +274,19 @@ class PlayerTest {
     }
 
     @Test
-    void testAddNormalBuildingCardThrowsExceptionWhenNull(){
+    void testAddNormalBuildingCardThrowsExceptionWhenNull() {
         assertThrows(IllegalArgumentException.class, () -> player.addBuildingCards((BuildingCard) null),
                 "NULL BUILDING CARD should throw IllegalArgumentException");
     }
 
     @Test
-    void testAddObserverSetBuildingCardSuccess(){
+    void testHasBuildingCardsInitiallyFalse() {
+        assertFalse(player.hasSetBuildingCard(), "Initially should not have Set Building Card");
+        assertFalse(player.hasPairBuildingCard(), "Initially should not have Pair Building Card");
+    }
+
+    @Test
+    void testAddObserverSetBuildingCardSuccess() {
         player.setEnvironment(mockGameInfo);
         ObserverSetBuildingCard mockObserverSetCard = mock(ObserverSetBuildingCard.class);
 
@@ -286,13 +301,13 @@ class PlayerTest {
     }
 
     @Test
-    void testAddObserverSetBuildingCardThrowsExceptionWhenNull(){
+    void testAddObserverSetBuildingCardThrowsExceptionWhenNull() {
         assertThrows(IllegalArgumentException.class, () -> player.addBuildingCards((ObserverSetBuildingCard) null),
                 "NULL OBSERVER SET BUILDING CARD should throw IllegalArgumentException");
     }
 
     @Test
-    void testAddObserverPairBuildingCardSuccess(){
+    void testAddObserverPairBuildingCardSuccess() {
         player.setEnvironment(mockGameInfo);
         ObserverPairBuildingCard mockObserverPairCard = mock(ObserverPairBuildingCard.class);
 
@@ -307,22 +322,36 @@ class PlayerTest {
     }
 
     @Test
-    void testAddObserverPairBuildingCardThrowsExceptionWhenNull(){
+    void testAddObserverPairBuildingCardThrowsExceptionWhenNull() {
         assertThrows(IllegalArgumentException.class, () -> player.addBuildingCards((ObserverPairBuildingCard) null),
                 "NULL OBSERVER PAIR BUILDING CARD should throw IllegalArgumentException");
+    }
+
+    @Test
+    void testAddObserverBuildingsTwice() {
+        player.setEnvironment(mockGameInfo);
+
+        ObserverSetBuildingCard setCard = mock(ObserverSetBuildingCard.class);
+        ObserverPairBuildingCard pairCard = mock(ObserverPairBuildingCard.class);
+
+        player.addBuildingCards(setCard);
+        player.addBuildingCards(pairCard);
+
+        assertDoesNotThrow(() -> player.addBuildingCards(setCard));
+        assertDoesNotThrow(() -> player.addBuildingCards(pairCard));
     }
 
 
     // --- CHARACTER CARDS TESTS
 
     @Test
-    void testAddCharacterCardThrowsExceptionWhenNull(){
+    void testAddCharacterCardThrowsExceptionWhenNull() {
         assertThrows(IllegalArgumentException.class, () -> player.addCharacterCards(null),
                 "NULL CHARACTER CARD should throw IllegalArgumentException");
     }
 
     @Test
-    void testAddBuilderCardSuccess(){
+    void testAddBuilderCardSuccess() {
         BuilderCard builder1 = new BuilderCard(Era.ERA_I, 2, 1);
         BuilderCard builder2 = new BuilderCard(Era.ERA_II, 3, 2);
 
@@ -338,7 +367,7 @@ class PlayerTest {
     }
 
     @Test
-    void testAddHunterCardSuccess(){
+    void testAddHunterCardSuccess() {
         HunterCard hunterWithIcon = new HunterCard(Era.ERA_I, true);
         HunterCard hunterWithoutIcon = new HunterCard(Era.ERA_II, false);
 
@@ -354,7 +383,7 @@ class PlayerTest {
     }
 
     @Test
-    void testAddArtistCardSuccess(){
+    void testAddArtistCardSuccess() {
         ArtistCard artist1 = new ArtistCard(Era.ERA_I);
         ArtistCard artist2 = new ArtistCard(Era.ERA_II);
 
@@ -368,7 +397,7 @@ class PlayerTest {
     }
 
     @Test
-    void testAddGatherersCardSuccess(){
+    void testAddGatherersCardSuccess() {
         GathererCard gatherer1 = new GathererCard(Era.ERA_I);
         GathererCard gatherer2 = new GathererCard(Era.ERA_II);
 
@@ -382,7 +411,7 @@ class PlayerTest {
     }
 
     @Test
-    void testAddInventorCardSuccess(){
+    void testAddInventorCardSuccess() {
         InventorCard boatInventor = new InventorCard(Era.ERA_I, InventionIcon.BOAT);
         InventorCard arrowheadInventor = new InventorCard(Era.ERA_II, InventionIcon.ARROWHEAD);
         InventorCard hookInventor = new InventorCard(Era.ERA_I, InventionIcon.HOOK);
@@ -412,7 +441,7 @@ class PlayerTest {
     }
 
     @Test
-    void testAddShamanCardSuccess(){
+    void testAddShamanCardSuccess() {
         ShamanCard shaman1 = new ShamanCard(Era.ERA_I, 1);
         ShamanCard shaman2 = new ShamanCard(Era.ERA_II, 2);
 
@@ -450,6 +479,22 @@ class PlayerTest {
     }
 
     @Test
+    void testIncreaseCharactersSetsThrowsExceptionWhenNull() {
+        assertThrows(IllegalStateException.class, () -> player.increaseCharactersSets(CharacterType.HUNTER));
+    }
+
+    @Test
+    void testIncreaseCharactersSetsDirectly() {
+        player.setEnvironment(mockGameInfo);
+        player.addBuildingCards(mock(ObserverSetBuildingCard.class));
+
+        assertDoesNotThrow(() -> player.increaseCharactersSets(CharacterType.HUNTER));
+        assertEquals(1, player.getCharactersSets().get(CharacterType.HUNTER));
+
+        assertThrows(IllegalArgumentException.class, () -> player.increaseCharactersSets(null));
+    }
+
+    @Test
     void testDecreaseCharactersSets() {
         player.setEnvironment(mockGameInfo);
         player.addBuildingCards(mock(ObserverSetBuildingCard.class));
@@ -465,6 +510,30 @@ class PlayerTest {
         assertDoesNotThrow(() -> player.decreaseCharactersSets());
 
         assertFalse(player.hasCompletedSet(), "Set should not be complete after decreasing");
+    }
+
+    @Test
+    void testDecreaseAndHasSetThrowsExceptionWhenNull() {
+        assertThrows(IllegalStateException.class, () -> player.decreaseCharactersSets());
+        assertThrows(IllegalStateException.class, () -> player.hasCompletedSet());
+    }
+
+    @Test
+    void testGetInventorPairs() {
+        assertNull(player.getInventorPairs(), "Initially inventorPairs map should be null");
+
+        player.setEnvironment(mockGameInfo);
+        player.addBuildingCards(mock(ObserverPairBuildingCard.class));
+
+        assertNotNull(player.getInventorPairs(), "After building, map should not be null");
+    }
+
+    @Test
+    void testIncreaseInventorPairsDirectly() {
+        player.setEnvironment(mockGameInfo);
+        player.addBuildingCards(mock(ObserverPairBuildingCard.class));
+
+        assertThrows(IllegalArgumentException.class, () -> player.increaseInventorPairs(null));
     }
 
     @Test
@@ -500,4 +569,23 @@ class PlayerTest {
         assertFalse(player.hasCompletedPair(), "Pair should be removed after calling decreaseInventorPair");
     }
 
+    @Test
+    void testInitInventorPairsWithPreExistingCards() {
+        player.addCharacterCards(new InventorCard(Era.ERA_I, InventionIcon.BOAT));
+        player.addCharacterCards(new InventorCard(Era.ERA_I, InventionIcon.BOAT));
+        player.addCharacterCards(new InventorCard(Era.ERA_I, InventionIcon.ROPE));
+
+        player.setEnvironment(mockGameInfo);
+        player.addBuildingCards(mock(ObserverPairBuildingCard.class));
+
+        assertEquals(0, player.getInventorPairs().get(InventionIcon.BOAT));
+        assertEquals(1, player.getInventorPairs().get(InventionIcon.ROPE));
+    }
+
+    @Test
+    void testPairsMethodsThrowsExceptionWhenNull() {
+        assertThrows(IllegalStateException.class, () -> player.decreaseInventorPair());
+        assertThrows(IllegalStateException.class, () -> player.hasCompletedPair());
+        assertThrows(IllegalStateException.class, () -> player.increaseInventorPairs(InventionIcon.BOAT));
+    }
 }
