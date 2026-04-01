@@ -1,6 +1,7 @@
 package it.polimi.gc06.mesos.model;
 
 import it.polimi.gc06.mesos.model.cards.buildings.*;
+import it.polimi.gc06.mesos.model.cards.characters.*;
 import it.polimi.gc06.mesos.model.cards.events.HuntEvent;
 import org.junit.jupiter.api.*;
 
@@ -293,13 +294,13 @@ class PlayerTest {
     @Test
     void testAddObserverPairBuildingCardSuccess(){
         player.setEnvironment(mockGameInfo);
-        ObserverSetBuildingCard mockObserverPairCard = mock(ObserverSetBuildingCard.class);
+        ObserverPairBuildingCard mockObserverPairCard = mock(ObserverPairBuildingCard.class);
 
         assertDoesNotThrow(() -> player.addBuildingCards(mockObserverPairCard));
 
         assertTrue(player.getBuildingCards().contains(mockObserverPairCard),
                 "deck should now contain the mockObserverPairCard");
-        assertTrue(player.hasSetBuildingCard(),
+        assertTrue(player.hasPairBuildingCard(),
                 "player should now contain the mockObserverPairCard");
 
         assertDoesNotThrow(() -> verify(mockGameInfo, times(1)).addObserver(mockObserverPairCard));
@@ -310,4 +311,193 @@ class PlayerTest {
         assertThrows(IllegalArgumentException.class, () -> player.addBuildingCards((ObserverPairBuildingCard) null),
                 "NULL OBSERVER PAIR BUILDING CARD should throw IllegalArgumentException");
     }
+
+
+    // --- CHARACTER CARDS TESTS
+
+    @Test
+    void testAddCharacterCardThrowsExceptionWhenNull(){
+        assertThrows(IllegalArgumentException.class, () -> player.addCharacterCards(null),
+                "NULL CHARACTER CARD should throw IllegalArgumentException");
+    }
+
+    @Test
+    void testAddBuilderCardSuccess(){
+        BuilderCard builder1 = new BuilderCard(Era.ERA_I, 2, 1);
+        BuilderCard builder2 = new BuilderCard(Era.ERA_II, 3, 2);
+
+        assertDoesNotThrow(() -> player.addCharacterCards(builder1));
+        player.addCharacterCards(builder2);
+
+        assertEquals(3, player.getBuildersDiscount(),
+                "BUILDER DISCOUNT should be 3 (1 + 2)");
+        assertEquals(5, player.getBuildersPrestige(),
+                "BUILDER PRESTIGE should be 5 (2 + 3)");
+        assertEquals(2, player.getCharacterDeck().get(CharacterType.BUILDER).size(),
+                "CHARACTER DECK should have 2 BUILDER cards");
+    }
+
+    @Test
+    void testAddHunterCardSuccess(){
+        HunterCard hunterWithIcon = new HunterCard(Era.ERA_I, true);
+        HunterCard hunterWithoutIcon = new HunterCard(Era.ERA_II, false);
+
+        assertDoesNotThrow(() -> player.addCharacterCards(hunterWithIcon));
+        player.addCharacterCards(hunterWithoutIcon);
+
+        assertEquals(2, player.getHuntersCounter(),
+                "HUNTER COUNTER should be 2");
+        assertEquals(2, player.getCharacterDeck().get(CharacterType.HUNTER).size(),
+                "CHARACTER DECK should have 2 HUNTER cards");
+        assertEquals(1, player.getFoodTokens(),
+                "FOOD TOKENS should be 1 after adding a HUNTER card with icon");
+    }
+
+    @Test
+    void testAddArtistCardSuccess(){
+        ArtistCard artist1 = new ArtistCard(Era.ERA_I);
+        ArtistCard artist2 = new ArtistCard(Era.ERA_II);
+
+        assertDoesNotThrow(() -> player.addCharacterCards(artist1));
+        player.addCharacterCards(artist2);
+
+        assertEquals(2, player.getArtistsCounter(),
+                "ARTIST COUNTER should be 2");
+        assertEquals(2, player.getCharacterDeck().get(CharacterType.ARTIST).size(),
+                "CHARACTER DECK should have 2 ARTIST cards");
+    }
+
+    @Test
+    void testAddGatherersCardSuccess(){
+        GathererCard gatherer1 = new GathererCard(Era.ERA_I);
+        GathererCard gatherer2 = new GathererCard(Era.ERA_II);
+
+        assertDoesNotThrow(() -> player.addCharacterCards(gatherer1));
+        player.addCharacterCards(gatherer2);
+
+        assertEquals(2, player.getGatherersCounter(),
+                "GATHERERS COUNTER should be 2");
+        assertEquals(2, player.getCharacterDeck().get(CharacterType.GATHERER).size(),
+                "CHARACTER DECK should have 2 GATHERERS cards");
+    }
+
+    @Test
+    void testAddInventorCardSuccess(){
+        InventorCard boatInventor = new InventorCard(Era.ERA_I, InventionIcon.BOAT);
+        InventorCard arrowheadInventor = new InventorCard(Era.ERA_II, InventionIcon.ARROWHEAD);
+        InventorCard hookInventor = new InventorCard(Era.ERA_I, InventionIcon.HOOK);
+        InventorCard necklaceInventor = new InventorCard(Era.ERA_II, InventionIcon.NECKLACE);
+        InventorCard bowlInventor = new InventorCard(Era.ERA_I, InventionIcon.BOWL);
+        InventorCard ropeInventor = new InventorCard(Era.ERA_II, InventionIcon.ROPE);
+        InventorCard figureInventor = new InventorCard(Era.ERA_I, InventionIcon.FIGURE);
+        InventorCard fluteInventor = new InventorCard(Era.ERA_II, InventionIcon.FLUTE);
+        InventorCard hideInventor = new InventorCard(Era.ERA_I, InventionIcon.HIDE);
+        InventorCard breadInventor = new InventorCard(Era.ERA_II, InventionIcon.BREAD);
+
+        assertDoesNotThrow(() -> player.addCharacterCards(boatInventor));
+        player.addCharacterCards(arrowheadInventor);
+        player.addCharacterCards(hookInventor);
+        player.addCharacterCards(necklaceInventor);
+        player.addCharacterCards(bowlInventor);
+        player.addCharacterCards(ropeInventor);
+        player.addCharacterCards(figureInventor);
+        player.addCharacterCards(fluteInventor);
+        player.addCharacterCards(hideInventor);
+        player.addCharacterCards(breadInventor);
+
+        assertEquals(10, player.getInventorsCounter(),
+                "INVENTORS COUNTER should be 10");
+        assertEquals(10, player.getCharacterDeck().get(CharacterType.INVENTOR).size(),
+                "CHARACTER DECK should have 10 INVENTORS cards");
+    }
+
+    @Test
+    void testAddShamanCardSuccess(){
+        ShamanCard shaman1 = new ShamanCard(Era.ERA_I, 1);
+        ShamanCard shaman2 = new ShamanCard(Era.ERA_II, 2);
+
+        assertDoesNotThrow(() -> player.addCharacterCards(shaman1));
+        player.addCharacterCards(shaman2);
+
+        assertEquals(3, player.getShamanStars(),
+                "SHAMAN STARS should be 3 (1 + 2)");
+        assertEquals(2, player.getCharacterDeck().get(CharacterType.SHAMAN).size(),
+                "CHARACTER DECK should have 2 SHAMAN cards");
+    }
+
+
+    // --- SETS AND PAIRS TESTS ---
+
+    @Test
+    void testCharactersSetsCompletion() {
+        player.setEnvironment(mockGameInfo);
+        ObserverSetBuildingCard mockSetCard = mock(ObserverSetBuildingCard.class);
+        player.addBuildingCards(mockSetCard);
+
+        assertFalse(player.hasCompletedSet(), "Initially, the player should not have a completed set");
+
+        player.addCharacterCards(new HunterCard(Era.ERA_I, false));
+        player.addCharacterCards(new GathererCard(Era.ERA_I));
+        player.addCharacterCards(new BuilderCard(Era.ERA_I, 1, 1));
+        player.addCharacterCards(new ArtistCard(Era.ERA_I));
+        player.addCharacterCards(new InventorCard(Era.ERA_I, InventionIcon.BOAT));
+
+        assertFalse(player.hasCompletedSet(), "Set should not be complete without a Shaman");
+
+        player.addCharacterCards(new ShamanCard(Era.ERA_I, 3));
+
+        assertTrue(player.hasCompletedSet(), "Set should be complete after adding one character of each type");
+    }
+
+    @Test
+    void testDecreaseCharactersSets() {
+        player.setEnvironment(mockGameInfo);
+        player.addBuildingCards(mock(ObserverSetBuildingCard.class));
+        player.addCharacterCards(new HunterCard(Era.ERA_I, false));
+        player.addCharacterCards(new GathererCard(Era.ERA_I));
+        player.addCharacterCards(new BuilderCard(Era.ERA_I, 1, 1));
+        player.addCharacterCards(new ArtistCard(Era.ERA_I));
+        player.addCharacterCards(new InventorCard(Era.ERA_I, InventionIcon.BOAT));
+        player.addCharacterCards(new ShamanCard(Era.ERA_I, 2));
+
+        assertTrue(player.hasCompletedSet());
+
+        assertDoesNotThrow(() -> player.decreaseCharactersSets());
+
+        assertFalse(player.hasCompletedSet(), "Set should not be complete after decreasing");
+    }
+
+    @Test
+    void testInventorPairsCompletion() {
+        player.setEnvironment(mockGameInfo);
+        ObserverPairBuildingCard mockPairCard = mock(ObserverPairBuildingCard.class);
+        player.addBuildingCards(mockPairCard);
+
+        assertFalse(player.hasCompletedPair(), "Initially, the player should not have a completed pair");
+
+        player.addCharacterCards(new InventorCard(Era.ERA_I, InventionIcon.BOAT));
+        assertFalse(player.hasCompletedPair(), "One boat inventor does not make a pair");
+
+        player.addCharacterCards(new InventorCard(Era.ERA_I, InventionIcon.ROPE));
+        assertFalse(player.hasCompletedPair(), "Two different icons do not make a pair");
+
+        player.addCharacterCards(new InventorCard(Era.ERA_I, InventionIcon.BOAT));
+
+        assertTrue(player.hasCompletedPair(), "Player should have a completed pair of BOATS");
+    }
+
+    @Test
+    void testDecreaseInventorPair() {
+        player.setEnvironment(mockGameInfo);
+        player.addBuildingCards(mock(ObserverPairBuildingCard.class));
+        player.addCharacterCards(new InventorCard(Era.ERA_I, InventionIcon.BOAT));
+        player.addCharacterCards(new InventorCard(Era.ERA_I, InventionIcon.BOAT));
+
+        assertTrue(player.hasCompletedPair());
+
+        assertDoesNotThrow(() -> player.decreaseInventorPair());
+
+        assertFalse(player.hasCompletedPair(), "Pair should be removed after calling decreaseInventorPair");
+    }
+
 }
