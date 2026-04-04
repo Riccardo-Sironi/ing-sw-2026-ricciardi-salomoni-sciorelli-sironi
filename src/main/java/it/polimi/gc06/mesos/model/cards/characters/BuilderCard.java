@@ -8,6 +8,12 @@ public class BuilderCard extends CharacterCard {
     private final int prestige;
     private final int foodDiscount;
 
+    public BuilderCard(Era era, int prestige, int foodDiscount) {
+        super(era);
+        this.prestige = prestige;
+        this.foodDiscount = foodDiscount;
+    }
+
     /**
      * this method is used to accept a visitor that will visit
      * the card and do some operations on it, depending on the type of visitor.
@@ -26,13 +32,10 @@ public class BuilderCard extends CharacterCard {
      * @param visitor the visitor that will visit the card.
      */
     @Override
-    public void accept(CardVisitor visitor) {visitor.visit(this);}
-
-    public BuilderCard(Era era, int prestige, int foodDiscount) {
-        super(era);
-        this.prestige = prestige;
-        this.foodDiscount = foodDiscount;
+    public void accept(CardVisitor visitor) {
+        visitor.visit(this);
     }
+
 
     /**
      * this method is used to know how many prestige points the card gives.
