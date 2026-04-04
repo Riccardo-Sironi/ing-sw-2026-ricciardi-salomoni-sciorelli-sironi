@@ -4,6 +4,7 @@ import it.polimi.gc06.mesos.model.Color;
 import it.polimi.gc06.mesos.model.Era;
 import it.polimi.gc06.mesos.model.Player;
 import it.polimi.gc06.mesos.model.cards.TribeCard;
+import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingsRegistry;
 import it.polimi.gc06.mesos.model.cards.events.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,12 +18,12 @@ class ShamanVisitorTest {
 
     @BeforeEach
     void setUp() {
-        player = new Player("TestPlayer", Color.RED, null);
+        player = new Player("TestPlayer", Color.RED, new ModifierBuildingsRegistry());
     }
 
     @Test
     void visitShamanCard() {
-        player = new Player("TestPlayer", Color.RED, null);
+        player = new Player("TestPlayer", Color.RED, new ModifierBuildingsRegistry());
         player.increaseShamanStars(5);
         ShamanCard card = new ShamanCard(Era.ERA_I, 5);
         ShamanVisitor visitor = new ShamanVisitor(player);

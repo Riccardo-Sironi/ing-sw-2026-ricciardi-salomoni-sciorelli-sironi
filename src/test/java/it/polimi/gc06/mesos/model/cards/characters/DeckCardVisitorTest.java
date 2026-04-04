@@ -4,6 +4,7 @@ import it.polimi.gc06.mesos.model.Color;
 import it.polimi.gc06.mesos.model.Era;
 import it.polimi.gc06.mesos.model.Player;
 import it.polimi.gc06.mesos.model.cards.TribeCard;
+import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingsRegistry;
 import it.polimi.gc06.mesos.model.cards.events.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,7 +17,7 @@ class DeckCardVisitorTest {
 
     @BeforeEach
     void setUp() {
-        player = new Player("test", Color.RED, null);
+        player = new Player("test", Color.RED, new ModifierBuildingsRegistry());
     }
 
     @Test
