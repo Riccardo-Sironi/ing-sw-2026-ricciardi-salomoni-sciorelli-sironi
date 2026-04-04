@@ -1,5 +1,6 @@
 [
   {
+    "class": "ModifierBuildingCard",
     "era": "ERA_I",
     "foodCost": 1,
     "prestigeGain": 2,
