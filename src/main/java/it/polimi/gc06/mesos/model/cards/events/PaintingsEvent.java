@@ -1,10 +1,8 @@
 package it.polimi.gc06.mesos.model.cards.events;
 
 import it.polimi.gc06.mesos.model.cards.CardVisitor;
-import it.polimi.gc06.mesos.model.cards.TribeCardVisitor;
 import it.polimi.gc06.mesos.model.Era;
 import it.polimi.gc06.mesos.model.Player;
-import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingCard;
 import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingRegistryKey;
 
 public class PaintingsEvent extends EventCard {
@@ -18,17 +16,6 @@ public class PaintingsEvent extends EventCard {
         this.numPrestigeGained = numPrestigeGained;
         this.numPrestigeLost = numPrestigeLost;
         this.minNumberOfArtists = minNumberOfArtists;
-    }
-
-    /**
-     * this method is used to accept a visitor that will visit the card and apply
-     * the effects of the card on the player that has chosen to resolve it.
-     *
-     * @param visitor the visitor that will visit the card.
-     */
-    @Override
-    public void accept(TribeCardVisitor visitor) {
-        visitor.visit(this);
     }
 
     /**

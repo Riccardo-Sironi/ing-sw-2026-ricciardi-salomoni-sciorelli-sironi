@@ -3,7 +3,7 @@ package it.polimi.gc06.mesos.model.cards.events.unit;
 import it.polimi.gc06.mesos.model.Era;
 import it.polimi.gc06.mesos.model.GameInfo;
 import it.polimi.gc06.mesos.model.Player;
-import it.polimi.gc06.mesos.model.cards.TribeCardVisitor;
+import it.polimi.gc06.mesos.model.cards.CardVisitor;
 import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
 import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingCard;
 import it.polimi.gc06.mesos.model.cards.events.RitualEvent;
@@ -61,7 +61,7 @@ public class RitualEventTest {
 
     @Test
     void testAcceptCallsVisitor() {
-        TribeCardVisitor visitor = mock(TribeCardVisitor.class);
+        CardVisitor visitor = mock(CardVisitor.class);
         ritualEvent.accept(visitor);
         verify(visitor).visit(ritualEvent);
     }
@@ -69,7 +69,7 @@ public class RitualEventTest {
     @Test
     void testAccept_With_NullVisitor() {
         assertThrows(NullPointerException.class, () -> {
-            ritualEvent.accept((TribeCardVisitor) null);
+            ritualEvent.accept((CardVisitor) null);
         });
     }
 

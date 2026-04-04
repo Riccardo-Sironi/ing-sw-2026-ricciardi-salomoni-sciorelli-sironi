@@ -3,6 +3,7 @@ package it.polimi.gc06.mesos.model.cards.buildings;
 import it.polimi.gc06.mesos.model.Era;
 import it.polimi.gc06.mesos.model.Player;
 import it.polimi.gc06.mesos.model.cards.Card;
+import it.polimi.gc06.mesos.model.cards.CardVisitor;
 
 public abstract class BuildingCard implements Card {
 
@@ -98,5 +99,5 @@ public abstract class BuildingCard implements Card {
      *
      * @param visitor the visitor that will visit the card.
      */
-    public abstract void accept(BuildingCardVisitor visitor);
+    public abstract void accept(CardVisitor visitor);
 }

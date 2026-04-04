@@ -5,7 +5,7 @@ import it.polimi.gc06.mesos.model.cards.events.*;
 
 import java.util.ArrayList;
 
-public class BottomRowInitVisitor implements TribeCardVisitor {
+public class BottomRowInitVisitor extends CardVisitor {
     ArrayList<TribeCard> bottomRow;
     ArrayList<TribeCard> topRow;
     int maxTopRowSize;
@@ -85,8 +85,4 @@ public class BottomRowInitVisitor implements TribeCardVisitor {
         bottomRow.addLast(card);
     }
 
-    @Override
-    public void visit(TribeCard card) {
-
-    }
 }

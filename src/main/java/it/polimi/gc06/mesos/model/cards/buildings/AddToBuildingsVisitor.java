@@ -2,8 +2,9 @@ package it.polimi.gc06.mesos.model.cards.buildings;
 
 import it.polimi.gc06.mesos.gameExceptions.IllegalGameActionException;
 import it.polimi.gc06.mesos.model.Player;
+import it.polimi.gc06.mesos.model.cards.CardVisitor;
 
-public class AddToBuildingsVisitor implements BuildingCardVisitor {
+public class AddToBuildingsVisitor extends CardVisitor {
     Player player;
 
     public AddToBuildingsVisitor(Player player) {

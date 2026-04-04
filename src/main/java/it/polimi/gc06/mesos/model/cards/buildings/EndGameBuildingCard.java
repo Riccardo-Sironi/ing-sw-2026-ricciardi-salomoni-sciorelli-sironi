@@ -50,11 +50,6 @@ public class EndGameBuildingCard extends BuildingCard {
         this.prestigeEffect = prestigeEffect;
     }
 
-    @Override
-    public void accept(BuildingCardVisitor visitor) {
-        visitor.visit(this);
-    }
-
     /**
      * this method is used to accept a visitor that will visit the card and apply
      * the effects of the card on the player that has chosen to resolve it.

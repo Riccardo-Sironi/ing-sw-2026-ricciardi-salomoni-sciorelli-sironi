@@ -15,7 +15,7 @@ public abstract class TribeCard implements Card {
      *
      * @param visitor the visitor that will visit the card.
      */
-    public abstract void accept(TribeCardVisitor visitor);
+    public abstract void accept(CardVisitor visitor);
 
     /**
      * This method is used to know the era of the card.

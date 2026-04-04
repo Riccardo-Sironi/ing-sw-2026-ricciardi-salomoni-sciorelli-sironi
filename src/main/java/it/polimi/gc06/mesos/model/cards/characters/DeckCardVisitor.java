@@ -1,51 +1,14 @@
 package it.polimi.gc06.mesos.model.cards.characters;
 
-import it.polimi.gc06.mesos.model.cards.events.HuntEvent;
-import it.polimi.gc06.mesos.model.cards.events.PaintingsEvent;
-import it.polimi.gc06.mesos.model.cards.events.RitualEvent;
-import it.polimi.gc06.mesos.model.cards.events.SustenanceEvent;
-import it.polimi.gc06.mesos.model.cards.TribeCard;
-import it.polimi.gc06.mesos.model.cards.TribeCardVisitor;
+import it.polimi.gc06.mesos.model.cards.CardVisitor;
 import it.polimi.gc06.mesos.model.Player;
 
-public class DeckCardVisitor implements TribeCardVisitor {
+public class DeckCardVisitor extends CardVisitor {
 
     private final Player player;
 
     public DeckCardVisitor(Player player) {
         this.player = player;
-    }
-
-    /**
-     * this method should not be used in this implementation.
-     */
-    @Override
-    public void visit(RitualEvent ritual) {
-
-    }
-
-    /**
-     * this method should not be used in this implementation.
-     */
-    @Override
-    public void visit(SustenanceEvent sustenance) {
-
-    }
-
-    /**
-     * this method should not be used in this implementation.
-     */
-    @Override
-    public void visit(HuntEvent hunt) {
-
-    }
-
-    /**
-     * this method should not be used in this implementation.
-     */
-    @Override
-    public void visit(PaintingsEvent paintings) {
-
     }
 
     /**
@@ -108,12 +71,4 @@ public class DeckCardVisitor implements TribeCardVisitor {
         player.getCharacterDeck().get(CharacterType.GATHERER).add(card);
     }
 
-    /**
-     * this method should not be used in this implementation.
-     */
-    //default case
-    @Override
-    public void visit(TribeCard card) {
-
-    }
 }

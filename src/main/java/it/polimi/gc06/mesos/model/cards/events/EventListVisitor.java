@@ -1,12 +1,10 @@
 package it.polimi.gc06.mesos.model.cards.events;
 
-import it.polimi.gc06.mesos.model.cards.TribeCard;
-import it.polimi.gc06.mesos.model.cards.TribeCardVisitor;
-import it.polimi.gc06.mesos.model.cards.characters.*;
+import it.polimi.gc06.mesos.model.cards.CardVisitor;
 
 import java.util.ArrayList;
 
-public class EventListVisitor implements TribeCardVisitor {
+public class EventListVisitor extends CardVisitor {
     private final ArrayList<EventCard> events;
 
     public EventListVisitor(ArrayList<EventCard> events) {
@@ -31,33 +29,5 @@ public class EventListVisitor implements TribeCardVisitor {
     @Override
     public void visit(PaintingsEvent paintings) {
         events.add(paintings);
-    }
-
-    @Override
-    public void visit(HunterCard card) {
-    }
-
-    @Override
-    public void visit(ShamanCard card) {
-    }
-
-    @Override
-    public void visit(ArtistCard card) {
-    }
-
-    @Override
-    public void visit(BuilderCard card) {
-    }
-
-    @Override
-    public void visit(InventorCard card) {
-    }
-
-    @Override
-    public void visit(GathererCard card) {
-    }
-
-    @Override
-    public void visit(TribeCard card) {
     }
 }

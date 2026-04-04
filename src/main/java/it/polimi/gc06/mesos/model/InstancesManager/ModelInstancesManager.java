@@ -57,8 +57,8 @@ public class ModelInstancesManager {
 
         //inject registry in each tile (with visitor)
         TileEffectRegistryAssigner registryAssigner = new TileEffectRegistryAssigner(registry);
-        turnOrderTile.slots().forEach((slot)->slot.getTileEffect().accept(registryAssigner));
-        //eventual null values will be mapped to visit(TileEffect) which does nothing, so it's not a problem
+        turnOrderTile.slots().stream().map(TileSlot::getTileEffect).filter(Objects::nonNull)
+                .forEach(effect -> effect.accept(registryAssigner));
 
         //load offer track
         input = getClass().getResourceAsStream(JSON_PATH+"offerTrackConfigs.json");

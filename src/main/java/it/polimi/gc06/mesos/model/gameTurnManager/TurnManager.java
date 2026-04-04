@@ -1,7 +1,6 @@
 package it.polimi.gc06.mesos.model.gameTurnManager;
 
 import it.polimi.gc06.mesos.model.Player;
-import it.polimi.gc06.mesos.model.cards.TribeCardVisitor;
 import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingCard;
 import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingRegistryKey;
 import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingsRegistry;

@@ -2,7 +2,7 @@ package it.polimi.gc06.mesos.model.cards.events.unit;
 
 import it.polimi.gc06.mesos.model.Era;
 import it.polimi.gc06.mesos.model.Player;
-import it.polimi.gc06.mesos.model.cards.TribeCardVisitor;
+import it.polimi.gc06.mesos.model.cards.CardVisitor;
 import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
 import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingCard;
 import it.polimi.gc06.mesos.model.cards.events.HuntEvent;
@@ -51,7 +51,7 @@ public class HuntEventTest {
 
     @Test
     void testAcceptCallsVisitor() {
-        TribeCardVisitor visitor = mock(TribeCardVisitor.class);
+        CardVisitor visitor = mock(CardVisitor.class);
         huntEvent.accept(visitor);
         verify(visitor).visit(huntEvent);
     }
@@ -149,7 +149,7 @@ public class HuntEventTest {
         // The visitor should not be null, thus, a NullPointerException is expected when trying to accept a null visitor
         // In order to enforce this, the parameter is marked as @NotNull, throwing a compile warning if a null visitor is passed.
         assertThrows(NullPointerException.class, () -> {
-            huntEvent.accept((TribeCardVisitor) null);
+            huntEvent.accept(null);
         });
     }
 }
