@@ -2,8 +2,11 @@ package it.polimi.gc06.mesos.model.cards.characters;
 
 import it.polimi.gc06.mesos.model.Era;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 class BuilderCardTest {
     @Test
@@ -16,5 +19,13 @@ class BuilderCardTest {
         assertEquals(excpectedEra, card.getEra());
         assertEquals(expectedPrestige, card.getPrestige());
         assertEquals(expectedFoodDiscount, card.getFoodDiscount());
+    }
+
+    @Test
+    void testAccept() {
+        BuilderCard card = new BuilderCard(Era.ERA_I, 3, 2);
+        CharactersSetsVisitor visitor = Mockito.mock(CharactersSetsVisitor.class);
+        card.accept(visitor);
+        verify(visitor, times(1)).visit(card);
     }
 }
