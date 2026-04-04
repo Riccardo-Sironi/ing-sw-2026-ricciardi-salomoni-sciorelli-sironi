@@ -1,4 +1,4 @@
-package it.polimi.gc06.mesos.model.cards.events.unit;
+package it.polimi.gc06.mesos.model.cards.events;
 
 import it.polimi.gc06.mesos.model.Era;
 import it.polimi.gc06.mesos.model.GameInfo;
@@ -6,10 +6,11 @@ import it.polimi.gc06.mesos.model.Player;
 import it.polimi.gc06.mesos.model.cards.CardVisitor;
 import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
 import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingCard;
-import it.polimi.gc06.mesos.model.cards.events.RitualEvent;
 import org.junit.jupiter.api.*;
 
 import java.util.ArrayList;
+import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingsRegistry;
+import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingRegistryKey;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -22,6 +23,7 @@ public class RitualEventTest {
     private ModifierBuildingCard mockDoubleWinCard;
     private Player player;
     private GameInfo gameInfo;
+    private ModifierBuildingsRegistry mockRegistry;
 
     private final int numPrestigeGained = 3;
     private final int numPrestigeLost = 2;
@@ -40,7 +42,16 @@ public class RitualEventTest {
     void setUp(TestInfo testInfo) {
         mockNoLossCard = mock(ModifierBuildingCard.class);
         mockDoubleWinCard = mock(ModifierBuildingCard.class);
-        ritualEvent = new RitualEvent(Era.ERA_II, numPrestigeGained, numPrestigeLost);
+        mockRegistry = mock(ModifierBuildingsRegistry.class);
+        when(mockRegistry.get(ModifierBuildingRegistryKey.RITUAL_NO_LOSS_CARD)).thenReturn(mockNoLossCard);
+        when(mockRegistry.get(ModifierBuildingRegistryKey.RITUAL_DOUBLE_WIN_CARD)).thenReturn(mockDoubleWinCard);
+
+        ritualEvent = new RitualEvent(Era.ERA_II, numPrestigeGained, numPrestigeLost) {
+            @Override
+            protected ModifierBuildingsRegistry getRegistry() {
+                return mockRegistry;
+            }
+        };
 
         player = mock(Player.class);
         gameInfo = mock(GameInfo.class);
@@ -204,7 +215,12 @@ public class RitualEventTest {
 
     @Test
     void testResolveEvent_NullModifierCardsInConstructor_DoesNotThrowWhenNoCards() {
-        RitualEvent nullModifierEvent = new RitualEvent(Era.ERA_I, 4, 3);
+        RitualEvent nullModifierEvent = new RitualEvent(Era.ERA_I, 4, 3) {
+            @Override
+            protected ModifierBuildingsRegistry getRegistry() {
+                return mockRegistry;
+            }
+        };
 
         when(gameInfo.getMaxStars()).thenReturn(10);
         when(gameInfo.getMinStars()).thenReturn(0);

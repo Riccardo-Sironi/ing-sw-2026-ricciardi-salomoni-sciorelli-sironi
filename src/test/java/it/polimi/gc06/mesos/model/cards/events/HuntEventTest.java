@@ -1,14 +1,15 @@
-package it.polimi.gc06.mesos.model.cards.events.unit;
+package it.polimi.gc06.mesos.model.cards.events;
 
 import it.polimi.gc06.mesos.model.Era;
 import it.polimi.gc06.mesos.model.Player;
 import it.polimi.gc06.mesos.model.cards.CardVisitor;
 import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
 import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingCard;
-import it.polimi.gc06.mesos.model.cards.events.HuntEvent;
 import org.junit.jupiter.api.*;
 
 import java.util.ArrayList;
+import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingsRegistry;
+import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingRegistryKey;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -19,6 +20,7 @@ public class HuntEventTest {
     private HuntEvent huntEvent;
     private ModifierBuildingCard mockBuildingCard;
     private Player player;
+    private ModifierBuildingsRegistry mockRegistry;
     private final int prestigeGain = 2;
 
     @BeforeAll
@@ -34,7 +36,15 @@ public class HuntEventTest {
     @BeforeEach
     void setUp(TestInfo testInfo) {
         mockBuildingCard = mock(ModifierBuildingCard.class);
-        huntEvent = new HuntEvent(Era.ERA_I, prestigeGain);
+        mockRegistry = mock(ModifierBuildingsRegistry.class);
+        when(mockRegistry.get(ModifierBuildingRegistryKey.HUNT_PRESTIGE_AND_FOOD_GAIN_CARD)).thenReturn(mockBuildingCard);
+
+        huntEvent = new HuntEvent(Era.ERA_I, prestigeGain) {
+            @Override
+            protected ModifierBuildingsRegistry getRegistry() {
+                return mockRegistry;
+            }
+        };
         player = mock(Player.class);
         System.out.println("--- [START] " + testInfo.getDisplayName() + " ---");
     }
@@ -93,7 +103,12 @@ public class HuntEventTest {
 
     @Test
     void testResolveEvent_NullModifierCardInConstructor() {
-        HuntEvent nullModifierEvent = new HuntEvent(Era.ERA_II, prestigeGain);
+        HuntEvent nullModifierEvent = new HuntEvent(Era.ERA_II, prestigeGain) {
+            @Override
+            protected ModifierBuildingsRegistry getRegistry() {
+                return mockRegistry;
+            }
+        };
         int huntersCount = 1;
         when(player.getHuntersCounter()).thenReturn(huntersCount);
         when(player.getBuildingCards()).thenReturn(new ArrayList<>());
@@ -107,7 +122,12 @@ public class HuntEventTest {
 
     @Test
     void testResolveEvent_ZeroPrestigeGain() {
-        HuntEvent zeroPrestigeEvent = new HuntEvent(Era.ERA_I, 0);
+        HuntEvent zeroPrestigeEvent = new HuntEvent(Era.ERA_I, 0) {
+            @Override
+            protected ModifierBuildingsRegistry getRegistry() {
+                return mockRegistry;
+            }
+        };
         int huntersCount = 3;
         when(player.getHuntersCounter()).thenReturn(huntersCount);
         when(player.getBuildingCards()).thenReturn(new ArrayList<>());
