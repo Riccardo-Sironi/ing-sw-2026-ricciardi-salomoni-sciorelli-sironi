@@ -22,6 +22,10 @@ public class InstanceSorterCardVisitor extends CardVisitor {
     public InstanceSorterCardVisitor(ModifierBuildingsRegistry registry) {
         this.tribeCards = new EnumMap<Era,ArrayList<TribeCard>>(Era.class);;
         this.buildingCards = new EnumMap<Era,ArrayList<BuildingCard>>(Era.class);
+        for(Era era : Era.values()){
+            this.tribeCards.put(era, new ArrayList<TribeCard>());
+            this.buildingCards.put(era, new ArrayList<BuildingCard>());
+        }
         this.finalEvents = new ArrayList<EventCard>();
         this.registry = registry;
     }
