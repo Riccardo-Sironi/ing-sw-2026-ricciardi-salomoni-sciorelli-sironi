@@ -3,7 +3,7 @@ package it.polimi.gc06.mesos.server;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.polimi.gc06.mesos.controller.GameController;
-import it.polimi.gc06.mesos.server.commands.ModelListener;
+
 import java.beans.PropertyChangeEvent;
 import java.io.BufferedReader;
 import java.io.IOException;

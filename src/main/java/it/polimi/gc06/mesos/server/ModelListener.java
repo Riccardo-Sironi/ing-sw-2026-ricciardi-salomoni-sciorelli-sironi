@@ -1,4 +1,4 @@
-package it.polimi.gc06.mesos.server.commands;
+package it.polimi.gc06.mesos.server;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
