@@ -1,5 +1,8 @@
 package it.polimi.gc06.mesos.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import it.polimi.gc06.mesos.gameExceptions.IllegalGameActionException;
 import it.polimi.gc06.mesos.gameExceptions.IllegalPhaseActionException;
 import it.polimi.gc06.mesos.model.GameModel;
@@ -11,14 +14,24 @@ import it.polimi.gc06.mesos.model.cards.characters.CharacterCard;
 import it.polimi.gc06.mesos.model.cards.events.EventCard;
 import it.polimi.gc06.mesos.model.gameBoard.TileSlot;
 import it.polimi.gc06.mesos.model.gameTurnManager.TurnManager;
+import it.polimi.gc06.mesos.server.CardPickedInfo;
+import it.polimi.gc06.mesos.server.TotemMovedInfo;
+import it.polimi.gc06.mesos.server.commands.Command;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+import java.util.ArrayList;
 import java.util.List;
 
 public class GameController {
+
     private final GameModel model;
+    private final PropertyChangeSupport support;
 
     public GameController(GameModel model) {
         this.model = model;
+        support = new PropertyChangeSupport(this);
     }
 
     public GameModel getModel() {
@@ -56,6 +69,10 @@ public class GameController {
             }
 
             turnManager.getPhase().placeTotem(turnManager, activePlayer, tile);
+
+            TotemMovedInfo info = new TotemMovedInfo(playerNickname,tileIndex);
+            support.firePropertyChange("totemMoved",null,info);
+
         } catch (IllegalPhaseActionException e) {
             System.err.println("Error for " + playerNickname + ": " + e.getMessage()); // TODO : communicate the error to the view
         }
@@ -77,6 +94,7 @@ public class GameController {
             }
 
             TribeCard card = model.getBoard().getBottomCardFromIndex(cardIndex);
+            CardPickedInfo info = new CardPickedInfo(playerNickname,card); //prepares the info if needed
 
             CardVisitor cardPickerVisitor = new CardVisitor(){
                 @Override
@@ -91,6 +109,8 @@ public class GameController {
 
             card.accept(cardPickerVisitor);
 
+            //if the operation was not successful the notice won't be sent
+            support.firePropertyChange("cardPicked",null,info);
         } catch (IllegalGameActionException | IndexOutOfBoundsException e) {
             System.err.println("Error for " + playerNickname + ": " + e.getMessage());
             // TODO: Inviare un pacchetto di Errore al Client
@@ -113,6 +133,7 @@ public class GameController {
             }
 
             TribeCard card = model.getBoard().getTopCardFromIndex(cardIndex);
+            CardPickedInfo info = new CardPickedInfo(playerNickname,card); //prepares the info if needed
 
             CardVisitor cardPickerVisitor = new CardVisitor(){
               @Override
@@ -127,6 +148,8 @@ public class GameController {
 
             card.accept(cardPickerVisitor);
 
+            //if the operation was not successful the notice won't be sent
+            support.firePropertyChange("cardPicked",null,info);
         } catch (IllegalGameActionException | IndexOutOfBoundsException e) {
             System.err.println("Error for " + playerNickname + ": " + e.getMessage());
             // TODO: Inviare un pacchetto di Errore al Client
@@ -150,8 +173,12 @@ public class GameController {
             }
 
             BuildingCard card = model.getBoard().getBottomBuildingFromIndex(cardIndex);
+            CardPickedInfo info = new CardPickedInfo(playerNickname,card); //prepares the info if needed
 
             turnManager.getPhase().pickCardFromBottom(turnManager, activePlayer, card, model.getBoard());
+
+            //if the operation was not successful the notice won't be sent
+            support.firePropertyChange("buildingPicked",null,info);
 
         } catch (IllegalGameActionException | IndexOutOfBoundsException e) {
             System.err.println("Error for " + playerNickname + ": " + e.getMessage()); // TODO : communicate the error to the view
@@ -175,12 +202,37 @@ public class GameController {
             }
 
             BuildingCard card = model.getBoard().getTopBuildingFromIndex(cardIndex);
+            CardPickedInfo info = new CardPickedInfo(playerNickname,card); //prepares the info if needed
 
             turnManager.getPhase().pickCardFromTop(turnManager, activePlayer, card, model.getBoard());
+
+            //if the operation was not successful the notice won't be sent
+            support.firePropertyChange("buildingPicked",null,info);
 
         } catch (IllegalGameActionException | IndexOutOfBoundsException e) {
             System.err.println("Error for " + playerNickname + ": " + e.getMessage()); // TODO : communicate the error to the view
         }
+    }
+
+    /**
+     * Parses a command and executes it.
+     * Example of valid JSON string: "{\"request\": \"TOP_CARD_REQUEST\", \"index\": 2, \"nickname\": \"Marco\"}"
+     *
+     * @param s the string that needs to be parsed to a command.
+     * @throws JsonProcessingException if parsing goes wrong due to JSON errors.
+     */
+    public synchronized void parse(String s) throws JsonProcessingException{
+        ObjectMapper mapper = new ObjectMapper();
+        Command command = mapper.readValue(s, Command.class);
+        command.execute(this);
+    }
+
+    public void addListener(PropertyChangeListener listener){
+        support.addPropertyChangeListener(listener);
+    }
+
+    public void removeListener(PropertyChangeListener listener){
+        support.removePropertyChangeListener(listener);
     }
 
 }
