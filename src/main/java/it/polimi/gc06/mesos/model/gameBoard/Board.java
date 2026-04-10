@@ -431,6 +431,50 @@ public class Board implements DrawSubject {
     }
 
     /**
+     * Gets the correct building from the provided index.
+     *
+     * @param index the ordinal index in the building top deck.
+     * @return the correct building.
+     * @throws IndexOutOfBoundsException if the index does not point to a valid building.
+     */
+    public BuildingCard getTopBuildingFromIndex(int index) throws IndexOutOfBoundsException{
+        return topBuildings.get(index);
+    }
+
+    /**
+     * Gets the correct building from the provided index.
+     *
+     * @param index the ordinal index in the building bottom deck.
+     * @return the correct building.
+     * @throws IndexOutOfBoundsException if the index does not point to a valid building.
+     */
+    public BuildingCard getBottomBuildingFromIndex(int index) throws IndexOutOfBoundsException{
+        return bottomBuildings.get(index);
+    }
+
+    /**
+     * Gets the correct tribe card from the provided index (does not discern events from characters).
+     *
+     * @param index the ordinal index in the top row.
+     * @return the correct tribe card.
+     * @throws IndexOutOfBoundsException if the index does not point to a valid tribe card.
+     */
+    public TribeCard getTopCardFromIndex(int index) throws IndexOutOfBoundsException{
+        return topRow.get(index);
+    }
+
+    /**
+     * Gets the correct tribe card from the provided index (does not discern events from characters).
+     *
+     * @param index the ordinal index in the bottom row.
+     * @return the correct tribe card.
+     * @throws IndexOutOfBoundsException if the index does not point to a valid tribe card.
+     */
+    public TribeCard getBottomCardFromIndex(int index) throws IndexOutOfBoundsException{
+        return bottomRow.get(index);
+    }
+
+    /**
      * This method is used to pick a card from the top row of cards. It handles the selection of a forbidden card (event card)
      * by the player and the selection of a character card, which is added to the player's hand and removed from the top row.
      * It is used in the offer resolution phase, when the player can pick one of the cards from the top row.
