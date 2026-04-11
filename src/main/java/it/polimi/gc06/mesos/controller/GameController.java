@@ -1,7 +1,6 @@
 package it.polimi.gc06.mesos.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.polimi.gc06.mesos.gameExceptions.IllegalGameActionException;
 import it.polimi.gc06.mesos.gameExceptions.IllegalPhaseActionException;
@@ -14,14 +13,12 @@ import it.polimi.gc06.mesos.model.cards.characters.CharacterCard;
 import it.polimi.gc06.mesos.model.cards.events.EventCard;
 import it.polimi.gc06.mesos.model.gameBoard.TileSlot;
 import it.polimi.gc06.mesos.model.gameTurnManager.TurnManager;
-import it.polimi.gc06.mesos.server.CardPickedInfo;
-import it.polimi.gc06.mesos.server.TotemMovedInfo;
+import it.polimi.gc06.mesos.server.infos.CardPickedInfo;
+import it.polimi.gc06.mesos.server.infos.TotemMovedInfo;
 import it.polimi.gc06.mesos.server.commands.Command;
 
-import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.util.ArrayList;
 import java.util.List;
 
 public class GameController {

@@ -13,25 +13,37 @@ import java.net.Socket;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-public class VirtualView implements Runnable{
+public class ClientManager implements Runnable{
 
     private final Socket socket;
     private final String nickname;
-    private final GameController controller;
+    private GameController controller;
     private final ModelListener listener;
     private final BlockingQueue<PropertyChangeEvent> noticeQueue;
 
-    VirtualView(Socket socket, String nickname, GameController controller){
+    ClientManager(Socket socket, String nickname){
         this.socket = socket;
         this.nickname = nickname;
-        this.controller = controller;
         noticeQueue = new LinkedBlockingQueue<>();
         listener = new ModelListener(noticeQueue);
-        controller.addListener(listener);
     }
 
     public void unsubscribeListener(){
         controller.removeListener(listener);
+    }
+
+    /**
+     * Controller setter, should be called before run() or start() method.
+     *
+     * @param controller the game controller.
+     */
+    public void setController(GameController controller){
+        this.controller = controller;
+        controller.addListener(listener);
+    }
+
+    public String getNickname(){
+        return nickname;
     }
 
     @Override
@@ -85,7 +97,7 @@ public class VirtualView implements Runnable{
                 notice = noticeQueue.take();
             }catch (InterruptedException _){ return; }
             try {
-                outToClient.print(mapper.writeValueAsString(notice));
+                outToClient.println(mapper.writeValueAsString(notice));
             }catch (IOException e){
                 System.err.print("Error on '"+nickname+"' notice dispatch: ");
                 e.printStackTrace();

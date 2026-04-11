@@ -25,9 +25,6 @@ public class GameModel implements GameInfo {
 
     private final TurnManager turnManager;
 
-    /**
-     * for testing purpose only!
-     */
     public GameModel(Board board, EnumMap<Era, ArrayList<BuildingCard>> buildingCardsDecks, EnumMap<Era, ArrayList<TribeCard>> tribeCardsDeck, EventCard[] finalEventCards, ArrayList<Player> players, TurnManager turnManager) {
         this.board = board;
         this.buildingCardsDecks = buildingCardsDecks;

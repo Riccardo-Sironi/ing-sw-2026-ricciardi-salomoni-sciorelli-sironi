@@ -22,8 +22,11 @@ public class ModelInstancesManager {
 
     private static final String JSON_PATH = "/it/polimi/gc06/mesos/jsons/";
 
-    public GameModel createGame(int numOfPlayers) throws IOException {
+    public GameModel createGame(List<String> nicknames) throws IOException, IllegalArgumentException {
 
+        if(nicknames == null) throw new IllegalArgumentException();
+
+        int numOfPlayers = nicknames.size();
         List<Card> cards;
         List<ModifierBuildingCard> modifierCards;
         ObjectMapper mapper = new ObjectMapper();
@@ -50,7 +53,7 @@ public class ModelInstancesManager {
         //creates players
         ArrayList<Player> players = new ArrayList<Player>();
         List<Color> colors = new ArrayList<>(Arrays.asList(Color.values()));
-        for (int i = 0; i < numOfPlayers; i++) players.add(new Player("Default", colors.removeLast(), registry));
+        for (int i = 0; i < numOfPlayers; i++) players.add(new Player(nicknames.removeFirst(), colors.removeFirst(), registry));
 
         //loads turn order tile
         input = getClass().getResourceAsStream(JSON_PATH + "turnOrderTileConfigs.json");
