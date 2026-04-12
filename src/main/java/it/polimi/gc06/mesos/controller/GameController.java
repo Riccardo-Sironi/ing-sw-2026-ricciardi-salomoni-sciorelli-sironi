@@ -226,7 +226,12 @@ public class GameController {
         command.execute(this);
     }
 
-    public void addListener(PropertyChangeListener listener) {
+    //TODO: implement game finished logic
+    public boolean isGameFinished(){
+        return false;
+    }
+
+    public void addListener(PropertyChangeListener listener){
         support.addPropertyChangeListener(listener);
     }
 

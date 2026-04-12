@@ -78,10 +78,8 @@ public class ModelInstancesManager {
             }
         });
 
-        //creates TurnManager
+        //set up Board & GameModel & TurnManager
         TurnManager turnManager = new TurnManager(new ArrayList<>(players), registry);
-
-        //set up Board & GameModel
         Board board = new Board(turnOrderTile, offerTrack);
         GameModel model = new GameModel(board,
                 sorter.getBuildingCards(),
@@ -90,6 +88,7 @@ public class ModelInstancesManager {
                 players,
                 turnManager);
         board.initBoard(model);
+        turnManager.setGameModel(model);
 
         return model;
     }

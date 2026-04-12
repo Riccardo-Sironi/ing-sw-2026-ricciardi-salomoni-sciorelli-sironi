@@ -20,16 +20,18 @@ public class ClientManager implements Runnable{
     private GameController controller;
     private final ModelListener listener;
     private final BlockingQueue<PropertyChangeEvent> noticeQueue;
+    private BufferedReader inFromClient;
+    private PrintWriter outToClient;
+    private boolean closed;
 
     ClientManager(Socket socket, String nickname){
         this.socket = socket;
         this.nickname = nickname;
         noticeQueue = new LinkedBlockingQueue<>();
         listener = new ModelListener(noticeQueue);
-    }
-
-    public void unsubscribeListener(){
-        controller.removeListener(listener);
+        inFromClient = null;
+        outToClient = null;
+        closed = false;
     }
 
     /**
@@ -55,7 +57,7 @@ public class ClientManager implements Runnable{
 
         try {
             //prepares input object
-            BufferedReader inFromClient = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            inFromClient = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
             //client input loop
             String input = "";
@@ -74,23 +76,25 @@ public class ClientManager implements Runnable{
             System.err.print("Error on '"+nickname+"' client thread: ");
             e.printStackTrace();
         }
+
+        closeConnection();
     }
 
     //it should never be called directly! only usable by a different Thread
     private void senderLoop(){
 
         //prepares the output object
-        PrintWriter outToClient = null;
         try{
             outToClient =  new PrintWriter(socket.getOutputStream(),true);
         }catch (IOException e){
             System.err.print("Error on '"+nickname+"' client notice thread: ");
             e.printStackTrace();
+            if(nickname != null) ServerMain.logout(nickname);
             return;
         }
 
         //notice loop
-        while(true){
+        while(!closed){
             ObjectMapper mapper = new ObjectMapper();
             PropertyChangeEvent notice = null;
             try {
@@ -103,6 +107,20 @@ public class ClientManager implements Runnable{
                 e.printStackTrace();
             }
         }
+    }
+
+    public void closeConnection(){
+        if(closed) return;
+        closed = true;
+        if(outToClient != null) outToClient.close();
+        if(nickname != null) ServerMain.logout(nickname);
+        controller.removeListener(listener);
+        try {
+            if(!socket.isClosed()) socket.close();
+        } catch (IOException _) {}
+        if(inFromClient != null) try{
+            inFromClient.close();
+        } catch(IOException _) {}
     }
 
 }
