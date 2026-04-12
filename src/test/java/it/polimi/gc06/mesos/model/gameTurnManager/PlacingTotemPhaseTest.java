@@ -21,6 +21,7 @@ class PlacingTotemPhaseTest {
     private TurnManager turnManagerMock;
     private Player playerMock;
     private TileSlot slotMock;
+    private Board boardMock;
 
     @BeforeAll
     static void whichTest() {
@@ -38,6 +39,7 @@ class PlacingTotemPhaseTest {
         turnManagerMock = mock(TurnManager.class);
         playerMock = mock(Player.class);
         slotMock = mock(TileSlot.class);
+        boardMock = mock(Board.class);
         System.out.println("--- [START] " + testInfo.getDisplayName() + " ---");
     }
 
@@ -53,7 +55,7 @@ class PlacingTotemPhaseTest {
         when(turnManagerMock.getPlayersOrder()).thenReturn(playersQueue);
         when(slotMock.isEmpty()).thenReturn(true);
 
-        phase.placeTotem(turnManagerMock, playerMock, slotMock);
+        phase.placeTotem(turnManagerMock, playerMock, slotMock, boardMock);
 
         verify(slotMock).isEmpty();
         verify(turnManagerMock).getPlayersOrder();
@@ -67,7 +69,7 @@ class PlacingTotemPhaseTest {
         when(slotMock.isEmpty()).thenReturn(false);
 
         IllegalPhaseActionException exception = assertThrows(IllegalPhaseActionException.class, () -> {
-            phase.placeTotem(turnManagerMock, playerMock, slotMock);
+            phase.placeTotem(turnManagerMock, playerMock, slotMock, boardMock);
         });
 
         assertEquals("The slot is not empty!", exception.getMessage());
