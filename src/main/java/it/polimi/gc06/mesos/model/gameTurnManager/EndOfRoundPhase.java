@@ -5,31 +5,47 @@ import it.polimi.gc06.mesos.gameExceptions.IllegalPhaseActionException;
 import it.polimi.gc06.mesos.model.GameModel;
 import it.polimi.gc06.mesos.model.Player;
 import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
-import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingCard;
 import it.polimi.gc06.mesos.model.cards.characters.CharacterCard;
 import it.polimi.gc06.mesos.model.gameBoard.Board;
-import it.polimi.gc06.mesos.model.gameBoard.TileSlot;
 
 import java.util.ArrayList;
 
 public class EndOfRoundPhase extends Phase {
 
-    private boolean isStarted;
+    private boolean justStarted;
+    private boolean isEndOfRoundPickPlayerPresent;
+    private int endOfRoundPickPlayerIndex;
 
     public EndOfRoundPhase() {
-        this.isStarted = false;
+        this.justStarted = true;
+        this.isEndOfRoundPickPlayerPresent = false;
+        this.endOfRoundPickPlayerIndex = 0;
     }
 
-    public void startEndOfRound(TurnManager turnManager, ArrayList<Player> players, TileSlot tileSlot) throws IllegalPhaseActionException {
+    public void checkForEndOfRoundPick(TurnManager turnManager) throws IllegalPhaseActionException {
+        ArrayList<Player> players = (ArrayList<Player>) turnManager.getPlayersOrder();
 
-        players.forEach((Player player) -> player.setTopDrawNum(player.getBuildingCards().contains(turnManager.getPickFromTopCard()) ? 1 : 0));
-        isStarted = true;
+        for (Player player : players) {
+            if (player.getBuildingCards().contains(turnManager.getPickFromTopCard())) {
+                player.setTopDrawNum(1);
+                isEndOfRoundPickPlayerPresent = true;
 
+                if (players.getFirst() != player) {
+                    endOfRoundPickPlayerIndex = players.indexOf(player);
+                    turnManager.setActivePlayerIndex(endOfRoundPickPlayerIndex);
+                }
+
+                break; // Once we find the player, there is no point in looking further.
+            }
+        }
+
+        justStarted = false;
     }
 
+    @Override
     public void pickCardFromTop(TurnManager turnManager, Player player, CharacterCard card, Board board) throws IllegalPhaseActionException {
 
-        if (!isStarted) {
+        if (!justStarted) {
             throw new IllegalPhaseActionException("You have to start the offer resolution phase first!");
         }
 
@@ -38,13 +54,16 @@ public class EndOfRoundPhase extends Phase {
         }
 
         board.pickCardFromTopRow(player, card);
-        player.setTopDrawNum(player.getTopDrawNum() - 1);
-        checkIfPlayerIsFinished(turnManager, player, board);
+        player.setTopDrawNum(0);
+        isEndOfRoundPickPlayerPresent = false;
+        turnManager.setActivePlayerIndex(0);
+        endOfRound(turnManager, board, turnManager.getGameModel());
     }
 
+    @Override
     public void pickCardFromTop(TurnManager turnManager, Player player, BuildingCard card, Board board) throws IllegalPhaseActionException, IllegalArgumentException, IllegalGameActionException {
 
-        if (!isStarted) {
+        if (!justStarted) {
             throw new IllegalPhaseActionException("You have to start the offer resolution phase first!");
         }
 
@@ -53,16 +72,10 @@ public class EndOfRoundPhase extends Phase {
         }
 
         board.buyBuildingFromTopRow(player, card);
-        player.setTopDrawNum(player.getTopDrawNum() - 1);
-        checkIfPlayerIsFinished(turnManager, player, board);
-    }
-
-    private void checkIfPlayerIsFinished(TurnManager turnManager, Player player, Board board) throws IllegalPhaseActionException {
-
-        if (!isStarted) {
-            throw new IllegalPhaseActionException("You have to start the offer resolution phase first!");
-        }
-
+        player.setTopDrawNum(0);
+        isEndOfRoundPickPlayerPresent = false;
+        turnManager.setActivePlayerIndex(0);
+        endOfRound(turnManager, board, turnManager.getGameModel());
     }
 
     /**
@@ -72,22 +85,29 @@ public class EndOfRoundPhase extends Phase {
      *
      * @param turnManager the turn manager controlling the flow of the game.
      */
+    @Override
     public void endOfRound(TurnManager turnManager, Board board, GameModel gameModel) throws IllegalPhaseActionException {
-
-        board.moveFromTopToBottom();
-
-        // TODO Remove Game model? We need it to get the decks and stuff. Check Board
-        board.populateTopRow(gameModel);
-
-        turnManager.setRound(turnManager.getRound() + 1);
-
-        // TODO Check whether game is over
-        if (board.isEndGame()) {
-            // TODO Go to EndGame Phase
-            return;
+        // if this method is called from the previous phase then we have to check if a player
+        // could pick a card from the top row before ending the round (so if someone has that specific building card)
+        if (justStarted) {
+            checkForEndOfRoundPick(turnManager);
         }
 
+        if (!isEndOfRoundPickPlayerPresent) {
+            board.moveFromTopToBottom();
+
+            board.populateTopRow(gameModel);
+
+            turnManager.setRound(turnManager.getRound() + 1);
+
+            // TODO Check whether game is over
+            if (board.isEndGame()) {
+                // TODO Go to EndGame Phase
+                return;
+            }
+
+            // if the game is not over we move on with the next round
+            turnManager.setPhase(new PlacingTotemPhase());
+        }
     }
-
-
 }

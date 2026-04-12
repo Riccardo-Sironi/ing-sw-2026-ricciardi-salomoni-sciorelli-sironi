@@ -1,6 +1,7 @@
 package it.polimi.gc06.mesos.model.gameTurnManager;
 
 import it.polimi.gc06.mesos.gameExceptions.IllegalPhaseActionException;
+import it.polimi.gc06.mesos.model.GameModel;
 import it.polimi.gc06.mesos.model.Player;
 import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
 import it.polimi.gc06.mesos.model.cards.characters.CharacterCard;
@@ -51,7 +52,7 @@ class PhaseTest {
     void testPlaceTotemThrowsException() {
         TileSlot tileSlot = mock(TileSlot.class);
         IllegalPhaseActionException exception = assertThrows(IllegalPhaseActionException.class, () ->
-                phase.placeTotem(turnManager, player, tileSlot));
+                phase.placeTotem(turnManager, player, tileSlot, board));
 
         assertEquals("You can't place a totem in this phase!", exception.getMessage());
     }
@@ -76,7 +77,7 @@ class PhaseTest {
     @Test
     void testEndOfRoundThrowsException() {
         IllegalPhaseActionException exception = assertThrows(IllegalPhaseActionException.class, () ->
-                phase.endOfRound(turnManager, player));
+                phase.endOfRound(turnManager, board, mock(GameModel.class)));
 
         assertEquals("You can't end the round in this phase!", exception.getMessage());
     }

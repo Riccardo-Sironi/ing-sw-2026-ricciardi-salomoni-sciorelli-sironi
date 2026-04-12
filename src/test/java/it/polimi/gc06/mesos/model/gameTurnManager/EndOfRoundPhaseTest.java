@@ -62,7 +62,7 @@ class EndOfRoundPhaseTest {
     void pickCard_With_ZeroTopDrawNum_ThrowsException() {
         ArrayList<Player> players = new ArrayList<>();
         players.add(player);
-        assertDoesNotThrow(() -> endOfRoundPhase.startEndOfRound(turnManager, players, null));
+        assertDoesNotThrow(() -> endOfRoundPhase.checkForEndOfRoundPick(turnManager));
 
         when(player.getTopDrawNum()).thenReturn(0);
         CharacterCard card = mock(CharacterCard.class);
@@ -74,7 +74,7 @@ class EndOfRoundPhaseTest {
     void pickCardFromTop_NormalExecution() {
         ArrayList<Player> players = new ArrayList<>();
         players.add(player);
-        assertDoesNotThrow(() -> endOfRoundPhase.startEndOfRound(turnManager, players, null));
+        assertDoesNotThrow(() -> endOfRoundPhase.checkForEndOfRoundPick(turnManager));
 
         when(player.getTopDrawNum()).thenReturn(1);
         CharacterCard card = mock(CharacterCard.class);
@@ -89,7 +89,7 @@ class EndOfRoundPhaseTest {
     void picCardFromTop_Building_NormalExecution() {
         ArrayList<Player> players = new ArrayList<>();
         players.add(player);
-        assertDoesNotThrow(() -> endOfRoundPhase.startEndOfRound(turnManager, players, null));
+        assertDoesNotThrow(() -> endOfRoundPhase.checkForEndOfRoundPick(turnManager));
 
         when(player.getTopDrawNum()).thenReturn(1);
         BuildingCard card = mock(BuildingCard.class);
