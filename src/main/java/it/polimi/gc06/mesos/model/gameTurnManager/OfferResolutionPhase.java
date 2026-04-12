@@ -14,7 +14,7 @@ public class OfferResolutionPhase extends Phase {
 
     @Override
     public void startPlayerOfferResolution(TurnManager turnManager, Player player, TileSlot tileSlot) throws IllegalPhaseActionException {
-
+        // TODO : THIS METHOD IS NEVER CALLED?
         if (turnManager.getActivePlayer() != player) {
             throw new IllegalPhaseActionException("It's not your turn yet!");
         }
@@ -24,22 +24,6 @@ public class OfferResolutionPhase extends Phase {
         isStarted = true;
 
         // TODO Notify Buildings on Draw
-    }
-
-    @Override
-    public void pickCardFromBottom(TurnManager turnManager, Player player, CharacterCard card, Board board) throws IllegalPhaseActionException, IllegalArgumentException {
-
-        if (!isStarted) {
-            throw new IllegalPhaseActionException("You have to start the offer resolution phase first!");
-        }
-
-        if (player.getBottomDrawNum() <= 0) {
-            throw new IllegalPhaseActionException("You can't draw from the bottom row anymore!");
-        }
-
-        board.pickCardFromBottomRow(player, card);
-        player.setBottomDrawNum(player.getBottomDrawNum() - 1);
-        checkIfPlayerIsFinished(turnManager, player, board);
     }
 
     @Override
@@ -59,6 +43,22 @@ public class OfferResolutionPhase extends Phase {
     }
 
     @Override
+    public void pickCardFromBottom(TurnManager turnManager, Player player, CharacterCard card, Board board) throws IllegalPhaseActionException, IllegalArgumentException {
+
+        if (!isStarted) {
+            throw new IllegalPhaseActionException("You have to start the offer resolution phase first!");
+        }
+
+        if (player.getBottomDrawNum() <= 0) {
+            throw new IllegalPhaseActionException("You can't draw from the bottom row anymore!");
+        }
+
+        board.pickCardFromBottomRow(player, card);
+        player.setBottomDrawNum(player.getBottomDrawNum() - 1);
+        checkIfPlayerIsFinished(turnManager, player, board);
+    }
+
+    @Override
     public void pickCardFromTop(TurnManager turnManager, Player player, BuildingCard card, Board board) throws IllegalPhaseActionException, IllegalArgumentException, IllegalGameActionException {
 
         if (!isStarted) {
@@ -74,6 +74,7 @@ public class OfferResolutionPhase extends Phase {
         checkIfPlayerIsFinished(turnManager, player, board);
     }
 
+    @Override
     public void pickCardFromBottom(TurnManager turnManager, Player player, BuildingCard card, Board board) throws IllegalPhaseActionException, IllegalArgumentException, IllegalGameActionException {
 
         if (!isStarted) {
@@ -99,21 +100,21 @@ public class OfferResolutionPhase extends Phase {
             TileSlot playerSlot = board.getOfferTrackPlayerSlot(player);
             playerSlot.removePlayer();
 
+            turnManager.getPlayersOrder().addLast(player);
+
             for (TileSlot orderTile : board.getTurnOrderTile().slots()) {
                 if (orderTile.getPlayer() == null) {
                     orderTile.setPlayer(player);
-                    turnManager.getPlayersOrder().addLast(player);
                     break;
                 }
             }
-
-
         }
 
-        // TODO Chiedere al Prof. Viene gestita dal Controller oppure viene gestita dalle fasi stesse?
-        // TODO In teoria non c'è nessuna richiesta del Player
+        // if the offer track is empty then we can move on with the next phase
         if (board.isOfferTrackEmpty()) {
             turnManager.setPhase(new EventResolutionPhase());
+            // we directly call the method, we don't wait for no request from no client
+            turnManager.getPhase().resolveEvent(turnManager, board);
         }
     }
 }
