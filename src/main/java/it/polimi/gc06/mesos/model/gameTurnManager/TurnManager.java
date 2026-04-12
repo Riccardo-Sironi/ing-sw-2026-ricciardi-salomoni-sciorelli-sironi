@@ -107,7 +107,7 @@ public class TurnManager {
      * @return the game model
      */
     public GameModel getGameModel() {
-        return model;
+        return gameModel;
     }
 
     /**
@@ -116,6 +116,6 @@ public class TurnManager {
      * @param model the game model to set.
      */
     public void setGameModel(GameModel model) {
-        this.model = model;
+        this.gameModel = model;
     }
 }
