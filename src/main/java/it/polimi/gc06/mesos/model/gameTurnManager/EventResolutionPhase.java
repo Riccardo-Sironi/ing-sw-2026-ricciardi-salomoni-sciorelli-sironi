@@ -15,6 +15,7 @@ public class EventResolutionPhase extends Phase {
     public EventResolutionPhase() {
     }
 
+    @Override
     public void resolveEvent(TurnManager turnManager, Board board) throws IllegalPhaseActionException {
 
         ArrayList<EventCard> events = board.cleanBottomRow();
@@ -24,6 +25,6 @@ public class EventResolutionPhase extends Phase {
         });
 
         turnManager.setPhase(new EndOfRoundPhase());
+        turnManager.getPhase().endOfRound(turnManager, board, turnManager.getGameModel());
     }
-
 }
