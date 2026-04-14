@@ -58,27 +58,36 @@ class PlacingTotemPhaseTest {
     void testPlaceTotem() {
         int numPlayers = 5;
         ArrayList<Player> players = new ArrayList<>();
-        ArrayList<TileSlot> slots = new ArrayList<>();
-        TileSlot slot = new TileSlot();
+        ArrayList<TileSlot> orderSlots = new ArrayList<>();
+        ArrayList<TileSlot> offerSlots = new ArrayList<>();
         for (int i = 0; i < numPlayers; i++) {
             players.add(new Player("Player" + (i + 1), Color.values()[i], new ModifierBuildingsRegistry()));
-            slots.add(new TileSlot());
-            slots.get(i).setPlayer(players.get(i));
+            orderSlots.add(new TileSlot());
+            orderSlots.get(i).setPlayer(players.get(i));
+
+            offerSlots.add(new TileSlot());
         }
 
-        when(turnManagerMock.getPlayersOrder()).thenReturn(new ArrayList<>(players));
+        ArrayList<Player> playersOrder = new ArrayList<>(players);
+        
+        when(turnManagerMock.getPlayersOrder()).thenReturn(playersOrder);
         when(boardMock.getTurnOrderTile()).thenReturn(turnOrderTileMock);
-        when(turnOrderTileMock.slots()).thenReturn(slots);
+        when(turnOrderTileMock.slots()).thenReturn(orderSlots);
+        when(boardMock.getOfferTrack()).thenReturn(offerSlots);
+        when(boardMock.getOfferTrackPlayerSlot(any(Player.class))).thenReturn(offerSlots.getFirst());
+        // we need this because it gets called when we set the new Phase at the end
+        when(turnManagerMock.getPhase()).thenReturn(new OfferResolutionPhase());
 
-        phase.placeTotem(turnManagerMock, players.getFirst(), slot, boardMock);
-        assertFalse(slot.isEmpty());
-        assertNull(slots.getFirst().getPlayer());
+        phase.placeTotem(turnManagerMock, players.getFirst(), boardMock.getOfferTrack().getFirst(), boardMock);
+        assertFalse(boardMock.getOfferTrack().getFirst().isEmpty());
+        assertNotNull(boardMock.getOfferTrack().getFirst().getPlayer());
+        assertNull(orderSlots.getFirst().getPlayer());
 
         for (int i = 1; i < numPlayers; i++) {
-            TileSlot s = new TileSlot();
-            phase.placeTotem(turnManagerMock, players.get(i), s, boardMock);
-            assertFalse(s.isEmpty());
-            assertNull(slots.get(i).getPlayer());
+            phase.placeTotem(turnManagerMock, players.get(i), boardMock.getOfferTrack().get(i), boardMock);
+            assertFalse(boardMock.getOfferTrack().get(i).isEmpty());
+            assertNotNull(boardMock.getOfferTrack().getFirst().getPlayer());
+            assertNull(orderSlots.get(i).getPlayer());
         }
 
         verify(turnManagerMock).setPhase(any(OfferResolutionPhase.class));

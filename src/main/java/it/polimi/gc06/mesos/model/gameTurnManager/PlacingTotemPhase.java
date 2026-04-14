@@ -38,6 +38,10 @@ public class PlacingTotemPhase extends Phase {
         // TODO : we are duplicating the list of players (basically the playersOrder list is the turnOrderTile list)
         if (turnManager.getPlayersOrder().isEmpty()) {
             turnManager.setPhase(new OfferResolutionPhase());
+
+            Player p = board.getOfferTrack().stream().filter(tile -> tile.getPlayer() != null).findFirst().map(TileSlot::getPlayer).orElse(null);
+            if (p == null) throw new IllegalStateException("test");
+            turnManager.getPhase().startPlayerOfferResolution(turnManager, p, board.getOfferTrackPlayerSlot(p));
         }
     }
 
