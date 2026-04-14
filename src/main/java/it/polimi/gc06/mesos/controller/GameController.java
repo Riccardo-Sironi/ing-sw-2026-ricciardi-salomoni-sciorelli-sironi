@@ -13,9 +13,9 @@ import it.polimi.gc06.mesos.model.cards.characters.CharacterCard;
 import it.polimi.gc06.mesos.model.cards.events.EventCard;
 import it.polimi.gc06.mesos.model.gameBoard.TileSlot;
 import it.polimi.gc06.mesos.model.gameTurnManager.TurnManager;
-import it.polimi.gc06.mesos.network.socket.server.commands.Command;
-import it.polimi.gc06.mesos.network.socket.server.infos.CardPickedInfo;
-import it.polimi.gc06.mesos.network.socket.server.infos.TotemMovedInfo;
+import it.polimi.gc06.mesos.network.socket.commands.Command;
+import it.polimi.gc06.mesos.network.socket.infos.CardPickedInfo;
+import it.polimi.gc06.mesos.network.socket.infos.TotemMovedInfo;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;

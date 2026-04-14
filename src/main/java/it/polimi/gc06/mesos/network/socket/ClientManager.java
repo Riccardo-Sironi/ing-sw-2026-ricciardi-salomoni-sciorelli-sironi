@@ -1,8 +1,9 @@
-package it.polimi.gc06.mesos.network.socket.server;
+package it.polimi.gc06.mesos.network.socket;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.polimi.gc06.mesos.controller.GameController;
+import it.polimi.gc06.mesos.network.server.MatchManager;
 
 import java.beans.PropertyChangeEvent;
 import java.io.BufferedReader;
@@ -17,6 +18,7 @@ public class ClientManager implements Runnable {
 
     private final Socket socket;
     private final String nickname;
+    private final MatchManager sharedManager;
     private GameController controller;
     private final ModelListener listener;
     private final BlockingQueue<PropertyChangeEvent> noticeQueue;
@@ -24,9 +26,10 @@ public class ClientManager implements Runnable {
     private PrintWriter outToClient;
     private boolean closed;
 
-    ClientManager(Socket socket, String nickname) {
+    public ClientManager(Socket socket, String nickname, MatchManager sharedManager) {
         this.socket = socket;
         this.nickname = nickname;
+        this.sharedManager = sharedManager;
         noticeQueue = new LinkedBlockingQueue<>();
         listener = new ModelListener(noticeQueue);
         inFromClient = null;
@@ -89,7 +92,7 @@ public class ClientManager implements Runnable {
         } catch (IOException e) {
             System.err.print("Error on '" + nickname + "' client notice thread: ");
             e.printStackTrace();
-            if (nickname != null) ServerMain.logout(nickname);
+            if (nickname != null) sharedManager.logout(nickname);
             return;
         }
 
@@ -115,7 +118,7 @@ public class ClientManager implements Runnable {
         if (closed) return;
         closed = true;
         if (outToClient != null) outToClient.close();
-        if (nickname != null) ServerMain.logout(nickname);
+        if (nickname != null) sharedManager.logout(nickname);
         controller.removeListener(listener);
         try {
             if (!socket.isClosed()) socket.close();

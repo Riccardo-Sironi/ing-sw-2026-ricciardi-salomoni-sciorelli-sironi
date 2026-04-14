@@ -1,15 +1,16 @@
-package it.polimi.gc06.mesos.network.socket.server;
+package it.polimi.gc06.mesos.network.server;
 
 import it.polimi.gc06.mesos.controller.GameController;
 import it.polimi.gc06.mesos.model.GameModel;
 import it.polimi.gc06.mesos.model.InstancesManager.ModelInstancesManager;
+import it.polimi.gc06.mesos.network.socket.ClientManager;
 
 import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class Match {
-
+    // TODO Fix and add RMI ClientManager
     private final BlockingQueue<ClientManager> players;
     private final BlockingQueue<Thread> playersThreads;
     public static final int MAX_PLAYERS = 5;

@@ -1,4 +1,4 @@
-package it.polimi.gc06.mesos.network.socket.server.commands;
+package it.polimi.gc06.mesos.network.socket.commands;
 
 import it.polimi.gc06.mesos.controller.GameController;
 

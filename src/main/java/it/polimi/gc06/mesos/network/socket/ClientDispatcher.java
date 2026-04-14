@@ -1,4 +1,7 @@
-package it.polimi.gc06.mesos.network.socket.server;
+package it.polimi.gc06.mesos.network.socket;
+
+import it.polimi.gc06.mesos.network.server.Match;
+import it.polimi.gc06.mesos.network.server.MatchManager;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -11,10 +14,12 @@ import java.net.SocketTimeoutException;
 public class ClientDispatcher implements Runnable {
 
     private final Socket clientSocket;
+    private final MatchManager sharedManager;
     private final static int TIMEOUT = 20 * 60 * 1000; //20 minutes
 
-    public ClientDispatcher(Socket clientSocket) {
+    public ClientDispatcher(Socket clientSocket, MatchManager sharedManager) {
         this.clientSocket = clientSocket;
+        this.sharedManager = sharedManager;
     }
 
     @Override
@@ -34,7 +39,7 @@ public class ClientDispatcher implements Runnable {
 
             //nickname handling
             nickname = inFromClient.readLine(); //client side: nickname request
-            while (!ServerMain.login(nickname)) {
+            while (!sharedManager.login(nickname)) {
                 outToClient.println("KO");
                 nickname = inFromClient.readLine();
             }
@@ -54,15 +59,16 @@ public class ClientDispatcher implements Runnable {
                         input = inFromClient.readLine();
                     }
                     clientSocket.setSoTimeout(0); //removes the timeout to ensure match confirm
-                    ServerMain.createMatch(Integer.parseInt(input), clientSocket, nickname);
+                    Match newMatch = sharedManager.createMatch(Integer.parseInt(input));
+                    sharedManager.joinMatch(newMatch.getMatchId(), clientSocket, nickname);
                     outToClient.println("OK");
                     success = true;
                 } else if (input.equals("JOIN")) {
-                    outToClient.println(ServerMain.getAvailableMatchesString());
+                    outToClient.println(sharedManager.getAvailableMatchesString());
                     input = inFromClient.readLine(); //client side: matches request
                     if (input == null) throw new NullPointerException(); //disconnection handling
-                    while (!isNumeric(input) || !ServerMain.joinMatch(Integer.parseInt(input), clientSocket, nickname)) {
-                        outToClient.println(ServerMain.getAvailableMatchesString());
+                    while (!isNumeric(input) || !sharedManager.joinMatch(Integer.parseInt(input), clientSocket, nickname)) {
+                        outToClient.println(sharedManager.getAvailableMatchesString());
                         input = inFromClient.readLine();
                     }
                     clientSocket.setSoTimeout(0); //removes the timeout to ensure match confirm
@@ -82,7 +88,7 @@ public class ClientDispatcher implements Runnable {
                 inFromClient.close();
             } catch (IOException _) {
             }
-            if (nickname != null) ServerMain.logout(nickname);
+            if (nickname != null) sharedManager.logout(nickname);
         } catch (IOException | NullPointerException | IllegalArgumentException e) {
             //NullPointerException could be thrown if the client disconnects and readLine() returns null
             System.err.print("Error while accepting player: ");
@@ -92,7 +98,7 @@ public class ClientDispatcher implements Runnable {
                 inFromClient.close();
             } catch (IOException _) {
             }
-            if (nickname != null) ServerMain.logout(nickname);
+            if (nickname != null) sharedManager.logout(nickname);
         }
     }
 
