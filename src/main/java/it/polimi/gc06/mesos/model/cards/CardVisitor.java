@@ -6,8 +6,6 @@ import it.polimi.gc06.mesos.model.cards.events.*;
 
 public abstract class CardVisitor {
 
-    //TODO teniamo le specializzazioni o tutto eredita da CardVisitor?
-
     public void visit(Card card){}
     public void visit(TribeCard card){}
     public void visit(EventCard card){}

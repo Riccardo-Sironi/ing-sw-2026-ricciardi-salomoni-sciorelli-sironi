@@ -33,7 +33,6 @@ public class Player {
 
     private final Color color;
 
-    // TODO Attenzione a non duplicare nel controller - vedrei se si può completamente spostare
     private int topDrawNum;
     private int bottomDrawNum;
 
@@ -339,7 +338,6 @@ public class Player {
         this.bottomDrawNum = bottomDrawNum;
     }
 
-    // TODO : SERVE?
     public void setEnvironment(GameInfo gameInfo) {
         this.gameInfo = gameInfo;
     }
