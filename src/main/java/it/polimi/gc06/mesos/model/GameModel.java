@@ -34,28 +34,6 @@ public class GameModel implements GameInfo {
         this.turnManager = turnManager;
     }
 
-    /*
-    public GameModel() {
-        //this is just the skeleton, but wondering if we should have a method called by the controller
-        // that fills the lists and maps with the correct number of objects based on player quantity.
-
-        //first thing is to initialize the players (and assign them the starting food tokens according to the player order ?).
-        this.players = new ArrayList<>();
-
-        //init the decks with the cards from the json files.
-        this.buildingCardsDecks = new EnumMap<>(Era.class);
-        this.tribeCardsDeck = new EnumMap<>(Era.class);
-        this.finalEventCards = new EventCard[2];
-
-        //after the decks initialization we have to create the board and initialize it.
-        //Add actual Modifer Building Card
-        this.board = new Board(null);
-
-        //after the board initialization we have to create the turn manager and initialize it with the first phase (PlacingTotemPhase) and the list of players.
-        this.turnManager = new TurnManager(players, null, null); // the parameters here are not clear yet (except for the list of players)
-    }
-    */
-
     /**
      * method that starts the game session
      *
@@ -63,34 +41,16 @@ public class GameModel implements GameInfo {
      * otherwise return false.
      */
     public boolean startGame() {
-        // TODO : we should fill all the decks here and other initialization stuff (like board init)
-
         if ((players.size() < 2 || players.size() > 5) /*|| se la parita è già iniziata*/) {
             return false;
         }
 
-        setupPlayersOrderAndFood();
+        board.initBoard(this);
+        turnManager.setGameModel(this);
 
-        setupDecksAndBoard();
+        Collections.shuffle(this.players); //randomize player order
 
-        //TODO: passare al turn manager la lista dei giocatori shuffolata.
-//        this.turnManager = new TurnManager(
-//               da implementare
-//        )
-
-
-        return true;
-    }
-
-    /**
-     * this method shuffles the list of players to determine the player order and assigns the starting
-     * food tokens based on their position in the order.
-     *
-     */
-    private void setupPlayersOrderAndFood() {
-
-        Collections.shuffle(this.players);
-
+        //setups the initial food
         for (int i = 0; i < players.size(); i++) {
             Player p = players.get(i);
             if (i == 0) {
@@ -102,29 +62,24 @@ public class GameModel implements GameInfo {
             }
         }
 
-    }
-
-    /**
-     * this method is used to create the decks
-     * TODO: logic of setupDecksAndBoard() method.
-     */
-    private void setupDecksAndBoard() {
-
+        return true;
     }
 
     /**
      * method that ends the game session and triggers final scoring.
-     *
-     * @return true if the game ended successfully.
-     * TODO: false otherwise.
      */
-    public boolean endGame() {
-        //TODO: method to count final prestige tokens (considering builders, inventors...)
+    public void endGame() {
+
+        players.forEach(p -> p.addPrestigeTokens(p.getBuildersPrestige()));
+        players.forEach(p -> p.addPrestigeTokens(p.getInventorsCounter() * p.getNumOfIcon()));
+        players.forEach(p -> p.addPrestigeTokens( p.getArtistsCounter() / 2 * 10));
+        players.forEach(p -> p.addPrestigeTokens(
+                p.getBuildingCards().stream().mapToInt(b -> b.getPrestigeGain(p)).sum()
+        ));
 
         players.sort(Comparator.comparing(Player::getPrestigeTokens)
                 .thenComparing(Player::getFoodTokens)
                 .reversed());
-        return true;
     }
 
     /**

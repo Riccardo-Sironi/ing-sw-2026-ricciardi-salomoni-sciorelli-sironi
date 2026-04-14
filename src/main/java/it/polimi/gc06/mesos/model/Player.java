@@ -1,12 +1,11 @@
 package it.polimi.gc06.mesos.model;
 
 import it.polimi.gc06.mesos.gameExceptions.GameObjectNotFoundException;
+import it.polimi.gc06.mesos.model.cards.CardVisitor;
 import it.polimi.gc06.mesos.model.cards.buildings.*;
 import it.polimi.gc06.mesos.model.cards.characters.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.EnumMap;
+import java.util.*;
 
 public class Player {
 
@@ -527,5 +526,20 @@ public class Player {
             prestigeGained += temp.getPrestige();
         }
         return prestigeGained;
+    }
+
+    /**
+     * Get the number of different inventor icons.
+     * @return the number of different inventor icons.
+     */
+    public int getNumOfIcon() {
+        InventorIconVisitor visitor = new InventorIconVisitor();
+        Set<InventionIcon> iconSet = new HashSet<>();
+        for(CharacterCard card : characterDeck.get(CharacterType.INVENTOR)){
+            visitor.visit(card);
+            InventionIcon icon = visitor.getAndClearIcon();
+            if(icon != null) iconSet.add(icon);
+        }
+        return iconSet.size();
     }
 }
