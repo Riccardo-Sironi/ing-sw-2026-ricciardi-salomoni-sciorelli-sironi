@@ -18,6 +18,9 @@ public class OfferResolutionPhase extends Phase {
         if (turnManager.getActivePlayer() != player) {
             throw new IllegalPhaseActionException("It's not your turn yet!");
         }
+        if (tileSlot == null) {
+            throw new IllegalArgumentException("Tile slot is null!");
+        }
 
         tileSlot.applyEffect();
 
@@ -90,7 +93,7 @@ public class OfferResolutionPhase extends Phase {
         checkIfPlayerIsFinished(turnManager, player, board);
     }
 
-    private void checkIfPlayerIsFinished(TurnManager turnManager, Player player, Board board) throws IllegalPhaseActionException {
+    public void checkIfPlayerIsFinished(TurnManager turnManager, Player player, Board board) throws IllegalPhaseActionException {
 
         if (!isStarted) {
             throw new IllegalPhaseActionException("You have to start the offer resolution phase first!");
@@ -108,12 +111,26 @@ public class OfferResolutionPhase extends Phase {
                     break;
                 }
             }
+
+            if (!board.getOfferTrack().isEmpty()) {
+                Player nextPlayer = null;
+
+                for (TileSlot offerTrackTile : board.getOfferTrack()) {
+                    if (offerTrackTile.getPlayer() != null) {
+                        nextPlayer = offerTrackTile.getPlayer();
+                    }
+                }
+
+                turnManager.setPhase(new OfferResolutionPhase());
+                turnManager.getPhase().startPlayerOfferResolution(turnManager, nextPlayer, board.getOfferTrackPlayerSlot(nextPlayer));
+            }
         }
+
 
         // if the offer track is empty then we can move on with the next phase
         if (board.isOfferTrackEmpty()) {
             turnManager.setPhase(new EventResolutionPhase());
-            // we directly call the method, we don't wait for no request from no client
+            // we call the method, we don't wait for no request from no client
             turnManager.getPhase().resolveEvent(turnManager, board);
         }
     }

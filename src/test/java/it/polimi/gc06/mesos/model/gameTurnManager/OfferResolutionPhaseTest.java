@@ -14,8 +14,7 @@ import org.junit.jupiter.api.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class OfferResolutionPhaseTest {
@@ -47,6 +46,7 @@ class OfferResolutionPhaseTest {
         boardMock = mock(Board.class);
         cardMock = mock(CharacterCard.class);
         buildingCardMock = mock(BuildingCard.class);
+
         System.out.println("--- [START] " + testInfo.getDisplayName() + " ---");
     }
 
@@ -60,36 +60,33 @@ class OfferResolutionPhaseTest {
     @DisplayName("startPlayerOfferResolution throws an exception if it's not that player's turn")
     void startPlayerOfferResolution_WrongPlayer_ThrowsException() {
         Player wrongPlayer = mock(Player.class);
-        when(turnManagerMock.getActivePlayer()).thenReturn(wrongPlayer);
+        when(turnManagerMock.getActivePlayer()).thenReturn(playerMock);
 
         assertThrows(IllegalPhaseActionException.class, () -> {
-            phase.startPlayerOfferResolution(turnManagerMock, playerMock, tileSlotMock);
+            phase.startPlayerOfferResolution(turnManagerMock, wrongPlayer, tileSlotMock);
         });
 
         verify(tileSlotMock, never()).applyEffect();
     }
 
     @Test
-    @DisplayName("startPlayerOfferResolution applies the effect and draws the card")
+    @DisplayName("startPlayerOfferResolution throws exception if offerTrack tile is null")
+    void startPlayerOfferResolution_NullTile_ThrowsException() {
+        when(turnManagerMock.getActivePlayer()).thenReturn(playerMock);
+        assertThrows(IllegalArgumentException.class, () -> {
+            phase.startPlayerOfferResolution(turnManagerMock, playerMock, null);
+        });
+        verify(tileSlotMock, never()).applyEffect();
+    }
+
+    @Test
+    @DisplayName("startPlayerOfferResolution applies the effect")
     void startPlayerOfferResolution_CorrectPlayer_StartsPhase() {
         when(turnManagerMock.getActivePlayer()).thenReturn(playerMock);
 
         phase.startPlayerOfferResolution(turnManagerMock, playerMock, tileSlotMock);
 
         verify(tileSlotMock, times(1)).applyEffect();
-
-        assertDoesNotThrow(() -> {
-            when(playerMock.getBottomDrawNum()).thenReturn(1);
-            phase.pickCardFromBottom(turnManagerMock, playerMock, cardMock, boardMock);
-        });
-    }
-
-    @Test
-    @DisplayName("pickCardFromBottom throws if phase is not started")
-    void pickCardFromBottom_NotStarted_ThrowsException() {
-        assertThrows(IllegalPhaseActionException.class, () -> {
-            phase.pickCardFromBottom(turnManagerMock, playerMock, cardMock, boardMock);
-        });
     }
 
     @Test
@@ -101,13 +98,8 @@ class OfferResolutionPhaseTest {
     }
 
     @Test
-    @DisplayName("pickCardFromBottom throws if no draws left")
-    void pickCardFromBottom_NoDrawsLeft_ThrowsException() throws IllegalPhaseActionException {
-        when(turnManagerMock.getActivePlayer()).thenReturn(playerMock);
-        phase.startPlayerOfferResolution(turnManagerMock, playerMock, tileSlotMock);
-
-        when(playerMock.getBottomDrawNum()).thenReturn(0);
-
+    @DisplayName("pickCardFromBottom throws if phase is not started")
+    void pickCardFromBottom_NotStarted_ThrowsException() {
         assertThrows(IllegalPhaseActionException.class, () -> {
             phase.pickCardFromBottom(turnManagerMock, playerMock, cardMock, boardMock);
         });
@@ -127,72 +119,137 @@ class OfferResolutionPhaseTest {
     }
 
     @Test
+    @DisplayName("pickCardFromBottom throws if no draws left")
+    void pickCardFromBottom_NoDrawsLeft_ThrowsException() throws IllegalPhaseActionException {
+        when(turnManagerMock.getActivePlayer()).thenReturn(playerMock);
+        phase.startPlayerOfferResolution(turnManagerMock, playerMock, tileSlotMock);
+
+        when(playerMock.getBottomDrawNum()).thenReturn(0);
+
+        assertThrows(IllegalPhaseActionException.class, () -> {
+            phase.pickCardFromBottom(turnManagerMock, playerMock, cardMock, boardMock);
+        });
+    }
+
+    @Test
+    @DisplayName("pickCardFromTop throws if phase is not started")
+    void pickBuildingFromTop_NotStarted_ThrowsException() {
+        assertThrows(IllegalPhaseActionException.class, () -> {
+            phase.pickCardFromTop(turnManagerMock, playerMock, buildingCardMock, boardMock);
+        });
+    }
+
+    @Test
+    @DisplayName("pickCardFromBottom throws if phase is not started")
+    void pickBuildingFromBottom_NotStarted_ThrowsException() {
+        assertThrows(IllegalPhaseActionException.class, () -> {
+            phase.pickCardFromBottom(turnManagerMock, playerMock, buildingCardMock, boardMock);
+        });
+    }
+
+    @Test
+    @DisplayName("pickCardFromTop throws if no draws left")
+    void pickBuildingFromTop_NoDrawsLeft_ThrowsException() throws IllegalPhaseActionException {
+        when(turnManagerMock.getActivePlayer()).thenReturn(playerMock);
+        phase.startPlayerOfferResolution(turnManagerMock, playerMock, tileSlotMock);
+
+        when(playerMock.getTopDrawNum()).thenReturn(0);
+
+        assertThrows(IllegalPhaseActionException.class, () -> {
+            phase.pickCardFromTop(turnManagerMock, playerMock, buildingCardMock, boardMock);
+        });
+    }
+
+    @Test
+    @DisplayName("pickCardFromBottom throws if no draws left")
+    void pickBuildingFromBottom_NoDrawsLeft_ThrowsException() throws IllegalPhaseActionException {
+        when(turnManagerMock.getActivePlayer()).thenReturn(playerMock);
+        phase.startPlayerOfferResolution(turnManagerMock, playerMock, tileSlotMock);
+
+        when(playerMock.getBottomDrawNum()).thenReturn(0);
+
+        assertThrows(IllegalPhaseActionException.class, () -> {
+            phase.pickCardFromBottom(turnManagerMock, playerMock, buildingCardMock, boardMock);
+        });
+    }
+
+    @Test
+    @DisplayName("pickCardFromTop (BuildingCard) succeeds")
+    void pickCardFromTop_BuildingCard_Success() {
+        when(turnManagerMock.getPhase()).thenReturn(phase);
+        when(turnManagerMock.getActivePlayer()).thenReturn(playerMock).thenReturn(playerMock);
+        phase.startPlayerOfferResolution(turnManagerMock, playerMock, tileSlotMock);
+
+        when(playerMock.getTopDrawNum()).thenReturn(1);
+        when(playerMock.getBottomDrawNum()).thenReturn(1);
+
+        phase.pickCardFromTop(turnManagerMock, playerMock, buildingCardMock, boardMock);
+        verify(boardMock).buyBuildingFromTopRow(playerMock, buildingCardMock);
+        // Does not trigger finish logic since getTopDrawNum() == 1
+        verify(boardMock, never()).getOfferTrackPlayerSlot(any());
+        verify(playerMock).setTopDrawNum(0);
+    }
+
+    @Test
     @DisplayName("pickCardFromBottom (BuildingCard) succeeds")
     void pickCardFromBottom_BuildingCard_Success() throws Exception {
         when(turnManagerMock.getActivePlayer()).thenReturn(playerMock);
         phase.startPlayerOfferResolution(turnManagerMock, playerMock, tileSlotMock);
 
-        when(playerMock.getBottomDrawNum()).thenReturn(1).thenReturn(0);
         when(playerMock.getTopDrawNum()).thenReturn(1); // Not finishing yet
+        when(playerMock.getBottomDrawNum()).thenReturn(1);
 
         phase.pickCardFromBottom(turnManagerMock, playerMock, buildingCardMock, boardMock);
 
         verify(boardMock).buyBuildingFromBottomRow(playerMock, buildingCardMock);
         // Does not trigger finish logic since getTopDrawNum() == 1
         verify(boardMock, never()).getOfferTrackPlayerSlot(any());
+        verify(playerMock).setBottomDrawNum(0);
     }
 
     @Test
-    @DisplayName("pickCardFromTop (CharacterCard) succeeds and triggers player finish")
-    void pickCardFromTop_Character_SuccessAndFinish() throws Exception {
-        when(turnManagerMock.getActivePlayer()).thenReturn(playerMock);
+    @DisplayName("pickCardFromTop (Character) succeeds")
+    void pickCardFromTop_CharacterCard_Success() {
+        when(turnManagerMock.getPhase()).thenReturn(phase);
+        when(turnManagerMock.getActivePlayer()).thenReturn(playerMock).thenReturn(playerMock);
         phase.startPlayerOfferResolution(turnManagerMock, playerMock, tileSlotMock);
 
-        // getTopDrawNum is called: 
-        // 1. in the <= 0 check (returns 1)
-        // 2. in setTopDrawNum(getTopDrawNum() - 1) (returns 1, sets 0)
-        // 3. in checkIfPlayerIsFinished (returns 0)
-        when(playerMock.getTopDrawNum()).thenReturn(1, 1, 0);
-        when(playerMock.getBottomDrawNum()).thenReturn(0); // already zero
-
-        TurnOrderTile turnOrderTileMock = mock(TurnOrderTile.class);
-        when(boardMock.getTurnOrderTile()).thenReturn(turnOrderTileMock);
-
-        TileSlot playerSlotMock = mock(TileSlot.class);
-        when(boardMock.getOfferTrackPlayerSlot(playerMock)).thenReturn(playerSlotMock);
-
-        TileSlot turnOrderSlotMock = mock(TileSlot.class);
-        when(turnOrderSlotMock.getPlayer()).thenReturn(null);
-
-        ArrayList<TileSlot> dummySlots = new ArrayList<>();
-        dummySlots.add(turnOrderSlotMock);
-        when(turnOrderTileMock.slots()).thenReturn(dummySlots);
-
-        List playerListMock = mock(List.class);
-        when(turnManagerMock.getPlayersOrder()).thenReturn(playerListMock);
-
-        when(boardMock.isOfferTrackEmpty()).thenReturn(true);
+        when(playerMock.getTopDrawNum()).thenReturn(1);
+        when(playerMock.getBottomDrawNum()).thenReturn(1);
 
         phase.pickCardFromTop(turnManagerMock, playerMock, cardMock, boardMock);
-
         verify(boardMock).pickCardFromTopRow(playerMock, cardMock);
+        // Does not trigger finish logic since getTopDrawNum() == 1
+        verify(boardMock, never()).getOfferTrackPlayerSlot(any());
         verify(playerMock).setTopDrawNum(0);
-
-        // Verifies player finish logic
-        verify(playerSlotMock).removePlayer();
-        verify(turnOrderSlotMock).setPlayer(playerMock);
-        verify(playerListMock).addLast(playerMock);
-        verify(turnManagerMock).setPhase(any(EventResolutionPhase.class)); // Phase changes
     }
 
     @Test
-    @DisplayName("pickCardFromTop does not transition phase if OfferTrack is NOT empty")
-    void pickCardFromTop_DoesNotTransitionPhase_IfOfferTrackNotEmpty() throws Exception {
+    @DisplayName("pickCardFromBottom (Character) succeeds")
+    void pickCardFromBottom_Character_Success() throws Exception {
         when(turnManagerMock.getActivePlayer()).thenReturn(playerMock);
         phase.startPlayerOfferResolution(turnManagerMock, playerMock, tileSlotMock);
 
-        when(playerMock.getTopDrawNum()).thenReturn(1, 1, 0);
+        when(playerMock.getTopDrawNum()).thenReturn(1); // Not finishing yet
+        when(playerMock.getBottomDrawNum()).thenReturn(1);
+
+        phase.pickCardFromBottom(turnManagerMock, playerMock, cardMock, boardMock);
+
+        verify(boardMock).pickCardFromBottomRow(playerMock, cardMock);
+        // Does not trigger finish logic since getTopDrawNum() == 1
+        verify(boardMock, never()).getOfferTrackPlayerSlot(any());
+        verify(playerMock).setBottomDrawNum(0);
+    }
+
+
+    @Test
+    @DisplayName("Player picks card from top but doesn't get remove from offer track because still has to pick")
+    void test_isPlayerFinished_doesNotMovePlayerWhoIsNotFinished() throws Exception {
+        when(turnManagerMock.getActivePlayer()).thenReturn(playerMock);
+        when(playerMock.getTopDrawNum()).thenReturn(2);
         when(playerMock.getBottomDrawNum()).thenReturn(0);
+
+        phase.startPlayerOfferResolution(turnManagerMock, playerMock, tileSlotMock);
 
         TurnOrderTile turnOrderTileMock = mock(TurnOrderTile.class);
         when(boardMock.getTurnOrderTile()).thenReturn(turnOrderTileMock);
@@ -214,7 +271,7 @@ class OfferResolutionPhaseTest {
 
         phase.pickCardFromTop(turnManagerMock, playerMock, cardMock, boardMock);
 
-        verify(playerMock).setTopDrawNum(0);
+        verify(playerMock).setTopDrawNum(1);
 
         // There is no player finish logic since OfferTrack is not empty, so the player remains on the track and phase does not change
         verify(turnManagerMock, never()).setPhase(any(EventResolutionPhase.class));
@@ -255,5 +312,14 @@ class OfferResolutionPhaseTest {
 
         // Since we threw an error, the draw MUST not have been consumed
         verify(playerMock, never()).setTopDrawNum(anyInt());
+    }
+
+    @Test
+    @DisplayName("test checkIfPlayerIsFinished does throw assertion if player hasn't started ")
+    void test_checkIfPlayerIsFinished_hasNotEvenStarted_ThrowsAssertion() {
+        OfferResolutionPhase offerResolutionPhase = new OfferResolutionPhase();
+        assertThrows(IllegalPhaseActionException.class, () -> {
+            offerResolutionPhase.checkIfPlayerIsFinished(turnManagerMock, playerMock, boardMock);
+        });
     }
 }
