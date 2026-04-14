@@ -1,18 +1,21 @@
 package it.polimi.gc06.mesos.model.gameTurnManager;
 
 import it.polimi.gc06.mesos.gameExceptions.IllegalPhaseActionException;
+import it.polimi.gc06.mesos.model.Color;
 import it.polimi.gc06.mesos.model.Player;
 import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
+import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingsRegistry;
 import it.polimi.gc06.mesos.model.cards.characters.CharacterCard;
 import it.polimi.gc06.mesos.model.cards.events.EventCard;
 import it.polimi.gc06.mesos.model.gameBoard.Board;
 import it.polimi.gc06.mesos.model.gameBoard.TileSlot;
+import it.polimi.gc06.mesos.model.gameBoard.TurnOrderTile;
 import org.junit.jupiter.api.*;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class PlacingTotemPhaseTest {
@@ -22,6 +25,7 @@ class PlacingTotemPhaseTest {
     private Player playerMock;
     private TileSlot slotMock;
     private Board boardMock;
+    private TurnOrderTile turnOrderTileMock;
 
     @BeforeAll
     static void whichTest() {
@@ -40,6 +44,7 @@ class PlacingTotemPhaseTest {
         playerMock = mock(Player.class);
         slotMock = mock(TileSlot.class);
         boardMock = mock(Board.class);
+        turnOrderTileMock = mock(TurnOrderTile.class);
         System.out.println("--- [START] " + testInfo.getDisplayName() + " ---");
     }
 
@@ -49,16 +54,55 @@ class PlacingTotemPhaseTest {
     }
 
     @Test
+    @DisplayName("Real situation of the phase")
+    void testPlaceTotem() {
+        int numPlayers = 5;
+        ArrayList<Player> players = new ArrayList<>();
+        ArrayList<TileSlot> slots = new ArrayList<>();
+        TileSlot slot = new TileSlot();
+        for (int i = 0; i < numPlayers; i++) {
+            players.add(new Player("Player" + (i + 1), Color.values()[i], new ModifierBuildingsRegistry()));
+            slots.add(new TileSlot());
+            slots.get(i).setPlayer(players.get(i));
+        }
+
+        when(turnManagerMock.getPlayersOrder()).thenReturn(new ArrayList<>(players));
+        when(boardMock.getTurnOrderTile()).thenReturn(turnOrderTileMock);
+        when(turnOrderTileMock.slots()).thenReturn(slots);
+
+        phase.placeTotem(turnManagerMock, players.getFirst(), slot, boardMock);
+        assertFalse(slot.isEmpty());
+        assertNull(slots.getFirst().getPlayer());
+
+        for (int i = 1; i < numPlayers; i++) {
+            TileSlot s = new TileSlot();
+            phase.placeTotem(turnManagerMock, players.get(i), s, boardMock);
+            assertFalse(s.isEmpty());
+            assertNull(slots.get(i).getPlayer());
+        }
+
+        verify(turnManagerMock).setPhase(any(OfferResolutionPhase.class));
+    }
+
+
+    @Test
     @DisplayName("placeTotem assigns player to slot and updates queue")
     void placeTotem_ValidSlot_PlacesPlayerAndRemovesFromOrder() throws IllegalPhaseActionException {
         LinkedList<Player> playersQueue = mock(LinkedList.class);
         when(turnManagerMock.getPlayersOrder()).thenReturn(playersQueue);
         when(slotMock.isEmpty()).thenReturn(true);
 
+        ArrayList<TileSlot> tileSlots = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            tileSlots.add(slotMock);
+        }
+        when(boardMock.getTurnOrderTile()).thenReturn(turnOrderTileMock);
+        when(turnOrderTileMock.slots()).thenReturn(tileSlots);
+
         phase.placeTotem(turnManagerMock, playerMock, slotMock, boardMock);
 
         verify(slotMock).isEmpty();
-        verify(turnManagerMock).getPlayersOrder();
+        verify(turnManagerMock, times(2)).getPlayersOrder();
         verify(playersQueue).removeFirst();
         verify(slotMock).setPlayer(playerMock);
     }

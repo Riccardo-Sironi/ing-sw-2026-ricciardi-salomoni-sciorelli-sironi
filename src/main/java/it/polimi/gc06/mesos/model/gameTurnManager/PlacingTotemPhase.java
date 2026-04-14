@@ -5,6 +5,8 @@ import it.polimi.gc06.mesos.model.Player;
 import it.polimi.gc06.mesos.model.gameBoard.Board;
 import it.polimi.gc06.mesos.model.gameBoard.TileSlot;
 
+import java.util.ArrayList;
+
 public class PlacingTotemPhase extends Phase {
 
     /**
@@ -24,8 +26,8 @@ public class PlacingTotemPhase extends Phase {
         turnManager.getPlayersOrder().removeFirst();
 
         for (TileSlot s : board.getTurnOrderTile().slots()) {
-            if (s.getPlayer() != null) {
-                s.setPlayer(null);
+            if (s.getPlayer() != null && s.getPlayer().equals(player)) {
+                s.removePlayer();
                 break;
             }
         }
