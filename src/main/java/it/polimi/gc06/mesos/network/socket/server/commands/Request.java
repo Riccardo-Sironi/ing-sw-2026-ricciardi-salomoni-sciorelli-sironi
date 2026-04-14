@@ -1,37 +1,37 @@
-package it.polimi.gc06.mesos.server.commands;
+package it.polimi.gc06.mesos.network.socket.server.commands;
 
 import it.polimi.gc06.mesos.controller.GameController;
 
-public enum Request implements ControllerCaller{
+public enum Request implements ControllerCaller {
 
-    OFFER_TRACK_REQUEST{
+    OFFER_TRACK_REQUEST {
         @Override
         public void call(GameController controller, String nickname, int index) {
-            controller.handleTotemOfferTilePlacement(nickname,index);
+            controller.handleTotemOfferTilePlacement(nickname, index);
         }
     },
-    TOP_CARD_REQUEST{
+    TOP_CARD_REQUEST {
         @Override
         public void call(GameController controller, String nickname, int index) {
-            controller.handleCardPickTopRow(nickname,index);
+            controller.handleCardPickTopRow(nickname, index);
         }
     },
-    BOTTOM_CARD_REQUEST{
+    BOTTOM_CARD_REQUEST {
         @Override
         public void call(GameController controller, String nickname, int index) {
-            controller.handleCardPickBottomRow(nickname,index);
+            controller.handleCardPickBottomRow(nickname, index);
         }
     },
-    TOP_BUILDING_REQUEST{
+    TOP_BUILDING_REQUEST {
         @Override
         public void call(GameController controller, String nickname, int index) {
-            controller.handleBuildingPickTopRow(nickname,index);
+            controller.handleBuildingPickTopRow(nickname, index);
         }
     },
-    BOTTOM_BUILDING_REQUEST{
+    BOTTOM_BUILDING_REQUEST {
         @Override
         public void call(GameController controller, String nickname, int index) {
-            controller.handleBuildingPickBottomRow(nickname,index);
+            controller.handleBuildingPickBottomRow(nickname, index);
         }
     },
 }

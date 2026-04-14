@@ -1,4 +1,4 @@
-package it.polimi.gc06.mesos.server.commands;
+package it.polimi.gc06.mesos.network.socket.server.commands;
 
 import it.polimi.gc06.mesos.controller.GameController;
 
@@ -26,7 +26,7 @@ public class Command {
         this.nickname = nickname;
     }
 
-    public void execute(GameController controller){
-        request.call(controller,nickname,index);
+    public void execute(GameController controller) {
+        request.call(controller, nickname, index);
     }
 }

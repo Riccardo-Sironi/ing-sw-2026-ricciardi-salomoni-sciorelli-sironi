@@ -1,4 +1,4 @@
-package it.polimi.gc06.mesos.server;
+package it.polimi.gc06.mesos.network.socket.server;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,7 +13,7 @@ import java.net.Socket;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-public class ClientManager implements Runnable{
+public class ClientManager implements Runnable {
 
     private final Socket socket;
     private final String nickname;
@@ -24,7 +24,7 @@ public class ClientManager implements Runnable{
     private PrintWriter outToClient;
     private boolean closed;
 
-    ClientManager(Socket socket, String nickname){
+    ClientManager(Socket socket, String nickname) {
         this.socket = socket;
         this.nickname = nickname;
         noticeQueue = new LinkedBlockingQueue<>();
@@ -39,12 +39,12 @@ public class ClientManager implements Runnable{
      *
      * @param controller the game controller.
      */
-    public void setController(GameController controller){
+    public void setController(GameController controller) {
         this.controller = controller;
         controller.addListener(listener);
     }
 
-    public String getNickname(){
+    public String getNickname() {
         return nickname;
     }
 
@@ -61,19 +61,19 @@ public class ClientManager implements Runnable{
 
             //client input loop
             String input = "";
-            while((input = inFromClient.readLine()) != null){
+            while ((input = inFromClient.readLine()) != null) {
 
                 //handling client input
-                System.out.println("'"+nickname+"' client sent: "+input);
+                System.out.println("'" + nickname + "' client sent: " + input);
                 try {
                     controller.parse(input);
-                } catch(JsonProcessingException e){
-                    System.err.print("Error on '"+nickname+"' client request: ");
+                } catch (JsonProcessingException e) {
+                    System.err.print("Error on '" + nickname + "' client request: ");
                     e.printStackTrace();
                 }
             }
-        } catch(IOException e){
-            System.err.print("Error on '"+nickname+"' client thread: ");
+        } catch (IOException e) {
+            System.err.print("Error on '" + nickname + "' client thread: ");
             e.printStackTrace();
         }
 
@@ -81,46 +81,50 @@ public class ClientManager implements Runnable{
     }
 
     //it should never be called directly! only usable by a different Thread
-    private void senderLoop(){
+    private void senderLoop() {
 
         //prepares the output object
-        try{
-            outToClient =  new PrintWriter(socket.getOutputStream(),true);
-        }catch (IOException e){
-            System.err.print("Error on '"+nickname+"' client notice thread: ");
+        try {
+            outToClient = new PrintWriter(socket.getOutputStream(), true);
+        } catch (IOException e) {
+            System.err.print("Error on '" + nickname + "' client notice thread: ");
             e.printStackTrace();
-            if(nickname != null) ServerMain.logout(nickname);
+            if (nickname != null) ServerMain.logout(nickname);
             return;
         }
 
         //notice loop
-        while(!closed){
+        while (!closed) {
             ObjectMapper mapper = new ObjectMapper();
             PropertyChangeEvent notice = null;
             try {
                 notice = noticeQueue.take();
-            }catch (InterruptedException _){ return; }
+            } catch (InterruptedException _) {
+                return;
+            }
             try {
                 outToClient.println(mapper.writeValueAsString(notice));
-            }catch (IOException e){
-                System.err.print("Error on '"+nickname+"' notice dispatch: ");
+            } catch (IOException e) {
+                System.err.print("Error on '" + nickname + "' notice dispatch: ");
                 e.printStackTrace();
             }
         }
     }
 
-    public void closeConnection(){
-        if(closed) return;
+    public void closeConnection() {
+        if (closed) return;
         closed = true;
-        if(outToClient != null) outToClient.close();
-        if(nickname != null) ServerMain.logout(nickname);
+        if (outToClient != null) outToClient.close();
+        if (nickname != null) ServerMain.logout(nickname);
         controller.removeListener(listener);
         try {
-            if(!socket.isClosed()) socket.close();
-        } catch (IOException _) {}
-        if(inFromClient != null) try{
+            if (!socket.isClosed()) socket.close();
+        } catch (IOException _) {
+        }
+        if (inFromClient != null) try {
             inFromClient.close();
-        } catch(IOException _) {}
+        } catch (IOException _) {
+        }
     }
 
 }

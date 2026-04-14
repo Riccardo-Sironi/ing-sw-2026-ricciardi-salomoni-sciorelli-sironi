@@ -13,9 +13,9 @@ import it.polimi.gc06.mesos.model.cards.characters.CharacterCard;
 import it.polimi.gc06.mesos.model.cards.events.EventCard;
 import it.polimi.gc06.mesos.model.gameBoard.TileSlot;
 import it.polimi.gc06.mesos.model.gameTurnManager.TurnManager;
-import it.polimi.gc06.mesos.server.infos.CardPickedInfo;
-import it.polimi.gc06.mesos.server.infos.TotemMovedInfo;
-import it.polimi.gc06.mesos.server.commands.Command;
+import it.polimi.gc06.mesos.network.socket.server.commands.Command;
+import it.polimi.gc06.mesos.network.socket.server.infos.CardPickedInfo;
+import it.polimi.gc06.mesos.network.socket.server.infos.TotemMovedInfo;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -227,11 +227,11 @@ public class GameController {
     }
 
     //TODO: implement game finished logic
-    public boolean isGameFinished(){
+    public boolean isGameFinished() {
         return false;
     }
 
-    public void addListener(PropertyChangeListener listener){
+    public void addListener(PropertyChangeListener listener) {
         support.addPropertyChangeListener(listener);
     }
 
