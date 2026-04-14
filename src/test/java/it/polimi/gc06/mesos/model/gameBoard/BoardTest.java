@@ -17,9 +17,7 @@ import it.polimi.gc06.mesos.model.cards.events.SustenanceEvent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.EnumMap;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -384,6 +382,37 @@ class BoardTest {
 
         when(modelMock.getTribeCardsDeck()).thenReturn(deck);
         assertThrows(IllegalStateException.class, () -> board.populateTopRow(modelMock));
+    }
+
+    @Test
+    void testPopulateTopRowEndGameCondition(){
+        for (Era era : Era.values()) {
+            board.getBuildingsDecks().get(era).add(mock(BuildingCard.class));
+        }
+
+        tribeDecks.get(Era.ERA_I).clear();
+        for (int i = 0; i < 6; i++) tribeDecks.get(Era.ERA_I).add(mock(TribeCard.class));
+
+        tribeDecks.get(Era.ERA_II).clear();
+        for (int i = 0; i < 6; i++) tribeDecks.get(Era.ERA_II).add(mock(TribeCard.class));
+
+        tribeDecks.get(Era.ERA_III).clear();
+        for (int i = 0; i < 2; i++) tribeDecks.get(Era.ERA_III).add(mock(TribeCard.class));
+
+        assertDoesNotThrow(() -> board.populateTopRow(modelMock));
+        board.getTopRow().clear();
+
+        assertDoesNotThrow(() -> board.populateTopRow(modelMock));
+        board.getTopRow().clear();
+
+        assertDoesNotThrow(() -> board.populateTopRow(modelMock));
+
+        assertTrue(board.isEndGame(), "Game should be marked as ended when current era deck is empty and we are in ERA_III");
+
+        assertEquals(4, board.getTopRow().size(), "Top row should be populated with final event cards when end game condition is met");
+
+        assertEquals(finalEvents[0],  board.getTopRow().get(2), "should have been added the first FINAL EVENT");
+        assertEquals(finalEvents[1],  board.getTopRow().get(3), "should have been added the second FINAL EVENT");
     }
 
     @Test
@@ -788,5 +817,62 @@ class BoardTest {
     void testRemoveObserverWhenObserverNotAddedPreviously() {
         ObserverPairBuildingCard observerPairBuildingCard = new ObserverPairBuildingCard();
         assertThrows(IllegalArgumentException.class, () -> board.removeObserver(observerPairBuildingCard), "Removing an observer that was never added should throw an exception");
+    }
+
+    @Test
+    void testIndexGetters() {
+        BuildingCard topBuilding = mock(BuildingCard.class);
+        BuildingCard bottomBuilding = mock(BuildingCard.class);
+        TribeCard topCard = mock(TribeCard.class);
+        TribeCard bottomCard = mock(TribeCard.class);
+
+        board.getTopBuildings().add(topBuilding);
+        board.getBottomBuildings().add(bottomBuilding);
+        board.getTopRow().add(topCard);
+        board.getBottomRow().add(bottomCard);
+
+        assertEquals(topBuilding, board.getTopBuildingFromIndex(0), "return the wrong top building");
+        assertEquals(bottomBuilding, board.getBottomBuildingFromIndex(0), "return the wrong bottom building");
+        assertEquals(topCard, board.getTopCardFromIndex(0), "return the wrong top card");
+        assertEquals(bottomCard, board.getBottomCardFromIndex(0), "return the wrong top card");
+
+        assertThrows(IndexOutOfBoundsException.class, () -> board.getTopBuildingFromIndex(1), "Index out of bounds exception");
+        assertThrows(IndexOutOfBoundsException.class, () -> board.getBottomBuildingFromIndex(1), "Index out of bounds exception");
+        assertThrows(IndexOutOfBoundsException.class, () -> board.getTopCardFromIndex(1), "Index out of bounds exception");
+        assertThrows(IndexOutOfBoundsException.class, () -> board.getBottomCardFromIndex(1), "Index out of bounds exception");
+    }
+
+    @Test
+    void testOfferTrackAndTurnOrderTile() {
+        TurnOrderTile mockTurnOrderTile = mock(TurnOrderTile.class);
+
+        TileSlot slot1 = mock(TileSlot.class);
+        TileSlot slot2 = mock(TileSlot.class);
+        List<TileSlot> mockOfferTrack = new ArrayList<>();
+        mockOfferTrack.add(slot1);
+        mockOfferTrack.add(slot2);
+
+        Player player1 = mock(Player.class);
+        Player player2 = mock(Player.class);
+
+        Board trackBoard = new Board(mockTurnOrderTile, mockOfferTrack);
+
+        assertEquals(mockTurnOrderTile, trackBoard.getTurnOrderTile(), "Turn Order Tile should be the same");
+        assertEquals(mockOfferTrack, trackBoard.getOfferTrack(), "Offer Track should be the same");
+
+        when(slot1.getPlayer()).thenReturn(null);
+        when(slot2.getPlayer()).thenReturn(null);
+
+        assertTrue(trackBoard.isOfferTrackEmpty(), "Offer track should be empty when all slots are unoccupied");
+
+        assertNull(trackBoard.getOfferTrackPlayerSlot(player1), "should return null if the player isn't in any slot");
+
+        when(slot1.getPlayer()).thenReturn(player1);
+
+        assertFalse(trackBoard.isOfferTrackEmpty(), "Offer track should not be empty when at least one slot is occupied");
+
+        assertEquals(slot1, trackBoard.getOfferTrackPlayerSlot(player1), "Offer track should return player1");
+
+        assertNull(trackBoard.getOfferTrackPlayerSlot(player2), "should return null for another player not in any slot");
     }
 }
