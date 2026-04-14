@@ -103,6 +103,7 @@ public class EndOfRoundPhase extends Phase {
             // TODO Check whether game is over
             if (board.isEndGame()) {
                 // TODO Go to EndGame Phase
+                gameModel.endGame();
                 return;
             }
 

@@ -226,9 +226,8 @@ public class GameController {
         command.execute(this);
     }
 
-    //TODO: implement game finished logic
     public boolean isGameFinished() {
-        return false;
+        return model.getBoard().isEndGame();
     }
 
     public void addListener(PropertyChangeListener listener) {
