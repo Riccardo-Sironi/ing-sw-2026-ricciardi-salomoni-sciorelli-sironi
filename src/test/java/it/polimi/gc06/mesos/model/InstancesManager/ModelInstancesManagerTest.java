@@ -6,6 +6,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mockConstruction;
 
@@ -21,21 +25,37 @@ public class ModelInstancesManagerTest {
     @Test
     void testCreateGame_ValidNumOfPlayers() {
         try (MockedConstruction<Board> mockedBoard = mockConstruction(Board.class)) {
-            GameModel model1 = manager.createGame(2);
-            assertNotNull(model1);
-            assertEquals(2, model1.getPlayers().size());
 
-            GameModel model2 = manager.createGame(3);
-            assertNotNull(model2);
-            assertEquals(3, model2.getPlayers().size());
+        assertDoesNotThrow(() -> {
+            // 2 players
+            List<String> num_player_2 = new ArrayList<>(Arrays.asList("p1", "p2"));
+            GameModel model_2_players = manager.createGame(num_player_2);
+            assertNotNull(model_2_players);
 
-            GameModel model3 = manager.createGame(4);
-            assertNotNull(model3);
-            assertEquals(4, model3.getPlayers().size());
+            assertEquals(2, model_2_players.getPlayers().size());
 
-            GameModel model4 = manager.createGame(5);
-            assertNotNull(model4);
-            assertEquals(5, model4.getPlayers().size());
+            //3 players
+            List<String> num_players_3 = new ArrayList<>(Arrays.asList("p1", "p2", "p3"));
+            GameModel model_3_players = manager.createGame(num_players_3);
+            assertNotNull(model_3_players);
+
+            assertEquals(3, model_3_players.getPlayers().size());
+
+            //4 players
+            List<String> num_players_4 = new ArrayList<>(Arrays.asList("p1", "p2", "p3", "p4"));
+            GameModel model_4_players = manager.createGame(num_players_4);
+            assertNotNull(model_4_players);
+
+            assertEquals(4, model_4_players.getPlayers().size());
+
+            //5 players
+            List<String> num_players_5 = new ArrayList<>(Arrays.asList("p1", "p2", "p3", "p4", "p5"));
+            GameModel model_5_players = manager.createGame(num_players_5);
+            assertNotNull(model_5_players);
+
+            assertEquals(5, model_5_players.getPlayers().size());
+
+        });
         } catch (Exception e) {
             fail("Exception should not be thrown for valid number of players (2-5): " + e.getMessage());
         }
@@ -44,24 +64,16 @@ public class ModelInstancesManagerTest {
     @Test
     void testCreateGame_ZeroPlayers_ThrowsException() {
         // numOfPlayers = 0 -> turnOrderTileConfig won't have a key "0" -> new TurnOrderTile(null) -> throws NPE or similar
-        Exception exception = assertThrows(Exception.class, () -> {
-            manager.createGame(0);
-        });
-        // We know it probably throws NPE or JsonMappingException/IllegalArgumentException deep down
-        assertNotNull(exception);
-    }
-
-    @Test
-    void testCreateGame_NegativePlayers_ThrowsException() {
-        assertThrows(Exception.class, () -> {
-            manager.createGame(-1);
-        });
+        List<String> num_player_0 = new ArrayList<>();
+        assertThrows(Exception.class, () -> manager.createGame(num_player_0));
     }
 
     @Test
     void testCreateGame_TooManyPlayers_ThrowsException() {
         // There are exactly 5 colors in the Color enum.
         // If numOfPlayers = 6, it will throw an exception (NoSuchElementException, IndexOutOfBoundsException, or equivalent).
-        assertThrows(Exception.class, () -> manager.createGame(6));
+        List<String> num_players_6 = new ArrayList<>(Arrays.asList("p1", "p2", "p3", "p4", "p5"));
+
+        assertThrows(Exception.class, () -> manager.createGame(num_players_6), "6 or more player should throw exception");
     }
 }
