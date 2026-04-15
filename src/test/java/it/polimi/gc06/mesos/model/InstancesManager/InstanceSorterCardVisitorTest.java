@@ -1,14 +1,19 @@
 package it.polimi.gc06.mesos.model.InstancesManager;
 
 import it.polimi.gc06.mesos.model.Era;
+import it.polimi.gc06.mesos.model.Player;
 import it.polimi.gc06.mesos.model.cards.TribeCard;
 import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
 import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingsRegistry;
 import it.polimi.gc06.mesos.model.cards.events.EventCard;
 import it.polimi.gc06.mesos.model.cards.events.RitualEvent;
 import it.polimi.gc06.mesos.model.cards.events.SustenanceEvent;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import it.polimi.gc06.mesos.model.gameBoard.Board;
+import it.polimi.gc06.mesos.model.gameBoard.TileSlot;
+import it.polimi.gc06.mesos.model.gameBoard.TurnOrderTile;
+import it.polimi.gc06.mesos.model.gameTurnManager.PlacingTotemPhase;
+import it.polimi.gc06.mesos.model.gameTurnManager.TurnManager;
+import org.junit.jupiter.api.*;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -21,11 +26,30 @@ public class InstanceSorterCardVisitorTest {
     private InstanceSorterCardVisitor visitor;
     private ModifierBuildingsRegistry mockRegistry;
 
+    @BeforeAll
+    static void whichTest() {
+        System.out.println("--- Starting PlayerTest ---");
+    }
+
+    @AfterAll
+    static void endTest() {
+        System.out.println("--- Ending PlayerTest ---");
+    }
+
+    @AfterEach
+    void tearDown(TestInfo testInfo) {
+        System.out.println("[END] " + testInfo.getDisplayName() + " DONE");
+    }
+
     @BeforeEach
-    void setUp() {
+    void setUp(TestInfo testInfo) {
+
         mockRegistry = mock(ModifierBuildingsRegistry.class);
         visitor = new InstanceSorterCardVisitor(mockRegistry);
+
+        System.out.println("[START] " + testInfo.getDisplayName() + " DONE");
     }
+
 
     @Test
     void testConstructorInitializesMaps() {

@@ -18,12 +18,12 @@ class BottomRowInitVisitorTest {
 
     @BeforeAll
     static void whichTest() {
-        System.out.println("--- Starting PlayerTest ---");
+        System.out.println("--- Starting BottomRowInitVisitorTest ---");
     }
 
     @AfterAll
     static void endTest() {
-        System.out.println("--- Ending PlayerTest ---");
+        System.out.println("--- Ending BottomRowInitVisitorTest ---");
     }
 
     @AfterEach

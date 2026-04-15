@@ -27,9 +27,11 @@ class RemoveFoodTileEffectTest {
     }
 
     @BeforeEach
-    void setUp() {
+    void setUp(TestInfo testInfo) {
         effect = new RemoveFoodTileEffect();
         mockPlayer = mock(Player.class);
+
+        System.out.println("[START] " + testInfo.getDisplayName() + " DONE");
     }
 
     @Test

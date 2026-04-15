@@ -35,7 +35,7 @@ class FoodTileEffectTest {
     }
 
     @BeforeEach
-    void setUp() {
+    void setUp(TestInfo testInfo) {
         effect = new FoodTileEffect();
         effect.setNumFood(2);
 
@@ -45,6 +45,8 @@ class FoodTileEffectTest {
 
         when(mockRegistry.get(ModifierBuildingRegistryKey.TILE_FOOD_BONUS)).thenReturn(mockFoodBonusCard);
         effect.setRegistry(mockRegistry);
+
+        System.out.println("[START] " + testInfo.getDisplayName() + " DONE");
     }
 
     @Test

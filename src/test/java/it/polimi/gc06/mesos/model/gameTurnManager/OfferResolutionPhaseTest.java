@@ -29,16 +29,22 @@ class OfferResolutionPhaseTest {
 
     @BeforeAll
     static void whichTest() {
-        System.out.println(">>> Starting OfferResolutionPhaseTest <<<");
+        System.out.println("--- Starting PlayerTest ---");
     }
 
     @AfterAll
     static void endTest() {
-        System.out.println(">>> Ending OfferResolutionPhaseTest <<<");
+        System.out.println("--- Ending PlayerTest ---");
+    }
+
+    @AfterEach
+    void tearDown(TestInfo testInfo) {
+        System.out.println("[END] " + testInfo.getDisplayName() + " DONE");
     }
 
     @BeforeEach
     void setUp(TestInfo testInfo) {
+
         phase = new OfferResolutionPhase();
         turnManagerMock = mock(TurnManager.class);
         playerMock = mock(Player.class);
@@ -47,14 +53,9 @@ class OfferResolutionPhaseTest {
         cardMock = mock(CharacterCard.class);
         buildingCardMock = mock(BuildingCard.class);
 
-        System.out.println("--- [START] " + testInfo.getDisplayName() + " ---");
+        System.out.println("[START] " + testInfo.getDisplayName() + " DONE");
     }
 
-    @AfterEach
-    void tearDown(TestInfo testInfo) {
-        System.out.println("--- [END] " + testInfo.getDisplayName() + " DONE! ---");
-
-    }
 
     @Test
     @DisplayName("startPlayerOfferResolution throws an exception if it's not that player's turn")

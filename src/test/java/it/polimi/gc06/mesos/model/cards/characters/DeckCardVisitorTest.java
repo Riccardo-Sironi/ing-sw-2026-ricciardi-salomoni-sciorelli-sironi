@@ -6,19 +6,40 @@ import it.polimi.gc06.mesos.model.Player;
 import it.polimi.gc06.mesos.model.cards.TribeCard;
 import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingsRegistry;
 import it.polimi.gc06.mesos.model.cards.events.*;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
+
+import java.util.EnumMap;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class DeckCardVisitorTest {
     Player player;
 
-    @BeforeEach
-    void setUp() {
-        player = new Player("test", Color.RED, new ModifierBuildingsRegistry());
+    @BeforeAll
+    static void whichTest() {
+        System.out.println("--- Starting DeckCardVisitorTest ---");
     }
+
+    @AfterAll
+    static void endTest() {
+        System.out.println("--- Ending DeckCardVisitorTest ---");
+    }
+
+    @AfterEach
+    void tearDown(TestInfo testInfo) {
+        System.out.println("[END] " + testInfo.getDisplayName() + " DONE");
+    }
+
+    @BeforeEach
+    void setUp(TestInfo testInfo)  {
+
+        player = new Player("test", Color.RED, new ModifierBuildingsRegistry());
+
+        System.out.println("[START] " + testInfo.getDisplayName());
+    }
+
 
     @Test
     void visitHunterCard() {

@@ -1,9 +1,9 @@
 package it.polimi.gc06.mesos.model.InstancesManager;
 
 import it.polimi.gc06.mesos.model.GameModel;
+import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingsRegistry;
 import it.polimi.gc06.mesos.model.gameBoard.Board;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.mockito.MockedConstruction;
 
 import java.util.ArrayList;
@@ -11,16 +11,36 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
 
 public class ModelInstancesManagerTest {
 
     private ModelInstancesManager manager;
 
-    @BeforeEach
-    void setUp() {
-        manager = new ModelInstancesManager();
+    @BeforeAll
+    static void whichTest() {
+        System.out.println("--- Starting PlayerTest ---");
     }
+
+    @AfterAll
+    static void endTest() {
+        System.out.println("--- Ending PlayerTest ---");
+    }
+
+    @AfterEach
+    void tearDown(TestInfo testInfo) {
+        System.out.println("[END] " + testInfo.getDisplayName() + " DONE");
+    }
+
+    @BeforeEach
+    void setUp(TestInfo testInfo) {
+
+        manager = new ModelInstancesManager();
+
+        System.out.println("[START] " + testInfo.getDisplayName() + " DONE");
+    }
+
 
     @Test
     void testCreateGame_ValidNumOfPlayers() {

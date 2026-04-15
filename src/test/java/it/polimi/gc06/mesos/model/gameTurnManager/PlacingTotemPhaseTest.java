@@ -29,29 +29,32 @@ class PlacingTotemPhaseTest {
 
     @BeforeAll
     static void whichTest() {
-        System.out.println(">>> Starting PlacingTotemPhaseTest <<<");
+        System.out.println("--- Starting PlayerTest ---");
     }
 
     @AfterAll
     static void endTest() {
-        System.out.println(">>> Ending PlacingTotemPhaseTest <<<");
+        System.out.println("--- Ending PlayerTest ---");
+    }
+
+    @AfterEach
+    void tearDown(TestInfo testInfo) {
+        System.out.println("[END] " + testInfo.getDisplayName() + " DONE");
     }
 
     @BeforeEach
     void setUp(TestInfo testInfo) {
+
         phase = new PlacingTotemPhase();
         turnManagerMock = mock(TurnManager.class);
         playerMock = mock(Player.class);
         slotMock = mock(TileSlot.class);
         boardMock = mock(Board.class);
         turnOrderTileMock = mock(TurnOrderTile.class);
-        System.out.println("--- [START] " + testInfo.getDisplayName() + " ---");
+
+        System.out.println("[START] " + testInfo.getDisplayName() + " DONE");
     }
 
-    @AfterEach
-    void tearDown(TestInfo testInfo) {
-        System.out.println("--- [END] " + testInfo.getDisplayName() + " DONE! ---");
-    }
 
     @Test
     @DisplayName("Real situation of the phase")

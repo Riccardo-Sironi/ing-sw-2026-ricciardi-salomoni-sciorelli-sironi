@@ -30,16 +30,22 @@ public class RitualEventTest {
 
     @BeforeAll
     static void whichTest() {
-        System.out.println(">>> Starting RitualEventTest <<<");
+        System.out.println("--- Starting EventListVisitorTest ---");
     }
 
     @AfterAll
     static void endTest() {
-        System.out.println(">>> Ending RitualEventTest <<<");
+        System.out.println("--- Ending EventListVisitorTest ---");
+    }
+
+    @AfterEach
+    void tearDown(TestInfo testInfo) {
+        System.out.println("[END] " + testInfo.getDisplayName() + " DONE");
     }
 
     @BeforeEach
-    void setUp(TestInfo testInfo) {
+    void setUp(TestInfo testInfo)  {
+
         mockNoLossCard = mock(ModifierBuildingCard.class);
         mockDoubleWinCard = mock(ModifierBuildingCard.class);
         mockRegistry = mock(ModifierBuildingsRegistry.class);
@@ -57,13 +63,9 @@ public class RitualEventTest {
         gameInfo = mock(GameInfo.class);
         when(player.getEnvironment()).thenReturn(gameInfo);
 
-        System.out.println("--- [START] " + testInfo.getDisplayName() + " ---");
+        System.out.println("[START] " + testInfo.getDisplayName());
     }
 
-    @AfterEach
-    void tearDown(TestInfo testInfo) {
-        System.out.println("--- [END] " + testInfo.getDisplayName() + " DONE! ---");
-    }
 
     @Test
     void testIsLastToBeResolvedIsFalse() {

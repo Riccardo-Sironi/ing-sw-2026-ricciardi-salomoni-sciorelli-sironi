@@ -1,8 +1,10 @@
 package it.polimi.gc06.mesos.model.gameTurnManager;
 
 import it.polimi.gc06.mesos.gameExceptions.IllegalPhaseActionException;
+import it.polimi.gc06.mesos.model.GameModel;
 import it.polimi.gc06.mesos.model.Player;
 import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
+import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingCard;
 import it.polimi.gc06.mesos.model.cards.characters.CharacterCard;
 import it.polimi.gc06.mesos.model.cards.events.EventCard;
 import it.polimi.gc06.mesos.model.gameBoard.Board;
@@ -22,26 +24,29 @@ class EventResolutionPhaseTest {
 
     @BeforeAll
     static void whichTest() {
-        System.out.println(">>> Starting EventResolutionPhaseTest <<<");
+        System.out.println("--- Starting PlayerTest ---");
     }
 
     @AfterAll
     static void endTest() {
-        System.out.println(">>> Ending EventResolutionPhaseTest <<<");
-    }
-
-    @BeforeEach
-    void setUp(TestInfo testInfo) {
-        phase = new EventResolutionPhase();
-        turnManagerMock = mock(TurnManager.class);
-        boardMock = mock(Board.class);
-        System.out.println("--- [START] " + testInfo.getDisplayName() + " ---");
+        System.out.println("--- Ending PlayerTest ---");
     }
 
     @AfterEach
     void tearDown(TestInfo testInfo) {
-        System.out.println("--- [END] " + testInfo.getDisplayName() + " DONE! ---");
+        System.out.println("[END] " + testInfo.getDisplayName() + " DONE");
     }
+
+    @BeforeEach
+    void setUp(TestInfo testInfo) {
+
+        phase = new EventResolutionPhase();
+        turnManagerMock = mock(TurnManager.class);
+        boardMock = mock(Board.class);
+
+        System.out.println("[START] " + testInfo.getDisplayName() + " DONE");
+    }
+
 
     @Test
     @DisplayName("resolveEvent correctly and change phase")

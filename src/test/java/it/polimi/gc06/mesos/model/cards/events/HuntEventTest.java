@@ -25,16 +25,22 @@ public class HuntEventTest {
 
     @BeforeAll
     static void whichTest() {
-        System.out.println(">>> Starting HuntEventTest <<<");
+        System.out.println("--- Starting HuntEventTest ---");
     }
 
     @AfterAll
     static void endTest() {
-        System.out.println(">>> Ending HuntEventTest <<<");
+        System.out.println("--- Ending HuntEventTest ---");
+    }
+
+    @AfterEach
+    void tearDown(TestInfo testInfo) {
+        System.out.println("[END] " + testInfo.getDisplayName() + " DONE");
     }
 
     @BeforeEach
-    void setUp(TestInfo testInfo) {
+    void setUp(TestInfo testInfo)  {
+
         mockBuildingCard = mock(ModifierBuildingCard.class);
         mockRegistry = mock(ModifierBuildingsRegistry.class);
         when(mockRegistry.get(ModifierBuildingRegistryKey.HUNT_PRESTIGE_AND_FOOD_GAIN_CARD)).thenReturn(mockBuildingCard);
@@ -46,13 +52,10 @@ public class HuntEventTest {
             }
         };
         player = mock(Player.class);
-        System.out.println("--- [START] " + testInfo.getDisplayName() + " ---");
+
+        System.out.println("[START] " + testInfo.getDisplayName());
     }
 
-    @AfterEach
-    void tearDown(TestInfo testInfo) {
-        System.out.println("--- [END] " + testInfo.getDisplayName() + " DONE! ---");
-    }
 
     @Test
     void testIsLastToBeResolvedIsFalse() {

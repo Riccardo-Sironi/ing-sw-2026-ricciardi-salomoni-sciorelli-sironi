@@ -6,8 +6,7 @@ import it.polimi.gc06.mesos.model.cards.CardVisitor;
 import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingCard;
 import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingRegistryKey;
 import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingsRegistry;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import java.util.ArrayList;
 
@@ -20,8 +19,23 @@ public class PaintingsEventTest {
     private PaintingsEvent event;
     private ModifierBuildingsRegistry mockRegistry;
 
+    @BeforeAll
+    static void whichTest() {
+        System.out.println("--- Starting EventListVisitorTest ---");
+    }
+
+    @AfterAll
+    static void endTest() {
+        System.out.println("--- Ending EventListVisitorTest ---");
+    }
+
+    @AfterEach
+    void tearDown(TestInfo testInfo) {
+        System.out.println("[END] " + testInfo.getDisplayName() + " DONE");
+    }
+
     @BeforeEach
-    void setUp() {
+    void setUp(TestInfo testInfo)  {
         player = mock(Player.class);
         mockRegistry = mock(ModifierBuildingsRegistry.class);
         ModifierBuildingCard foodGainBuilding = mock(ModifierBuildingCard.class);
@@ -33,7 +47,10 @@ public class PaintingsEventTest {
                 return mockRegistry;
             }
         };
+
+        System.out.println("[START] " + testInfo.getDisplayName());
     }
+
 
     @Test
     void testResolveEvent_ArtistsBelowMin_LosesPrestige() {

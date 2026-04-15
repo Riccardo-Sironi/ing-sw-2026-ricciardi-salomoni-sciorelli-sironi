@@ -10,12 +10,12 @@ class ObserverSetBuildingCardTest {
 
     @BeforeAll
     static void whichTest() {
-        System.out.println("--- Starting PlayerTest ---");
+        System.out.println("--- Starting ObserverSetBuildingCardTest ---");
     }
 
     @AfterAll
     static void endTest() {
-        System.out.println("--- Ending PlayerTest ---");
+        System.out.println("--- Ending ObserverSetBuildingCardTest ---");
     }
 
     @AfterEach

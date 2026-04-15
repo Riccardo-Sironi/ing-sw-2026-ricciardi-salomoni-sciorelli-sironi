@@ -7,6 +7,7 @@ import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
 import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingCard;
 import it.polimi.gc06.mesos.model.cards.characters.CharacterCard;
 import it.polimi.gc06.mesos.model.gameBoard.Board;
+import it.polimi.gc06.mesos.model.gameBoard.RemoveFoodTileEffect;
 import org.junit.jupiter.api.*;
 
 import java.util.ArrayList;
@@ -25,17 +26,22 @@ class EndOfRoundPhaseTest {
 
     @BeforeAll
     static void whichTest() {
-        System.out.println(">>> Starting EndOfRoundPhaseTest <<<");
+        System.out.println("--- Starting PlayerTest ---");
     }
 
     @AfterAll
     static void endTest() {
-        System.out.println(">>> Ending EndOfRoundPhaseTest <<<");
+        System.out.println("--- Ending PlayerTest ---");
     }
 
+    @AfterEach
+    void tearDown(TestInfo testInfo) {
+        System.out.println("[END] " + testInfo.getDisplayName() + " DONE");
+    }
 
     @BeforeEach
     void setUp(TestInfo testInfo) {
+
         endOfRoundPhase = new EndOfRoundPhase();
         turnManager = mock(TurnManager.class);
         player = mock(Player.class);
@@ -45,11 +51,8 @@ class EndOfRoundPhaseTest {
         when(turnManager.getPickFromTopCard()).thenReturn(mockPickCard);
         when(player.getBuildingCards()).thenReturn(new ArrayList<>());
         System.out.println("--- [START] " + testInfo.getDisplayName() + " ---");
-    }
 
-    @AfterEach
-    void tearDown(TestInfo testInfo) {
-        System.out.println("--- [END] " + testInfo.getDisplayName() + " DONE! ---");
+        System.out.println("[START] " + testInfo.getDisplayName() + " DONE");
     }
 
     @Test

@@ -3,13 +3,34 @@ package it.polimi.gc06.mesos.model.cards;
 import it.polimi.gc06.mesos.model.cards.buildings.*;
 import it.polimi.gc06.mesos.model.cards.characters.*;
 import it.polimi.gc06.mesos.model.cards.events.*;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
+
+import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.mock;
 
 class CardVisitorTest {
 
+    @BeforeAll
+    static void whichTest() {
+        System.out.println("--- Starting BottomRowInitVisitorTest ---");
+    }
+
+    @AfterAll
+    static void endTest() {
+        System.out.println("--- Ending BottomRowInitVisitorTest ---");
+    }
+
+    @AfterEach
+    void tearDown(TestInfo testInfo) {
+        System.out.println("[END] " + testInfo.getDisplayName() + " DONE");
+    }
+
+    @BeforeEach
+    void setUp(TestInfo testInfo)  {
+        System.out.println("[START] " + testInfo.getDisplayName());
+    }
 
     // DEFAULT CLASSES
 

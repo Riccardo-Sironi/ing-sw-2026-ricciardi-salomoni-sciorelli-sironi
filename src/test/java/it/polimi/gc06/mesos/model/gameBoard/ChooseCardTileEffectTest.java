@@ -12,12 +12,12 @@ class ChooseCardTileEffectTest {
 
     @BeforeAll
     static void whichTest() {
-        System.out.println("--- Starting PlayerTest ---");
+        System.out.println("--- Starting ChooseCardTileEffectTest ---");
     }
 
     @AfterAll
     static void endTest() {
-        System.out.println("--- Ending PlayerTest ---");
+        System.out.println("--- Ending ChooseCardTileEffectTest ---");
     }
 
     @AfterEach
@@ -26,8 +26,11 @@ class ChooseCardTileEffectTest {
     }
 
     @BeforeEach
-    void setUp() {
+    void setUp(TestInfo testInfo) {
+
         mockPlayer = mock(Player.class);
+
+        System.out.println("[START] " + testInfo.getDisplayName());
     }
 
     @Test

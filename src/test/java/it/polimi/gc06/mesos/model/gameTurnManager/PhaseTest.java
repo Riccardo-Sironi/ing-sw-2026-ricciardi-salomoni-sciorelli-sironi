@@ -23,28 +23,29 @@ class PhaseTest {
 
     @BeforeAll
     static void whichTest() {
-        System.out.println(">>> Starting PhaseTest <<<");
+        System.out.println("--- Starting PlayerTest ---");
     }
 
     @AfterAll
     static void endTest() {
-        System.out.println(">>> Ending PhaseTest <<<");
+        System.out.println("--- Ending PlayerTest ---");
     }
 
+    @AfterEach
+    void tearDown(TestInfo testInfo) {
+        System.out.println("[END] " + testInfo.getDisplayName() + " DONE");
+    }
 
     @BeforeEach
     void setUp(TestInfo testInfo) {
+
         phase = new Phase() {
         };
         turnManager = mock(TurnManager.class);
         player = mock(Player.class);
         board = mock(Board.class);
-        System.out.println("--- [START] " + testInfo.getDisplayName() + " ---");
-    }
 
-    @AfterEach
-    void tearDown(TestInfo testInfo) {
-        System.out.println("--- [END] " + testInfo.getDisplayName() + " DONE! ---");
+        System.out.println("[START] " + testInfo.getDisplayName() + " DONE");
     }
 
 

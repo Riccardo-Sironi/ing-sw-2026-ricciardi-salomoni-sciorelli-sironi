@@ -9,8 +9,7 @@ import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingsRegistry;
 import it.polimi.gc06.mesos.model.cards.buildings.ObserverPairBuildingCard;
 import it.polimi.gc06.mesos.model.cards.events.*;
 import it.polimi.gc06.mesos.model.gameBoard.Board;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import java.util.EnumMap;
 
@@ -22,13 +21,32 @@ class InventorPairsVisitorTest {
     Player player;
     InventorPairsVisitor visitor;
 
+    @BeforeAll
+    static void whichTest() {
+        System.out.println("--- Starting InventorPairsVisitorTest ---");
+    }
+
+    @AfterAll
+    static void endTest() {
+        System.out.println("--- Ending InventorPairsVisitorTest ---");
+    }
+
+    @AfterEach
+    void tearDown(TestInfo testInfo) {
+        System.out.println("[END] " + testInfo.getDisplayName() + " DONE");
+    }
+
     @BeforeEach
-    void setUp() {
+    void setUp(TestInfo testInfo)  {
+
         GameModel modelMock = mock(GameModel.class);
         player = new Player("TestPlayer", Color.RED, new ModifierBuildingsRegistry());
         player.setEnvironment(mock(GameModel.class));
         visitor = new InventorPairsVisitor(player);
+
+        System.out.println("[START] " + testInfo.getDisplayName());
     }
+
 
     @Test
     void visitInventorCard() {

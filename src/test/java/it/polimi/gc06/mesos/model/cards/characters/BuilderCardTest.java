@@ -1,7 +1,7 @@
 package it.polimi.gc06.mesos.model.cards.characters;
 
 import it.polimi.gc06.mesos.model.Era;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -9,6 +9,27 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 class BuilderCardTest {
+
+    @BeforeAll
+    static void whichTest() {
+        System.out.println("--- Starting BuilderCardTest ---");
+    }
+
+    @AfterAll
+    static void endTest() {
+        System.out.println("--- Ending BuilderCardTest ---");
+    }
+
+    @AfterEach
+    void tearDown(TestInfo testInfo) {
+        System.out.println("[END] " + testInfo.getDisplayName() + " DONE");
+    }
+
+    @BeforeEach
+    void setUp(TestInfo testInfo)  {
+        System.out.println("[START] " + testInfo.getDisplayName());
+    }
+
     @Test
     void testConstructor() {
         Era excpectedEra = Era.ERA_I;

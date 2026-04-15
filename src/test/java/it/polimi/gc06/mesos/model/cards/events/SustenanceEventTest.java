@@ -1,6 +1,7 @@
 package it.polimi.gc06.mesos.model.cards.events;
 
 import it.polimi.gc06.mesos.model.Era;
+import it.polimi.gc06.mesos.model.GameInfo;
 import it.polimi.gc06.mesos.model.Player;
 import it.polimi.gc06.mesos.model.cards.CardVisitor;
 import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
@@ -32,16 +33,22 @@ public class SustenanceEventTest {
 
     @BeforeAll
     static void whichTest() {
-        System.out.println(">>> Starting SustenanceEventTest <<<");
+        System.out.println("--- Starting EventListVisitorTest ---");
     }
 
     @AfterAll
     static void endTest() {
-        System.out.println(">>> Ending SustenanceEventTest <<<");
+        System.out.println("--- Ending EventListVisitorTest ---");
+    }
+
+    @AfterEach
+    void tearDown(TestInfo testInfo) {
+        System.out.println("[END] " + testInfo.getDisplayName() + " DONE");
     }
 
     @BeforeEach
-    void setUp(TestInfo testInfo) {
+    void setUp(TestInfo testInfo)  {
+
         mockGathererDiscountCard = mock(ModifierBuildingCard.class);
         mockArtistDiscountCard = mock(ModifierBuildingCard.class);
         mockInventorDiscountCard = mock(ModifierBuildingCard.class);
@@ -68,12 +75,7 @@ public class SustenanceEventTest {
         when(player.getFoodTokens()).thenReturn(0);
         when(player.getBuildingCards()).thenReturn(new ArrayList<>());
 
-        System.out.println("--- [START] " + testInfo.getDisplayName() + " ---");
-    }
-
-    @AfterEach
-    void tearDown(TestInfo testInfo) {
-        System.out.println("--- [END] " + testInfo.getDisplayName() + " DONE! ---");
+        System.out.println("[START] " + testInfo.getDisplayName());
     }
 
     @Test

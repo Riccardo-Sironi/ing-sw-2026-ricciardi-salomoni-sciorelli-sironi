@@ -2,6 +2,7 @@ package it.polimi.gc06.mesos.model.gameBoard;
 
 import it.polimi.gc06.mesos.gameExceptions.IllegalGameActionException;
 import it.polimi.gc06.mesos.model.*;
+import it.polimi.gc06.mesos.model.cards.BottomRowInitVisitor;
 import it.polimi.gc06.mesos.model.cards.TribeCard;
 import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
 import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingCard;
@@ -14,8 +15,7 @@ import it.polimi.gc06.mesos.model.cards.events.EventCard;
 import it.polimi.gc06.mesos.model.cards.events.PaintingsEvent;
 import it.polimi.gc06.mesos.model.cards.events.RitualEvent;
 import it.polimi.gc06.mesos.model.cards.events.SustenanceEvent;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import java.util.*;
 
@@ -34,8 +34,23 @@ class BoardTest {
     private EnumMap<Era, ArrayList<BuildingCard>> buildingDecks;
     private EventCard[] finalEvents;
 
+    @BeforeAll
+    static void whichTest() {
+        System.out.println("--- Starting BottomRowInitVisitorTest ---");
+    }
+
+    @AfterAll
+    static void endTest() {
+        System.out.println("--- Ending BottomRowInitVisitorTest ---");
+    }
+
+    @AfterEach
+    void tearDown(TestInfo testInfo) {
+        System.out.println("[END] " + testInfo.getDisplayName() + " DONE");
+    }
+
     @BeforeEach
-    void setUp() {
+    void setUp(TestInfo testInfo)  {
         board = new Board(null, null);
         modelMock = mock(GameModel.class);
 
@@ -77,7 +92,11 @@ class BoardTest {
         when(modelMock.getTribeCardsDeck()).thenReturn(tribeDecks);
         when(modelMock.getBuildingCardsDecks()).thenReturn(buildingDecks);
         when(modelMock.getFinalEventCards()).thenReturn(finalEvents);
+
+        System.out.println("[START] " + testInfo.getDisplayName());
     }
+
+
 
     /*
     @Test

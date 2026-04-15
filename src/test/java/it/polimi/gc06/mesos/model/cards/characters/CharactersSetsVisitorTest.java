@@ -5,8 +5,7 @@ import it.polimi.gc06.mesos.model.Era;
 import it.polimi.gc06.mesos.model.Player;
 import it.polimi.gc06.mesos.model.cards.TribeCard;
 import it.polimi.gc06.mesos.model.cards.events.*;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -19,8 +18,24 @@ class CharactersSetsVisitorTest {
     Player player;
     CharactersSetsVisitor visitor;
 
+    @BeforeAll
+    static void whichTest() {
+        System.out.println("--- Starting CharactersSetsVisitorTest ---");
+    }
+
+    @AfterAll
+    static void endTest() {
+        System.out.println("--- Ending CharactersSetsVisitorTest ---");
+    }
+
+    @AfterEach
+    void tearDown(TestInfo testInfo) {
+        System.out.println("[END] " + testInfo.getDisplayName() + " DONE");
+    }
+
     @BeforeEach
-    void setUp() {
+    void setUp(TestInfo testInfo)  {
+
         player = mock(Player.class);
         EnumMap<CharacterType, Integer> sets = new EnumMap<CharacterType, Integer>(CharacterType.class);
         for (CharacterType type : CharacterType.values()) {
@@ -28,7 +43,10 @@ class CharactersSetsVisitorTest {
         }
         when(player.getCharactersSets()).thenReturn(sets);
         visitor = new CharactersSetsVisitor(player);
+
+        System.out.println("[START] " + testInfo.getDisplayName());
     }
+
 
     @Test
     void visitHunterCard() {

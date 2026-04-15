@@ -6,8 +6,7 @@ import it.polimi.gc06.mesos.model.Player;
 import it.polimi.gc06.mesos.model.cards.TribeCard;
 import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingsRegistry;
 import it.polimi.gc06.mesos.model.cards.events.*;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
@@ -16,10 +15,29 @@ import static org.mockito.Mockito.when;
 class ShamanVisitorTest {
     Player player;
 
-    @BeforeEach
-    void setUp() {
-        player = new Player("TestPlayer", Color.RED, new ModifierBuildingsRegistry());
+    @BeforeAll
+    static void whichTest() {
+        System.out.println("--- Starting ShamanVisitorTest ---");
     }
+
+    @AfterAll
+    static void endTest() {
+        System.out.println("--- Ending ShamanVisitorTest ---");
+    }
+
+    @AfterEach
+    void tearDown(TestInfo testInfo) {
+        System.out.println("[END] " + testInfo.getDisplayName() + " DONE");
+    }
+
+    @BeforeEach
+    void setUp(TestInfo testInfo)  {
+
+        player = new Player("TestPlayer", Color.RED, new ModifierBuildingsRegistry());
+
+        System.out.println("[START] " + testInfo.getDisplayName());
+    }
+
 
     @Test
     void visitShamanCard() {
