@@ -3,6 +3,9 @@ package it.polimi.gc06.mesos.model;
 import it.polimi.gc06.mesos.model.cards.buildings.*;
 import it.polimi.gc06.mesos.model.cards.characters.*;
 import org.junit.jupiter.api.*;
+import org.mockito.MockedConstruction;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -587,5 +590,59 @@ class PlayerTest {
         assertThrows(IllegalStateException.class, () -> player.decreaseInventorPair());
         assertThrows(IllegalStateException.class, () -> player.hasCompletedPair());
         assertThrows(IllegalStateException.class, () -> player.increaseInventorPairs(InventionIcon.BOAT));
+    }
+
+    @Test
+    void testGetNumOfIcon(){
+        List<CharacterCard> inventorDeck = player.getCharacterDeck().get(CharacterType.INVENTOR);
+        inventorDeck.clear();
+
+        inventorDeck.add(mock(CharacterCard.class));
+        inventorDeck.add(mock(CharacterCard.class));
+        inventorDeck.add(mock(CharacterCard.class));
+
+        try (MockedConstruction<InventorIconVisitor> mockedVisitor = mockConstruction(InventorIconVisitor.class,
+                (mock, context) -> {
+                    when(mock.getAndClearIcon()).thenReturn(
+                            InventionIcon.BOAT,
+                            InventionIcon.ARROWHEAD,
+                            InventionIcon.BOAT,
+                            null
+                    );
+                })) {
+            int numIcons = player.getNumOfIcon();
+
+            assertEquals(2, numIcons, "Inventor should have 2 icons");
+
+            inventorDeck.clear();
+            assertEquals(0, player.getNumOfIcon(), "Inventor should have 0 icons after clearing deck");
+        }
+    }
+
+    @Test
+    void testGetNumOfIconAdd(){
+        List<CharacterCard> inventorDeck = player.getCharacterDeck().get(CharacterType.INVENTOR);
+        inventorDeck.clear();
+
+        CharacterCard cardWithIcon = mock(CharacterCard.class);
+        CharacterCard cardWithoutIcon = mock(CharacterCard.class);
+        CharacterCard duplicateCard = mock(CharacterCard.class);
+
+        inventorDeck.add(cardWithIcon);
+        inventorDeck.add(cardWithoutIcon);
+        inventorDeck.add(duplicateCard);
+
+        try (MockedConstruction<InventorIconVisitor> mockedVisitor = mockConstruction(
+                InventorIconVisitor.class,
+                (mock, context) -> {
+                    when(mock.getAndClearIcon())
+                            .thenReturn(InventionIcon.BOAT)
+                            .thenReturn(null)
+                            .thenReturn(InventionIcon.BOAT);
+                }
+                )){
+
+            assertEquals(1, player.getNumOfIcon(), "Inventor should have 1 icon BOAT");
+        }
     }
 }
