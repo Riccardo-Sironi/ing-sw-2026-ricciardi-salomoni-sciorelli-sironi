@@ -35,11 +35,6 @@ public class GameController {
         return model;
     }
 
-    //initialization should be handled server side, it's not a request from the player
-    /*public void handleGameInitialization() {
-        model.startGame();
-    }*/
-
     /**
      * Handles the request of tile placement
      *

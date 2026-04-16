@@ -35,17 +35,23 @@ public class GameModel implements GameInfo {
     }
 
     /**
-     * method that starts the game session
-     *
-     * @return true if the game started successfully.
-     * otherwise return false.
+     * This method initializes the game session by setting up the board, randomizing player order, and distributing
+     * initial food tokens based on player count. It also checks that the number of players is within the allowed
+     * range (2 to 5) before starting the game.
      */
-    public boolean startGame() {
-        if ((players.size() < 2 || players.size() > 5) /*|| se la parita è già iniziata*/) {
-            return false;
+    public void startGame() {
+        if ((players.size() < 2 || players.size() > 5)) {
+            throw new IllegalStateException("Player count must be between 2 and 5.");
         }
 
-        board.initBoard(this);
+        try {
+            board.initBoard(this);
+        } catch (IllegalStateException e) {
+            throw new IllegalStateException("Failed to initialize the board: " + e.getMessage());
+        } catch (IllegalArgumentException ex) {
+            throw new IllegalStateException(ex.getMessage());
+        }
+        
         turnManager.setGameModel(this);
 
         Collections.shuffle(this.players); //randomize player order
@@ -61,18 +67,19 @@ public class GameModel implements GameInfo {
                 p.addFoodTokens(4);
             }
         }
-
-        return true;
     }
 
     /**
-     * method that ends the game session and triggers final scoring.
+     * This method calculates the final prestige tokens for each player at the end of the game based on various factors
+     * such as builders prestige, inventors counter, artists counter, and the prestige gain from building cards.
+     * After calculating the prestige tokens, it sorts the players in descending order based on their prestige tokens
+     * and food tokens to determine the final ranking of the players.
      */
     public void endGame() {
 
         players.forEach(p -> p.addPrestigeTokens(p.getBuildersPrestige()));
         players.forEach(p -> p.addPrestigeTokens(p.getInventorsCounter() * p.getNumOfIcon()));
-        players.forEach(p -> p.addPrestigeTokens( p.getArtistsCounter() / 2 * 10));
+        players.forEach(p -> p.addPrestigeTokens(p.getArtistsCounter() / 2 * 10));
         players.forEach(p -> p.addPrestigeTokens(
                 p.getBuildingCards().stream().mapToInt(b -> b.getPrestigeGain(p)).sum()
         ));
@@ -83,10 +90,9 @@ public class GameModel implements GameInfo {
     }
 
     /**
-     * this method retrieves the maximum number of shaman stars currently held by any player.
+     * This method retrieves the maximum number of shaman stars currently held by any player.
      *
-     * @return the highest number of shaman stars among all players.
-     * if there are no players, returns 0
+     * @return the highest number of shaman stars among all players. If there are no players, returns 0
      */
     @Override
     public int getMaxStars() {
