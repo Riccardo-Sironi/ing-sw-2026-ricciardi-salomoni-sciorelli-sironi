@@ -22,12 +22,12 @@ class EventResolutionPhaseTest {
 
     @BeforeAll
     static void whichTest() {
-        System.out.println(">>> Starting EventResolutionPhaseTest <<<");
+        System.out.println("--- Starting EventResolutionPhaseTest ---");
     }
 
     @AfterAll
     static void endTest() {
-        System.out.println(">>> Ending EventResolutionPhaseTest <<<");
+        System.out.println("--- Ending EventResolutionPhaseTest ---");
     }
 
     @AfterEach

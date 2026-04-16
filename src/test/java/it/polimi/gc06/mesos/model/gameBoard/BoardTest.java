@@ -36,12 +36,12 @@ class BoardTest {
 
     @BeforeAll
     static void whichTest() {
-        System.out.println("--- Starting BottomRowInitVisitorTest ---");
+        System.out.println("--- Starting BoardTest ---");
     }
 
     @AfterAll
     static void endTest() {
-        System.out.println("--- Ending BottomRowInitVisitorTest ---");
+        System.out.println("--- Ending BoardTest ---");
     }
 
     @AfterEach

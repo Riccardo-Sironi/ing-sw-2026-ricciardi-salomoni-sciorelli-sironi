@@ -30,12 +30,12 @@ public class RitualEventTest {
 
     @BeforeAll
     static void whichTest() {
-        System.out.println("--- Starting EventListVisitorTest ---");
+        System.out.println("--- Starting RitualEventTest ---");
     }
 
     @AfterAll
     static void endTest() {
-        System.out.println("--- Ending EventListVisitorTest ---");
+        System.out.println("--- Ending RitualEventTest ---");
     }
 
     @AfterEach

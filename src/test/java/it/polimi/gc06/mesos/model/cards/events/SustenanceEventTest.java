@@ -33,12 +33,12 @@ public class SustenanceEventTest {
 
     @BeforeAll
     static void whichTest() {
-        System.out.println("--- Starting EventListVisitorTest ---");
+        System.out.println("--- Starting SustenanceEventTest ---");
     }
 
     @AfterAll
     static void endTest() {
-        System.out.println("--- Ending EventListVisitorTest ---");
+        System.out.println("--- Ending SustenanceEventTest ---");
     }
 
     @AfterEach

@@ -21,12 +21,12 @@ public class PaintingsEventTest {
 
     @BeforeAll
     static void whichTest() {
-        System.out.println("--- Starting EventListVisitorTest ---");
+        System.out.println("--- Starting PaintingsEventTest ---");
     }
 
     @AfterAll
     static void endTest() {
-        System.out.println("--- Ending EventListVisitorTest ---");
+        System.out.println("--- Ending PaintingsEventTest ---");
     }
 
     @AfterEach
