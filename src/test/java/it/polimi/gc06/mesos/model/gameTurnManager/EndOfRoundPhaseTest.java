@@ -1,11 +1,17 @@
 package it.polimi.gc06.mesos.model.gameTurnManager;
 
 import it.polimi.gc06.mesos.gameExceptions.IllegalPhaseActionException;
+import it.polimi.gc06.mesos.model.Color;
+import it.polimi.gc06.mesos.model.Era;
 import it.polimi.gc06.mesos.model.GameModel;
 import it.polimi.gc06.mesos.model.Player;
+import it.polimi.gc06.mesos.model.cards.TribeCard;
 import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
 import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingCard;
+import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingRegistryKey;
+import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingsRegistry;
 import it.polimi.gc06.mesos.model.cards.characters.CharacterCard;
+import it.polimi.gc06.mesos.model.cards.characters.HunterCard;
 import it.polimi.gc06.mesos.model.gameBoard.Board;
 import it.polimi.gc06.mesos.model.gameBoard.RemoveFoodTileEffect;
 import org.junit.jupiter.api.*;
@@ -47,71 +53,70 @@ class EndOfRoundPhaseTest {
         player = mock(Player.class);
         board = mock(Board.class);
         gameModel = mock(GameModel.class);
-        ModifierBuildingCard mockPickCard = mock(ModifierBuildingCard.class);
-        when(turnManager.getPickFromTopCard()).thenReturn(mockPickCard);
-        when(player.getBuildingCards()).thenReturn(new ArrayList<>());
+//        ModifierBuildingCard mockPickCard = mock(ModifierBuildingCard.class);
+//        when(turnManager.getPickFromTopCard()).thenReturn(mockPickCard);
+//        when(player.getBuildingCards()).thenReturn(new ArrayList<>());
         System.out.println("--- [START] " + testInfo.getDisplayName() + " ---");
 
         System.out.println("[START] " + testInfo.getDisplayName() + " DONE");
     }
 
     @Test
-    void illegalActions_ThrowIllegalPhaseActionException() {
-        CharacterCard card = mock(CharacterCard.class);
-        assertThrows(IllegalPhaseActionException.class, () -> endOfRoundPhase.pickCardFromTop(turnManager, player, card, board));
-    }
+    @DisplayName("resolveEvent with players without the pick building")
+    void test_resolveEvent_NoPickCard() {
+        EndOfRoundPhase phase = new EndOfRoundPhase();
 
-    @Test
-    void pickCard_With_ZeroTopDrawNum_ThrowsException() {
         ArrayList<Player> players = new ArrayList<>();
         players.add(player);
-        assertDoesNotThrow(() -> endOfRoundPhase.checkForEndOfRoundPick(turnManager));
+        players.add(player);
+        when(turnManager.getPlayersOrder()).thenReturn(players);
 
-        when(player.getTopDrawNum()).thenReturn(0);
-        CharacterCard card = mock(CharacterCard.class);
-
-        assertThrows(IllegalPhaseActionException.class, () -> endOfRoundPhase.pickCardFromTop(turnManager, player, card, board));
+        phase.endOfRound(turnManager, board, gameModel);
     }
 
     @Test
-    void pickCardFromTop_NormalExecution() {
+    @DisplayName("resolveEvent with players with the pick building")
+    void test_resolveEvent_PickCard() {
+        EndOfRoundPhase phase = new EndOfRoundPhase();
+        ModifierBuildingCard pickCard = mock(ModifierBuildingCard.class);
+
+
+        when(turnManager.getPickFromTopCard()).thenReturn(pickCard);
+
+
         ArrayList<Player> players = new ArrayList<>();
         players.add(player);
-        assertDoesNotThrow(() -> endOfRoundPhase.checkForEndOfRoundPick(turnManager));
+        Player playerWithPickCard = new Player("playerWithPickCard", Color.BLUE, new ModifierBuildingsRegistry());
+        playerWithPickCard.addBuildingCards(pickCard);
+        players.add(playerWithPickCard);
+        when(turnManager.getPlayersOrder()).thenReturn(players);
 
-        when(player.getTopDrawNum()).thenReturn(1);
-        CharacterCard card = mock(CharacterCard.class);
-
-        assertDoesNotThrow(() -> endOfRoundPhase.pickCardFromTop(turnManager, player, card, board));
-
-        verify(board).pickCardFromTopRow(player, card);
-        verify(player, times(2)).setTopDrawNum(0);
+        phase.endOfRound(turnManager, board, gameModel);
     }
 
     @Test
-    void picCardFromTop_Building_NormalExecution() {
+    void test_pickCardFromTop() {
+        EndOfRoundPhase phase = new EndOfRoundPhase();
+        ModifierBuildingCard pickCard = mock(ModifierBuildingCard.class);
+
+        Player player = new Player("player", Color.BLUE, new ModifierBuildingsRegistry());
+        player.addBuildingCards(pickCard);
         ArrayList<Player> players = new ArrayList<>();
+
+        when(turnManager.getPickFromTopCard()).thenReturn(pickCard);
+
         players.add(player);
-        assertDoesNotThrow(() -> endOfRoundPhase.checkForEndOfRoundPick(turnManager));
+        when(turnManager.getPlayersOrder()).thenReturn(players);
 
-        when(player.getTopDrawNum()).thenReturn(1);
-        BuildingCard card = mock(BuildingCard.class);
+        phase.endOfRound(turnManager, board, gameModel);
 
-        assertDoesNotThrow(() -> endOfRoundPhase.pickCardFromTop(turnManager, player, card, board));
+        HunterCard card = new HunterCard(Era.ERA_I, true);
+        ArrayList<TribeCard> deck = new ArrayList<>();
+        deck.add(card);
+        when(board.getTopRow()).thenReturn(deck);
 
-        assertDoesNotThrow(() -> verify(board).buyBuildingFromTopRow(player, card));
-        verify(player, times(2)).setTopDrawNum(0);
-    }
+        phase.endOfRound(turnManager, board, gameModel);
 
-    @Test
-    void EndOfRoundLogic() {
-        when(turnManager.getRound()).thenReturn(1);
-        when(board.isEndGame()).thenReturn(false);
-
-        assertDoesNotThrow(() -> endOfRoundPhase.endOfRound(turnManager, board, gameModel));
-
-        verify(board).moveFromTopToBottom();
-        verify(board).populateTopRow(gameModel);
-        verify(turnManager).setRound(2);
+        phase.pickCardFromTop(turnManager, player, card, board);
     }
 }

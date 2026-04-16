@@ -45,8 +45,8 @@ public class EndOfRoundPhase extends Phase {
     @Override
     public void pickCardFromTop(TurnManager turnManager, Player player, CharacterCard card, Board board) throws IllegalPhaseActionException {
 
-        if (!justStarted) {
-            throw new IllegalPhaseActionException("You have to start the offer resolution phase first!");
+        if (justStarted) {
+            throw new IllegalPhaseActionException("You have to start the end of round phase first!");
         }
 
         if (player.getTopDrawNum() <= 0) {
@@ -63,7 +63,7 @@ public class EndOfRoundPhase extends Phase {
     @Override
     public void pickCardFromTop(TurnManager turnManager, Player player, BuildingCard card, Board board) throws IllegalPhaseActionException, IllegalArgumentException, IllegalGameActionException {
 
-        if (!justStarted) {
+        if (justStarted) {
             throw new IllegalPhaseActionException("You have to start the offer resolution phase first!");
         }
 
