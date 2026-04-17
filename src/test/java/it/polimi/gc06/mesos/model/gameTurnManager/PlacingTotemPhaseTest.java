@@ -72,12 +72,13 @@ class PlacingTotemPhaseTest {
         }
 
         ArrayList<Player> playersOrder = new ArrayList<>(players);
-        
+
         when(turnManagerMock.getPlayersOrder()).thenReturn(playersOrder);
         when(boardMock.getTurnOrderTile()).thenReturn(turnOrderTileMock);
         when(turnOrderTileMock.slots()).thenReturn(orderSlots);
         when(boardMock.getOfferTrack()).thenReturn(offerSlots);
         when(boardMock.getOfferTrackPlayerSlot(any(Player.class))).thenReturn(offerSlots.getFirst());
+        when(turnManagerMock.getActivePlayer()).thenReturn(players.getFirst());
         // we need this because it gets called when we set the new Phase at the end
         when(turnManagerMock.getPhase()).thenReturn(new OfferResolutionPhase());
 
