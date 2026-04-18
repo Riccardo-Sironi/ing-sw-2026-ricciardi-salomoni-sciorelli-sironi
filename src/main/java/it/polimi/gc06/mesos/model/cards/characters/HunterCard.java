@@ -4,10 +4,27 @@ import it.polimi.gc06.mesos.model.cards.CardVisitor;
 import it.polimi.gc06.mesos.model.Era;
 
 public class HunterCard extends CharacterCard {
-    private final boolean hasFoodIcon;
+    private boolean hasFoodIcon;
 
+    public HunterCard(){
+        super();
+        this.hasFoodIcon = false;
+    }
+
+    /**
+     * For testing purpose only!
+     */
     public HunterCard(Era era, boolean hasFoodIcon) {
         super(era);
+        this.hasFoodIcon = hasFoodIcon;
+    }
+
+    /**
+     * Food icon setter. This should be called only once during initialization.
+     *
+     * @param hasFoodIcon must be true if the hunter has the food icon.
+     */
+    public void setHasFoodIcon(boolean hasFoodIcon) {
         this.hasFoodIcon = hasFoodIcon;
     }
 

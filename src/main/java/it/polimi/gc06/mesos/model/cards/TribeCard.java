@@ -3,9 +3,25 @@ package it.polimi.gc06.mesos.model.cards;
 import it.polimi.gc06.mesos.model.Era;
 
 public abstract class TribeCard implements Card {
-    private final Era era;
+    private Era era;
 
-    public TribeCard(Era era) {
+    public TribeCard(){
+        era = null;
+    }
+
+    /**
+     * For testing purpose only!
+     */
+    public TribeCard(Era era){
+        this.era = era;
+    }
+
+    /**
+     * Era setter. This should be called only once during initialization.
+     *
+     * @param era the era of the card.
+     */
+    public void setEra(Era era) {
         this.era = era;
     }
 

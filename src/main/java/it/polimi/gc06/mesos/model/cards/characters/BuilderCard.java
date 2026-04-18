@@ -4,12 +4,39 @@ import it.polimi.gc06.mesos.model.cards.CardVisitor;
 import it.polimi.gc06.mesos.model.Era;
 
 public class BuilderCard extends CharacterCard {
-    private final int prestige;
-    private final int foodDiscount;
+    private int prestige;
+    private int foodDiscount;
 
+    public BuilderCard() {
+        super();
+        this.prestige = -1;
+        this.foodDiscount = -1;
+    }
+
+    /**
+     * For testing purpose only!
+     */
     public BuilderCard(Era era, int prestige, int foodDiscount) {
         super(era);
         this.prestige = prestige;
+        this.foodDiscount = foodDiscount;
+    }
+
+    /**
+     * Prestige setter. This should be called only once during initialization.
+     *
+     * @param prestige the prestige given by the builder.
+     */
+    public void setPrestige(int prestige) {
+        this.prestige = prestige;
+    }
+
+    /**
+     * Food discount setter. This should be called only once during initialization.
+     *
+     * @param foodDiscount the food discount given by the builder.
+     */
+    public void setFoodDiscount(int foodDiscount) {
         this.foodDiscount = foodDiscount;
     }
 

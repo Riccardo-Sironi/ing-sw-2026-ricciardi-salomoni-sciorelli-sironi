@@ -16,7 +16,7 @@ class EventCardTest {
         private boolean isResolved = false;
 
         public DummyEventCard(Era era, boolean lastToBeResolved) {
-            super(era, lastToBeResolved);
+            super(lastToBeResolved, era);
         }
 
         @Override

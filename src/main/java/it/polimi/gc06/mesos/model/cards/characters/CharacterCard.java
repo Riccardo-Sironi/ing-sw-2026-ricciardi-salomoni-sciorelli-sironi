@@ -4,7 +4,15 @@ import it.polimi.gc06.mesos.model.cards.TribeCard;
 import it.polimi.gc06.mesos.model.Era;
 
 public abstract class CharacterCard extends TribeCard {
-    public CharacterCard(Era era) {
+
+    /**
+     * For testing purpose only!
+     */
+    public CharacterCard(Era era){
         super(era);
+    }
+
+    public CharacterCard(){
+        super();
     }
 }

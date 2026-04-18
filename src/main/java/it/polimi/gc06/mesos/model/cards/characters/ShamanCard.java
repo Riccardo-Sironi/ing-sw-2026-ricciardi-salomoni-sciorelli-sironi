@@ -4,10 +4,27 @@ import it.polimi.gc06.mesos.model.cards.CardVisitor;
 import it.polimi.gc06.mesos.model.Era;
 
 public class ShamanCard extends CharacterCard {
-    private final int nStars;
+    private int nStars;
 
+    public ShamanCard() {
+        super();
+        this.nStars = -1;
+    }
+
+    /**
+     * For testing purpose only!
+     */
     public ShamanCard(Era era, int nStars) {
         super(era);
+        this.nStars = nStars;
+    }
+
+    /**
+     * Number of star setter. This should be called only once during initialization.
+     *
+     * @param nStars the number of star on the shaman card.
+     */
+    public void setnStars(int nStars) {
         this.nStars = nStars;
     }
 

@@ -8,12 +8,26 @@ import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingRegistryKey;
 public class SustenanceEvent extends EventCard {
 
     private static final int defaultGathererDiscount = 3;
-    private final int numPrestigeLoss;
+    private int numPrestigeLoss;
 
-    public SustenanceEvent(Era era, int numPrestigeLoss)
+    public SustenanceEvent(Era era)
     {
-        super(era, true);
+        super(true);
+        numPrestigeLoss = -1;
+    }
+
+    public SustenanceEvent(Era era, int numPrestigeLoss) {
+        super(true, era);
         this.numPrestigeLoss = numPrestigeLoss;
+    }
+
+    /**
+     * Prestige lost setter. This should be called only once during initialization.
+     *
+     * @param numPrestigeLost the prestige lost if the player loses the event.
+     */
+    public void setNumPrestigeLost(int numPrestigeLost) {
+        this.numPrestigeLoss = numPrestigeLost;
     }
 
     /**

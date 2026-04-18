@@ -10,8 +10,16 @@ public abstract class EventCard extends TribeCard {
     private final boolean lastToBeResolved;
     private ModifierBuildingsRegistry buildingsRegistry;
 
-    public EventCard(Era era, boolean lastToBeResolved) {
+    /**
+     * For testing purpose only!
+     */
+    public EventCard(boolean lastToBeResolved, Era era){
         super(era);
+        this.lastToBeResolved = lastToBeResolved;
+    }
+
+    public EventCard(boolean lastToBeResolved) {
+        super();
         this.lastToBeResolved = lastToBeResolved;
     }
 

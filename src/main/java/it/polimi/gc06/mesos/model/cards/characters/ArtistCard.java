@@ -6,6 +6,9 @@ import it.polimi.gc06.mesos.model.Era;
 
 public class ArtistCard extends CharacterCard {
 
+    /**
+     * For testing purpose only!
+     */
     public ArtistCard(Era era) {
         super(era);
     }

@@ -4,10 +4,27 @@ import it.polimi.gc06.mesos.model.cards.CardVisitor;
 import it.polimi.gc06.mesos.model.Era;
 
 public class InventorCard extends CharacterCard {
-    private final InventionIcon icon;
+    private InventionIcon icon;
 
+    public InventorCard() {
+        super();
+        this.icon = null;
+    }
+
+    /**
+     * For testing purpose only!
+     */
     public InventorCard(Era era, InventionIcon icon) {
         super(era);
+        this.icon = icon;
+    }
+
+    /**
+     * Icon setter. This should be called only once during initialization.
+     *
+     * @param icon the invention icon of the inventor.
+     */
+    public void setIcon(InventionIcon icon) {
         this.icon = icon;
     }
 

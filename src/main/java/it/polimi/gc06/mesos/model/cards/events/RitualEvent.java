@@ -7,12 +7,39 @@ import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingRegistryKey;
 
 public class RitualEvent extends EventCard {
 
-    private final int numPrestigeGained;
-    private final int numPrestigeLost;
+    private int numPrestigeGained;
+    private int numPrestigeLost;
 
+    public RitualEvent() {
+        super(false);
+        this.numPrestigeGained = -1;
+        this.numPrestigeLost = -1;
+    }
+
+    /**
+     * For testing purpose only!
+     */
     public RitualEvent(Era era, int numPrestigeGained, int numPrestigeLost) {
-        super(era, false);
+        super(false, era);
         this.numPrestigeGained = numPrestigeGained;
+        this.numPrestigeLost = numPrestigeLost;
+    }
+
+    /**
+     * Prestige gained setter. This should be called only once during initialization.
+     *
+     * @param numPrestigeGained the prestige given by the event.
+     */
+    public void setNumPrestigeGained(int numPrestigeGained) {
+        this.numPrestigeGained = numPrestigeGained;
+    }
+
+    /**
+     * Prestige lost setter. This should be called only once during initialization.
+     *
+     * @param numPrestigeLost the prestige lost if the player loses the event.
+     */
+    public void setNumPrestigeLost(int numPrestigeLost) {
         this.numPrestigeLost = numPrestigeLost;
     }
 

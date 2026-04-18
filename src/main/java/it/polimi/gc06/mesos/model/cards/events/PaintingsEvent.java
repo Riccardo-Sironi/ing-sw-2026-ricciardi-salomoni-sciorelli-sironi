@@ -7,14 +7,51 @@ import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingRegistryKey;
 
 public class PaintingsEvent extends EventCard {
 
-    private final int numPrestigeGained;
-    private final int numPrestigeLost;
-    private final int minNumberOfArtists;
+    private int numPrestigeGained;
+    private int numPrestigeLost;
+    private int minNumberOfArtists;
 
+    public PaintingsEvent() {
+        super(false);
+        this.numPrestigeGained = -1;
+        this.numPrestigeLost = -1;
+        this.minNumberOfArtists = -1;
+    }
+
+    /**
+     * For testing purpose only!
+     */
     public PaintingsEvent(Era era, int numPrestigeGained, int numPrestigeLost, int minNumberOfArtists) {
-        super(era, false);
+        super(false, era);
         this.numPrestigeGained = numPrestigeGained;
         this.numPrestigeLost = numPrestigeLost;
+        this.minNumberOfArtists = minNumberOfArtists;
+    }
+
+    /**
+     * Prestige gained setter. This should be called only once during initialization.
+     *
+     * @param numPrestigeGained the prestige given by the event.
+     */
+    public void setNumPrestigeGained(int numPrestigeGained) {
+        this.numPrestigeGained = numPrestigeGained;
+    }
+
+    /**
+     * Prestige lost setter. This should be called only once during initialization.
+     *
+     * @param numPrestigeLost the prestige lost if the player loses the event.
+     */
+    public void setNumPrestigeLost(int numPrestigeLost) {
+        this.numPrestigeLost = numPrestigeLost;
+    }
+
+    /**
+     * Minimum number of artist setter. This should be called only once during initialization.
+     *
+     * @param minNumberOfArtists the minimum number of artist to not lose the event.
+     */
+    public void setMinNumberOfArtists(int minNumberOfArtists) {
         this.minNumberOfArtists = minNumberOfArtists;
     }
 

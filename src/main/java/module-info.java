@@ -10,7 +10,6 @@ module it.polimi.gc06.mesos {
     requires java.rmi;
 
     opens it.polimi.gc06.mesos to javafx.fxml;
-    exports it.polimi.gc06.mesos;
     exports it.polimi.gc06.mesos.model;
     opens it.polimi.gc06.mesos.model to javafx.fxml, com.fasterxml.jackson.databind;
     exports it.polimi.gc06.mesos.model.cards;

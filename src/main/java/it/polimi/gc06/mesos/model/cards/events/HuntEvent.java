@@ -7,11 +7,28 @@ import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingRegistryKey;
 
 public class HuntEvent extends EventCard {
 
-    private final int numPrestigeGained;
+    private int numPrestigeGained;
 
     //CONSTRUCTOR
+    public HuntEvent() {
+        super(false);
+        this.numPrestigeGained = -1;
+    }
+
+    /**
+     * For testing purpose only!
+     */
     public HuntEvent(Era era, int numPrestigeGained) {
-        super(era, false);
+        super(false, era);
+        this.numPrestigeGained = numPrestigeGained;
+    }
+
+    /**
+     * Prestige setter. This should be called only once during initialization.
+     *
+     * @param numPrestigeGained the prestige gained for each hunter.
+     */
+    public void setNumPrestigeGained(int numPrestigeGained) {
         this.numPrestigeGained = numPrestigeGained;
     }
 

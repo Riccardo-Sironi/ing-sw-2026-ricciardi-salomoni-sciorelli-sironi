@@ -4,8 +4,16 @@ import it.polimi.gc06.mesos.model.cards.CardVisitor;
 import it.polimi.gc06.mesos.model.Era;
 
 public class GathererCard extends CharacterCard {
+
+    /**
+     * For testing purpose only!
+     */
     public GathererCard(Era era) {
         super(era);
+    }
+
+    public GathererCard() {
+        super();
     }
 
     /**
