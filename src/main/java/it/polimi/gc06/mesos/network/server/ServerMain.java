@@ -32,8 +32,13 @@ public class ServerMain {
 
             try {
                 RMIServerInterfaceImpl rmiImpl = new RMIServerInterfaceImpl(sharedManager);
-                Registry registry = LocateRegistry.createRegistry(RMIPortNumber);
-                registry.rebind("MesosServer", rmiImpl);
+                Registry registry;
+                try {
+                    registry = LocateRegistry.createRegistry(RMIPortNumber);
+                } catch (Exception e) {
+                    registry = LocateRegistry.getRegistry(RMIPortNumber);
+                }
+                registry.rebind("MesosRMIServer", rmiImpl);
                 System.out.println("RMI started on port " + RMIPortNumber);
             } catch (Exception e) {
                 System.err.println("Failed to start RMI server component on port " + RMIPortNumber + ".");
@@ -53,6 +58,7 @@ public class ServerMain {
         } catch (Exception e) {
             System.err.println("Unexpected error while starting server components.");
             e.printStackTrace();
+
         }
     }
 }

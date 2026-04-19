@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.polimi.gc06.mesos.controller.GameController;
 import it.polimi.gc06.mesos.network.server.MatchManager;
+import it.polimi.gc06.mesos.network.server.VirtualClient;
+import it.polimi.gc06.mesos.network.socket.commands.Command;
 
 import java.beans.PropertyChangeEvent;
 import java.io.BufferedReader;
@@ -14,8 +16,9 @@ import java.net.Socket;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-public class ClientManager implements Runnable {
+public class ClientManager implements VirtualClient {
 
+    private BlockingQueue<Command> actionQueue;
     private final Socket socket;
     private final String nickname;
     private final MatchManager sharedManager;
@@ -35,6 +38,7 @@ public class ClientManager implements Runnable {
         inFromClient = null;
         outToClient = null;
         closed = false;
+        actionQueue = null;
     }
 
     /**
@@ -52,11 +56,17 @@ public class ClientManager implements Runnable {
     }
 
     @Override
-    public void run() {
+    public void setActionQueue(BlockingQueue<Command> queue) {
+        this.actionQueue = queue;
+    }
 
+    @Override
+    public void run() {
         //prepares the sender that responds to listener notice, necessary to ensure thread-safe notice
         Thread sender = new Thread(this::senderLoop);
         sender.start();
+
+        ObjectMapper mapper = new ObjectMapper();
 
         try {
             //prepares input object
@@ -69,9 +79,31 @@ public class ClientManager implements Runnable {
                 //handling client input
                 System.out.println("'" + nickname + "' client sent: " + input);
                 try {
-                    controller.parse(input);
+
+                    Command command = mapper.readValue(input, Command.class);
+
+                    //TODO Può avere senso obbligare che il sender sia il player stesso? Evitiamo chiamate fasulle
+                    //command.setNickname(this.nickname);
+
+                    if (actionQueue != null) {
+                        actionQueue.put(command);
+                    } else {
+                        sendErrorMessage("The match hasn't started yet!");
+                    }
                 } catch (JsonProcessingException e) {
                     System.err.print("Error on '" + nickname + "' client request: ");
+
+                    //TODO Questo potrebbe essere un modo per propagare l'errore al sender
+                    sendErrorMessage(e.getMessage());
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    break;
+                } catch (Exception e) {
+
+                    //TODO Questo potrebbe essere un modo per propagare l'errore al sender
+                    sendErrorMessage(e.getMessage());
+                    System.err.println("['" + nickname + "'] Unexpected error: " + e.getMessage());
                     e.printStackTrace();
                 }
             }
@@ -82,6 +114,17 @@ public class ClientManager implements Runnable {
 
         closeConnection();
     }
+
+    @Override
+    public void sendErrorMessage(String message) {
+        try {
+            // Fake event to notify the Error
+            noticeQueue.put(new PropertyChangeEvent(this, "ACTION_ERROR", null, message));
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
 
     //it should never be called directly! only usable by a different Thread
     private void senderLoop() {

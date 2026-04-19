@@ -1,9 +1,6 @@
 package it.polimi.gc06.mesos.network.server;
 
-import it.polimi.gc06.mesos.network.socket.ClientManager;
-
 import java.io.IOException;
-import java.net.Socket;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -17,7 +14,7 @@ public class MatchManager {
     private final static AtomicInteger idGenerator = new AtomicInteger();
 
 
-    public synchronized boolean login(String nick) {
+    public boolean login(String nick) {
         return loggedUsers.add(nick);
     }
 
@@ -36,7 +33,7 @@ public class MatchManager {
         return newMatch;
     }
 
-    public synchronized String getAvailableMatchesString() {
+    public String getAvailableMatchesString() {
         return activeMatches.values().stream()
                 .filter(m -> !m.isFull() || !m.hasStarted())
                 .map(m -> m.getMatchId() + ":"
@@ -45,13 +42,13 @@ public class MatchManager {
                 .collect(Collectors.joining(","));
     }
 
-    public synchronized boolean joinMatch(int matchId, Socket clientSocket, String nickname) {
+    public boolean joinMatch(int matchId, VirtualClient client) {
         Match match = activeMatches.values().stream().filter(m -> m.getMatchId() == matchId).findFirst().orElse(null);
         if (match == null) return false;
         synchronized (match) {
             if (match.isFull() || match.hasStarted()) return false;
             try {
-                match.addPlayer(new ClientManager(clientSocket, nickname, this));
+                match.addPlayer(client);
                 return true;
             } catch (IOException _) {
                 activeMatches.values().remove(match); //match is not safe

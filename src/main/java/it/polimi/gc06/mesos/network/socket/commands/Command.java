@@ -26,7 +26,20 @@ public class Command {
         this.nickname = nickname;
     }
 
-    public void execute(GameController controller) {
+    public String getNickname() {
+        return nickname;
+    }
+
+    public static Command create(String nickname, int index, Request request) {
+        Command command = new Command();
+        command.setNickname(nickname);
+        command.setIndex(index);
+        command.setRequest(request);
+        return command;
+    }
+
+
+    public void execute(GameController controller) throws Exception {
         request.call(controller, nickname, index);
     }
 }

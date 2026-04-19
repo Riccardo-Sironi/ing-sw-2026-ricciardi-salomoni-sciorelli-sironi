@@ -1,7 +1,5 @@
 package it.polimi.gc06.mesos.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import it.polimi.gc06.mesos.gameExceptions.IllegalGameActionException;
 import it.polimi.gc06.mesos.gameExceptions.IllegalPhaseActionException;
 import it.polimi.gc06.mesos.model.GameModel;
@@ -13,7 +11,6 @@ import it.polimi.gc06.mesos.model.cards.characters.CharacterCard;
 import it.polimi.gc06.mesos.model.cards.events.EventCard;
 import it.polimi.gc06.mesos.model.gameBoard.TileSlot;
 import it.polimi.gc06.mesos.model.gameTurnManager.TurnManager;
-import it.polimi.gc06.mesos.network.socket.commands.Command;
 import it.polimi.gc06.mesos.network.socket.infos.CardPickedInfo;
 import it.polimi.gc06.mesos.network.socket.infos.TotemMovedInfo;
 
@@ -40,34 +37,31 @@ public class GameController {
      *
      * @param playerNickname the player performing the action.
      * @param tileIndex      the index of the tile where the player wants to be placed.
+     * @throws IllegalPhaseActionException if the action is not allowed in the current phase or if the player is trying to perform an action that is not his turn.
      */
-    public void handleTotemOfferTilePlacement(String playerNickname, int tileIndex) {
+    public void handleTotemOfferTilePlacement(String playerNickname, int tileIndex) throws IllegalPhaseActionException {
         TurnManager turnManager = model.getTurnManager();
-        try {
-            Player activePlayer = turnManager.getActivePlayer();
+        Player activePlayer = turnManager.getActivePlayer();
 
-            if (!activePlayer.getNickname().equals(playerNickname)) {
-                throw new IllegalPhaseActionException("It is not " + playerNickname + " turn !");
-            }
-
-            List<TileSlot> offerTrack = model.getBoard().getOfferTrack();
-            if (tileIndex >= offerTrack.size() || tileIndex < 0) {
-                throw new IllegalPhaseActionException("Requested tile does not exist !");
-            }
-            TileSlot tile = offerTrack.get(tileIndex);
-
-            if (tile.getPlayer() != null) {
-                throw new IllegalPhaseActionException("The tile is already occupied !");
-            }
-
-            turnManager.getPhase().placeTotem(turnManager, activePlayer, tile, model.getBoard());
-
-            TotemMovedInfo info = new TotemMovedInfo(playerNickname, tileIndex);
-            support.firePropertyChange("totemMoved", null, info);
-
-        } catch (IllegalPhaseActionException e) {
-            System.err.println("Error for " + playerNickname + ": " + e.getMessage()); // TODO : communicate the error to the view
+        if (!activePlayer.getNickname().equals(playerNickname)) {
+            throw new IllegalPhaseActionException("It is not " + playerNickname + " turn !");
         }
+
+        List<TileSlot> offerTrack = model.getBoard().getOfferTrack();
+        if (tileIndex >= offerTrack.size() || tileIndex < 0) {
+            throw new IllegalPhaseActionException("Requested tile does not exist !");
+        }
+        TileSlot tile = offerTrack.get(tileIndex);
+
+        if (tile.getPlayer() != null) {
+            throw new IllegalPhaseActionException("The tile is already occupied !");
+        }
+
+        turnManager.getPhase().placeTotem(turnManager, activePlayer, tile, model.getBoard());
+
+        TotemMovedInfo info = new TotemMovedInfo(playerNickname, tileIndex);
+        support.firePropertyChange("totemMoved", null, info);
+
     }
 
     /**
@@ -75,39 +69,37 @@ public class GameController {
      *
      * @param playerNickname the player performing the action.
      * @param cardIndex      the index of the card that the player wants to pick.
+     * @throws IllegalPhaseActionException if the player is trying to perform an action that is not his turn.
+     * @throws IllegalGameActionException  if the action is not allowed in the current phase
+     * @throws IndexOutOfBoundsException   if the card index is out of bounds.
      */
-    public void handleCardPickBottomRow(String playerNickname, int cardIndex) {
+    public void handleCardPickBottomRow(String playerNickname, int cardIndex) throws IllegalGameActionException, IndexOutOfBoundsException {
         TurnManager turnManager = model.getTurnManager();
+        Player activePlayer = turnManager.getActivePlayer();
+        if (!activePlayer.getNickname().equals(playerNickname)) {
+            throw new IllegalPhaseActionException("It's not " + playerNickname + " turn !");
+        }
 
-        try {
-            Player activePlayer = turnManager.getActivePlayer();
-            if (!activePlayer.getNickname().equals(playerNickname)) {
-                throw new IllegalPhaseActionException("It's not " + playerNickname + " turn !");
+        TribeCard card = model.getBoard().getBottomCardFromIndex(cardIndex);
+        CardPickedInfo info = new CardPickedInfo(playerNickname, card); //prepares the info if needed
+
+        CardVisitor cardPickerVisitor = new CardVisitor() {
+            @Override
+            public void visit(CharacterCard card) {
+                turnManager.getPhase().pickCardFromBottom(turnManager, activePlayer, card, model.getBoard());
             }
 
-            TribeCard card = model.getBoard().getBottomCardFromIndex(cardIndex);
-            CardPickedInfo info = new CardPickedInfo(playerNickname, card); //prepares the info if needed
+            @Override
+            public void visit(EventCard card) throws IllegalGameActionException {
+                throw new IllegalGameActionException("Event cards cannot be picked!");
+            }
+        };
 
-            CardVisitor cardPickerVisitor = new CardVisitor() {
-                @Override
-                public void visit(CharacterCard card) {
-                    turnManager.getPhase().pickCardFromBottom(turnManager, activePlayer, card, model.getBoard());
-                }
+        card.accept(cardPickerVisitor);
 
-                @Override
-                public void visit(EventCard card) throws IllegalGameActionException {
-                    throw new IllegalGameActionException("Event cards cannot be picked!");
-                }
-            };
+        //if the operation was not successful the notice won't be sent
+        support.firePropertyChange("cardPicked", null, info);
 
-            card.accept(cardPickerVisitor);
-
-            //if the operation was not successful the notice won't be sent
-            support.firePropertyChange("cardPicked", null, info);
-        } catch (IllegalGameActionException | IndexOutOfBoundsException e) {
-            System.err.println("Error for " + playerNickname + ": " + e.getMessage());
-            // TODO: Inviare un pacchetto di Errore al Client
-        }
     }
 
     /**
@@ -115,39 +107,38 @@ public class GameController {
      *
      * @param playerNickname the player performing the action.
      * @param cardIndex      the index of the card that the player wants to pick.
+     * @throws IllegalPhaseActionException if the player is trying to perform an action that is not his turn.
+     * @throws IllegalGameActionException  if the action is not allowed in the current phase or if the player is trying to perform an action that is not his turn.
+     * @throws IndexOutOfBoundsException   if the card index is out of bounds.
      */
-    public void handleCardPickTopRow(String playerNickname, int cardIndex) {
+    public void handleCardPickTopRow(String playerNickname, int cardIndex) throws IllegalGameActionException, IndexOutOfBoundsException {
         TurnManager turnManager = model.getTurnManager();
 
-        try {
-            Player activePlayer = turnManager.getActivePlayer();
-            if (!activePlayer.getNickname().equals(playerNickname)) {
-                throw new IllegalPhaseActionException("It's not " + playerNickname + " turn !");
+        Player activePlayer = turnManager.getActivePlayer();
+        if (!activePlayer.getNickname().equals(playerNickname)) {
+            throw new IllegalPhaseActionException("It's not " + playerNickname + " turn !");
+        }
+
+        TribeCard card = model.getBoard().getTopCardFromIndex(cardIndex);
+        CardPickedInfo info = new CardPickedInfo(playerNickname, card); //prepares the info if needed
+
+        CardVisitor cardPickerVisitor = new CardVisitor() {
+            @Override
+            public void visit(CharacterCard card) {
+                turnManager.getPhase().pickCardFromTop(turnManager, activePlayer, card, model.getBoard());
             }
 
-            TribeCard card = model.getBoard().getTopCardFromIndex(cardIndex);
-            CardPickedInfo info = new CardPickedInfo(playerNickname, card); //prepares the info if needed
+            @Override
+            public void visit(EventCard card) throws IllegalGameActionException {
+                throw new IllegalGameActionException("Event cards cannot be picked!");
+            }
+        };
 
-            CardVisitor cardPickerVisitor = new CardVisitor() {
-                @Override
-                public void visit(CharacterCard card) {
-                    turnManager.getPhase().pickCardFromTop(turnManager, activePlayer, card, model.getBoard());
-                }
+        card.accept(cardPickerVisitor);
 
-                @Override
-                public void visit(EventCard card) throws IllegalGameActionException {
-                    throw new IllegalGameActionException("Event cards cannot be picked!");
-                }
-            };
+        //if the operation was not successful the notice won't be sent
+        support.firePropertyChange("cardPicked", null, info);
 
-            card.accept(cardPickerVisitor);
-
-            //if the operation was not successful the notice won't be sent
-            support.firePropertyChange("cardPicked", null, info);
-        } catch (IllegalGameActionException | IndexOutOfBoundsException e) {
-            System.err.println("Error for " + playerNickname + ": " + e.getMessage());
-            // TODO: Inviare un pacchetto di Errore al Client
-        }
     }
 
     /**
@@ -155,28 +146,27 @@ public class GameController {
      *
      * @param playerNickname the player performing the action.
      * @param cardIndex      the index of the building that the player wants to pick.
+     * @throws IllegalPhaseActionException if the player is trying to perform an action that is not his turn.
+     * @throws IllegalGameActionException  if the action is not allowed in the current phase or if the player is trying to perform an action that is not his turn.
+     * @throws IndexOutOfBoundsException   if the card index is out of bounds.
      */
-    public void handleBuildingPickBottomRow(String playerNickname, int cardIndex) {
+    public void handleBuildingPickBottomRow(String playerNickname, int cardIndex) throws IllegalGameActionException, IndexOutOfBoundsException {
         TurnManager turnManager = model.getTurnManager();
 
-        try {
-            Player activePlayer = turnManager.getActivePlayer();
 
-            if (!activePlayer.getNickname().equals(playerNickname)) {
-                throw new IllegalPhaseActionException("It's not " + playerNickname + " turn !");
-            }
+        Player activePlayer = turnManager.getActivePlayer();
 
-            BuildingCard card = model.getBoard().getBottomBuildingFromIndex(cardIndex);
-            CardPickedInfo info = new CardPickedInfo(playerNickname, card); //prepares the info if needed
-
-            turnManager.getPhase().pickCardFromBottom(turnManager, activePlayer, card, model.getBoard());
-
-            //if the operation was not successful the notice won't be sent
-            support.firePropertyChange("buildingPicked", null, info);
-
-        } catch (IllegalGameActionException | IndexOutOfBoundsException e) {
-            System.err.println("Error for " + playerNickname + ": " + e.getMessage()); // TODO : communicate the error to the view
+        if (!activePlayer.getNickname().equals(playerNickname)) {
+            throw new IllegalPhaseActionException("It's not " + playerNickname + " turn !");
         }
+
+        BuildingCard card = model.getBoard().getBottomBuildingFromIndex(cardIndex);
+        CardPickedInfo info = new CardPickedInfo(playerNickname, card); //prepares the info if needed
+
+        turnManager.getPhase().pickCardFromBottom(turnManager, activePlayer, card, model.getBoard());
+
+        //if the operation was not successful the notice won't be sent
+        support.firePropertyChange("buildingPicked", null, info);
     }
 
     /**
@@ -184,42 +174,27 @@ public class GameController {
      *
      * @param playerNickname the player performing the action.
      * @param cardIndex      the index of the building that the player wants to pick.
+     * @throws IllegalPhaseActionException if the player is trying to perform an action that is not his turn.
+     * @throws IllegalGameActionException  if the action is not allowed in the current phase or if the player is trying to perform an action that is not his turn.
+     * @throws IndexOutOfBoundsException   if the card index is out of bounds.
      */
-    public void handleBuildingPickTopRow(String playerNickname, int cardIndex) {
+    public void handleBuildingPickTopRow(String playerNickname, int cardIndex) throws IllegalGameActionException, IndexOutOfBoundsException {
         TurnManager turnManager = model.getTurnManager();
+        Player activePlayer = turnManager.getActivePlayer();
 
-        try {
-            Player activePlayer = turnManager.getActivePlayer();
-
-            if (!activePlayer.getNickname().equals(playerNickname)) {
-                throw new IllegalPhaseActionException("It's not " + playerNickname + " turn !");
-            }
-
-            BuildingCard card = model.getBoard().getTopBuildingFromIndex(cardIndex);
-            CardPickedInfo info = new CardPickedInfo(playerNickname, card); //prepares the info if needed
-
-            turnManager.getPhase().pickCardFromTop(turnManager, activePlayer, card, model.getBoard());
-
-            //if the operation was not successful the notice won't be sent
-            support.firePropertyChange("buildingPicked", null, info);
-
-        } catch (IllegalGameActionException | IndexOutOfBoundsException e) {
-            System.err.println("Error for " + playerNickname + ": " + e.getMessage()); // TODO : communicate the error to the view
+        if (!activePlayer.getNickname().equals(playerNickname)) {
+            throw new IllegalPhaseActionException("It's not " + playerNickname + " turn !");
         }
+
+        BuildingCard card = model.getBoard().getTopBuildingFromIndex(cardIndex);
+        CardPickedInfo info = new CardPickedInfo(playerNickname, card); //prepares the info if needed
+
+        turnManager.getPhase().pickCardFromTop(turnManager, activePlayer, card, model.getBoard());
+
+        //if the operation was not successful the notice won't be sent
+        support.firePropertyChange("buildingPicked", null, info);
     }
 
-    /**
-     * Parses a command and executes it.
-     * Example of valid JSON string: "{\"request\": \"TOP_CARD_REQUEST\", \"index\": 2, \"nickname\": \"Marco\"}"
-     *
-     * @param s the string that needs to be parsed to a command.
-     * @throws JsonProcessingException if parsing goes wrong due to JSON errors.
-     */
-    public synchronized void parse(String s) throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
-        Command command = mapper.readValue(s, Command.class);
-        command.execute(this);
-    }
 
     public boolean isGameFinished() {
         return model.getBoard().isEndGame();
