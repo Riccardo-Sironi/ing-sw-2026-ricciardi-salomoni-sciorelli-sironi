@@ -32,5 +32,9 @@ import it.polimi.gc06.mesos.model.cards.events.SustenanceEvent;
 })
 
 public interface Card {
+
     public void accept(CardVisitor visitor);
+
+    public int getMinPlayers();
+
 }

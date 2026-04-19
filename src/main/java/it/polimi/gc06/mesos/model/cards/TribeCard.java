@@ -31,7 +31,18 @@ public abstract class TribeCard implements Card {
      *
      * @param visitor the visitor that will visit the card.
      */
+    @Override
     public abstract void accept(CardVisitor visitor);
+
+    /**
+     * MinPlayers getter.
+     *
+     * @return the minimum number of player to use this card
+     */
+    @Override
+    public int getMinPlayers(){
+        return 2;
+    }
 
     /**
      * This method is used to know the era of the card.
