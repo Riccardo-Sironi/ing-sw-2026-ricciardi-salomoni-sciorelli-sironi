@@ -101,14 +101,4 @@ public abstract class BuildingCard implements Card {
      */
     public abstract void accept(CardVisitor visitor);
 
-    /**
-     * MinPlayers getter.
-     *
-     * @return the minimum number of player to use this card
-     */
-    @Override
-    public int getMinPlayers(){
-        return 2;
-    }
-
 }

@@ -17,6 +17,7 @@ import it.polimi.gc06.mesos.model.gameTurnManager.TurnManager;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ModelInstancesManager {
 
@@ -27,14 +28,16 @@ public class ModelInstancesManager {
         if(nicknames == null) throw new IllegalArgumentException();
 
         int numOfPlayers = nicknames.size();
-        List<Card> cards;
+        List<Card> cards = new ArrayList<>();
         List<ModifierBuildingCard> modifierCards;
         ObjectMapper mapper = new ObjectMapper();
 
         //loads normal cards
         InputStream input = getClass().getResourceAsStream(JSON_PATH + "cards.json");
-        cards = mapper.readValue(input, new TypeReference<List<Card>>() {
-        });
+        Map<String,List<Card>> cardMap = mapper.readValue(input, new TypeReference<Map<String,List<Card>>>() {});
+        for(int i=2; i < numOfPlayers; i++){
+            cards.addAll(cardMap.get(String.valueOf(i)));
+        }
 
         //loads modifierBuildingCards
         input = getClass().getResourceAsStream(JSON_PATH + "modifierCards.json");
@@ -83,14 +86,12 @@ public class ModelInstancesManager {
 
         Board board = new Board(turnOrderTile, offerTrack);
 
-        GameModel model = new GameModel(board,
+        return new GameModel(board,
                 sorter.getBuildingCards(),
                 sorter.getTribeCards(),
                 sorter.getFinalEvents(),
                 players,
                 turnManager);
-
-        return model;
     }
 
 }
