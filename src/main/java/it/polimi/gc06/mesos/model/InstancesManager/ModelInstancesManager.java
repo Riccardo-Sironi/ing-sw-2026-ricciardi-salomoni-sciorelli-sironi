@@ -88,12 +88,16 @@ public class ModelInstancesManager {
 
         Board board = new Board(turnOrderTile, offerTrack);
 
-        return new GameModel(board,
+        GameModel model = new GameModel(board,
                 sorter.getBuildingCards(),
                 sorter.getTribeCards(),
                 sorter.getFinalEvents(),
                 players,
                 turnManager);
+
+        model.getTurnManager().setGameModel(model);
+
+        return model;
     }
 
 }
