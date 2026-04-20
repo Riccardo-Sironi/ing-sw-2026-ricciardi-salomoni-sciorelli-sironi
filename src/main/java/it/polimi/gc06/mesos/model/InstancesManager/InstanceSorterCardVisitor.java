@@ -4,7 +4,9 @@ import it.polimi.gc06.mesos.model.Era;
 import it.polimi.gc06.mesos.model.cards.CardVisitor;
 import it.polimi.gc06.mesos.model.cards.TribeCard;
 import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
+import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingCard;
 import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingsRegistry;
+import it.polimi.gc06.mesos.model.cards.characters.*;
 import it.polimi.gc06.mesos.model.cards.events.EventCard;
 import it.polimi.gc06.mesos.model.cards.events.RitualEvent;
 import it.polimi.gc06.mesos.model.cards.events.SustenanceEvent;
@@ -20,9 +22,10 @@ public class InstanceSorterCardVisitor extends CardVisitor {
     private final ModifierBuildingsRegistry registry;
 
     public InstanceSorterCardVisitor(ModifierBuildingsRegistry registry) {
-        this.tribeCards = new EnumMap<Era,ArrayList<TribeCard>>(Era.class);;
-        this.buildingCards = new EnumMap<Era,ArrayList<BuildingCard>>(Era.class);
-        for(Era era : Era.values()){
+        this.tribeCards = new EnumMap<Era, ArrayList<TribeCard>>(Era.class);
+        ;
+        this.buildingCards = new EnumMap<Era, ArrayList<BuildingCard>>(Era.class);
+        for (Era era : Era.values()) {
             this.tribeCards.put(era, new ArrayList<TribeCard>());
             this.buildingCards.put(era, new ArrayList<BuildingCard>());
         }
@@ -41,22 +44,52 @@ public class InstanceSorterCardVisitor extends CardVisitor {
     }
 
     @Override
-    public void visit(EventCard card){
+    public void visit(HunterCard card) {
+        tribeCards.get(card.getEra()).add(card);
+    }
+
+    @Override
+    public void visit(ShamanCard card) {
+        tribeCards.get(card.getEra()).add(card);
+    }
+
+    @Override
+    public void visit(ArtistCard card) {
+        tribeCards.get(card.getEra()).add(card);
+    }
+
+    @Override
+    public void visit(BuilderCard card) {
+        tribeCards.get(card.getEra()).add(card);
+    }
+
+    @Override
+    public void visit(InventorCard card) {
+        tribeCards.get(card.getEra()).add(card);
+    }
+
+    @Override
+    public void visit(GathererCard card) {
+        tribeCards.get(card.getEra()).add(card);
+    }
+
+    @Override
+    public void visit(EventCard card) {
         card.setRegistry(registry);
         tribeCards.get(card.getEra()).add(card);
     }
 
     @Override
-    public void visit(RitualEvent card){
+    public void visit(RitualEvent card) {
         card.setRegistry(registry);
-        if(card.getEra().equals(Era.ERA_III)) finalEvents.add(card);
+        if (card.getEra().equals(Era.ERA_III)) finalEvents.add(card);
         else tribeCards.get(card.getEra()).add(card);
     }
 
     @Override
-    public void visit(SustenanceEvent card){
+    public void visit(SustenanceEvent card) {
         card.setRegistry(registry);
-        if(card.getEra().equals(Era.ERA_III)) finalEvents.add(card);
+        if (card.getEra().equals(Era.ERA_III)) finalEvents.add(card);
         else tribeCards.get(card.getEra()).add(card);
     }
 

@@ -25,7 +25,7 @@ public class ModelInstancesManager {
 
     public GameModel createGame(List<String> nicknames) throws IOException, IllegalArgumentException {
 
-        if(nicknames == null) throw new IllegalArgumentException();
+        if (nicknames == null) throw new IllegalArgumentException();
 
         int numOfPlayers = nicknames.size();
         List<Card> cards = new ArrayList<>();
@@ -34,8 +34,9 @@ public class ModelInstancesManager {
 
         //loads normal cards
         InputStream input = getClass().getResourceAsStream(JSON_PATH + "cards.json");
-        Map<String,List<Card>> cardMap = mapper.readValue(input, new TypeReference<Map<String,List<Card>>>() {});
-        for(int i=2; i < numOfPlayers; i++){
+        Map<String, List<Card>> cardMap = mapper.readValue(input, new TypeReference<Map<String, List<Card>>>() {
+        });
+        for (int i = 2; i <= numOfPlayers; i++) {
             cards.addAll(cardMap.get(String.valueOf(i)));
         }
 
@@ -56,7 +57,8 @@ public class ModelInstancesManager {
         //creates players
         ArrayList<Player> players = new ArrayList<Player>();
         List<Color> colors = new ArrayList<>(Arrays.asList(Color.values()));
-        for (int i = 0; i < numOfPlayers; i++) players.add(new Player(nicknames.removeFirst(), colors.removeFirst(), registry));
+        for (int i = 0; i < numOfPlayers; i++)
+            players.add(new Player(nicknames.removeFirst(), colors.removeFirst(), registry));
 
         //loads turn order tile
         input = getClass().getResourceAsStream(JSON_PATH + "turnOrderTileConfigs.json");

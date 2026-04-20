@@ -1,96 +1,418 @@
-[
-  {
-    "2": [
-      { "class": "ShamanCard", "era": "ERA_I", "nStars": 2 },
-      { "class": "ShamanCard", "era": "ERA_I", "nStars": 1 },
-      { "class": "ShamanCard", "era": "ERA_II", "nStars": 2 },
-      { "class": "ShamanCard", "era": "ERA_II", "nStars": 2 },
-      { "class": "ShamanCard", "era": "ERA_III", "nStars": 3 },
-      { "class": "ShamanCard", "era": "ERA_III", "nStars": 2 },
-      { "class": "ShamanCard", "era": "ERA_III", "nStars": 3 },
-      { "class": "BuilderCard", "era": "ERA_I", "foodDiscount": 1, "prestige": 3},
-      { "class": "BuilderCard", "era": "ERA_I", "foodDiscount": 2, "prestige": 0},
-      { "class": "BuilderCard", "era": "ERA_I", "foodDiscount": 1, "prestige": 2},
-      { "class": "BuilderCard", "era": "ERA_II", "foodDiscount": 1, "prestige": 4},
-      { "class": "BuilderCard", "era": "ERA_II", "foodDiscount": 2, "prestige": 1},
-      { "class": "BuilderCard", "era": "ERA_II", "foodDiscount": 2, "prestige": 3},
-      { "class": "BuilderCard", "era": "ERA_III", "foodDiscount": 1, "prestige": 5},
-      { "class": "BuilderCard", "era": "ERA_III", "foodDiscount": 2, "prestige": 3},
-      { "class": "BuilderCard", "era": "ERA_III", "foodDiscount": 2, "prestige": 2},
-      { "class": "InventorCard", "era": "ERA_I", "icon": "HIDE" },
-      { "class": "InventorCard", "era": "ERA_I", "icon": "BOAT" },
-      { "class": "InventorCard", "era": "ERA_I", "icon": "ARROWHEAD" },
-      { "class": "InventorCard", "era": "ERA_I", "icon": "BREAD" },
-      { "class": "InventorCard", "era": "ERA_II", "icon": "FIGURE" },
-      { "class": "InventorCard", "era": "ERA_II", "icon": "ROPE" },
-      { "class": "InventorCard", "era": "ERA_II", "icon": "FLUTE" },
-      { "class": "InventorCard", "era": "ERA_II", "icon": "BOWL" },
-      { "class": "InventorCard", "era": "ERA_II", "icon": "HIDE" },
-      { "class": "InventorCard", "era": "ERA_III", "icon": "FIGURE" },
-      { "class": "InventorCard", "era": "ERA_III", "icon": "HOOK" },
-      { "class": "InventorCard", "era": "ERA_III", "icon": "NECKLACE" },
-      { "class": "InventorCard", "era": "ERA_III", "icon": "BREAD" },
-      { "class": "ArtistCard", "era": "ERA_I" },
-      { "class": "ArtistCard", "era": "ERA_I" },
-      { "class": "ArtistCard", "era": "ERA_I" },
-      { "class": "ArtistCard", "era": "ERA_II" },
-      { "class": "ArtistCard", "era": "ERA_II" },
-      { "class": "ArtistCard", "era": "ERA_II" },
-      { "class": "ArtistCard", "era": "ERA_II" },
-      { "class": "ArtistCard", "era": "ERA_II" },
-      { "class": "ArtistCard", "era": "ERA_II" },
-      { "class": "GathererCard", "era": "ERA_I" },
-      { "class": "GathererCard", "era": "ERA_I" },
-      { "class": "GathererCard", "era": "ERA_II" },
-      { "class": "GathererCard", "era": "ERA_III" },
-      { "class": "HunterCard", "era": "ERA_I", "hasFoodIcon": true },
-      { "class": "HunterCard", "era": "ERA_I", "hasFoodIcon": true },
-      { "class": "HunterCard", "era": "ERA_I", "hasFoodIcon": false },
-      { "class": "HunterCard", "era": "ERA_II", "hasFoodIcon": true },
-      { "class": "HunterCard", "era": "ERA_II", "hasFoodIcon": false },
-      { "class": "HunterCard", "era": "ERA_II", "hasFoodIcon": false },
-      { "class": "HunterCard", "era": "ERA_III", "hasFoodIcon": true },
-      { "class": "HunterCard", "era": "ERA_III", "hasFoodIcon": false },
-      { "class": "HunterCard", "era": "ERA_III", "hasFoodIcon": false }
-    ],
-    "3": [
-      { "class": "ShamanCard", "era": "ERA_III", "nStars": 2 },
-      { "class": "BuilderCard", "era": "ERA_II", "foodDiscount": 1, "prestige": 2},
-      { "class": "InventorCard", "era": "ERA_III", "icon": "BOAT" },
-      { "class": "InventorCard", "era": "ERA_III", "icon": "ARROWHEAD" },
-      { "class": "ArtistCard", "era": "ERA_I" },
-      { "class": "ArtistCard", "era": "ERA_II" },
-      { "class": "GathererCard", "era": "ERA_I" },
-      { "class": "GathererCard", "era": "ERA_II" },
-      { "class": "HunterCard", "era": "ERA_I", "hasFoodIcon": false },
-      { "class": "HunterCard", "era": "ERA_I", "hasFoodIcon": false },
-      { "class": "HunterCard", "era": "ERA_II", "hasFoodIcon": true }
-    ],
-    "4": [
-      { "class": "ShamanCard", "era": "ERA_I", "nStars": 1 },
-      { "class": "ShamanCard", "era": "ERA_III", "nStars": 3 },
-      { "class": "InventorCard", "era": "ERA_I", "icon": "ROPE" },
-      { "class": "InventorCard", "era": "ERA_I", "icon": "FLUTE" },
-      { "class": "InventorCard", "era": "ERA_I", "icon": "BOWL" },
-      { "class": "InventorCard", "era": "ERA_II", "icon": "HOOK" },
-      { "class": "InventorCard", "era": "ERA_III", "icon": "NECKLACE" },
-      { "class": "ArtistCard", "era": "ERA_I" },
-      { "class": "GathererCard", "era": "ERA_II" },
-      { "class": "GathererCard", "era": "ERA_III" },
-      { "class": "HunterCard", "era": "ERA_II", "hasFoodIcon": true }
-    ],
-    "5": [
-      { "class": "ShamanCard", "era": "ERA_I", "nStars": 2 },
-      { "class": "ShamanCard", "era": "ERA_II", "nStars": 1 },
-      { "class": "ShamanCard", "era": "ERA_II", "nStars": 2 },
-      { "class": "BuilderCard", "era": "ERA_I", "foodDiscount": 2, "prestige": 1},
-      { "class": "BuilderCard", "era": "ERA_III", "foodDiscount": 1, "prestige": 4},
-      { "class": "ArtistCard", "era": "ERA_II" },
-      { "class": "GathererCard", "era": "ERA_I" },
-      { "class": "GathererCard", "era": "ERA_II" },
-      { "class": "GathererCard", "era": "ERA_III" },
-      { "class": "HunterCard", "era": "ERA_II", "hasFoodIcon": false },
-      { "class": "HunterCard", "era": "ERA_III", "hasFoodIcon": true }
-    ]
-  }
-]
+{
+  "2": [
+    {
+      "class": "ShamanCard",
+      "era": "ERA_I",
+      "nStars": 2
+    },
+    {
+      "class": "ShamanCard",
+      "era": "ERA_I",
+      "nStars": 1
+    },
+    {
+      "class": "ShamanCard",
+      "era": "ERA_II",
+      "nStars": 2
+    },
+    {
+      "class": "ShamanCard",
+      "era": "ERA_II",
+      "nStars": 2
+    },
+    {
+      "class": "ShamanCard",
+      "era": "ERA_III",
+      "nStars": 3
+    },
+    {
+      "class": "ShamanCard",
+      "era": "ERA_III",
+      "nStars": 2
+    },
+    {
+      "class": "ShamanCard",
+      "era": "ERA_III",
+      "nStars": 3
+    },
+    {
+      "class": "BuilderCard",
+      "era": "ERA_I",
+      "foodDiscount": 1,
+      "prestige": 3
+    },
+    {
+      "class": "BuilderCard",
+      "era": "ERA_I",
+      "foodDiscount": 2,
+      "prestige": 0
+    },
+    {
+      "class": "BuilderCard",
+      "era": "ERA_I",
+      "foodDiscount": 1,
+      "prestige": 2
+    },
+    {
+      "class": "BuilderCard",
+      "era": "ERA_II",
+      "foodDiscount": 1,
+      "prestige": 4
+    },
+    {
+      "class": "BuilderCard",
+      "era": "ERA_II",
+      "foodDiscount": 2,
+      "prestige": 1
+    },
+    {
+      "class": "BuilderCard",
+      "era": "ERA_II",
+      "foodDiscount": 2,
+      "prestige": 3
+    },
+    {
+      "class": "BuilderCard",
+      "era": "ERA_III",
+      "foodDiscount": 1,
+      "prestige": 5
+    },
+    {
+      "class": "BuilderCard",
+      "era": "ERA_III",
+      "foodDiscount": 2,
+      "prestige": 3
+    },
+    {
+      "class": "BuilderCard",
+      "era": "ERA_III",
+      "foodDiscount": 2,
+      "prestige": 2
+    },
+    {
+      "class": "InventorCard",
+      "era": "ERA_I",
+      "icon": "HIDE"
+    },
+    {
+      "class": "InventorCard",
+      "era": "ERA_I",
+      "icon": "BOAT"
+    },
+    {
+      "class": "InventorCard",
+      "era": "ERA_I",
+      "icon": "ARROWHEAD"
+    },
+    {
+      "class": "InventorCard",
+      "era": "ERA_I",
+      "icon": "BREAD"
+    },
+    {
+      "class": "InventorCard",
+      "era": "ERA_II",
+      "icon": "FIGURE"
+    },
+    {
+      "class": "InventorCard",
+      "era": "ERA_II",
+      "icon": "ROPE"
+    },
+    {
+      "class": "InventorCard",
+      "era": "ERA_II",
+      "icon": "FLUTE"
+    },
+    {
+      "class": "InventorCard",
+      "era": "ERA_II",
+      "icon": "BOWL"
+    },
+    {
+      "class": "InventorCard",
+      "era": "ERA_II",
+      "icon": "HIDE"
+    },
+    {
+      "class": "InventorCard",
+      "era": "ERA_III",
+      "icon": "FIGURE"
+    },
+    {
+      "class": "InventorCard",
+      "era": "ERA_III",
+      "icon": "HOOK"
+    },
+    {
+      "class": "InventorCard",
+      "era": "ERA_III",
+      "icon": "NECKLACE"
+    },
+    {
+      "class": "InventorCard",
+      "era": "ERA_III",
+      "icon": "BREAD"
+    },
+    {
+      "class": "ArtistCard",
+      "era": "ERA_I"
+    },
+    {
+      "class": "ArtistCard",
+      "era": "ERA_I"
+    },
+    {
+      "class": "ArtistCard",
+      "era": "ERA_I"
+    },
+    {
+      "class": "ArtistCard",
+      "era": "ERA_II"
+    },
+    {
+      "class": "ArtistCard",
+      "era": "ERA_II"
+    },
+    {
+      "class": "ArtistCard",
+      "era": "ERA_II"
+    },
+    {
+      "class": "ArtistCard",
+      "era": "ERA_II"
+    },
+    {
+      "class": "ArtistCard",
+      "era": "ERA_II"
+    },
+    {
+      "class": "ArtistCard",
+      "era": "ERA_II"
+    },
+    {
+      "class": "GathererCard",
+      "era": "ERA_I"
+    },
+    {
+      "class": "GathererCard",
+      "era": "ERA_I"
+    },
+    {
+      "class": "GathererCard",
+      "era": "ERA_II"
+    },
+    {
+      "class": "GathererCard",
+      "era": "ERA_III"
+    },
+    {
+      "class": "HunterCard",
+      "era": "ERA_I",
+      "hasFoodIcon": true
+    },
+    {
+      "class": "HunterCard",
+      "era": "ERA_I",
+      "hasFoodIcon": true
+    },
+    {
+      "class": "HunterCard",
+      "era": "ERA_I",
+      "hasFoodIcon": false
+    },
+    {
+      "class": "HunterCard",
+      "era": "ERA_II",
+      "hasFoodIcon": true
+    },
+    {
+      "class": "HunterCard",
+      "era": "ERA_II",
+      "hasFoodIcon": false
+    },
+    {
+      "class": "HunterCard",
+      "era": "ERA_II",
+      "hasFoodIcon": false
+    },
+    {
+      "class": "HunterCard",
+      "era": "ERA_III",
+      "hasFoodIcon": true
+    },
+    {
+      "class": "HunterCard",
+      "era": "ERA_III",
+      "hasFoodIcon": false
+    },
+    {
+      "class": "HunterCard",
+      "era": "ERA_III",
+      "hasFoodIcon": false
+    }
+  ],
+  "3": [
+    {
+      "class": "ShamanCard",
+      "era": "ERA_III",
+      "nStars": 2
+    },
+    {
+      "class": "BuilderCard",
+      "era": "ERA_II",
+      "foodDiscount": 1,
+      "prestige": 2
+    },
+    {
+      "class": "InventorCard",
+      "era": "ERA_III",
+      "icon": "BOAT"
+    },
+    {
+      "class": "InventorCard",
+      "era": "ERA_III",
+      "icon": "ARROWHEAD"
+    },
+    {
+      "class": "ArtistCard",
+      "era": "ERA_I"
+    },
+    {
+      "class": "ArtistCard",
+      "era": "ERA_II"
+    },
+    {
+      "class": "GathererCard",
+      "era": "ERA_I"
+    },
+    {
+      "class": "GathererCard",
+      "era": "ERA_II"
+    },
+    {
+      "class": "HunterCard",
+      "era": "ERA_I",
+      "hasFoodIcon": false
+    },
+    {
+      "class": "HunterCard",
+      "era": "ERA_I",
+      "hasFoodIcon": false
+    },
+    {
+      "class": "HunterCard",
+      "era": "ERA_II",
+      "hasFoodIcon": true
+    }
+  ],
+  "4": [
+    {
+      "class": "ShamanCard",
+      "era": "ERA_I",
+      "nStars": 1
+    },
+    {
+      "class": "ShamanCard",
+      "era": "ERA_III",
+      "nStars": 3
+    },
+    {
+      "class": "InventorCard",
+      "era": "ERA_I",
+      "icon": "ROPE"
+    },
+    {
+      "class": "InventorCard",
+      "era": "ERA_I",
+      "icon": "FLUTE"
+    },
+    {
+      "class": "InventorCard",
+      "era": "ERA_I",
+      "icon": "BOWL"
+    },
+    {
+      "class": "InventorCard",
+      "era": "ERA_II",
+      "icon": "HOOK"
+    },
+    {
+      "class": "InventorCard",
+      "era": "ERA_III",
+      "icon": "NECKLACE"
+    },
+    {
+      "class": "ArtistCard",
+      "era": "ERA_I"
+    },
+    {
+      "class": "GathererCard",
+      "era": "ERA_II"
+    },
+    {
+      "class": "GathererCard",
+      "era": "ERA_III"
+    },
+    {
+      "class": "HunterCard",
+      "era": "ERA_II",
+      "hasFoodIcon": true
+    }
+  ],
+  "5": [
+    {
+      "class": "ShamanCard",
+      "era": "ERA_I",
+      "nStars": 2
+    },
+    {
+      "class": "ShamanCard",
+      "era": "ERA_II",
+      "nStars": 1
+    },
+    {
+      "class": "ShamanCard",
+      "era": "ERA_II",
+      "nStars": 2
+    },
+    {
+      "class": "BuilderCard",
+      "era": "ERA_I",
+      "foodDiscount": 2,
+      "prestige": 1
+    },
+    {
+      "class": "BuilderCard",
+      "era": "ERA_III",
+      "foodDiscount": 1,
+      "prestige": 4
+    },
+    {
+      "class": "ArtistCard",
+      "era": "ERA_II"
+    },
+    {
+      "class": "GathererCard",
+      "era": "ERA_I"
+    },
+    {
+      "class": "GathererCard",
+      "era": "ERA_II"
+    },
+    {
+      "class": "GathererCard",
+      "era": "ERA_III"
+    },
+    {
+      "class": "HunterCard",
+      "era": "ERA_II",
+      "hasFoodIcon": false
+    },
+    {
+      "class": "HunterCard",
+      "era": "ERA_III",
+      "hasFoodIcon": true
+    }
+  ]
+}

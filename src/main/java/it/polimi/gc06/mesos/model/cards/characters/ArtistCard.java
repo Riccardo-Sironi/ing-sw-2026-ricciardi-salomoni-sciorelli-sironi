@@ -1,5 +1,7 @@
 package it.polimi.gc06.mesos.model.cards.characters;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import it.polimi.gc06.mesos.model.cards.CardVisitor;
 import it.polimi.gc06.mesos.model.Era;
 
@@ -13,6 +15,10 @@ public class ArtistCard extends CharacterCard {
         super(era);
     }
 
+    public ArtistCard() {
+        super();
+    }
+
     /**
      * this method is used to accept a visitor that will visit the card and apply
      * the effects of the card on the player that has chosen to resolve it.
@@ -20,6 +26,8 @@ public class ArtistCard extends CharacterCard {
      * @param visitor the visitor that will visit the card.
      */
     @Override
-    public void accept(CardVisitor visitor) {visitor.visit(this);}
+    public void accept(CardVisitor visitor) {
+        visitor.visit(this);
+    }
 
 }
