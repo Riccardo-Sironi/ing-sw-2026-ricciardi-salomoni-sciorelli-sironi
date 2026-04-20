@@ -42,7 +42,7 @@ public record TurnOrderTile(ArrayList<TileSlot> slots) {
      * @throws IllegalArgumentException {@inheritDoc}
      */
     protected void setPlayerOnNthTile(Player player, int n) throws IllegalArgumentException {
-        if (n < 0 || n > slots.size() || player == null) throw new IllegalArgumentException();
+        if (n < 0 || n >= slots.size() || player == null) throw new IllegalArgumentException();
         slots.get(n).setPlayer(player);
     }
 }
