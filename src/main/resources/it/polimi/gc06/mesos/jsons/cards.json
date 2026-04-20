@@ -250,6 +250,75 @@
       "class": "HunterCard",
       "era": "ERA_III",
       "hasFoodIcon": false
+    },
+    {
+      "class": "HuntEvent",
+      "era": "ERA_I",
+      "prestigeGain": 1
+    },
+    {
+      "class": "SustenanceEvent",
+      "era": "ERA_I",
+      "prestigeLoss": 1
+    },
+    {
+      "class": "RitualEvent",
+      "era": "ERA_I",
+      "prestigeGain": 5,
+      "prestigeLoss": 3
+    },
+    {
+      "class": "PaintingsEvent",
+      "era": "ERA_I",
+      "prestigeGain": 1,
+      "prestigeLoss": 2,
+      "minNumberOfArtists": 1
+    },
+    {
+      "class": "HuntEvent",
+      "era": "ERA_II",
+      "prestigeGain": 2
+    },
+    {
+      "class": "SustenanceEvent",
+      "era": "ERA_II",
+      "prestigeLoss": 2
+    },
+    {
+      "class": "RitualEvent",
+      "era": "ERA_II",
+      "prestigeGain": 10,
+      "prestigeLoss": 5
+    },
+    {
+      "class": "PaintingsEvent",
+      "era": "ERA_II",
+      "prestigeGain": 2,
+      "prestigeLoss": 2,
+      "minNumberOfArtists": 2
+    },
+    {
+      "class": "HuntEvent",
+      "era": "ERA_III",
+      "prestigeGain": 3
+    },
+    {
+      "class": "PaintingsEvent",
+      "era": "ERA_II",
+      "prestigeGain": 3,
+      "prestigeLoss": 2,
+      "minNumberOfArtists": 3
+    },
+    {
+      "class": "SustenanceEvent",
+      "era": "ERA_III",
+      "prestigeLoss": 3
+    },
+    {
+      "class": "RitualEvent",
+      "era": "ERA_III",
+      "prestigeGain": 15,
+      "prestigeLoss": 7
     }
   ],
   "3": [

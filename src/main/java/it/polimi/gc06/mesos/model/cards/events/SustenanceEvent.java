@@ -10,24 +10,23 @@ public class SustenanceEvent extends EventCard {
     private static final int defaultGathererDiscount = 3;
     private int numPrestigeLoss;
 
-    public SustenanceEvent(Era era)
-    {
+    public SustenanceEvent() {
         super(true);
         numPrestigeLoss = -1;
     }
 
-    public SustenanceEvent(Era era, int numPrestigeLoss) {
+    public SustenanceEvent(Era era, int prestigeLoss) {
         super(true, era);
-        this.numPrestigeLoss = numPrestigeLoss;
+        this.numPrestigeLoss = prestigeLoss;
     }
 
     /**
      * Prestige lost setter. This should be called only once during initialization.
      *
-     * @param numPrestigeLost the prestige lost if the player loses the event.
+     * @param prestigeLoss the prestige lost if the player loses the event.
      */
-    public void setNumPrestigeLost(int numPrestigeLost) {
-        this.numPrestigeLoss = numPrestigeLost;
+    public void setPrestigeLoss(int prestigeLoss) {
+        this.numPrestigeLoss = prestigeLoss;
     }
 
     /**
@@ -37,7 +36,9 @@ public class SustenanceEvent extends EventCard {
      * @param visitor the visitor that will visit the card.
      */
     @Override
-    public void accept(CardVisitor visitor) {visitor.visit(this);}
+    public void accept(CardVisitor visitor) {
+        visitor.visit(this);
+    }
 
     /**
      * this method is used to resolve the event card:
@@ -98,7 +99,7 @@ public class SustenanceEvent extends EventCard {
         }
         if (player.getBuildingCards().contains(
                 getRegistry().get(ModifierBuildingRegistryKey.SUSTENANCE_ARTIST_DISCOUNT)
-        )){
+        )) {
             requiredFood = Math.max((requiredFood - artistsCount), 0);
         }
         if (player.getBuildingCards().contains(

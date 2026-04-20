@@ -7,40 +7,40 @@ import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingRegistryKey;
 
 public class RitualEvent extends EventCard {
 
-    private int numPrestigeGained;
-    private int numPrestigeLost;
+    private int prestigeGain;
+    private int prestigeLoss;
 
     public RitualEvent() {
         super(false);
-        this.numPrestigeGained = -1;
-        this.numPrestigeLost = -1;
+        this.prestigeGain = -1;
+        this.prestigeLoss = -1;
     }
 
     /**
      * For testing purpose only!
      */
-    public RitualEvent(Era era, int numPrestigeGained, int numPrestigeLost) {
+    public RitualEvent(Era era, int prestigeGain, int prestigeLoss) {
         super(false, era);
-        this.numPrestigeGained = numPrestigeGained;
-        this.numPrestigeLost = numPrestigeLost;
+        this.prestigeGain = prestigeGain;
+        this.prestigeLoss = prestigeLoss;
     }
 
     /**
      * Prestige gained setter. This should be called only once during initialization.
      *
-     * @param numPrestigeGained the prestige given by the event.
+     * @param prestigeGain the prestige given by the event.
      */
-    public void setNumPrestigeGained(int numPrestigeGained) {
-        this.numPrestigeGained = numPrestigeGained;
+    public void setPrestigeGain(int prestigeGain) {
+        this.prestigeGain = prestigeGain;
     }
 
     /**
      * Prestige lost setter. This should be called only once during initialization.
      *
-     * @param numPrestigeLost the prestige lost if the player loses the event.
+     * @param prestigeLoss the prestige lost if the player loses the event.
      */
-    public void setNumPrestigeLost(int numPrestigeLost) {
-        this.numPrestigeLost = numPrestigeLost;
+    public void setPrestigeLoss(int prestigeLoss) {
+        this.prestigeLoss = prestigeLoss;
     }
 
     /**
@@ -50,7 +50,9 @@ public class RitualEvent extends EventCard {
      * @param visitor the visitor that will visit the card.
      */
     @Override
-    public void accept(CardVisitor visitor) {visitor.visit(this);}
+    public void accept(CardVisitor visitor) {
+        visitor.visit(this);
+    }
 
     /**
      * this method is used to resolve the event card:
@@ -69,19 +71,21 @@ public class RitualEvent extends EventCard {
 
         if (player.getShamanStars() == maxStars) {
 
-                /*player is the only one to has the max stars      &&          player has the doubleWinCard*/
-            if(player.getEnvironment().getNumPlayerMaxStars() == 1 && player.getBuildingCards().contains(
+            /*player is the only one to has the max stars      &&          player has the doubleWinCard*/
+            if (player.getEnvironment().getNumPlayerMaxStars() == 1 && player.getBuildingCards().contains(
                     getRegistry().get(ModifierBuildingRegistryKey.RITUAL_DOUBLE_WIN_CARD)
             )) {
-                player.addPrestigeTokens(numPrestigeGained *2);
-            } else { player.addPrestigeTokens(numPrestigeGained); }
+                player.addPrestigeTokens(prestigeGain * 2);
+            } else {
+                player.addPrestigeTokens(prestigeGain);
+            }
 
         }
 
         if (player.getShamanStars() == minStars) {
             player.removePrestigeTokens(player.getBuildingCards().contains(
                     getRegistry().get(ModifierBuildingRegistryKey.RITUAL_NO_LOSS_CARD)
-            ) ? 0 : numPrestigeLost);
+            ) ? 0 : prestigeLoss);
         }
     }
 

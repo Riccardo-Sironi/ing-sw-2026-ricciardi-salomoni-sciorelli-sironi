@@ -7,29 +7,28 @@ import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingRegistryKey;
 
 public class HuntEvent extends EventCard {
 
-    private int numPrestigeGained;
-
-    //CONSTRUCTOR
+    private int prestigeGain;
+    
     public HuntEvent() {
         super(false);
-        this.numPrestigeGained = -1;
+        this.prestigeGain = -1;
     }
 
     /**
      * For testing purpose only!
      */
-    public HuntEvent(Era era, int numPrestigeGained) {
+    public HuntEvent(Era era, int prestigeGain) {
         super(false, era);
-        this.numPrestigeGained = numPrestigeGained;
+        this.prestigeGain = prestigeGain;
     }
 
     /**
      * Prestige setter. This should be called only once during initialization.
      *
-     * @param numPrestigeGained the prestige gained for each hunter.
+     * @param prestigeGain the prestige gained for each hunter.
      */
-    public void setNumPrestigeGained(int numPrestigeGained) {
-        this.numPrestigeGained = numPrestigeGained;
+    public void setPrestigeGain(int prestigeGain) {
+        this.prestigeGain = prestigeGain;
     }
 
     /**
@@ -39,7 +38,9 @@ public class HuntEvent extends EventCard {
      * @param visitor the visitor that will visit the card.
      */
     @Override
-    public void accept(CardVisitor visitor) {visitor.visit(this);}
+    public void accept(CardVisitor visitor) {
+        visitor.visit(this);
+    }
 
     /**
      * this method is used to resolve the event card:
@@ -63,7 +64,7 @@ public class HuntEvent extends EventCard {
             /*add prestige tokens for every hunter in the deck multiplied by the prestige on the card*/
             player.addPrestigeTokens(player.getBuildingCards().contains(
                     getRegistry().get(ModifierBuildingRegistryKey.HUNT_PRESTIGE_AND_FOOD_GAIN_CARD)
-            ) ? (huntersCount * (numPrestigeGained + 1)) : huntersCount * numPrestigeGained);
+            ) ? (huntersCount * (prestigeGain + 1)) : huntersCount * prestigeGain);
         }
     }
 }

@@ -7,43 +7,43 @@ import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingRegistryKey;
 
 public class PaintingsEvent extends EventCard {
 
-    private int numPrestigeGained;
-    private int numPrestigeLost;
+    private int prestigeGain;
+    private int prestigeLoss;
     private int minNumberOfArtists;
 
     public PaintingsEvent() {
         super(false);
-        this.numPrestigeGained = -1;
-        this.numPrestigeLost = -1;
+        this.prestigeGain = -1;
+        this.prestigeLoss = -1;
         this.minNumberOfArtists = -1;
     }
 
     /**
      * For testing purpose only!
      */
-    public PaintingsEvent(Era era, int numPrestigeGained, int numPrestigeLost, int minNumberOfArtists) {
+    public PaintingsEvent(Era era, int prestigeGain, int prestigeLoss, int minNumberOfArtists) {
         super(false, era);
-        this.numPrestigeGained = numPrestigeGained;
-        this.numPrestigeLost = numPrestigeLost;
+        this.prestigeGain = prestigeGain;
+        this.prestigeLoss = prestigeLoss;
         this.minNumberOfArtists = minNumberOfArtists;
     }
 
     /**
      * Prestige gained setter. This should be called only once during initialization.
      *
-     * @param numPrestigeGained the prestige given by the event.
+     * @param prestigeGain the prestige given by the event.
      */
-    public void setNumPrestigeGained(int numPrestigeGained) {
-        this.numPrestigeGained = numPrestigeGained;
+    public void setPrestigeGain(int prestigeGain) {
+        this.prestigeGain = prestigeGain;
     }
 
     /**
      * Prestige lost setter. This should be called only once during initialization.
      *
-     * @param numPrestigeLost the prestige lost if the player loses the event.
+     * @param prestigeLoss the prestige lost if the player loses the event.
      */
-    public void setNumPrestigeLost(int numPrestigeLost) {
-        this.numPrestigeLost = numPrestigeLost;
+    public void setPrestigeLoss(int prestigeLoss) {
+        this.prestigeLoss = prestigeLoss;
     }
 
     /**
@@ -62,7 +62,9 @@ public class PaintingsEvent extends EventCard {
      * @param visitor the visitor that will visit the card.
      */
     @Override
-    public void accept(CardVisitor visitor) {visitor.visit(this);}
+    public void accept(CardVisitor visitor) {
+        visitor.visit(this);
+    }
 
     /**
      * this method is used to resolve the event card:
@@ -79,11 +81,11 @@ public class PaintingsEvent extends EventCard {
 
         /*if number of artist is lower than the number of the card remove the prestige written on the card*/
         if (artistCount < minNumberOfArtists) {
-            player.removePrestigeTokens(numPrestigeLost);
+            player.removePrestigeTokens(prestigeLoss);
         }
         /*otherwise add prestige tokens for every artist in the deck multiplied by the prestige on the card*/
         else {
-            player.addPrestigeTokens(artistCount * numPrestigeGained);
+            player.addPrestigeTokens(artistCount * prestigeGain);
         }
 
         if (player.getBuildingCards().contains(getRegistry().get(ModifierBuildingRegistryKey.PAINTING_FOOD_GAIN_CARD))) {
