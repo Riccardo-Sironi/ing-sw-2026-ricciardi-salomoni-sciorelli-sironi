@@ -52,8 +52,6 @@ public class GameModel implements GameInfo {
             throw new IllegalStateException(ex.getMessage());
         }
         
-        turnManager.setGameModel(this);
-
         Collections.shuffle(this.players); //randomize player order
 
         //setups the initial food

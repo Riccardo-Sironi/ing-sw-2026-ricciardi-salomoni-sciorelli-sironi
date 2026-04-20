@@ -25,7 +25,10 @@ public class ModelInstancesManager {
 
     public GameModel createGame(List<String> nicknames) throws IOException, IllegalArgumentException {
 
-        if (nicknames == null) throw new IllegalArgumentException();
+        if (nicknames == null) throw new IllegalArgumentException("Nicknames list is null");
+        if (nicknames.isEmpty()) throw new IllegalArgumentException("Nicknames list is empty");
+        if (nicknames.size() > 5 || nicknames.size() < 2)
+            throw new IllegalArgumentException("Nicknames list size should be between 2 and 5");
 
         int numOfPlayers = nicknames.size();
         List<Card> cards = new ArrayList<>();
