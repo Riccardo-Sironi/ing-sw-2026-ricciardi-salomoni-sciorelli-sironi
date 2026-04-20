@@ -3,9 +3,7 @@ package it.polimi.gc06.mesos.model.InstancesManager;
 import it.polimi.gc06.mesos.model.Era;
 import it.polimi.gc06.mesos.model.cards.CardVisitor;
 import it.polimi.gc06.mesos.model.cards.TribeCard;
-import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
-import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingCard;
-import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingsRegistry;
+import it.polimi.gc06.mesos.model.cards.buildings.*;
 import it.polimi.gc06.mesos.model.cards.characters.*;
 import it.polimi.gc06.mesos.model.cards.events.EventCard;
 import it.polimi.gc06.mesos.model.cards.events.RitualEvent;
@@ -36,6 +34,26 @@ public class InstanceSorterCardVisitor extends CardVisitor {
     @Override
     public void visit(BuildingCard card) {
         buildingCards.get(card.getEra()).add(card);
+    }
+
+    @Override
+    public void visit(EndGameBuildingCard building) {
+        buildingCards.get(building.getEra()).add(building);
+    }
+
+    @Override
+    public void visit(ModifierBuildingCard building) {
+        buildingCards.get(building.getEra()).add(building);
+    }
+
+    @Override
+    public void visit(ObserverSetBuildingCard building) {
+        buildingCards.get(building.getEra()).add(building);
+    }
+
+    @Override
+    public void visit(ObserverPairBuildingCard building) {
+        buildingCards.get(building.getEra()).add(building);
     }
 
     @Override
