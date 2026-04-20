@@ -1,34 +1,43 @@
 package it.polimi.gc06.mesos.model.gameTurnManager;
 
+import it.polimi.gc06.mesos.gameExceptions.IllegalGameActionException;
 import it.polimi.gc06.mesos.gameExceptions.IllegalPhaseActionException;
-import it.polimi.gc06.mesos.model.Color;
-import it.polimi.gc06.mesos.model.Era;
 import it.polimi.gc06.mesos.model.GameModel;
 import it.polimi.gc06.mesos.model.Player;
-import it.polimi.gc06.mesos.model.cards.TribeCard;
 import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
 import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingCard;
-import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingRegistryKey;
-import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingsRegistry;
 import it.polimi.gc06.mesos.model.cards.characters.CharacterCard;
-import it.polimi.gc06.mesos.model.cards.characters.HunterCard;
 import it.polimi.gc06.mesos.model.gameBoard.Board;
-import it.polimi.gc06.mesos.model.gameBoard.RemoveFoodTileEffect;
 import org.junit.jupiter.api.*;
 
 import java.util.ArrayList;
+import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 class EndOfRoundPhaseTest {
 
     private EndOfRoundPhase endOfRoundPhase;
-    private TurnManager turnManager;
-    private Player player;
-    private Board board;
-    private GameModel gameModel;
+
+    private final TurnManager turnManager =  mock(TurnManager.class);
+
+    private final GameModel gameModel =  mock(GameModel.class);
+
+    private final Board board = mock(Board.class);
+
+    private final Player player0 = mock(Player.class);
+
+    private final Player player1 = mock(Player.class);
+
+    private final ModifierBuildingCard specialBuildingCard =  mock(ModifierBuildingCard.class);
+
+    private final CharacterCard characterCardToPick =  mock(CharacterCard.class);
+
+    private final BuildingCard buildingCardToPick = mock(BuildingCard.class);
+
+    private ArrayList<Player> players;
 
     @BeforeAll
     static void whichTest() {
@@ -47,76 +56,169 @@ class EndOfRoundPhaseTest {
 
     @BeforeEach
     void setUp(TestInfo testInfo) {
-
         endOfRoundPhase = new EndOfRoundPhase();
-        turnManager = mock(TurnManager.class);
-        player = mock(Player.class);
-        board = mock(Board.class);
-        gameModel = mock(GameModel.class);
-//        ModifierBuildingCard mockPickCard = mock(ModifierBuildingCard.class);
-//        when(turnManager.getPickFromTopCard()).thenReturn(mockPickCard);
-//        when(player.getBuildingCards()).thenReturn(new ArrayList<>());
-        System.out.println("--- [START] " + testInfo.getDisplayName() + " ---");
+        players = new ArrayList<>(List.of(player0, player1));
 
         System.out.println("[START] " + testInfo.getDisplayName() + " DONE");
     }
 
     @Test
-    @DisplayName("resolveEvent with players without the pick building")
-    void test_resolveEvent_NoPickCard() {
-        EndOfRoundPhase phase = new EndOfRoundPhase();
-
-        ArrayList<Player> players = new ArrayList<>();
-        players.add(player);
-        players.add(player);
+    void givenNoSpecialBuilding_whenEndOfRound_thenShiftBoardAndAdvanceRound() throws IllegalPhaseActionException {
         when(turnManager.getPlayersOrder()).thenReturn(players);
+        when(turnManager.getPickFromTopCard()).thenReturn(specialBuildingCard); // Nessun cast necessario
+        when(turnManager.getGameModel()).thenReturn(gameModel);
 
-        phase.endOfRound(turnManager, board, gameModel);
+        when(player0.getBuildingCards()).thenReturn(new ArrayList<>());
+        when(player1.getBuildingCards()).thenReturn(new ArrayList<>());
+
+        when(board.isEndGame()).thenReturn(false);
+        when(turnManager.getRound()).thenReturn(1);
+
+        endOfRoundPhase.endOfRound(turnManager, board, gameModel);
+
+        verify(board, times(1)).moveFromTopToBottom();
+        verify(board, times(1)).populateTopRow(gameModel);
+        verify(turnManager, times(1)).setRound(2);
+        verify(turnManager, times(1)).setPhase(any(PlacingTotemPhase.class));
+        verify(gameModel, never()).endGame();
     }
 
     @Test
-    @DisplayName("resolveEvent with players with the pick building")
-    void test_resolveEvent_PickCard() {
-        EndOfRoundPhase phase = new EndOfRoundPhase();
-        ModifierBuildingCard pickCard = mock(ModifierBuildingCard.class);
-
-
-        when(turnManager.getPickFromTopCard()).thenReturn(pickCard);
-
-
-        ArrayList<Player> players = new ArrayList<>();
-        players.add(player);
-        Player playerWithPickCard = new Player("playerWithPickCard", Color.BLUE, new ModifierBuildingsRegistry());
-        playerWithPickCard.addBuildingCards(pickCard);
-        players.add(playerWithPickCard);
+    void givenNoSpecialBuilding_whenEndOfRound_thenTriggerEndGame() throws IllegalPhaseActionException {
         when(turnManager.getPlayersOrder()).thenReturn(players);
+        when(turnManager.getPickFromTopCard()).thenReturn(specialBuildingCard);
+        when(turnManager.getGameModel()).thenReturn(gameModel);
 
-        phase.endOfRound(turnManager, board, gameModel);
+        when(player0.getBuildingCards()).thenReturn(new ArrayList<>());
+        when(player1.getBuildingCards()).thenReturn(new ArrayList<>());
+
+        when(board.isEndGame()).thenReturn(true);
+
+        endOfRoundPhase.endOfRound(turnManager, board, gameModel);
+
+        verify(board, times(1)).moveFromTopToBottom();
+        verify(board, times(1)).populateTopRow(gameModel);
+        verify(gameModel, times(1)).endGame();
+        verify(turnManager, never()).setPhase(any(PlacingTotemPhase.class));
     }
 
     @Test
-    void test_pickCardFromTop() {
-        EndOfRoundPhase phase = new EndOfRoundPhase();
-        ModifierBuildingCard pickCard = mock(ModifierBuildingCard.class);
-
-        Player player = new Player("player", Color.BLUE, new ModifierBuildingsRegistry());
-        player.addBuildingCards(pickCard);
-        ArrayList<Player> players = new ArrayList<>();
-
-        when(turnManager.getPickFromTopCard()).thenReturn(pickCard);
-
-        players.add(player);
+    void givenPlayer0HasSpecialBuilding_whenEndOfRound_thenGrantDrawAndWait() throws IllegalPhaseActionException {
         when(turnManager.getPlayersOrder()).thenReturn(players);
+        when(turnManager.getPickFromTopCard()).thenReturn(specialBuildingCard);
 
-        phase.endOfRound(turnManager, board, gameModel);
+        when(player0.getBuildingCards()).thenReturn(new ArrayList<>(List.of(specialBuildingCard)));
 
-        HunterCard card = new HunterCard(Era.ERA_I, true);
-        ArrayList<TribeCard> deck = new ArrayList<>();
-        deck.add(card);
-        when(board.getTopRow()).thenReturn(deck);
+        endOfRoundPhase.endOfRound(turnManager, board, gameModel);
 
-        phase.endOfRound(turnManager, board, gameModel);
+        verify(player0, times(1)).setTopDrawNum(1);
+        verify(turnManager, never()).setActivePlayerIndex(anyInt());
+        verify(board, never()).moveFromTopToBottom();
+    }
 
-        phase.pickCardFromTop(turnManager, player, card, board);
+    @Test
+    void givenPlayer1HasSpecialBuilding_whenEndOfRound_thenChangeActivePlayerAndGrantDraw() throws IllegalPhaseActionException {
+        when(turnManager.getPlayersOrder()).thenReturn(players);
+        when(turnManager.getPickFromTopCard()).thenReturn(specialBuildingCard);
+
+        when(player0.getBuildingCards()).thenReturn(new ArrayList<>());
+        when(player1.getBuildingCards()).thenReturn(new ArrayList<>(List.of(specialBuildingCard)));
+
+        endOfRoundPhase.endOfRound(turnManager, board, gameModel);
+
+        verify(player1, times(1)).setTopDrawNum(1);
+        verify(turnManager, times(1)).setActivePlayerIndex(1);
+        verify(board, never()).moveFromTopToBottom();
+    }
+
+    @Test
+    void givenPlayerWithDrawLeft_whenPickCharacterCard_thenProcessPickAndFinishRound() throws IllegalPhaseActionException {
+        triggerSpecialPickStateForPlayer(player1);
+
+        when(player1.getTopDrawNum()).thenReturn(1);
+        when(board.isEndGame()).thenReturn(false);
+        when(turnManager.getRound()).thenReturn(1);
+
+        endOfRoundPhase.pickCardFromTop(turnManager, player1, characterCardToPick, board);
+
+        verify(board, times(1)).pickCardFromTopRow(player1, characterCardToPick);
+        verify(player1, times(1)).setTopDrawNum(0);
+        verify(turnManager, times(1)).setActivePlayerIndex(0);
+        verify(board, times(1)).moveFromTopToBottom();
+    }
+
+    @Test
+    void givenPlayerWithDrawLeft_whenPickBuildingCard_thenProcessBuyAndFinishRound() throws IllegalPhaseActionException, IllegalGameActionException {
+        triggerSpecialPickStateForPlayer(player0);
+
+        when(player0.getTopDrawNum()).thenReturn(1);
+        when(board.isEndGame()).thenReturn(false);
+        when(turnManager.getRound()).thenReturn(1);
+
+        endOfRoundPhase.pickCardFromTop(turnManager, player0, buildingCardToPick, board);
+
+        verify(board, times(1)).buyBuildingFromTopRow(player0, buildingCardToPick);
+        verify(player0, times(1)).setTopDrawNum(0);
+        verify(turnManager, times(1)).setActivePlayerIndex(0);
+        verify(board, times(1)).moveFromTopToBottom();
+    }
+
+    @Test
+    void givenPhaseJustStarted_whenPickCharacter_thenThrowException() {
+        IllegalPhaseActionException exception = assertThrows(IllegalPhaseActionException.class, () -> {
+            endOfRoundPhase.pickCardFromTop(turnManager, player0, characterCardToPick, board);
+        });
+        assertEquals("You have to start the end of round phase first!", exception.getMessage());
+    }
+
+    @Test
+    void givenPhaseJustStarted_whenPickBuilding_thenThrowException() {
+        IllegalPhaseActionException exception = assertThrows(IllegalPhaseActionException.class, () -> {
+            endOfRoundPhase.pickCardFromTop(turnManager, player0, buildingCardToPick, board);
+        });
+        assertEquals("You have to start the offer resolution phase first!", exception.getMessage());
+    }
+
+    @Test
+    void givenZeroDraws_whenPickCharacter_thenThrowException() throws IllegalPhaseActionException {
+        triggerSpecialPickStateForPlayer(player0);
+        when(player0.getTopDrawNum()).thenReturn(0);
+
+        IllegalPhaseActionException exception = assertThrows(IllegalPhaseActionException.class, () -> {
+            endOfRoundPhase.pickCardFromTop(turnManager, player0, characterCardToPick, board);
+        });
+        assertEquals("You can't draw from the top row anymore!", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("Should throw Exception if player has 0 draws left and tries to pick Building")
+    void givenZeroDraws_whenPickBuilding_thenThrowException() throws IllegalPhaseActionException {
+        triggerSpecialPickStateForPlayer(player0);
+        when(player0.getTopDrawNum()).thenReturn(0);
+
+        IllegalPhaseActionException exception = assertThrows(IllegalPhaseActionException.class, () -> {
+            endOfRoundPhase.pickCardFromTop(turnManager, player0, buildingCardToPick, board);
+        });
+        assertEquals("You can't draw from the top row anymore!", exception.getMessage());
+    }
+
+    private void triggerSpecialPickStateForPlayer(Player playerWithCard) throws IllegalPhaseActionException {
+        when(turnManager.getPlayersOrder()).thenReturn(players);
+        when(turnManager.getPickFromTopCard()).thenReturn(specialBuildingCard);
+
+        for (Player p : players) {
+            if (p == playerWithCard) {
+                when(p.getBuildingCards()).thenReturn(new ArrayList<>(List.of(specialBuildingCard)));
+            } else {
+                when(p.getBuildingCards()).thenReturn(new ArrayList<>());
+            }
+        }
+
+        endOfRoundPhase.endOfRound(turnManager, board, gameModel);
+
+        reset(board);
+        reset(turnManager);
+        reset(playerWithCard);
+        when(turnManager.getGameModel()).thenReturn(gameModel);
     }
 }

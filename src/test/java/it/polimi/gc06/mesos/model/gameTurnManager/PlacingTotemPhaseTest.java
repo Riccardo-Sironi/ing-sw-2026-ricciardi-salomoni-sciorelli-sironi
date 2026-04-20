@@ -14,6 +14,7 @@ import org.junit.jupiter.api.*;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -52,76 +53,56 @@ class PlacingTotemPhaseTest {
         boardMock = mock(Board.class);
         turnOrderTileMock = mock(TurnOrderTile.class);
 
-        System.out.println("[START] " + testInfo.getDisplayName() + " DONE");
+        System.out.println("[START] " + testInfo.getDisplayName());
     }
 
-
     @Test
-    @DisplayName("Real situation of the phase")
-    void testPlaceTotem() {
+    void testPlaceTotem() throws IllegalPhaseActionException {
+
         int numPlayers = 5;
         ArrayList<Player> players = new ArrayList<>();
         ArrayList<TileSlot> orderSlots = new ArrayList<>();
         ArrayList<TileSlot> offerSlots = new ArrayList<>();
-        for (int i = 0; i < numPlayers; i++) {
+
+         for (int i = 0; i < numPlayers; i++) {
             players.add(new Player("Player" + (i + 1), Color.values()[i], new ModifierBuildingsRegistry()));
-            orderSlots.add(new TileSlot());
-            orderSlots.get(i).setPlayer(players.get(i));
+
+            TileSlot orderSlot = new TileSlot();
+            orderSlot.setPlayer(players.get(i));
+            orderSlots.add(orderSlot);
 
             offerSlots.add(new TileSlot());
         }
 
-        ArrayList<Player> playersOrder = new ArrayList<>(players);
+        LinkedList<Player> playersOrder = new LinkedList<>(players);
 
         when(turnManagerMock.getPlayersOrder()).thenReturn(playersOrder);
         when(boardMock.getTurnOrderTile()).thenReturn(turnOrderTileMock);
         when(turnOrderTileMock.slots()).thenReturn(orderSlots);
         when(boardMock.getOfferTrack()).thenReturn(offerSlots);
         when(boardMock.getOfferTrackPlayerSlot(any(Player.class))).thenReturn(offerSlots.getFirst());
-        when(turnManagerMock.getActivePlayer()).thenReturn(players.getFirst());
-        // we need this because it gets called when we set the new Phase at the end
-        when(turnManagerMock.getPhase()).thenReturn(new OfferResolutionPhase());
 
-        phase.placeTotem(turnManagerMock, players.getFirst(), boardMock.getOfferTrack().getFirst(), boardMock);
-        assertFalse(boardMock.getOfferTrack().getFirst().isEmpty());
-        assertNotNull(boardMock.getOfferTrack().getFirst().getPlayer());
-        assertNull(orderSlots.getFirst().getPlayer());
+        Phase offerPhaseMock = mock(OfferResolutionPhase.class);
+        when(turnManagerMock.getPhase()).thenReturn(offerPhaseMock);
 
-        for (int i = 1; i < numPlayers; i++) {
-            phase.placeTotem(turnManagerMock, players.get(i), boardMock.getOfferTrack().get(i), boardMock);
-            assertFalse(boardMock.getOfferTrack().get(i).isEmpty());
-            assertNotNull(boardMock.getOfferTrack().getFirst().getPlayer());
-            assertNull(orderSlots.get(i).getPlayer());
+        for (int i = 0; i < numPlayers - 1; i++) {
+            phase.placeTotem(turnManagerMock, players.get(i), offerSlots.get(i), boardMock);
+
+            assertFalse(offerSlots.get(i).isEmpty(), "offer slot should contain the player");
+            assertNotNull(offerSlots.get(i).getPlayer(), "player in offer slot shouldn't be null");
+            assertNull(orderSlots.get(i).getPlayer(), "player should be removed from the turn order tile");
+
+            verify(turnManagerMock, never()).setPhase(any(OfferResolutionPhase.class));
         }
 
-        verify(turnManagerMock).setPhase(any(OfferResolutionPhase.class));
-    }
+        phase.placeTotem(turnManagerMock, players.get(numPlayers - 1), offerSlots.get(numPlayers - 1), boardMock);
 
+        verify(turnManagerMock, times(1)).setPhase(any(OfferResolutionPhase.class));
 
-    @Test
-    @DisplayName("placeTotem assigns player to slot and updates queue")
-    void placeTotem_ValidSlot_PlacesPlayerAndRemovesFromOrder() throws IllegalPhaseActionException {
-        LinkedList<Player> playersQueue = mock(LinkedList.class);
-        when(turnManagerMock.getPlayersOrder()).thenReturn(playersQueue);
-        when(slotMock.isEmpty()).thenReturn(true);
-
-        ArrayList<TileSlot> tileSlots = new ArrayList<>();
-        for (int i = 0; i < 5; i++) {
-            tileSlots.add(slotMock);
-        }
-        when(boardMock.getTurnOrderTile()).thenReturn(turnOrderTileMock);
-        when(turnOrderTileMock.slots()).thenReturn(tileSlots);
-
-        phase.placeTotem(turnManagerMock, playerMock, slotMock, boardMock);
-
-        verify(slotMock).isEmpty();
-        verify(turnManagerMock, times(2)).getPlayersOrder();
-        verify(playersQueue).removeFirst();
-        verify(slotMock).setPlayer(playerMock);
+        verify(offerPhaseMock, times(1)).startPlayerOfferResolution(eq(turnManagerMock), any(Player.class), any(TileSlot.class));
     }
 
     @Test
-    @DisplayName("placeTotem fails if slot is not empty")
     void placeTotem_SlotNotEmpty_ThrowsIllegalPhaseActionException() {
         when(slotMock.isEmpty()).thenReturn(false);
 
@@ -135,14 +116,17 @@ class PlacingTotemPhaseTest {
     }
 
     @Test
-    @DisplayName("Trying to perform illegal actions in PlacingTotemPhaseTest throws IllegalPhaseActionException")
     void illegalActions_ThrowIllegalPhaseActionException() {
         assertThrows(IllegalPhaseActionException.class, () -> {
-            phase.startPlayerOfferResolution(turnManagerMock, mock(Player.class), mock());
+            phase.startPlayerOfferResolution(turnManagerMock, mock(Player.class), mock(TileSlot.class));
         });
 
         assertThrows(IllegalPhaseActionException.class, () -> {
             phase.pickCardFromTop(turnManagerMock, mock(Player.class), mock(CharacterCard.class), mock(Board.class));
+        });
+
+        assertThrows(IllegalPhaseActionException.class, () -> {
+            phase.pickCardFromTop(turnManagerMock, mock(Player.class), mock(BuildingCard.class), mock(Board.class));
         });
 
         assertThrows(IllegalPhaseActionException.class, () -> {
@@ -154,7 +138,64 @@ class PlacingTotemPhaseTest {
         });
 
         assertThrows(IllegalPhaseActionException.class, () -> {
+            phase.pickCardFromBottom(turnManagerMock, mock(Player.class), mock(CharacterCard.class), mock(Board.class));
+        });
+
+        assertThrows(IllegalPhaseActionException.class, () -> {
             phase.resolveEvent(turnManagerMock, mock(Board.class));
         });
+
+        assertThrows(IllegalPhaseActionException.class, () -> {
+            phase.endOfRound(turnManagerMock, mock(Board.class), mock());
+        });
+    }
+
+    @Test
+    void placeTotem_RemovesPlayerFromCorrectSlot_BranchCoverage() throws IllegalPhaseActionException {
+        LinkedList<Player> playersOrder = new LinkedList<>(List.of(playerMock, mock(Player.class)));
+        when(turnManagerMock.getPlayersOrder()).thenReturn(playersOrder);
+        when(slotMock.isEmpty()).thenReturn(true);
+
+        TileSlot emptySlot = mock(TileSlot.class);
+        when(emptySlot.getPlayer()).thenReturn(null);
+
+        TileSlot wrongPlayerSlot = mock(TileSlot.class);
+        when(wrongPlayerSlot.getPlayer()).thenReturn(mock(Player.class));
+
+        TileSlot correctSlot = mock(TileSlot.class);
+        when(correctSlot.getPlayer()).thenReturn(playerMock);
+
+        when(boardMock.getTurnOrderTile()).thenReturn(turnOrderTileMock);
+
+        when(turnOrderTileMock.slots()).thenReturn(new ArrayList<>(List.of(emptySlot, wrongPlayerSlot, correctSlot)));
+
+        phase.placeTotem(turnManagerMock, playerMock, slotMock, boardMock);
+
+        verify(emptySlot, never()).removePlayer();
+        verify(wrongPlayerSlot, never()).removePlayer();
+        verify(correctSlot, times(1)).removePlayer();
+    }
+
+    @Test
+    void placeTotem_TransitionWithEmptyOfferTrack_ThrowsIllegalStateException() throws IllegalPhaseActionException {
+        LinkedList<Player> playersOrder = new LinkedList<>(List.of(playerMock));
+        when(turnManagerMock.getPlayersOrder()).thenReturn(playersOrder);
+        when(slotMock.isEmpty()).thenReturn(true);
+
+        when(boardMock.getTurnOrderTile()).thenReturn(turnOrderTileMock);
+        when(turnOrderTileMock.slots()).thenReturn(new ArrayList<>());
+
+        TileSlot emptyOfferSlot = mock(TileSlot.class);
+        when(emptyOfferSlot.getPlayer()).thenReturn(null);
+
+        when(boardMock.getOfferTrack()).thenReturn(new ArrayList<>(List.of(emptyOfferSlot)));
+
+        when(turnManagerMock.getPhase()).thenReturn(mock(OfferResolutionPhase.class));
+
+        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> {
+            phase.placeTotem(turnManagerMock, playerMock, slotMock, boardMock);
+        });
+
+        assertEquals("test", exception.getMessage());
     }
 }
