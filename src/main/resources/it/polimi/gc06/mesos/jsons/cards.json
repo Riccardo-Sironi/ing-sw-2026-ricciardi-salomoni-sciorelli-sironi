@@ -319,6 +319,151 @@
       "era": "ERA_III",
       "prestigeGain": 15,
       "prestigeLoss": 7
+    },
+    {
+      "class": "ObserverSetBuildingCard",
+      "era": "ERA_I",
+      "foodCost": 4,
+      "prestigeGain": 3
+    },
+    {
+      "class": "ModifierBuildingCard",
+      "era": "ERA_I",
+      "foodCost": 4,
+      "prestigeGain": 4,
+      "cardKey": "SUSTENANCE_GATHERER_DISCOUNT"
+    },
+    {
+      "class": "ModifierBuildingCard",
+      "era": "ERA_I",
+      "foodCost": 5,
+      "prestigeGain": 3,
+      "cardKey": "SUSTENANCE_ARTIST_DISCOUNT"
+    },
+    {
+      "class": "ModifierBuildingCard",
+      "era": "ERA_I",
+      "foodCost": 5,
+      "prestigeGain": 2,
+      "cardKey": "RITUAL_NO_PRESTIGE_LOSS"
+    },
+    {
+      "class": "ModifierBuildingCard",
+      "era": "ERA_I",
+      "foodCost": 3,
+      "prestigeGain": 3,
+      "cardKey": "TILE_FOOD_BONUS"
+    },
+    {
+      "class": "ObserverPairBuildingCard",
+      "era": "ERA_I",
+      "foodCost": 3,
+      "prestigeGain": 4
+    },
+    {
+      "class": "ModifierBuildingCard",
+      "era": "ERA_II",
+      "foodCost": 7,
+      "prestigeGain": 0,
+      "cardKey": "RITUAL_DOUBLE_WIN_CARD"
+    },
+    {
+      "class": "ModifierBuildingCard",
+      "era": "ERA_II",
+      "foodCost": 6,
+      "prestigeGain": 4,
+      "cardKey": "RITUAL_THREE_STAR_CARD"
+    },
+    {
+      "class": "ModifierBuildingCard",
+      "era": "ERA_II",
+      "foodCost": 7,
+      "prestigeGain": 4,
+      "cardKey": "SUSTENANCE_INVENTOR_DISCOUNT"
+    },
+    {
+      "class": "ModifierBuildingCard",
+      "era": "ERA_II",
+      "foodCost": 7,
+      "prestigeGain": 2,
+      "cardKey": "HUNT_PRESTIGE_AND_FOOD_GAIN_CARD"
+    },
+    {
+      "class": "EndGameBuildingCard",
+      "era": "ERA_II",
+      "foodCost": 6,
+      "prestigeGain": 4,
+      "prestigeEffect": "DOUBLE_BUILDERS"
+    },
+    {
+      "class": "ModifierBuildingCard",
+      "era": "ERA_II",
+      "foodCost": 5,
+      "prestigeGain": 6,
+      "cardKey": "PAINTING_FOOD_GAIN_CARD"
+    },
+    {
+      "class": "EndGameBuildingCard",
+      "era": "ERA_III",
+      "foodCost": 5,
+      "prestigeGain": 6,
+      "prestigeEffect": "COUNT_SETS"
+    },
+    {
+      "class": "EndGameBuildingCard",
+      "era": "ERA_III",
+      "foodCost": 8,
+      "prestigeGain": 8,
+      "prestigeEffect": "COUNT_HUNTERS"
+    },
+    {
+      "class": "EndGameBuildingCard",
+      "era": "ERA_III",
+      "foodCost": 7,
+      "prestigeGain": 6,
+      "prestigeEffect": "COUNT_GATHERERS"
+    },
+    {
+      "class": "EndGameBuildingCard",
+      "era": "ERA_III",
+      "foodCost": 7,
+      "prestigeGain": 4,
+      "prestigeEffect": "COUNT_SHAMANS"
+    },
+    {
+      "class": "EndGameBuildingCard",
+      "era": "ERA_III",
+      "foodCost": 6,
+      "prestigeGain": 3,
+      "prestigeEffect": "COUNT_BUILDERS"
+    },
+    {
+      "class": "EndGameBuildingCard",
+      "era": "ERA_III",
+      "foodCost": 7,
+      "prestigeGain": 4,
+      "prestigeEffect": "COUNT_ARTISTS"
+    },
+    {
+      "class": "EndGameBuildingCard",
+      "era": "ERA_III",
+      "foodCost": 6,
+      "prestigeGain": 6,
+      "prestigeEffect": "COUNT_INVENTORS"
+    },
+    {
+      "class": "ModifierBuildingCard",
+      "era": "ERA_III",
+      "foodCost": 9,
+      "prestigeGain": 3,
+      "cardKey": "PICK_FROM_TOP"
+    },
+    {
+      "class": "EndGameBuildingCard",
+      "era": "ERA_III",
+      "foodCost": 10,
+      "prestigeGain": 0,
+      "prestigeEffect": "FIXED_25"
     }
   ],
   "3": [
@@ -373,6 +518,151 @@
       "class": "HunterCard",
       "era": "ERA_II",
       "hasFoodIcon": true
+    },
+    {
+      "class": "ObserverSetBuildingCard",
+      "era": "ERA_I",
+      "foodCost": 4,
+      "prestigeGain": 3
+    },
+    {
+      "class": "ModifierBuildingCard",
+      "era": "ERA_I",
+      "foodCost": 4,
+      "prestigeGain": 4,
+      "cardKey": "SUSTENANCE_GATHERER_DISCOUNT"
+    },
+    {
+      "class": "ModifierBuildingCard",
+      "era": "ERA_I",
+      "foodCost": 5,
+      "prestigeGain": 3,
+      "cardKey": "SUSTENANCE_ARTIST_DISCOUNT"
+    },
+    {
+      "class": "ModifierBuildingCard",
+      "era": "ERA_I",
+      "foodCost": 5,
+      "prestigeGain": 2,
+      "cardKey": "RITUAL_NO_PRESTIGE_LOSS"
+    },
+    {
+      "class": "ModifierBuildingCard",
+      "era": "ERA_I",
+      "foodCost": 3,
+      "prestigeGain": 3,
+      "cardKey": "TILE_FOOD_BONUS"
+    },
+    {
+      "class": "ObserverPairBuildingCard",
+      "era": "ERA_I",
+      "foodCost": 3,
+      "prestigeGain": 4
+    },
+    {
+      "class": "ModifierBuildingCard",
+      "era": "ERA_II",
+      "foodCost": 7,
+      "prestigeGain": 0,
+      "cardKey": "RITUAL_DOUBLE_WIN_CARD"
+    },
+    {
+      "class": "ModifierBuildingCard",
+      "era": "ERA_II",
+      "foodCost": 6,
+      "prestigeGain": 4,
+      "cardKey": "RITUAL_THREE_STAR_CARD"
+    },
+    {
+      "class": "ModifierBuildingCard",
+      "era": "ERA_II",
+      "foodCost": 7,
+      "prestigeGain": 4,
+      "cardKey": "SUSTENANCE_INVENTOR_DISCOUNT"
+    },
+    {
+      "class": "ModifierBuildingCard",
+      "era": "ERA_II",
+      "foodCost": 7,
+      "prestigeGain": 2,
+      "cardKey": "HUNT_PRESTIGE_AND_FOOD_GAIN_CARD"
+    },
+    {
+      "class": "EndGameBuildingCard",
+      "era": "ERA_II",
+      "foodCost": 6,
+      "prestigeGain": 4,
+      "prestigeEffect": "DOUBLE_BUILDERS"
+    },
+    {
+      "class": "ModifierBuildingCard",
+      "era": "ERA_II",
+      "foodCost": 5,
+      "prestigeGain": 6,
+      "cardKey": "PAINTING_FOOD_GAIN_CARD"
+    },
+    {
+      "class": "EndGameBuildingCard",
+      "era": "ERA_III",
+      "foodCost": 5,
+      "prestigeGain": 6,
+      "prestigeEffect": "COUNT_SETS"
+    },
+    {
+      "class": "EndGameBuildingCard",
+      "era": "ERA_III",
+      "foodCost": 8,
+      "prestigeGain": 8,
+      "prestigeEffect": "COUNT_HUNTERS"
+    },
+    {
+      "class": "EndGameBuildingCard",
+      "era": "ERA_III",
+      "foodCost": 7,
+      "prestigeGain": 6,
+      "prestigeEffect": "COUNT_GATHERERS"
+    },
+    {
+      "class": "EndGameBuildingCard",
+      "era": "ERA_III",
+      "foodCost": 7,
+      "prestigeGain": 4,
+      "prestigeEffect": "COUNT_SHAMANS"
+    },
+    {
+      "class": "EndGameBuildingCard",
+      "era": "ERA_III",
+      "foodCost": 6,
+      "prestigeGain": 3,
+      "prestigeEffect": "COUNT_BUILDERS"
+    },
+    {
+      "class": "EndGameBuildingCard",
+      "era": "ERA_III",
+      "foodCost": 7,
+      "prestigeGain": 4,
+      "prestigeEffect": "COUNT_ARTISTS"
+    },
+    {
+      "class": "EndGameBuildingCard",
+      "era": "ERA_III",
+      "foodCost": 6,
+      "prestigeGain": 6,
+      "prestigeEffect": "COUNT_INVENTORS"
+    },
+    {
+      "class": "ModifierBuildingCard",
+      "era": "ERA_III",
+      "foodCost": 9,
+      "prestigeGain": 3,
+      "cardKey": "PICK_FROM_TOP"
+    },
+    {
+      "class": "EndGameBuildingCard",
+      "era": "ERA_III",
+      "foodCost": 10,
+      "prestigeGain": 0,
+      "prestigeEffect": "FIXED_25"
     }
   ],
   "4": [
@@ -427,6 +717,151 @@
       "class": "HunterCard",
       "era": "ERA_II",
       "hasFoodIcon": true
+    },
+    {
+      "class": "ObserverSetBuildingCard",
+      "era": "ERA_I",
+      "foodCost": 4,
+      "prestigeGain": 3
+    },
+    {
+      "class": "ModifierBuildingCard",
+      "era": "ERA_I",
+      "foodCost": 4,
+      "prestigeGain": 4,
+      "cardKey": "SUSTENANCE_GATHERER_DISCOUNT"
+    },
+    {
+      "class": "ModifierBuildingCard",
+      "era": "ERA_I",
+      "foodCost": 5,
+      "prestigeGain": 3,
+      "cardKey": "SUSTENANCE_ARTIST_DISCOUNT"
+    },
+    {
+      "class": "ModifierBuildingCard",
+      "era": "ERA_I",
+      "foodCost": 5,
+      "prestigeGain": 2,
+      "cardKey": "RITUAL_NO_PRESTIGE_LOSS"
+    },
+    {
+      "class": "ModifierBuildingCard",
+      "era": "ERA_I",
+      "foodCost": 3,
+      "prestigeGain": 3,
+      "cardKey": "TILE_FOOD_BONUS"
+    },
+    {
+      "class": "ObserverPairBuildingCard",
+      "era": "ERA_I",
+      "foodCost": 3,
+      "prestigeGain": 4
+    },
+    {
+      "class": "ModifierBuildingCard",
+      "era": "ERA_II",
+      "foodCost": 7,
+      "prestigeGain": 0,
+      "cardKey": "RITUAL_DOUBLE_WIN_CARD"
+    },
+    {
+      "class": "ModifierBuildingCard",
+      "era": "ERA_II",
+      "foodCost": 6,
+      "prestigeGain": 4,
+      "cardKey": "RITUAL_THREE_STAR_CARD"
+    },
+    {
+      "class": "ModifierBuildingCard",
+      "era": "ERA_II",
+      "foodCost": 7,
+      "prestigeGain": 4,
+      "cardKey": "SUSTENANCE_INVENTOR_DISCOUNT"
+    },
+    {
+      "class": "ModifierBuildingCard",
+      "era": "ERA_II",
+      "foodCost": 7,
+      "prestigeGain": 2,
+      "cardKey": "HUNT_PRESTIGE_AND_FOOD_GAIN_CARD"
+    },
+    {
+      "class": "EndGameBuildingCard",
+      "era": "ERA_II",
+      "foodCost": 6,
+      "prestigeGain": 4,
+      "prestigeEffect": "DOUBLE_BUILDERS"
+    },
+    {
+      "class": "ModifierBuildingCard",
+      "era": "ERA_II",
+      "foodCost": 5,
+      "prestigeGain": 6,
+      "cardKey": "PAINTING_FOOD_GAIN_CARD"
+    },
+    {
+      "class": "EndGameBuildingCard",
+      "era": "ERA_III",
+      "foodCost": 5,
+      "prestigeGain": 6,
+      "prestigeEffect": "COUNT_SETS"
+    },
+    {
+      "class": "EndGameBuildingCard",
+      "era": "ERA_III",
+      "foodCost": 8,
+      "prestigeGain": 8,
+      "prestigeEffect": "COUNT_HUNTERS"
+    },
+    {
+      "class": "EndGameBuildingCard",
+      "era": "ERA_III",
+      "foodCost": 7,
+      "prestigeGain": 6,
+      "prestigeEffect": "COUNT_GATHERERS"
+    },
+    {
+      "class": "EndGameBuildingCard",
+      "era": "ERA_III",
+      "foodCost": 7,
+      "prestigeGain": 4,
+      "prestigeEffect": "COUNT_SHAMANS"
+    },
+    {
+      "class": "EndGameBuildingCard",
+      "era": "ERA_III",
+      "foodCost": 6,
+      "prestigeGain": 3,
+      "prestigeEffect": "COUNT_BUILDERS"
+    },
+    {
+      "class": "EndGameBuildingCard",
+      "era": "ERA_III",
+      "foodCost": 7,
+      "prestigeGain": 4,
+      "prestigeEffect": "COUNT_ARTISTS"
+    },
+    {
+      "class": "EndGameBuildingCard",
+      "era": "ERA_III",
+      "foodCost": 6,
+      "prestigeGain": 6,
+      "prestigeEffect": "COUNT_INVENTORS"
+    },
+    {
+      "class": "ModifierBuildingCard",
+      "era": "ERA_III",
+      "foodCost": 9,
+      "prestigeGain": 3,
+      "cardKey": "PICK_FROM_TOP"
+    },
+    {
+      "class": "EndGameBuildingCard",
+      "era": "ERA_III",
+      "foodCost": 10,
+      "prestigeGain": 0,
+      "prestigeEffect": "FIXED_25"
     }
   ],
   "5": [
@@ -482,6 +917,151 @@
       "class": "HunterCard",
       "era": "ERA_III",
       "hasFoodIcon": true
+    },
+    {
+      "class": "ObserverSetBuildingCard",
+      "era": "ERA_I",
+      "foodCost": 4,
+      "prestigeGain": 3
+    },
+    {
+      "class": "ModifierBuildingCard",
+      "era": "ERA_I",
+      "foodCost": 4,
+      "prestigeGain": 4,
+      "cardKey": "SUSTENANCE_GATHERER_DISCOUNT"
+    },
+    {
+      "class": "ModifierBuildingCard",
+      "era": "ERA_I",
+      "foodCost": 5,
+      "prestigeGain": 3,
+      "cardKey": "SUSTENANCE_ARTIST_DISCOUNT"
+    },
+    {
+      "class": "ModifierBuildingCard",
+      "era": "ERA_I",
+      "foodCost": 5,
+      "prestigeGain": 2,
+      "cardKey": "RITUAL_NO_PRESTIGE_LOSS"
+    },
+    {
+      "class": "ModifierBuildingCard",
+      "era": "ERA_I",
+      "foodCost": 3,
+      "prestigeGain": 3,
+      "cardKey": "TILE_FOOD_BONUS"
+    },
+    {
+      "class": "ObserverPairBuildingCard",
+      "era": "ERA_I",
+      "foodCost": 3,
+      "prestigeGain": 4
+    },
+    {
+      "class": "ModifierBuildingCard",
+      "era": "ERA_II",
+      "foodCost": 7,
+      "prestigeGain": 0,
+      "cardKey": "RITUAL_DOUBLE_WIN_CARD"
+    },
+    {
+      "class": "ModifierBuildingCard",
+      "era": "ERA_II",
+      "foodCost": 6,
+      "prestigeGain": 4,
+      "cardKey": "RITUAL_THREE_STAR_CARD"
+    },
+    {
+      "class": "ModifierBuildingCard",
+      "era": "ERA_II",
+      "foodCost": 7,
+      "prestigeGain": 4,
+      "cardKey": "SUSTENANCE_INVENTOR_DISCOUNT"
+    },
+    {
+      "class": "ModifierBuildingCard",
+      "era": "ERA_II",
+      "foodCost": 7,
+      "prestigeGain": 2,
+      "cardKey": "HUNT_PRESTIGE_AND_FOOD_GAIN_CARD"
+    },
+    {
+      "class": "EndGameBuildingCard",
+      "era": "ERA_II",
+      "foodCost": 6,
+      "prestigeGain": 4,
+      "prestigeEffect": "DOUBLE_BUILDERS"
+    },
+    {
+      "class": "ModifierBuildingCard",
+      "era": "ERA_II",
+      "foodCost": 5,
+      "prestigeGain": 6,
+      "cardKey": "PAINTING_FOOD_GAIN_CARD"
+    },
+    {
+      "class": "EndGameBuildingCard",
+      "era": "ERA_III",
+      "foodCost": 5,
+      "prestigeGain": 6,
+      "prestigeEffect": "COUNT_SETS"
+    },
+    {
+      "class": "EndGameBuildingCard",
+      "era": "ERA_III",
+      "foodCost": 8,
+      "prestigeGain": 8,
+      "prestigeEffect": "COUNT_HUNTERS"
+    },
+    {
+      "class": "EndGameBuildingCard",
+      "era": "ERA_III",
+      "foodCost": 7,
+      "prestigeGain": 6,
+      "prestigeEffect": "COUNT_GATHERERS"
+    },
+    {
+      "class": "EndGameBuildingCard",
+      "era": "ERA_III",
+      "foodCost": 7,
+      "prestigeGain": 4,
+      "prestigeEffect": "COUNT_SHAMANS"
+    },
+    {
+      "class": "EndGameBuildingCard",
+      "era": "ERA_III",
+      "foodCost": 6,
+      "prestigeGain": 3,
+      "prestigeEffect": "COUNT_BUILDERS"
+    },
+    {
+      "class": "EndGameBuildingCard",
+      "era": "ERA_III",
+      "foodCost": 7,
+      "prestigeGain": 4,
+      "prestigeEffect": "COUNT_ARTISTS"
+    },
+    {
+      "class": "EndGameBuildingCard",
+      "era": "ERA_III",
+      "foodCost": 6,
+      "prestigeGain": 6,
+      "prestigeEffect": "COUNT_INVENTORS"
+    },
+    {
+      "class": "ModifierBuildingCard",
+      "era": "ERA_III",
+      "foodCost": 9,
+      "prestigeGain": 3,
+      "cardKey": "PICK_FROM_TOP"
+    },
+    {
+      "class": "EndGameBuildingCard",
+      "era": "ERA_III",
+      "foodCost": 10,
+      "prestigeGain": 0,
+      "prestigeEffect": "FIXED_25"
     }
   ]
 }
