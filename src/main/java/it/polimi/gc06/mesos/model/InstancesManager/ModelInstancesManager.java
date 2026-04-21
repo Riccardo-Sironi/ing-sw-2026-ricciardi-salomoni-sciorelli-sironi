@@ -100,6 +100,10 @@ public class ModelInstancesManager {
 
         turnManager.setGameModel(model);
 
+        for (Player player : turnManager.getPlayersOrder()) {
+            player.setEnvironment(model);
+        }
+
         return model;
     }
 
