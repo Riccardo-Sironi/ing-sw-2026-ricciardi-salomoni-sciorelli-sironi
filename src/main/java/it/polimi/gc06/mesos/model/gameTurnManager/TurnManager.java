@@ -23,7 +23,6 @@ public class TurnManager {
     private GameModel gameModel;
 
     public TurnManager(List<Player> playersOrder, ModifierBuildingsRegistry registry) {
-        Collections.shuffle(playersOrder);
         this.playersOrder = playersOrder;
         this.pickFromTopCard = registry.get(ModifierBuildingRegistryKey.PICK_FROM_TOP);
         this.phase = new PlacingTotemPhase();

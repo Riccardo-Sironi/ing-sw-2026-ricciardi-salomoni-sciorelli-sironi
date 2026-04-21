@@ -98,7 +98,7 @@ public class ModelInstancesManager {
                 players,
                 turnManager);
 
-        model.getTurnManager().setGameModel(model);
+        turnManager.setGameModel(model);
 
         return model;
     }
