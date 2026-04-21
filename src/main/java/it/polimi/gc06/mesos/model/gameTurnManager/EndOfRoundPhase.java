@@ -6,6 +6,7 @@ import it.polimi.gc06.mesos.model.GameModel;
 import it.polimi.gc06.mesos.model.Player;
 import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
 import it.polimi.gc06.mesos.model.cards.characters.CharacterCard;
+import it.polimi.gc06.mesos.model.cards.events.EventCard;
 import it.polimi.gc06.mesos.model.gameBoard.Board;
 
 import java.util.ArrayList;
@@ -102,6 +103,16 @@ public class EndOfRoundPhase extends Phase {
 
             // TODO Check whether game is over
             if (board.isEndGame()) {
+
+                // end of game routine:
+                board.moveFromTopToBottom();
+
+                ArrayList<EventCard> events = board.cleanBottomRow();
+
+                events.forEach(card -> {
+                    turnManager.getPlayersOrder().forEach(card::resolveEvent);
+                });
+
                 // TODO Go to EndGame Phase
                 gameModel.endGame();
                 return;
