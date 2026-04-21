@@ -4,11 +4,8 @@ import it.polimi.gc06.mesos.gameExceptions.IllegalGameActionException;
 import it.polimi.gc06.mesos.gameExceptions.IllegalPhaseActionException;
 import it.polimi.gc06.mesos.model.GameModel;
 import it.polimi.gc06.mesos.model.Player;
-import it.polimi.gc06.mesos.model.cards.CardVisitor;
 import it.polimi.gc06.mesos.model.cards.TribeCard;
 import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
-import it.polimi.gc06.mesos.model.cards.characters.CharacterCard;
-import it.polimi.gc06.mesos.model.cards.events.EventCard;
 import it.polimi.gc06.mesos.model.gameBoard.TileSlot;
 import it.polimi.gc06.mesos.model.gameTurnManager.TurnManager;
 import it.polimi.gc06.mesos.network.socket.infos.CardPickedInfo;
@@ -83,17 +80,7 @@ public class GameController {
         TribeCard card = model.getBoard().getBottomCardFromIndex(cardIndex);
         CardPickedInfo info = new CardPickedInfo(playerNickname, card); //prepares the info if needed
 
-        CardVisitor cardPickerVisitor = new CardVisitor() {
-            @Override
-            public void visit(CharacterCard card) {
-                turnManager.getPhase().pickCardFromBottom(turnManager, activePlayer, card, model.getBoard());
-            }
-
-            @Override
-            public void visit(EventCard card) throws IllegalGameActionException {
-                throw new IllegalGameActionException("Event cards cannot be picked!");
-            }
-        };
+        CardBottomRowControllerVisitor cardPickerVisitor = new CardBottomRowControllerVisitor(turnManager, activePlayer, model);
 
         card.accept(cardPickerVisitor);
 
@@ -122,17 +109,7 @@ public class GameController {
         TribeCard card = model.getBoard().getTopCardFromIndex(cardIndex);
         CardPickedInfo info = new CardPickedInfo(playerNickname, card); //prepares the info if needed
 
-        CardVisitor cardPickerVisitor = new CardVisitor() {
-            @Override
-            public void visit(CharacterCard card) {
-                turnManager.getPhase().pickCardFromTop(turnManager, activePlayer, card, model.getBoard());
-            }
-
-            @Override
-            public void visit(EventCard card) throws IllegalGameActionException {
-                throw new IllegalGameActionException("Event cards cannot be picked!");
-            }
-        };
+        CardTopRowControllerVisitor cardPickerVisitor = new CardTopRowControllerVisitor(turnManager, activePlayer, model);
 
         card.accept(cardPickerVisitor);
 
