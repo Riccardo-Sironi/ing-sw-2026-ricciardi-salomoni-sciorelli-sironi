@@ -39,6 +39,14 @@ public class PlacingTotemPhase extends Phase {
         if (turnManager.getPlayersOrder().isEmpty()) {
             turnManager.setPhase(new OfferResolutionPhase());
 
+            // once we move the players from turn order tile we refill the players order list with the new order of
+            // the players based on the offer track
+            for (TileSlot s : board.getOfferTrack()) {
+                if (s.getPlayer() != null) {
+                    turnManager.getPlayersOrder().addLast(s.getPlayer());
+                }
+            }
+
             Player p = board.getOfferTrack().stream().filter(tile -> tile.getPlayer() != null).findFirst().map(TileSlot::getPlayer).orElse(null);
             if (p == null) throw new IllegalStateException("test");
             turnManager.getPhase().startPlayerOfferResolution(turnManager, p, board.getOfferTrackPlayerSlot(p));

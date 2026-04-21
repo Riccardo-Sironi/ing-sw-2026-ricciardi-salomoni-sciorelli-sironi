@@ -26,6 +26,13 @@ public class OfferResolutionPhase extends Phase {
 
         isStarted = true;
 
+        // TODO : if the player is in the offer tile 0, which gives food but doesn't allow to draw cards, we have to call
+        // the checkIfPlayerFinishedMethod to let the player skip the offer resolution phase and move on with the next one
+
+        if (player.getTopDrawNum() == 0 && player.getBottomDrawNum() == 0) {
+            checkIfPlayerIsFinished(turnManager, player, turnManager.getGameModel().getBoard());
+        }
+
         // TODO Notify Buildings on Draw
     }
 
@@ -103,7 +110,7 @@ public class OfferResolutionPhase extends Phase {
             TileSlot playerSlot = board.getOfferTrackPlayerSlot(player);
             playerSlot.removePlayer();
 
-            turnManager.getPlayersOrder().addLast(player);
+            turnManager.getPlayersOrder().remove(player);
 
             for (TileSlot orderTile : board.getTurnOrderTile().slots()) {
                 if (orderTile.getPlayer() == null) {
@@ -112,12 +119,13 @@ public class OfferResolutionPhase extends Phase {
                 }
             }
 
-            if (!board.getOfferTrack().isEmpty()) {
+            if (!board.isOfferTrackEmpty()) {
                 Player nextPlayer = null;
 
                 for (TileSlot offerTrackTile : board.getOfferTrack()) {
                     if (offerTrackTile.getPlayer() != null) {
                         nextPlayer = offerTrackTile.getPlayer();
+                        break;
                     }
                 }
 
@@ -130,6 +138,16 @@ public class OfferResolutionPhase extends Phase {
         // if the offer track is empty then we can move on with the next phase
         if (board.isOfferTrackEmpty()) {
             turnManager.setPhase(new EventResolutionPhase());
+
+            turnManager.getPlayersOrder().clear();
+
+            // refill the players order list with the new order of the players based on the turn order tile
+            for (TileSlot orderTile : board.getTurnOrderTile().slots()) {
+                if (orderTile.getPlayer() != null) {
+                    turnManager.getPlayersOrder().addLast(orderTile.getPlayer());
+                }
+            }
+
             // we call the method, we don't wait for no request from no client
             turnManager.getPhase().resolveEvent(turnManager, board);
         }
