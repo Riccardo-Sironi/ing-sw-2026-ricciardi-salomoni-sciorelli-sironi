@@ -44,6 +44,11 @@ public class GameModel implements GameInfo {
             throw new IllegalStateException("Player count must be between 2 and 5.");
         }
 
+        for (Era e : Era.values()) {
+            Collections.shuffle(tribeCardsDeck.get(e));
+            Collections.shuffle(buildingCardsDecks.get(e));
+        }
+
         try {
             board.initBoard(this);
         } catch (IllegalStateException e) {
@@ -51,12 +56,17 @@ public class GameModel implements GameInfo {
         } catch (IllegalArgumentException ex) {
             throw new IllegalStateException(ex.getMessage());
         }
-        
-        Collections.shuffle(this.players); //randomize player order
+
+        buildingCardsDecks.clear();
+
+        ArrayList<Player> playersList = (ArrayList<Player>) turnManager.getPlayersOrder();
+
+        Collections.shuffle(playersList); //randomize player order
 
         //setups the initial food
-        for (int i = 0; i < players.size(); i++) {
-            Player p = players.get(i);
+        for (int i = 0; i < playersList.size(); i++) {
+            Player p = playersList.get(i);
+            board.getTurnOrderTile().slots().get(i).setPlayer(p);
             if (i == 0) {
                 p.addFoodTokens(2);
             } else if (i == 1 || i == 2) {
