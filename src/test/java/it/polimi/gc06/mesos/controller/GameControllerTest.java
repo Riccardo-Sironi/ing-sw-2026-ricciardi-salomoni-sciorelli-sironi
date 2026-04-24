@@ -11,9 +11,10 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 // TODO: dobbiamo fare il testing del controller, ma solo dopo aver terminato tutti quelli del model (linear)
 class GameControllerTest {
@@ -54,6 +55,10 @@ class GameControllerTest {
 
         int nPlayers = controller.getModel().getTurnManager().getPlayersOrder().size();
 
+        ArrayList<Integer> choiceList = new ArrayList<>(Arrays.asList(0, 1, 2, 3, 4, 5, 6));
+
+        Collections.shuffle(choiceList);
+
         for (int i = 0; i < nPlayers; i++) {
             String movingPlayer = model.getBoard().getTurnOrderTile().slots().get(i).getPlayer().getNickname();
 
@@ -61,9 +66,9 @@ class GameControllerTest {
             printTurnOrderTile();
             printOfferTrack();
 
-            System.out.println("\n  [  Moving " + movingPlayer + " from turn order tile " + i + " to offer track tile " + i + "  ]\n");
+            System.out.println("\n  [  Moving " + movingPlayer + " from turn order tile " + i + " to offer track tile " + choiceList.get(i) + "  ]\n");
 
-            controller.handleTotemOfferTilePlacement(movingPlayer, i);
+            controller.handleTotemOfferTilePlacement(movingPlayer, choiceList.get(i));
 
             printTurnOrderTile();
             printOfferTrack();
@@ -75,7 +80,9 @@ class GameControllerTest {
         System.out.println();
         System.out.println();
 
-        for (int i = 0; i < nPlayers; i++) {
+        int offerTrackSize = controller.getModel().getBoard().getOfferTrack().size();
+
+        for (int i = 0; i < offerTrackSize; i++) {
             Player pickingPlayer = controller.getModel().getBoard().getOfferTrack().get(i).getPlayer();
 
             if (pickingPlayer != null) {
@@ -85,12 +92,22 @@ class GameControllerTest {
                 int pickedCardIndex;
 
                 while (pickingPlayer.getTopDrawNum() > 0) {
-                    pickedCard = controller.getModel().getBoard().getTopRow().stream().filter(card -> card instanceof CharacterCard).map(card -> (CharacterCard) card).findFirst().orElseThrow();
+                    pickedCard = controller.getModel().getBoard().getTopRow().stream().filter(card -> card instanceof CharacterCard).map(card -> (CharacterCard) card).findFirst().orElse(null);
+                    if (pickedCard == null) {
+                        pickingPlayer.setTopDrawNum(0);
+                        controller.getModel().getTurnManager().getPhase().skipPickingPLayer(controller.getModel().getTurnManager());
+                        break;
+                    }
                     pickedCardIndex = controller.getModel().getBoard().getTopRow().indexOf(pickedCard);
                     topSituation(pickingPlayerNickname, pickedCard, pickedCardIndex);
                 }
                 while (pickingPlayer.getBottomDrawNum() > 0) {
-                    pickedCard = controller.getModel().getBoard().getBottomRow().stream().filter(card -> card instanceof CharacterCard).map(card -> (CharacterCard) card).findFirst().orElseThrow();
+                    pickedCard = controller.getModel().getBoard().getBottomRow().stream().filter(card -> card instanceof CharacterCard).map(card -> (CharacterCard) card).findFirst().orElse(null);
+                    if (pickedCard == null) {
+                        pickingPlayer.setBottomDrawNum(0);
+                        controller.getModel().getTurnManager().getPhase().skipPickingPLayer(controller.getModel().getTurnManager());
+                        break;
+                    }
                     pickedCardIndex = controller.getModel().getBoard().getBottomRow().indexOf(pickedCard);
                     bottomSituation(pickingPlayerNickname, pickedCard, pickedCardIndex);
                 }
