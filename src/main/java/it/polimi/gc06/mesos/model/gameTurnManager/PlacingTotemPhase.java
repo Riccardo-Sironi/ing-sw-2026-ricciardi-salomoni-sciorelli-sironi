@@ -5,8 +5,6 @@ import it.polimi.gc06.mesos.model.Player;
 import it.polimi.gc06.mesos.model.gameBoard.Board;
 import it.polimi.gc06.mesos.model.gameBoard.TileSlot;
 
-import java.util.ArrayList;
-
 public class PlacingTotemPhase extends Phase {
 
     /**

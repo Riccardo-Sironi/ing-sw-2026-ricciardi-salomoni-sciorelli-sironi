@@ -6,7 +6,8 @@ import it.polimi.gc06.mesos.model.GameModel;
 import it.polimi.gc06.mesos.model.Player;
 import it.polimi.gc06.mesos.model.cards.BottomRowInitVisitor;
 import it.polimi.gc06.mesos.model.cards.TribeCard;
-import it.polimi.gc06.mesos.model.cards.buildings.*;
+import it.polimi.gc06.mesos.model.cards.buildings.AddToBuildingsVisitor;
+import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
 import it.polimi.gc06.mesos.model.cards.characters.CharacterCard;
 import it.polimi.gc06.mesos.model.cards.events.EventCard;
 import it.polimi.gc06.mesos.model.cards.events.EventListVisitor;
@@ -437,7 +438,7 @@ public class Board implements DrawSubject {
      * @return the correct building.
      * @throws IndexOutOfBoundsException if the index does not point to a valid building.
      */
-    public BuildingCard getTopBuildingFromIndex(int index) throws IndexOutOfBoundsException{
+    public BuildingCard getTopBuildingFromIndex(int index) throws IndexOutOfBoundsException {
         return topBuildings.get(index);
     }
 
@@ -448,7 +449,7 @@ public class Board implements DrawSubject {
      * @return the correct building.
      * @throws IndexOutOfBoundsException if the index does not point to a valid building.
      */
-    public BuildingCard getBottomBuildingFromIndex(int index) throws IndexOutOfBoundsException{
+    public BuildingCard getBottomBuildingFromIndex(int index) throws IndexOutOfBoundsException {
         return bottomBuildings.get(index);
     }
 
@@ -459,7 +460,7 @@ public class Board implements DrawSubject {
      * @return the correct tribe card.
      * @throws IndexOutOfBoundsException if the index does not point to a valid tribe card.
      */
-    public TribeCard getTopCardFromIndex(int index) throws IndexOutOfBoundsException{
+    public TribeCard getTopCardFromIndex(int index) throws IndexOutOfBoundsException {
         return topRow.get(index);
     }
 
@@ -470,7 +471,7 @@ public class Board implements DrawSubject {
      * @return the correct tribe card.
      * @throws IndexOutOfBoundsException if the index does not point to a valid tribe card.
      */
-    public TribeCard getBottomCardFromIndex(int index) throws IndexOutOfBoundsException{
+    public TribeCard getBottomCardFromIndex(int index) throws IndexOutOfBoundsException {
         return bottomRow.get(index);
     }
 

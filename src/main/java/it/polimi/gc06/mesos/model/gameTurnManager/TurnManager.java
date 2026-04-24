@@ -6,7 +6,6 @@ import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingCard;
 import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingRegistryKey;
 import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingsRegistry;
 
-import java.util.Collections;
 import java.util.List;
 
 public class TurnManager {

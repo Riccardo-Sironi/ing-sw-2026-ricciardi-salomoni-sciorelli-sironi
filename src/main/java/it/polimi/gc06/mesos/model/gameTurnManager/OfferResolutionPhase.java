@@ -14,7 +14,6 @@ public class OfferResolutionPhase extends Phase {
 
     @Override
     public void startPlayerOfferResolution(TurnManager turnManager, Player player, TileSlot tileSlot) throws IllegalPhaseActionException {
-        // TODO : THIS METHOD IS NEVER CALLED?
         if (turnManager.getActivePlayer() != player) {
             throw new IllegalPhaseActionException("It's not your turn yet!");
         }
