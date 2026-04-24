@@ -4,11 +4,11 @@ import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
 import it.polimi.gc06.mesos.model.cards.characters.*;
 import it.polimi.gc06.mesos.model.cards.events.*;
 
-public class TopRowAreCharactersPresentVisitor extends CardVisitor {
+public class CharactersPresenceVisitor extends CardVisitor {
     boolean areThereCardsInTopRow = false;
 
 
-    public TopRowAreCharactersPresentVisitor() {
+    public CharactersPresenceVisitor() {
     }
 
     public boolean areCharactersPresent() {
