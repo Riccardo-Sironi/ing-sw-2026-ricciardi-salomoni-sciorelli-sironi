@@ -3,6 +3,8 @@ package it.polimi.gc06.mesos.model.gameTurnManager;
 import it.polimi.gc06.mesos.gameExceptions.IllegalGameActionException;
 import it.polimi.gc06.mesos.gameExceptions.IllegalPhaseActionException;
 import it.polimi.gc06.mesos.model.Player;
+import it.polimi.gc06.mesos.model.cards.BuildingPresenceVisitor;
+import it.polimi.gc06.mesos.model.cards.CharactersPresenceVisitor;
 import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
 import it.polimi.gc06.mesos.model.cards.characters.CharacterCard;
 import it.polimi.gc06.mesos.model.gameBoard.Board;
@@ -25,12 +27,34 @@ public class OfferResolutionPhase extends Phase {
 
         isStarted = true;
 
-        // TODO : if the player is in the offer tile 0, which gives food but doesn't allow to draw cards, we have to call
-        // the checkIfPlayerFinishedMethod to let the player skip the offer resolution phase and move on with the next one
+        // we automatically check if the player can draw from the rows, if not we set the draw num to 0 so that they
+        // can't draw, and we can move on with the next player
+        
+        if (player.getTopDrawNum() > 0) {
+            CharactersPresenceVisitor charactersPresenceVisitor = new CharactersPresenceVisitor();
+            BuildingPresenceVisitor buildingPresenceVisitor = new BuildingPresenceVisitor();
 
-        if (player.getTopDrawNum() == 0 && player.getBottomDrawNum() == 0) {
-            checkIfPlayerIsFinished(turnManager, player, turnManager.getGameModel().getBoard());
+            turnManager.getGameModel().getBoard().getTopRow().forEach(card -> card.accept(charactersPresenceVisitor));
+            turnManager.getGameModel().getBoard().getTopBuildings().forEach(card -> card.accept(buildingPresenceVisitor));
+
+            if (!charactersPresenceVisitor.areCharactersPresent() && !buildingPresenceVisitor.areThereBuildings()) {
+                player.setTopDrawNum(0);
+            }
         }
+
+        if (player.getBottomDrawNum() > 0) {
+            CharactersPresenceVisitor charactersPresenceVisitor = new CharactersPresenceVisitor();
+            BuildingPresenceVisitor buildingPresenceVisitor = new BuildingPresenceVisitor();
+
+            turnManager.getGameModel().getBoard().getBottomRow().forEach(card -> card.accept(charactersPresenceVisitor));
+            turnManager.getGameModel().getBoard().getBottomRow().forEach(card -> card.accept(buildingPresenceVisitor));
+
+            if (!charactersPresenceVisitor.areCharactersPresent() && !buildingPresenceVisitor.areThereBuildings()) {
+                player.setBottomDrawNum(0);
+            }
+        }
+
+        checkIfPlayerIsFinished(turnManager, player, turnManager.getGameModel().getBoard());
 
         // TODO Notify Buildings on Draw
     }
@@ -160,7 +184,7 @@ public class OfferResolutionPhase extends Phase {
      * @throws IllegalPhaseActionException
      */
     @Override
-    public void skipPickingPLayer(TurnManager turnManager) throws IllegalPhaseActionException {
+    public void skipPickingPlayer(TurnManager turnManager) throws IllegalPhaseActionException {
         checkIfPlayerIsFinished(turnManager, turnManager.getActivePlayer(), turnManager.getGameModel().getBoard());
     }
 }

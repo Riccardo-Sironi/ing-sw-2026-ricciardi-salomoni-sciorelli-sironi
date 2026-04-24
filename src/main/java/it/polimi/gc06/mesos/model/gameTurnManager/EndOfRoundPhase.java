@@ -4,7 +4,8 @@ import it.polimi.gc06.mesos.gameExceptions.IllegalGameActionException;
 import it.polimi.gc06.mesos.gameExceptions.IllegalPhaseActionException;
 import it.polimi.gc06.mesos.model.GameModel;
 import it.polimi.gc06.mesos.model.Player;
-import it.polimi.gc06.mesos.model.cards.TopRowAreCharactersPresentVisitor;
+import it.polimi.gc06.mesos.model.cards.BuildingPresenceVisitor;
+import it.polimi.gc06.mesos.model.cards.CharactersPresenceVisitor;
 import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
 import it.polimi.gc06.mesos.model.cards.characters.CharacterCard;
 import it.polimi.gc06.mesos.model.cards.events.EventCard;
@@ -27,10 +28,16 @@ public class EndOfRoundPhase extends Phase {
     public void checkForEndOfRoundPick(TurnManager turnManager) throws IllegalPhaseActionException {
         Board board = turnManager.getGameModel().getBoard();
 
-        TopRowAreCharactersPresentVisitor visitor = new TopRowAreCharactersPresentVisitor();
-        board.getTopRow().forEach(card -> card.accept(visitor));
+        CharactersPresenceVisitor charactersPresentVisitor = new CharactersPresenceVisitor();
+        BuildingPresenceVisitor buildingVisitor = new BuildingPresenceVisitor();
 
-        if (visitor.areCharactersPresent()) {
+        board.getTopRow().forEach(card -> card.accept(charactersPresentVisitor));
+        board.getTopBuildings().forEach(card -> card.accept(buildingVisitor));
+
+        if (!charactersPresentVisitor.areCharactersPresent() && !buildingVisitor.areThereBuildings()) {
+            skipPickingPlayer(turnManager);
+
+        } else {
             ArrayList<Player> players = (ArrayList<Player>) turnManager.getPlayersOrder();
 
             for (Player player : players) {
@@ -46,9 +53,8 @@ public class EndOfRoundPhase extends Phase {
                     break; // Once we find the player, there is no point in looking further.
                 }
             }
-        } else {
-            skipPickingPLayer(turnManager);
         }
+        
         justStarted = false;
     }
 
@@ -95,7 +101,7 @@ public class EndOfRoundPhase extends Phase {
      * @throws IllegalPhaseActionException
      */
     @Override
-    public void skipPickingPLayer(TurnManager turnManager) throws IllegalPhaseActionException {
+    public void skipPickingPlayer(TurnManager turnManager) throws IllegalPhaseActionException {
         turnManager.getActivePlayer().setTopDrawNum(0);
         isEndOfRoundPickPlayerPresent = false;
         turnManager.setActivePlayerIndex(0);
