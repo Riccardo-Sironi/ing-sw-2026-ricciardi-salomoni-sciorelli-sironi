@@ -4,6 +4,7 @@ import it.polimi.gc06.mesos.gameExceptions.IllegalGameActionException;
 import it.polimi.gc06.mesos.gameExceptions.IllegalPhaseActionException;
 import it.polimi.gc06.mesos.model.GameModel;
 import it.polimi.gc06.mesos.model.Player;
+import it.polimi.gc06.mesos.model.cards.TopRowAreCharactersPresentVisitor;
 import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
 import it.polimi.gc06.mesos.model.cards.characters.CharacterCard;
 import it.polimi.gc06.mesos.model.cards.events.EventCard;
@@ -24,22 +25,30 @@ public class EndOfRoundPhase extends Phase {
     }
 
     public void checkForEndOfRoundPick(TurnManager turnManager) throws IllegalPhaseActionException {
-        ArrayList<Player> players = (ArrayList<Player>) turnManager.getPlayersOrder();
+        Board board = turnManager.getGameModel().getBoard();
 
-        for (Player player : players) {
-            if (player.getBuildingCards().contains(turnManager.getPickFromTopCard())) {
-                player.setTopDrawNum(1);
-                isEndOfRoundPickPlayerPresent = true;
+        TopRowAreCharactersPresentVisitor visitor = new TopRowAreCharactersPresentVisitor();
+        board.getTopRow().forEach(card -> card.accept(visitor));
 
-                if (players.getFirst() != player) {
-                    endOfRoundPickPlayerIndex = players.indexOf(player);
-                    turnManager.setActivePlayerIndex(endOfRoundPickPlayerIndex);
+        if (visitor.areCharactersPresent()) {
+            ArrayList<Player> players = (ArrayList<Player>) turnManager.getPlayersOrder();
+
+            for (Player player : players) {
+                if (player.getBuildingCards().contains(turnManager.getPickFromTopCard())) {
+                    player.setTopDrawNum(1);
+                    isEndOfRoundPickPlayerPresent = true;
+
+                    if (players.getFirst() != player) {
+                        endOfRoundPickPlayerIndex = players.indexOf(player);
+                        turnManager.setActivePlayerIndex(endOfRoundPickPlayerIndex);
+                    }
+
+                    break; // Once we find the player, there is no point in looking further.
                 }
-
-                break; // Once we find the player, there is no point in looking further.
             }
+        } else {
+            skipPickingPLayer(turnManager);
         }
-
         justStarted = false;
     }
 
@@ -77,6 +86,20 @@ public class EndOfRoundPhase extends Phase {
         isEndOfRoundPickPlayerPresent = false;
         turnManager.setActivePlayerIndex(0);
         endOfRound(turnManager, board, turnManager.getGameModel());
+    }
+
+    /**
+     * This method allow to skip the end of round pick if needed.
+     *
+     * @param turnManager
+     * @throws IllegalPhaseActionException
+     */
+    @Override
+    public void skipPickingPLayer(TurnManager turnManager) throws IllegalPhaseActionException {
+        turnManager.getActivePlayer().setTopDrawNum(0);
+        isEndOfRoundPickPlayerPresent = false;
+        turnManager.setActivePlayerIndex(0);
+        endOfRound(turnManager, turnManager.getGameModel().getBoard(), turnManager.getGameModel());
     }
 
     /**

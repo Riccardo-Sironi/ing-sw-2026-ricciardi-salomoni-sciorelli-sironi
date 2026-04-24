@@ -151,4 +151,16 @@ public class OfferResolutionPhase extends Phase {
             turnManager.getPhase().resolveEvent(turnManager, board);
         }
     }
+
+    /**
+     * This method allows to skip the player picking phase if needed. An example is if there are no characters card to
+     * pick or if the rows are empty.
+     *
+     * @param turnManager
+     * @throws IllegalPhaseActionException
+     */
+    @Override
+    public void skipPickingPLayer(TurnManager turnManager) throws IllegalPhaseActionException {
+        checkIfPlayerIsFinished(turnManager, turnManager.getActivePlayer(), turnManager.getGameModel().getBoard());
+    }
 }
