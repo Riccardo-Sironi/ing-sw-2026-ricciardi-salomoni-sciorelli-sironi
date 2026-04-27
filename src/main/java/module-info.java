@@ -8,6 +8,7 @@ module it.polimi.gc06.mesos {
     requires java.compiler;
     requires com.fasterxml.jackson.databind;
     requires java.rmi;
+    requires java.sql;
 
     opens it.polimi.gc06.mesos to javafx.fxml;
     exports it.polimi.gc06.mesos.model;
