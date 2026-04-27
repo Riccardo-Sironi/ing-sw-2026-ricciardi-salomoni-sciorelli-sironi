@@ -6,15 +6,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * The class is static and this application should be the only one accessing the DB, if this is not respected the
  * DAO won't be consistent with external updates. Right now the DAO has two states:
  * 1. Application just started, DB is created and at the first read request all the data is extracted from DB.
- * 2. First read request already happened, local data is up to date, no need to request DB update
+ * 2. First read request already happened, local data is up to date, no need to request DB update.
  */
 public class LeaderboardDAO {
 
@@ -46,26 +44,89 @@ public class LeaderboardDAO {
 
         //sets up the connection to DB
         connection = DriverManager.getConnection(base_url+db_name, user, password);
+        try {
+            String query = "CREATE TABLE IF NOT EXIST leaderboards(" +
+                    "id INT AUTO_INCREMENT PRIMARY KEY, " +
+                    "numOfPlayers INT NOT NULL, " +
+                    "tstamp TIMESTAMP NOT NULL)";
+            connection.createStatement().execute(query);
+            query = "CREATE TABLE IF NOT EXIST scores(" +
+                    "id INT AUTO_INCREMENT PRIMARY KEY, " +
+                    "nickname VARCHAR(255) NOT NULL, " +
+                    "score INT TIMESTAMP NOT NULL," +
+                    "leaderboardId INT NOT NULL REFERENCES leaderboards(id) ON UPDATE CASCADE ON DELETE NO ACTION)";
+            connection.createStatement().execute(query);
+
+        } catch(SQLException _){
+            connection = null; //init should be called again
+            throw new SQLException();
+        }
     }
 
     private synchronized static List<Leaderboard> getLeaderboards() throws IOException, SQLException {
 
         if(connection == null) init();
 
-        //only if current list is empty it calls the DB to request the necessary leaderboards
+        //only if current list is empty it calls the DB to request the leaderboards
+        if(leaderboards.isEmpty()){
+            String query = "SELECT l.id AS id, numOfPlayers, tstamp, nickname, score" +
+                    "FROM leaderboards AS l JOIN scores AS s ON l.id = s.leaderboardId" +
+                    "ORDER BY l.id";
+            ResultSet result = connection.prepareStatement(query).executeQuery();
+            Set<Integer> idSet = new HashSet<>();
+            Leaderboard tempLb = null;
+            while(result.next()){
+
+                //if necessary creates new leaderboard and saves the previous
+                if(!idSet.contains(result.getInt("id"))){
+                    idSet.add(result.getInt("id"));
+
+                    leaderboards.add(tempLb);
+                    tempLb = new Leaderboard();
+
+                    tempLb.setID(result.getInt("id"));
+                    tempLb.setTimestamp(result.getTimestamp("tstamp"));
+                    tempLb.setNumOfPlayers(result.getInt("numOfPlayers"));
+                }
+
+                Score score = new Score();
+                score.setScore(result.getInt("score"));
+                score.setNickname(result.getString("nickname"));
+                tempLb.addScore(score);
+            }
+            if(tempLb != null) leaderboards.add(tempLb); //saves the last unsaved leaderboard if present
+        }
 
         //returns the leaderboards
         leaderboards.sort(Leaderboard::compareTo);
         return Collections.unmodifiableList(leaderboards);
     }
 
-    public synchronized static void saveLeaderboard(Leaderboard leaderboard) throws IOException, SQLException {
+    public synchronized static void saveLeaderboard(Leaderboard l) throws IOException, SQLException {
 
         if(connection == null) init();
 
         //request to save the leaderboard to DB
+        connection.setAutoCommit(false);
+        try {
+            String query = "INSERT INTO leaderboards (numOfPlayers, tstamp) " +
+                    "VALUES (" + l.getNumOfPlayers() + ", " + l.getTimestamp() + ")";
+            int id = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS).executeUpdate();
+            for (Score s : l.getScores()) {
+                query = "INSERT INTO scores (nickname, score, leaderboardId) " +
+                        "VALUES (" + s.getNickname() + ", " + s.getScore() + ", " + id + ")";
+                connection.prepareStatement(query).executeUpdate();
+            }
+            connection.commit();
+
+        } catch(SQLException _){
+            //if something goes wrong we do a rollback
+            connection.rollback();
+            throw new SQLException();
+        }
+        connection.setAutoCommit(true);
 
         //saves the leaderboard locally
-        leaderboards.add(leaderboard);
+        leaderboards.add(l);
     }
 }

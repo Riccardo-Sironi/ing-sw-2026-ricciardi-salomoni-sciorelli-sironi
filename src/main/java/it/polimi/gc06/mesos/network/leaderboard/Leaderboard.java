@@ -44,16 +44,12 @@ public class Leaderboard implements Comparable<Leaderboard>{
     }
 
     /**
-     * Adds a score to the current leaderboard, if the score leaderboard ID
-     * doesn't match this leaderboard ID, the request will be ignored.
+     * Adds a score to the current leaderboard.
      *
      * @param score the score object for the player
-     * @return whether ot not the request has been dispatched;
      */
-    public boolean addScore(Score score){
-        if(score.getLeaderboardID() != this.ID) return false;
+    public void addScore(Score score){
         scores.add(score);
-        return true;
     }
 
     /**

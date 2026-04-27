@@ -4,7 +4,6 @@ public class Score {
 
     private String nickname;
     private int score;
-    private int LeaderboardID;
 
     public String getNickname() {
         return nickname;
@@ -20,13 +19,5 @@ public class Score {
 
     public void setScore(int score) {
         this.score = score;
-    }
-
-    public int getLeaderboardID() {
-        return LeaderboardID;
-    }
-
-    public void setLeaderboardID(int leaderboardID) {
-        LeaderboardID = leaderboardID;
     }
 }

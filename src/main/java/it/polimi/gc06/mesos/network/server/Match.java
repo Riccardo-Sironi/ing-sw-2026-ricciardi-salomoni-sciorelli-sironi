@@ -7,8 +7,10 @@ import it.polimi.gc06.mesos.model.InstancesManager.ModelInstancesManager;
 import it.polimi.gc06.mesos.network.socket.commands.Command;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.stream.Collectors;
 
 public class Match {
     private final BlockingQueue<VirtualClient> players;
@@ -41,8 +43,8 @@ public class Match {
 
     private synchronized void start() throws IOException {
         GameModel model = new ModelInstancesManager().createGame(
-                players.stream().map(VirtualClient::getNickname).toList());
-        model.startGame(); //TODO: is necessary?
+                players.stream().map(VirtualClient::getNickname).collect(Collectors.toCollection(ArrayList::new)));
+        model.startGame();
         controller = new GameController(model);
         hasStarted = true;
         players.forEach(c -> c.setController(controller));
