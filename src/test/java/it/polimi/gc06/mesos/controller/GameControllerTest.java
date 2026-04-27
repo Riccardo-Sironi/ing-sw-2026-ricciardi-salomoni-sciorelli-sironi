@@ -1,213 +1,218 @@
 package it.polimi.gc06.mesos.controller;
 
+import it.polimi.gc06.mesos.gameExceptions.IllegalGameActionException;
+import it.polimi.gc06.mesos.gameExceptions.IllegalPhaseActionException;
 import it.polimi.gc06.mesos.model.GameModel;
 import it.polimi.gc06.mesos.model.InstancesManager.ModelInstancesManager;
 import it.polimi.gc06.mesos.model.Player;
-import it.polimi.gc06.mesos.model.cards.TribeCard;
+import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
 import it.polimi.gc06.mesos.model.cards.characters.CharacterCard;
+import it.polimi.gc06.mesos.model.gameBoard.Board;
 import it.polimi.gc06.mesos.model.gameBoard.TileSlot;
-import it.polimi.gc06.mesos.model.gameBoard.TurnOrderTile;
-import org.junit.jupiter.api.Test;
+import it.polimi.gc06.mesos.model.gameTurnManager.Phase;
+import it.polimi.gc06.mesos.model.gameTurnManager.TurnManager;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
-// TODO: dobbiamo fare il testing del controller, ma solo dopo aver terminato tutti quelli del model (linear)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 class GameControllerTest {
-    GameController controller;
-    GameModel model;
+
+    private GameController controller;
+
+    @Mock private GameModel modelMock;
+    @Mock private TurnManager turnManagerMock;
+    @Mock private Phase phaseMock;
+    @Mock private Board boardMock;
+    @Mock private Player activePlayerMock;
+
+    @Mock private TileSlot tileSlotMock;
+    @Mock private CharacterCard characterCardMock;
+    @Mock private BuildingCard buildingCardMock;
+
+    private final String activeNickname = "ActivePlayer";
+
+    @BeforeAll
+    static void whichTest() {
+        System.out.println("--- Starting GameControllerTest ---");
+    }
+
+    @AfterAll
+    static void endTest() {
+        System.out.println("--- Ending GameControllerTest ---");
+    }
+
+    @AfterEach
+    void tearDown(TestInfo testInfo) {
+        System.out.println("[END] " + testInfo.getDisplayName() + " DONE");
+    }
+
+    @BeforeEach
+    void setUp(TestInfo testInfo) {
+        when(modelMock.getTurnManager()).thenReturn(turnManagerMock);
+        when(modelMock.getBoard()).thenReturn(boardMock);
+        when(turnManagerMock.getActivePlayer()).thenReturn(activePlayerMock);
+        when(turnManagerMock.getPhase()).thenReturn(phaseMock);
+        when(activePlayerMock.getNickname()).thenReturn(activeNickname);
+
+        controller = new GameController(modelMock);
+
+        System.out.println("[START] " + testInfo.getDisplayName() + " DONE");
+    }
 
     @Test
-    void test_fullGame() {
-        ModelInstancesManager manager = new ModelInstancesManager();
-        List<String> playersNames = new ArrayList<>(Arrays.asList("player1", "player2", "player3", "player4", "player5"));
-
-
-        assertDoesNotThrow(() -> {
-            model = manager.createGame(playersNames);
-        });
-
-        controller = new GameController(model);
-
-        controller.getModel().startGame();
-
-        while (true) {
-            playRound();
-            if (controller.isGameFinished()) {
-                System.out.println("Game finished");
-
-                for (Player p : model.getPlayers()) {
-                    System.out.println(p.getNickname() + " prestigeTokens: " + p.getPrestigeTokens() + " | foodTokens: " + p.getFoodTokens());
-                }
-
-                break;
-            }
-        }
-
+    void testGetModel() {
+        assertEquals(modelMock, controller.getModel());
     }
 
-    private void playRound() {
-        System.out.print("\n__________________________ ROUND " + controller.getModel().getTurnManager().getRound() + " _________________________________\n");
+    @Test
+    void testIsGameFinished() {
+        when(boardMock.isEndGame()).thenReturn(true);
+        assertTrue(controller.isGameFinished());
 
-        int nPlayers = controller.getModel().getTurnManager().getPlayersOrder().size();
-
-        ArrayList<Integer> choiceList = new ArrayList<>(Arrays.asList(0, 1, 2, 3, 4, 5, 6));
-
-        Collections.shuffle(choiceList);
-
-        for (int i = 0; i < nPlayers; i++) {
-            String movingPlayer = model.getBoard().getTurnOrderTile().slots().get(i).getPlayer().getNickname();
-
-            System.out.println("____________________________________________________________");
-            printTurnOrderTile();
-            printOfferTrack();
-
-            System.out.println("\n  [  Moving " + movingPlayer + " from turn order tile " + i + " to offer track tile " + choiceList.get(i) + "  ]\n");
-
-            controller.handleTotemOfferTilePlacement(movingPlayer, choiceList.get(i));
-
-            printTurnOrderTile();
-            printOfferTrack();
-            System.out.println("____________________________________________________________");
-        }
-
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println();
-
-        int offerTrackSize = controller.getModel().getBoard().getOfferTrack().size();
-
-        for (int i = 0; i < offerTrackSize; i++) {
-            Player pickingPlayer = controller.getModel().getBoard().getOfferTrack().get(i).getPlayer();
-
-            if (pickingPlayer != null) {
-                String pickingPlayerNickname = pickingPlayer.getNickname();
-
-                CharacterCard pickedCard;
-                int pickedCardIndex;
-
-                while (pickingPlayer.getTopDrawNum() > 0) {
-                    pickedCard = controller.getModel().getBoard().getTopRow().stream().filter(card -> card instanceof CharacterCard).map(card -> (CharacterCard) card).findFirst().orElse(null);
-                    if (pickedCard == null) {
-                        pickingPlayer.setTopDrawNum(0);
-                        controller.getModel().getTurnManager().getPhase().skipPickingPLayer(controller.getModel().getTurnManager());
-                        break;
-                    }
-                    pickedCardIndex = controller.getModel().getBoard().getTopRow().indexOf(pickedCard);
-                    topSituation(pickingPlayerNickname, pickedCard, pickedCardIndex);
-                }
-                while (pickingPlayer.getBottomDrawNum() > 0) {
-                    pickedCard = controller.getModel().getBoard().getBottomRow().stream().filter(card -> card instanceof CharacterCard).map(card -> (CharacterCard) card).findFirst().orElse(null);
-                    if (pickedCard == null) {
-                        pickingPlayer.setBottomDrawNum(0);
-                        controller.getModel().getTurnManager().getPhase().skipPickingPLayer(controller.getModel().getTurnManager());
-                        break;
-                    }
-                    pickedCardIndex = controller.getModel().getBoard().getBottomRow().indexOf(pickedCard);
-                    bottomSituation(pickingPlayerNickname, pickedCard, pickedCardIndex);
-                }
-            }
-        }
-
-
-        System.out.println();
-        printPlayersOrder();
+        when(boardMock.isEndGame()).thenReturn(false);
+        assertFalse(controller.isGameFinished());
     }
 
-    private void topSituation(String pickingPlayerNickname, CharacterCard pickedCard, int pickedCardIndex) {
-        System.out.println("____________________________________________________________");
-        printPlayersOrder();
-        printTurnOrderTile();
-        printOfferTrack();
-        printTopRow();
-
-        System.out.println("\n  [" + pickingPlayerNickname + " is picking card " + pickedCard.getClass().getSimpleName() + " from the top row  ]\n");
-
-        controller.handleCardPickTopRow(pickingPlayerNickname, pickedCardIndex);
-
-        printPlayersOrder();
-        printTurnOrderTile();
-        printOfferTrack();
-        printTopRow();
-        System.out.println("____________________________________________________________");
+    @Test
+    void handleTotemOfferTilePlacement_WrongPlayer_ThrowsException() {
+        IllegalPhaseActionException ex = assertThrows(IllegalPhaseActionException.class, () ->
+                controller.handleTotemOfferTilePlacement("WrongPlayer", 0)
+        );
+        assertEquals("It is not WrongPlayer turn !", ex.getMessage());
     }
 
-    private void bottomSituation(String pickingPlayerNickname, CharacterCard pickedCard, int pickedCardIndex) {
-        System.out.println("____________________________________________________________");
-        printPlayersOrder();
-        printTurnOrderTile();
-        printOfferTrack();
-        printBottomRow();
+    @Test
+    void handleTotemOfferTilePlacement_IndexOutOfBounds_ThrowsException() {
+        List<TileSlot> offerTrack = new ArrayList<>(List.of(tileSlotMock));
+        when(boardMock.getOfferTrack()).thenReturn(offerTrack);
 
-        System.out.println("\n  [" + pickingPlayerNickname + " is picking card " + pickedCard.getClass().getSimpleName() + " from the bottom row  ]\n");
-
-        controller.handleCardPickBottomRow(pickingPlayerNickname, pickedCardIndex);
-
-        printPlayersOrder();
-        printTurnOrderTile();
-        printOfferTrack();
-        printBottomRow();
-        System.out.println("____________________________________________________________");
+        assertThrows(IllegalPhaseActionException.class, () -> controller.handleTotemOfferTilePlacement(activeNickname, -1));
+        assertThrows(IllegalPhaseActionException.class, () -> controller.handleTotemOfferTilePlacement(activeNickname, 5));
     }
 
-    private void printOfferTrack() {
-        ArrayList<TileSlot> offerTrack = (ArrayList<TileSlot>) controller.getModel().getBoard().getOfferTrack();
-        System.out.print("offerTrack ");
-        for (TileSlot tileSlot : offerTrack) {
-            if (tileSlot.getPlayer() == null) {
-                System.out.print("| - |");
-            } else {
-                System.out.print("| " + tileSlot.getPlayer().getNickname() + " |");
-            }
-        }
-        System.out.println();
+    @Test
+    void handleTotemOfferTilePlacement_TileOccupied_ThrowsException() {
+        List<TileSlot> offerTrack = new ArrayList<>(List.of(tileSlotMock));
+        when(boardMock.getOfferTrack()).thenReturn(offerTrack);
+        when(tileSlotMock.getPlayer()).thenReturn(mock(Player.class));
+
+        IllegalPhaseActionException ex = assertThrows(IllegalPhaseActionException.class, () ->
+                controller.handleTotemOfferTilePlacement(activeNickname, 0)
+        );
+        assertEquals("The tile is already occupied !", ex.getMessage());
     }
 
-    private void printTurnOrderTile() {
-        TurnOrderTile turnOrderTile = controller.getModel().getBoard().getTurnOrderTile();
-        System.out.print("turnOrderTile ");
-        for (TileSlot tileSlot : turnOrderTile.slots()) {
-            if (tileSlot.getPlayer() == null) {
-                System.out.print("| - |");
-            } else {
-                System.out.print("| " + tileSlot.getPlayer().getNickname() + " |");
-            }
-        }
-        System.out.println();
+    @Test
+    void handleTotemOfferTilePlacement_Success_FiresPropertyChange() throws IllegalPhaseActionException {
+        List<TileSlot> offerTrack = new ArrayList<>(List.of(tileSlotMock));
+        when(boardMock.getOfferTrack()).thenReturn(offerTrack);
+        when(tileSlotMock.getPlayer()).thenReturn(null);
+
+        PropertyChangeListener listenerMock = mock(PropertyChangeListener.class);
+        controller.addListener(listenerMock);
+
+        controller.handleTotemOfferTilePlacement(activeNickname, 0);
+
+        verify(phaseMock).placeTotem(turnManagerMock, activePlayerMock, tileSlotMock, boardMock);
+        verify(listenerMock, times(1)).propertyChange(any(PropertyChangeEvent.class));
     }
 
-    private void printTopRow() {
-        ArrayList<TribeCard> topRow = controller.getModel().getBoard().getTopRow();
-        System.out.print("topRow ");
-        for (TribeCard tribeCard : topRow) {
-            String cardTitle = tribeCard.getClass().getSimpleName();
-            System.out.print("// " + cardTitle + " //");
-        }
-        System.out.println();
+    @Test
+    void handleCardPickBottomRow_WrongPlayer_ThrowsException() {
+        IllegalPhaseActionException ex = assertThrows(IllegalPhaseActionException.class, () ->
+                controller.handleCardPickBottomRow("WrongPlayer", 0)
+        );
+        assertEquals("It's not WrongPlayer turn !", ex.getMessage());
     }
 
-    private void printBottomRow() {
-        ArrayList<TribeCard> bottomRow = controller.getModel().getBoard().getBottomRow();
-        System.out.print("bottomRow ");
-        for (TribeCard tribeCard : bottomRow) {
-            String cardTitle = tribeCard.getClass().getSimpleName();
-            System.out.print("// " + cardTitle + " //");
-        }
-        System.out.println();
+    @Test
+    void handleCardPickBottomRow_Success_FiresPropertyChange() throws IllegalGameActionException {
+        when(boardMock.getBottomCardFromIndex(0)).thenReturn(characterCardMock);
+
+        PropertyChangeListener listenerMock = mock(PropertyChangeListener.class);
+        controller.addListener(listenerMock);
+
+        controller.handleCardPickBottomRow(activeNickname, 0);
+
+        verify(characterCardMock).accept(any(CardBottomRowControllerVisitor.class));
+        verify(listenerMock, times(1)).propertyChange(any(PropertyChangeEvent.class));
     }
 
-    void printPlayersOrder() {
-        ArrayList<Player> players = (ArrayList<Player>) controller.getModel().getTurnManager().getPlayersOrder();
-        System.out.print("playersOrder ");
+    @Test
+    void handleCardPickTopRow_WrongPlayer_ThrowsException() {
+        IllegalPhaseActionException ex = assertThrows(IllegalPhaseActionException.class, () ->
+                controller.handleCardPickTopRow("WrongPlayer", 0)
+        );
+        assertEquals("It's not WrongPlayer turn !", ex.getMessage());
+    }
 
-        for (Player player : players) {
-            System.out.print("| " + player.getNickname() + " |");
-        }
-        System.out.println();
+    @Test
+    void handleCardPickTopRow_Success_FiresPropertyChange() throws IllegalGameActionException {
+        when(boardMock.getTopCardFromIndex(0)).thenReturn(characterCardMock);
+
+        PropertyChangeListener listenerMock = mock(PropertyChangeListener.class);
+        controller.addListener(listenerMock);
+
+        controller.handleCardPickTopRow(activeNickname, 0);
+
+        verify(characterCardMock).accept(any(CardTopRowControllerVisitor.class));
+        verify(listenerMock, times(1)).propertyChange(any(PropertyChangeEvent.class));
+    }
+
+    @Test
+    void handleBuildingPickBottomRow_WrongPlayer_ThrowsException() {
+        IllegalPhaseActionException ex = assertThrows(IllegalPhaseActionException.class, () ->
+                controller.handleBuildingPickBottomRow("WrongPlayer", 0)
+        );
+        assertEquals("It's not WrongPlayer turn !", ex.getMessage());
+    }
+
+    @Test
+    void handleBuildingPickBottomRow_Success_FiresPropertyChange() throws IllegalGameActionException {
+        when(boardMock.getBottomBuildingFromIndex(0)).thenReturn(buildingCardMock);
+
+        PropertyChangeListener listenerMock = mock(PropertyChangeListener.class);
+        controller.addListener(listenerMock);
+
+        controller.handleBuildingPickBottomRow(activeNickname, 0);
+
+        verify(phaseMock).pickCardFromBottom(turnManagerMock, activePlayerMock, buildingCardMock, boardMock);
+        verify(listenerMock, times(1)).propertyChange(any(PropertyChangeEvent.class));
+    }
+
+    @Test
+    void handleBuildingPickTopRow_WrongPlayer_ThrowsException() {
+        IllegalPhaseActionException ex = assertThrows(IllegalPhaseActionException.class, () ->
+                controller.handleBuildingPickTopRow("WrongPlayer", 0)
+        );
+        assertEquals("It's not WrongPlayer turn !", ex.getMessage());
+    }
+
+    @Test
+    void handleBuildingPickTopRow_Success_FiresPropertyChange() throws IllegalGameActionException {
+        when(boardMock.getTopBuildingFromIndex(0)).thenReturn(buildingCardMock);
+
+        PropertyChangeListener listenerMock = mock(PropertyChangeListener.class);
+        controller.addListener(listenerMock);
+
+        controller.handleBuildingPickTopRow(activeNickname, 0);
+
+        verify(phaseMock).pickCardFromTop(turnManagerMock, activePlayerMock, buildingCardMock, boardMock);
+        verify(listenerMock, times(1)).propertyChange(any(PropertyChangeEvent.class));
+
+        controller.removeListener(listenerMock);
     }
 }
