@@ -45,15 +45,15 @@ public class LeaderboardDAO {
         //sets up the connection to DB
         connection = DriverManager.getConnection(base_url+db_name, user, password);
         try {
-            String query = "CREATE TABLE IF NOT EXIST leaderboards(" +
+            String query = "CREATE TABLE IF NOT EXISTS leaderboards(" +
                     "id INT AUTO_INCREMENT PRIMARY KEY, " +
                     "numOfPlayers INT NOT NULL, " +
                     "tstamp TIMESTAMP NOT NULL)";
             connection.createStatement().execute(query);
-            query = "CREATE TABLE IF NOT EXIST scores(" +
+            query = "CREATE TABLE IF NOT EXISTS scores(" +
                     "id INT AUTO_INCREMENT PRIMARY KEY, " +
                     "nickname VARCHAR(255) NOT NULL, " +
-                    "score INT TIMESTAMP NOT NULL," +
+                    "score INT NOT NULL," +
                     "leaderboardId INT NOT NULL REFERENCES leaderboards(id) ON UPDATE CASCADE ON DELETE NO ACTION)";
             connection.createStatement().execute(query);
 
@@ -69,21 +69,20 @@ public class LeaderboardDAO {
 
         //only if current list is empty it calls the DB to request the leaderboards
         if(leaderboards.isEmpty()){
-            String query = "SELECT l.id AS id, numOfPlayers, tstamp, nickname, score" +
-                    "FROM leaderboards AS l JOIN scores AS s ON l.id = s.leaderboardId" +
+            String query = "SELECT l.id AS id, numOfPlayers, tstamp, nickname, score " +
+                    "FROM leaderboards AS l JOIN scores AS s ON l.id = s.leaderboardId " +
                     "ORDER BY l.id";
             ResultSet result = connection.prepareStatement(query).executeQuery();
             Set<Integer> idSet = new HashSet<>();
             Leaderboard tempLb = null;
             while(result.next()){
 
-                //if necessary creates new leaderboard and saves the previous
+                //if necessary creates new leaderboard and saves the previous (if present)
                 if(!idSet.contains(result.getInt("id"))){
                     idSet.add(result.getInt("id"));
 
-                    leaderboards.add(tempLb);
+                    if(tempLb != null) leaderboards.add(tempLb);
                     tempLb = new Leaderboard();
-
                     tempLb.setID(result.getInt("id"));
                     tempLb.setTimestamp(result.getTimestamp("tstamp"));
                     tempLb.setNumOfPlayers(result.getInt("numOfPlayers"));
@@ -111,20 +110,38 @@ public class LeaderboardDAO {
         try {
             String query = "INSERT INTO leaderboards (numOfPlayers, tstamp) " +
                     "VALUES (" + l.getNumOfPlayers() + ", " + l.getTimestamp() + ")";
-            int id = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS).executeUpdate();
-            for (Score s : l.getScores()) {
+            PreparedStatement ps = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+            ps.executeUpdate();
+            ResultSet result = ps.getGeneratedKeys();
+
+            if(result.next()) {
+
                 query = "INSERT INTO scores (nickname, score, leaderboardId) " +
-                        "VALUES (" + s.getNickname() + ", " + s.getScore() + ", " + id + ")";
-                connection.prepareStatement(query).executeUpdate();
+                        "VALUES ( ?, ?, ?)"; //prevents nickname SQL injection
+                ps = connection.prepareStatement(query);
+
+                int id = result.getInt(1);
+                for (Score s : l.getScores()) {
+                    ps.setString(1, s.getNickname());
+                    ps.setInt(2, s.getScore());
+                    ps.setInt(3, id);
+                    ps.addBatch();
+                }
+                ps.executeBatch();
+            }
+            else{
+                connection.rollback();
             }
             connection.commit();
 
-        } catch(SQLException _){
+        } catch(SQLException e){
             //if something goes wrong we do a rollback
             connection.rollback();
-            throw new SQLException();
+            throw e;
         }
-        connection.setAutoCommit(true);
+        finally {
+            connection.setAutoCommit(true);
+        }
 
         //saves the leaderboard locally
         leaderboards.add(l);
