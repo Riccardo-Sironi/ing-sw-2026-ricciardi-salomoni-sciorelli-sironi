@@ -20,7 +20,7 @@ public class LeaderboardDAO {
     private final static String JSON_CONFIG_URL = "/it/polimi/gc06/mesos/jsons/dbConfig.json";
     private static Connection connection = null;
 
-    private synchronized static void init() throws IOException, SQLException {
+    public synchronized static void init() throws IOException, SQLException {
 
         //gets DB config
         String base_url;
@@ -57,13 +57,13 @@ public class LeaderboardDAO {
                     "leaderboardId INT NOT NULL REFERENCES leaderboards(id) ON UPDATE CASCADE ON DELETE NO ACTION)";
             connection.createStatement().execute(query);
 
-        } catch(SQLException _){
+        } catch(SQLException e){
             connection = null; //init should be called again
-            throw new SQLException();
+            throw e;
         }
     }
 
-    private synchronized static List<Leaderboard> getLeaderboards() throws IOException, SQLException {
+    public synchronized static List<Leaderboard> getLeaderboards() throws IOException, SQLException {
 
         if(connection == null) init();
 
@@ -83,7 +83,6 @@ public class LeaderboardDAO {
 
                     if(tempLb != null) leaderboards.add(tempLb);
                     tempLb = new Leaderboard();
-                    tempLb.setID(result.getInt("id"));
                     tempLb.setTimestamp(result.getTimestamp("tstamp"));
                     tempLb.setNumOfPlayers(result.getInt("numOfPlayers"));
                 }
@@ -109,8 +108,10 @@ public class LeaderboardDAO {
         connection.setAutoCommit(false);
         try {
             String query = "INSERT INTO leaderboards (numOfPlayers, tstamp) " +
-                    "VALUES (" + l.getNumOfPlayers() + ", " + l.getTimestamp() + ")";
+                    "VALUES (?,?)";
             PreparedStatement ps = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+            ps.setInt(1,l.getNumOfPlayers());
+            ps.setTimestamp(2,l.getTimestamp());
             ps.executeUpdate();
             ResultSet result = ps.getGeneratedKeys();
 

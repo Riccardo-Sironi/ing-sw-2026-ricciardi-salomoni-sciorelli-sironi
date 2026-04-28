@@ -9,13 +9,11 @@ public class Leaderboard implements Comparable<Leaderboard>{
 
     private Timestamp timestamp;
     private int numOfPlayers;
-    private int ID;
     private final List<Score> scores;
 
     public Leaderboard(){
         timestamp = null;
         numOfPlayers = -1;
-        ID = -1;
         scores = new ArrayList<>();
     }
 
@@ -33,14 +31,6 @@ public class Leaderboard implements Comparable<Leaderboard>{
 
     public void setNumOfPlayers(int numOfPlayers) {
         this.numOfPlayers = numOfPlayers;
-    }
-
-    public int getID() {
-        return ID;
-    }
-
-    public void setID(int ID) {
-        this.ID = ID;
     }
 
     /**

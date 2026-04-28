@@ -1,6 +1,6 @@
 {
-  "base_url" : "",
-  "db_name": "",
-  "user" : "",
-  "password" : ""
+  "base_url" : "jdbc:mysql://localhost:3306/",
+  "db_name": "GC06_Mesos_DB",
+  "user" : "clanker",
+  "password" : "1234"
 }
