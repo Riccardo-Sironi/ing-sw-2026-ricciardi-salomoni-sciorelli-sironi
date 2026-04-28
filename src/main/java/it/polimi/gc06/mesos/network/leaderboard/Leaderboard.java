@@ -1,6 +1,7 @@
 package it.polimi.gc06.mesos.network.leaderboard;
 
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -8,12 +9,10 @@ import java.util.List;
 public class Leaderboard implements Comparable<Leaderboard>{
 
     private Timestamp timestamp;
-    private int numOfPlayers;
     private final List<Score> scores;
 
     public Leaderboard(){
         timestamp = null;
-        numOfPlayers = -1;
         scores = new ArrayList<>();
     }
 
@@ -26,13 +25,8 @@ public class Leaderboard implements Comparable<Leaderboard>{
     }
 
     public int getNumOfPlayers() {
-        return numOfPlayers;
+        return scores.size();
     }
-
-    public void setNumOfPlayers(int numOfPlayers) {
-        this.numOfPlayers = numOfPlayers;
-    }
-
     /**
      * Adds a score to the current leaderboard.
      *

@@ -14,6 +14,7 @@ import java.util.*;
  * 1. Application just started, DB is created and at the first read request all the data is extracted from DB.
  * 2. First read request already happened, local data is up to date, no need to request DB update.
  */
+//TODO: dare al client la possibilità di vedere la leaderboard con getLeaderboards()
 public class LeaderboardDAO {
 
     private final static List<Leaderboard> leaderboards = new ArrayList<>();
@@ -84,7 +85,6 @@ public class LeaderboardDAO {
                     if(tempLb != null) leaderboards.add(tempLb);
                     tempLb = new Leaderboard();
                     tempLb.setTimestamp(result.getTimestamp("tstamp"));
-                    tempLb.setNumOfPlayers(result.getInt("numOfPlayers"));
                 }
 
                 Score score = new Score();

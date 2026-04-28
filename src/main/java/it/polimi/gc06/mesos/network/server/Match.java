@@ -4,6 +4,7 @@ import it.polimi.gc06.mesos.controller.GameController;
 import it.polimi.gc06.mesos.gameExceptions.IllegalGameActionException;
 import it.polimi.gc06.mesos.model.GameModel;
 import it.polimi.gc06.mesos.model.InstancesManager.ModelInstancesManager;
+import it.polimi.gc06.mesos.network.leaderboard.LeaderboardDAO;
 import it.polimi.gc06.mesos.network.socket.commands.Command;
 
 import java.io.IOException;
@@ -80,7 +81,16 @@ public class Match {
 
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt(); // Interrotto in caso di killMatch()
-                break;
+                return;
+            }
+        }
+        if(controller != null && controller.isGameFinished()){
+            //salvo la classifica
+            try {
+                LeaderboardDAO.saveLeaderboard(controller.getLeaderboard());
+            } catch (Exception e) {
+                System.err.println("Something went wrong with leaderboard saving request, please check if mySql server is online");
+                e.printStackTrace();
             }
         }
     }

@@ -5,6 +5,16 @@ public class Score {
     private String nickname;
     private int score;
 
+    public Score(){
+        nickname = null;
+        score = 0;
+    }
+
+    public Score(String nickname, int score){
+        this.nickname = nickname;
+        this.score = score;
+    }
+
     public String getNickname() {
         return nickname;
     }

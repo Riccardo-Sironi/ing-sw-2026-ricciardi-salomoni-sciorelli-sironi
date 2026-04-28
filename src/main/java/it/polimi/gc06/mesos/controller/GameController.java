@@ -8,11 +8,16 @@ import it.polimi.gc06.mesos.model.cards.TribeCard;
 import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
 import it.polimi.gc06.mesos.model.gameBoard.TileSlot;
 import it.polimi.gc06.mesos.model.gameTurnManager.TurnManager;
+import it.polimi.gc06.mesos.network.leaderboard.Leaderboard;
+import it.polimi.gc06.mesos.network.leaderboard.Score;
 import it.polimi.gc06.mesos.network.socket.infos.CardPickedInfo;
 import it.polimi.gc06.mesos.network.socket.infos.TotemMovedInfo;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 public class GameController {
@@ -175,6 +180,17 @@ public class GameController {
 
     public boolean isGameFinished() {
         return model.getBoard().isEndGame();
+    }
+
+    public Leaderboard getLeaderboard() throws IllegalStateException{
+        if(!isGameFinished()) throw new IllegalStateException("Game is not finished yet");
+
+        Leaderboard leaderboard = new Leaderboard();
+        leaderboard.setTimestamp(Timestamp.from(Instant.now()));
+        for(Player p : model.getPlayers()){
+            leaderboard.addScore(new Score(p.getNickname(),p.getPrestigeTokens()));
+        }
+        return leaderboard;
     }
 
     public void addListener(PropertyChangeListener listener) {
