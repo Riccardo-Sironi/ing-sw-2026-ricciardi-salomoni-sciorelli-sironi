@@ -3,16 +3,21 @@ package it.polimi.gc06.mesos.model.gameTurnManager;
 import it.polimi.gc06.mesos.gameExceptions.IllegalGameActionException;
 import it.polimi.gc06.mesos.gameExceptions.IllegalPhaseActionException;
 import it.polimi.gc06.mesos.model.Player;
-import it.polimi.gc06.mesos.model.cards.BuildingPresenceVisitor;
 import it.polimi.gc06.mesos.model.cards.CharactersPresenceVisitor;
 import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
 import it.polimi.gc06.mesos.model.cards.characters.CharacterCard;
 import it.polimi.gc06.mesos.model.gameBoard.Board;
 import it.polimi.gc06.mesos.model.gameBoard.TileSlot;
+import javafx.scene.input.ScrollEvent;
 
 public class OfferResolutionPhase extends Phase {
 
     private boolean isStarted = false;
+
+    // TODO : la possibilità di skippare la fase la si da solo se non ci sono carte character da pescare VVVVV
+    // TODO : deve essere differenziarta fra top e bottom VVVV
+    // TODO : deve essere ricontrollato ogni volta che si pesca una carta VVVV
+    // TODO : capire poi come si capiscese siamo nel pecaggio top o bottom
 
     @Override
     public void startPlayerOfferResolution(TurnManager turnManager, Player player, TileSlot tileSlot) throws IllegalPhaseActionException {
@@ -26,33 +31,6 @@ public class OfferResolutionPhase extends Phase {
         tileSlot.applyEffect();
 
         isStarted = true;
-
-        // we automatically check if the player can draw from the rows, if not we set the draw num to 0 so that they
-        // can't draw, and we can move on with the next player
-        
-        if (player.getTopDrawNum() > 0) {
-            CharactersPresenceVisitor charactersPresenceVisitor = new CharactersPresenceVisitor();
-            BuildingPresenceVisitor buildingPresenceVisitor = new BuildingPresenceVisitor();
-
-            turnManager.getGameModel().getBoard().getTopRow().forEach(card -> card.accept(charactersPresenceVisitor));
-            turnManager.getGameModel().getBoard().getTopBuildings().forEach(card -> card.accept(buildingPresenceVisitor));
-
-            if (!charactersPresenceVisitor.areCharactersPresent() && !buildingPresenceVisitor.areThereBuildings()) {
-                player.setTopDrawNum(0);
-            }
-        }
-
-        if (player.getBottomDrawNum() > 0) {
-            CharactersPresenceVisitor charactersPresenceVisitor = new CharactersPresenceVisitor();
-            BuildingPresenceVisitor buildingPresenceVisitor = new BuildingPresenceVisitor();
-
-            turnManager.getGameModel().getBoard().getBottomRow().forEach(card -> card.accept(charactersPresenceVisitor));
-            turnManager.getGameModel().getBoard().getBottomRow().forEach(card -> card.accept(buildingPresenceVisitor));
-
-            if (!charactersPresenceVisitor.areCharactersPresent() && !buildingPresenceVisitor.areThereBuildings()) {
-                player.setBottomDrawNum(0);
-            }
-        }
 
         checkIfPlayerIsFinished(turnManager, player, turnManager.getGameModel().getBoard());
 
@@ -176,15 +154,45 @@ public class OfferResolutionPhase extends Phase {
         }
     }
 
+    private boolean checkForRightToSkipTop(Player player, Board board) throws IllegalPhaseActionException {
+        if (player.getTopDrawNum() > 0) {
+            CharactersPresenceVisitor charactersPresenceVisitor = new CharactersPresenceVisitor();
+            board.getTopRow().forEach(card -> card.accept(charactersPresenceVisitor));
+            return !charactersPresenceVisitor.areCharactersPresent();
+        } else {
+            return true;
+        }
+    }
+
+    private boolean checkForRightToSkipBottom(Player player, Board board) throws IllegalPhaseActionException {
+        if (player.getBottomDrawNum() > 0) {
+            CharactersPresenceVisitor charactersPresenceVisitor = new CharactersPresenceVisitor();
+            board.getBottomRow().forEach(card -> card.accept(charactersPresenceVisitor));
+            return !charactersPresenceVisitor.areCharactersPresent();
+        } else {
+            return true;
+        }
+    }
+
     /**
      * This method allows to skip the player picking phase if needed. An example is if there are no characters card to
      * pick or if the rows are empty.
      *
-     * @param turnManager
-     * @throws IllegalPhaseActionException
+     * @param turnManager the model turn manager reference.
+     * @throws IllegalPhaseActionException if the player can't skip the phase or if the offer resolution phase for that player hasn't started yet.
      */
     @Override
-    public void skipPickingPlayer(TurnManager turnManager) throws IllegalPhaseActionException {
-        checkIfPlayerIsFinished(turnManager, turnManager.getActivePlayer(), turnManager.getGameModel().getBoard());
+    public void skipPick(TurnManager turnManager) throws IllegalPhaseActionException {
+        if (!isStarted) throw new IllegalPhaseActionException("You have to start the offer resolution phase first!");
+        Player currentPlayer = turnManager.getActivePlayer();
+
+        if (checkForRightToSkipTop(currentPlayer, turnManager.getGameModel().getBoard()) && checkForRightToSkipBottom(currentPlayer, turnManager.getGameModel().getBoard())) {
+            currentPlayer.setTopDrawNum(0);
+            currentPlayer.setBottomDrawNum(0);
+
+            checkForRightToSkipTop(currentPlayer, turnManager.getGameModel().getBoard());
+        } else {
+            throw new IllegalPhaseActionException("You can't skip the offer resolution phase!");
+        }
     }
 }
