@@ -60,7 +60,7 @@ public abstract class Phase {
         throw new IllegalPhaseActionException("You can't pick Event Cards during the Offer Resolution Phase!");
     }
 
-    public void skipPick(TurnManager turnManager) throws IllegalPhaseActionException {
+    public void skipPick(TurnManager turnManager, Player player) throws IllegalPhaseActionException {
         throw new IllegalPhaseActionException("You can't skip top pick in this phase!");
     }
 }

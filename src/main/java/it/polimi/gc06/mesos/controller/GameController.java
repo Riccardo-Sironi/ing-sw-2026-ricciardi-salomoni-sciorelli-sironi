@@ -17,7 +17,6 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 
 public class GameController {
@@ -177,18 +176,37 @@ public class GameController {
         support.firePropertyChange("buildingPicked", null, info);
     }
 
+    /**
+     * Handles the request of skipping the pick phase.
+     *
+     * @param playerNickname the player performing the action.
+     * @throws IllegalGameActionException if the action is not allowed in the current phase or if the player is trying
+     *                                    to perform an action that is not his turn.
+     */
+    public void handlePickSkip(String playerNickname) throws IllegalGameActionException {
+        TurnManager turnManager = model.getTurnManager();
+        Player activePlayer = turnManager.getActivePlayer();
+
+        if (!activePlayer.getNickname().equals(playerNickname)) {
+            throw new IllegalPhaseActionException("It's not " + playerNickname + " turn !");
+        }
+
+        turnManager.getPhase().skipPick(turnManager, activePlayer);
+
+        // TODO : property change
+    }
 
     public boolean isGameFinished() {
         return model.getBoard().isEndGame();
     }
 
-    public Leaderboard getLeaderboard() throws IllegalStateException{
-        if(!isGameFinished()) throw new IllegalStateException("Game is not finished yet");
+    public Leaderboard getLeaderboard() throws IllegalStateException {
+        if (!isGameFinished()) throw new IllegalStateException("Game is not finished yet");
 
         Leaderboard leaderboard = new Leaderboard();
         leaderboard.setTimestamp(Timestamp.from(Instant.now()));
-        for(Player p : model.getPlayers()){
-            leaderboard.addScore(new Score(p.getNickname(),p.getPrestigeTokens()));
+        for (Player p : model.getPlayers()) {
+            leaderboard.addScore(new Score(p.getNickname(), p.getPrestigeTokens()));
         }
         return leaderboard;
     }

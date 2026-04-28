@@ -84,16 +84,15 @@ public class EndOfRoundPhase extends Phase {
      * This method allow to skip the end of round pick if needed.
      *
      * @param turnManager
+     * @param player      current player that wants to skip the end of round pick.
      * @throws IllegalPhaseActionException if the player tries to skip the end of round pick when he still has to pick
      *                                     a character card or if the end of round phase has just started.
      */
     @Override
-    public void skipPick(TurnManager turnManager) throws IllegalPhaseActionException {
+    public void skipPick(TurnManager turnManager, Player player) throws IllegalPhaseActionException {
         if (justStarted) throw new IllegalPhaseActionException("You have to start the end of round phase first!");
 
-        Player currentPlayer = turnManager.getActivePlayer();
-
-        if (checkForRightToSkip(currentPlayer, turnManager.getGameModel().getBoard())) {
+        if (checkForRightToSkip(player, turnManager.getGameModel().getBoard())) {
             turnManager.getActivePlayer().setTopDrawNum(0);
             isEndOfRoundPickPlayerPresent = false;
             turnManager.setActivePlayerIndex(0);

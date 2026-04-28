@@ -8,7 +8,6 @@ import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
 import it.polimi.gc06.mesos.model.cards.characters.CharacterCard;
 import it.polimi.gc06.mesos.model.gameBoard.Board;
 import it.polimi.gc06.mesos.model.gameBoard.TileSlot;
-import javafx.scene.input.ScrollEvent;
 
 public class OfferResolutionPhase extends Phase {
 
@@ -175,22 +174,23 @@ public class OfferResolutionPhase extends Phase {
     }
 
     /**
+     * /**
      * This method allows to skip the player picking phase if needed. An example is if there are no characters card to
      * pick or if the rows are empty.
      *
      * @param turnManager the model turn manager reference.
+     * @param player      current player that wants to skip the picking phase.
      * @throws IllegalPhaseActionException if the player can't skip the phase or if the offer resolution phase for that player hasn't started yet.
      */
     @Override
-    public void skipPick(TurnManager turnManager) throws IllegalPhaseActionException {
+    public void skipPick(TurnManager turnManager, Player player) throws IllegalPhaseActionException {
         if (!isStarted) throw new IllegalPhaseActionException("You have to start the offer resolution phase first!");
-        Player currentPlayer = turnManager.getActivePlayer();
 
-        if (checkForRightToSkipTop(currentPlayer, turnManager.getGameModel().getBoard()) && checkForRightToSkipBottom(currentPlayer, turnManager.getGameModel().getBoard())) {
-            currentPlayer.setTopDrawNum(0);
-            currentPlayer.setBottomDrawNum(0);
+        if (checkForRightToSkipTop(player, turnManager.getGameModel().getBoard()) && checkForRightToSkipBottom(player, turnManager.getGameModel().getBoard())) {
+            player.setTopDrawNum(0);
+            player.setBottomDrawNum(0);
 
-            checkForRightToSkipTop(currentPlayer, turnManager.getGameModel().getBoard());
+            checkForRightToSkipTop(player, turnManager.getGameModel().getBoard());
         } else {
             throw new IllegalPhaseActionException("You can't skip the offer resolution phase!");
         }
