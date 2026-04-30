@@ -40,9 +40,9 @@ public class DAOTest {
     void testSaveLeaderboard(){
         Random r = new Random();
         Leaderboard l = new Leaderboard();
-        l.setNumOfPlayers(r.nextInt(2,6));
+        int nPlayers = r.nextInt(2,6);
         l.setTimestamp(new Timestamp(r.nextLong(0L, (long) 10e10)));
-        for(int i=0;i<l.getNumOfPlayers();i++){
+        for(int i=0; i < nPlayers ;i++){
             Score s = new Score();
             s.setNickname(names[r.nextInt(0,50)]);
             s.setScore(r.nextInt(0,401)-200);

@@ -4,20 +4,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import it.polimi.gc06.mesos.controller.GameController;
 import it.polimi.gc06.mesos.network.server.MatchManager;
 import it.polimi.gc06.mesos.network.server.VirtualClient;
-import it.polimi.gc06.mesos.network.socket.ModelListener;
 import it.polimi.gc06.mesos.network.socket.commands.Command;
 
 import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-public class RMIClientManager implements VirtualClient {
+public class RMIClientManager implements VirtualClient, PropertyChangeListener {
     private final String nickname;
     private final RMIClientInterface rmiClient;
     private final MatchManager sharedManager;
     private GameController controller;
-    private final ModelListener listener;
     private final BlockingQueue<PropertyChangeEvent> noticeQueue;
     private BlockingQueue<Command> actionQueue;
     private boolean closed;
@@ -27,7 +26,6 @@ public class RMIClientManager implements VirtualClient {
         this.rmiClient = rmiClient;
         this.sharedManager = sharedManager;
         this.noticeQueue = new LinkedBlockingQueue<>();
-        this.listener = new ModelListener(noticeQueue);
         this.closed = false;
         actionQueue = null;
     }
@@ -40,7 +38,7 @@ public class RMIClientManager implements VirtualClient {
     @Override
     public void setController(GameController controller) {
         this.controller = controller;
-        controller.addListener(listener);
+        controller.addListener(this);
     }
 
     @Override
@@ -98,10 +96,15 @@ public class RMIClientManager implements VirtualClient {
         if (closed) return;
         closed = true;
         if (nickname != null) sharedManager.logout(nickname);
-        if (controller != null) controller.removeListener(listener);
+        if (controller != null) controller.removeListener(this);
     }
 
     public GameController getController() {
         return controller;
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        noticeQueue.add(evt);
     }
 }

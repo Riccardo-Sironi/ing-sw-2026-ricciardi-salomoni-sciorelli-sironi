@@ -12,7 +12,7 @@ import java.util.function.Consumer;
 public class RMIServerConnection extends UnicastRemoteObject implements ServerConnection, RMIClientInterface {
 
     private final RMIServerInterface serverStub;
-    private final Consumer<String> messageHandler;
+    private final Consumer<String> messageHandler; //oggetto che deve ricevere il messaggio lato client
 
     public RMIServerConnection(String host, int port, Consumer<String> messageHandler) throws Exception {
         super();
@@ -21,6 +21,12 @@ public class RMIServerConnection extends UnicastRemoteObject implements ServerCo
         this.serverStub = (RMIServerInterface) registry.lookup("MesosRMIServer");
     }
 
+    /**
+     * Sends a message to the intended reader client-side, uses a thread to free the caller immediately
+     * since RMI calls are blocking.
+     * @param message the update from the server
+     * @throws RemoteException //TODO perché?
+     */
     @Override
     public void receiveMessage(String message) throws RemoteException {
         new Thread(() -> messageHandler.accept(message)).start();

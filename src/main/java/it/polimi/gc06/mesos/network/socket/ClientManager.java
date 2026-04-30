@@ -8,6 +8,7 @@ import it.polimi.gc06.mesos.network.server.VirtualClient;
 import it.polimi.gc06.mesos.network.socket.commands.Command;
 
 import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -16,14 +17,13 @@ import java.net.Socket;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-public class ClientManager implements VirtualClient {
+public class ClientManager implements VirtualClient, PropertyChangeListener {
 
     private BlockingQueue<Command> actionQueue;
     private final Socket socket;
     private final String nickname;
     private final MatchManager sharedManager;
     private GameController controller;
-    private final ModelListener listener;
     private final BlockingQueue<PropertyChangeEvent> noticeQueue;
     private BufferedReader inFromClient;
     private PrintWriter outToClient;
@@ -34,7 +34,6 @@ public class ClientManager implements VirtualClient {
         this.nickname = nickname;
         this.sharedManager = sharedManager;
         noticeQueue = new LinkedBlockingQueue<>();
-        listener = new ModelListener(noticeQueue);
         inFromClient = null;
         outToClient = null;
         closed = false;
@@ -48,7 +47,7 @@ public class ClientManager implements VirtualClient {
      */
     public void setController(GameController controller) {
         this.controller = controller;
-        controller.addListener(listener);
+        controller.addListener(this);
     }
 
     public String getNickname() {
@@ -162,7 +161,7 @@ public class ClientManager implements VirtualClient {
         closed = true;
         if (outToClient != null) outToClient.close();
         if (nickname != null) sharedManager.logout(nickname);
-        controller.removeListener(listener);
+        controller.removeListener(this);
         try {
             if (!socket.isClosed()) socket.close();
         } catch (IOException _) {
@@ -173,4 +172,8 @@ public class ClientManager implements VirtualClient {
         }
     }
 
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        noticeQueue.add(evt);
+    }
 }

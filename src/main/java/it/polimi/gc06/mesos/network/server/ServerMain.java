@@ -12,7 +12,7 @@ public class ServerMain {
      *
      * @param args the first argument is the TCP port number, the second argument is the RMI port number
      */
-    static void main(String[] args) {
+    public static void main(String[] args) {
         int tcpPortNumber = 1234;
         int RMIPortNumber = 1099;
 
@@ -30,6 +30,7 @@ public class ServerMain {
 
             System.out.println("Server started");
 
+            //tries to start RMI protocol
             try {
                 RMIServerInterfaceImpl rmiImpl = new RMIServerInterfaceImpl(sharedManager);
                 Registry registry;
@@ -46,6 +47,7 @@ public class ServerMain {
                 return;
             }
 
+            //tries to start TCP protocol (socket)
             try {
                 TCPServer tcpServer = new TCPServer(tcpPortNumber, sharedManager);
                 Thread tcpServerThread = new Thread(tcpServer);
