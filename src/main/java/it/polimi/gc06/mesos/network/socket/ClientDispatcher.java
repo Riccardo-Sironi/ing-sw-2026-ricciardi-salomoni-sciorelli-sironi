@@ -60,14 +60,14 @@ public class ClientDispatcher implements Runnable {
                     }
                     clientSocket.setSoTimeout(0); //removes the timeout to ensure match confirm
                     Match newMatch = sharedManager.createMatch(Integer.parseInt(input));
-                    sharedManager.joinMatch(newMatch.getMatchId(), new ClientManager(clientSocket, nickname, sharedManager));
+                    sharedManager.joinMatch(newMatch.getMatchId(), new TCPClientManager(clientSocket, nickname, sharedManager));
                     outToClient.println("OK");
                     success = true;
                 } else if (input.equals("JOIN")) {
                     outToClient.println(sharedManager.getAvailableMatchesString());
                     input = inFromClient.readLine(); //client side: matches request
                     if (input == null) throw new NullPointerException(); //disconnection handling
-                    while (!isNumeric(input) || !sharedManager.joinMatch(Integer.parseInt(input), new ClientManager(clientSocket, nickname, sharedManager))) {
+                    while (!isNumeric(input) || !sharedManager.joinMatch(Integer.parseInt(input), new TCPClientManager(clientSocket, nickname, sharedManager))) {
                         outToClient.println(sharedManager.getAvailableMatchesString());
                         input = inFromClient.readLine();
                     }

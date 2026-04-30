@@ -66,7 +66,7 @@ public class RMIServerInterfaceImpl extends UnicastRemoteObject implements RMISe
             throw new RemoteException("User not found: " + nickname);
         }
 
-        Command command = Command.create(nickname, tileIndex, Request.OFFER_TRACK_REQUEST);
+        Command command = new Command(nickname, tileIndex, Request.OFFER_TRACK_REQUEST);
 
         manager.enqueueCommand(command);
     }
@@ -78,7 +78,7 @@ public class RMIServerInterfaceImpl extends UnicastRemoteObject implements RMISe
             throw new RemoteException("User not found: " + nickname);
         }
 
-        Command command = Command.create(nickname, cardIndex, Request.BOTTOM_CARD_REQUEST);
+        Command command = new Command(nickname, cardIndex, Request.BOTTOM_CARD_REQUEST);
 
         manager.enqueueCommand(command);
     }
@@ -90,7 +90,7 @@ public class RMIServerInterfaceImpl extends UnicastRemoteObject implements RMISe
             throw new RemoteException("User not found: " + nickname);
         }
 
-        Command command = Command.create(nickname, cardIndex, Request.TOP_CARD_REQUEST);
+        Command command = new Command(nickname, cardIndex, Request.TOP_CARD_REQUEST);
 
         manager.enqueueCommand(command);
     }
@@ -102,7 +102,7 @@ public class RMIServerInterfaceImpl extends UnicastRemoteObject implements RMISe
             throw new RemoteException("User not found: " + nickname);
         }
 
-        Command command = Command.create(nickname, cardIndex, Request.BOTTOM_BUILDING_REQUEST);
+        Command command = new Command(nickname, cardIndex, Request.BOTTOM_BUILDING_REQUEST);
 
         manager.enqueueCommand(command);
     }
@@ -114,7 +114,7 @@ public class RMIServerInterfaceImpl extends UnicastRemoteObject implements RMISe
             throw new RemoteException("User not found: " + nickname);
         }
 
-        Command command = Command.create(nickname, cardIndex, Request.TOP_BUILDING_REQUEST);
+        Command command = new Command(nickname, cardIndex, Request.TOP_BUILDING_REQUEST);
 
         manager.enqueueCommand(command);
     }
@@ -126,7 +126,7 @@ public class RMIServerInterfaceImpl extends UnicastRemoteObject implements RMISe
             throw new RemoteException("User not found: " + nickname);
         }
 
-        Command command = Command.create(nickname, 0, Request.SKIP_REQUEST);
+        Command command = new Command(nickname, 0, Request.SKIP_REQUEST);
 
         manager.enqueueCommand(command);
     }

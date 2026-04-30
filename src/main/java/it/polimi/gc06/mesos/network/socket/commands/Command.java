@@ -9,9 +9,15 @@ public class Command {
     private String nickname;
 
     public Command() {
-        request = null;
-        index = -1;
-        nickname = null;
+        this.request = null;
+        this.index = -1;
+        this.nickname = null;
+    }
+
+    public Command(String nickname, int index, Request request) {
+        this.nickname = nickname;
+        this.index = index;
+        this.request = request;
     }
 
     public void setRequest(Request request) {
@@ -27,19 +33,10 @@ public class Command {
     }
 
     public String getNickname() {
-        return nickname;
+        return this.nickname;
     }
-
-    public static Command create(String nickname, int index, Request request) {
-        Command command = new Command();
-        command.setNickname(nickname);
-        command.setIndex(index);
-        command.setRequest(request);
-        return command;
-    }
-
 
     public void execute(GameController controller) throws Exception {
-        request.call(controller, nickname, index);
+        request.call(controller, this.nickname, this.index);
     }
 }

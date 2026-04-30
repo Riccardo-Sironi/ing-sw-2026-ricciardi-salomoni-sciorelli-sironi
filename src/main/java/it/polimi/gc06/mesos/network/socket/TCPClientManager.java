@@ -17,7 +17,7 @@ import java.net.Socket;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-public class ClientManager implements VirtualClient, PropertyChangeListener {
+public class TCPClientManager implements VirtualClient, PropertyChangeListener {
 
     private BlockingQueue<Command> actionQueue;
     private final Socket socket;
@@ -29,7 +29,7 @@ public class ClientManager implements VirtualClient, PropertyChangeListener {
     private PrintWriter outToClient;
     private boolean closed;
 
-    public ClientManager(Socket socket, String nickname, MatchManager sharedManager) {
+    public TCPClientManager(Socket socket, String nickname, MatchManager sharedManager) {
         this.socket = socket;
         this.nickname = nickname;
         this.sharedManager = sharedManager;
@@ -80,9 +80,6 @@ public class ClientManager implements VirtualClient, PropertyChangeListener {
                 try {
 
                     Command command = mapper.readValue(input, Command.class);
-
-                    //TODO Può avere senso obbligare che il sender sia il player stesso? Evitiamo chiamate fasulle
-                    //command.setNickname(this.nickname);
 
                     if (actionQueue != null) {
                         actionQueue.put(command);
