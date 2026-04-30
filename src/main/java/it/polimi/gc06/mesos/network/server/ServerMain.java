@@ -6,13 +6,18 @@ import it.polimi.gc06.mesos.network.socket.TCPServer;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
+/**
+ * Entrypoint for the server application.
+ * Initializes and starts both {@link RMIServerInterfaceImpl RMI} and {@link TCPServer TCP} (Socket) server components,
+ * sharing a common {@link MatchManager} instance between them.
+ */
 public class ServerMain {
     /**
      * Main method to start the server.
      *
      * @param args the first argument is the TCP port number, the second argument is the RMI port number
      */
-    public static void main(String[] args) {
+    static void main(String[] args) {
         int tcpPortNumber = 1234;
         int RMIPortNumber = 1099;
 
