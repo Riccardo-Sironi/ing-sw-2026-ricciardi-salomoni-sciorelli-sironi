@@ -15,4 +15,5 @@ public interface RMIServerInterface extends Remote {
     void handleCardPickTopRow(String nickname, int cardIndex) throws RemoteException;
     void handleBuildingPickBottomRow(String nickname, int cardIndex) throws RemoteException;
     void handleBuildingPickTopRow(String nickname, int cardIndex) throws RemoteException;
+    void handleSkip(String nickname) throws RemoteException;
 }

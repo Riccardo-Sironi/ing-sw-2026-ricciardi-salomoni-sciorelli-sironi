@@ -34,4 +34,11 @@ public enum Request implements ControllerCaller {
             controller.handleBuildingPickBottomRow(nickname, index);
         }
     },
+    //in this case index is not used!
+    SKIP_REQUEST {
+        @Override
+        public void call(GameController controller, String nickname, int index) {
+            controller.handlePickSkip(nickname);
+        }
+    }
 }

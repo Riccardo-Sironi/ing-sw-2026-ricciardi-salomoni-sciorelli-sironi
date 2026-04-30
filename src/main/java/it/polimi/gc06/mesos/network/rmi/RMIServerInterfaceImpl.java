@@ -118,4 +118,16 @@ public class RMIServerInterfaceImpl extends UnicastRemoteObject implements RMISe
 
         manager.enqueueCommand(command);
     }
+
+    @Override
+    public void handleSkip(String nickname) throws RemoteException {
+        RMIClientManager manager = clientManagers.get(nickname);
+        if (manager == null) {
+            throw new RemoteException("User not found: " + nickname);
+        }
+
+        Command command = Command.create(nickname, 0, Request.SKIP_REQUEST);
+
+        manager.enqueueCommand(command);
+    }
 }
