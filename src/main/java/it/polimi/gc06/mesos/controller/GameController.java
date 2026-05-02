@@ -82,7 +82,7 @@ public class GameController {
         }
 
         TribeCard card = model.getBoard().getBottomCardFromIndex(cardIndex);
-        CardPickedInfo info = new CardPickedInfo(playerNickname, card); //prepares the info if needed
+        CardPickedInfo info = new CardPickedInfo(playerNickname, cardIndex, card); //prepares the info if needed
 
         CardBottomRowControllerVisitor cardPickerVisitor = new CardBottomRowControllerVisitor(turnManager, activePlayer, model);
 
@@ -111,7 +111,7 @@ public class GameController {
         }
 
         TribeCard card = model.getBoard().getTopCardFromIndex(cardIndex);
-        CardPickedInfo info = new CardPickedInfo(playerNickname, card); //prepares the info if needed
+        CardPickedInfo info = new CardPickedInfo(playerNickname, cardIndex, card); //prepares the info if needed
 
         CardTopRowControllerVisitor cardPickerVisitor = new CardTopRowControllerVisitor(turnManager, activePlayer, model);
 
@@ -142,7 +142,7 @@ public class GameController {
         }
 
         BuildingCard card = model.getBoard().getBottomBuildingFromIndex(cardIndex);
-        CardPickedInfo info = new CardPickedInfo(playerNickname, card); //prepares the info if needed
+        CardPickedInfo info = new CardPickedInfo(playerNickname, cardIndex, card); //prepares the info if needed
 
         turnManager.getPhase().pickCardFromBottom(turnManager, activePlayer, card, model.getBoard());
 
@@ -168,7 +168,7 @@ public class GameController {
         }
 
         BuildingCard card = model.getBoard().getTopBuildingFromIndex(cardIndex);
-        CardPickedInfo info = new CardPickedInfo(playerNickname, card); //prepares the info if needed
+        CardPickedInfo info = new CardPickedInfo(playerNickname, cardIndex, card); //prepares the info if needed
 
         turnManager.getPhase().pickCardFromTop(turnManager, activePlayer, card, model.getBoard());
 
