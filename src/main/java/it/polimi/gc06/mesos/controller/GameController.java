@@ -12,6 +12,7 @@ import it.polimi.gc06.mesos.network.leaderboard.Leaderboard;
 import it.polimi.gc06.mesos.network.leaderboard.Score;
 import it.polimi.gc06.mesos.network.socket.infos.CardPickedInfo;
 import it.polimi.gc06.mesos.network.socket.infos.TotemMovedInfo;
+import it.polimi.gc06.mesos.view.PropertyChangeName;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -61,7 +62,7 @@ public class GameController {
         turnManager.getPhase().placeTotem(turnManager, activePlayer, tile, model.getBoard());
 
         TotemMovedInfo info = new TotemMovedInfo(playerNickname, tileIndex);
-        support.firePropertyChange("totemMoved", null, info);
+        support.firePropertyChange(PropertyChangeName.TOTEM_MOVED.name(), null, info);
 
     }
 
@@ -89,7 +90,7 @@ public class GameController {
         card.accept(cardPickerVisitor);
 
         //if the operation was not successful the notice won't be sent
-        support.firePropertyChange("cardPicked", null, info);
+        support.firePropertyChange(PropertyChangeName.PICK_FROM_BOTTOM_ROW.name(), null, info);
 
     }
 
@@ -118,7 +119,7 @@ public class GameController {
         card.accept(cardPickerVisitor);
 
         //if the operation was not successful the notice won't be sent
-        support.firePropertyChange("cardPicked", null, info);
+        support.firePropertyChange(PropertyChangeName.PICK_FROM_TOP_ROW.name(), null, info);
 
     }
 
@@ -147,7 +148,7 @@ public class GameController {
         turnManager.getPhase().pickCardFromBottom(turnManager, activePlayer, card, model.getBoard());
 
         //if the operation was not successful the notice won't be sent
-        support.firePropertyChange("buildingPicked", null, info);
+        support.firePropertyChange(PropertyChangeName.PICK_FROM_BOTTOM_BUILDINGS.name(), null, info);
     }
 
     /**
@@ -173,7 +174,7 @@ public class GameController {
         turnManager.getPhase().pickCardFromTop(turnManager, activePlayer, card, model.getBoard());
 
         //if the operation was not successful the notice won't be sent
-        support.firePropertyChange("buildingPicked", null, info);
+        support.firePropertyChange(PropertyChangeName.PICK_FROM_TOP_BUILDINGS.name(), null, info);
     }
 
     /**
