@@ -1,9 +1,8 @@
-package it.polimi.gc06.mesos.view.viewControllers;
+package it.polimi.gc06.mesos.view.gui.viewControllers;
 
 import it.polimi.gc06.mesos.model.cards.Card;
 import it.polimi.gc06.mesos.model.gameBoard.TileSlot;
 import it.polimi.gc06.mesos.model.gameBoard.TurnOrderTile;
-import it.polimi.gc06.mesos.view.GUI;
 import javafx.beans.binding.DoubleBinding;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;

@@ -1,6 +1,6 @@
 package it.polimi.gc06.mesos;
 
-import it.polimi.gc06.mesos.view.GUI;
+import it.polimi.gc06.mesos.view.gui.GUI;
 import it.polimi.gc06.mesos.view.tui.TuiView;
 import javafx.application.Application;
 

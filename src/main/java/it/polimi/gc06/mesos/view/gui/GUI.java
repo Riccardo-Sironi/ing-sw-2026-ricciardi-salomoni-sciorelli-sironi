@@ -1,4 +1,4 @@
-package it.polimi.gc06.mesos.view;
+package it.polimi.gc06.mesos.view.gui;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;

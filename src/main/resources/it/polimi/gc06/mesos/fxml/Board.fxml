@@ -6,7 +6,7 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.control.Button?>
 <BorderPane fx:id="boardRoot" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
-            fx:controller="it.polimi.gc06.mesos.view.viewControllers.BoardController">
+            fx:controller="it.polimi.gc06.mesos.view.gui.viewControllers.BoardController">
     <top>
         <HBox fx:id="topContainer" spacing="5" alignment="CENTER">
             <ScrollPane fx:id="topRow" vbarPolicy="NEVER" hbarPolicy="NEVER" fitToHeight="true">
