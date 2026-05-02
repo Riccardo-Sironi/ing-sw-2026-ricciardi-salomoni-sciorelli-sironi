@@ -3,8 +3,11 @@ package it.polimi.gc06.mesos.network.server;
 import it.polimi.gc06.mesos.network.rmi.RMIServerInterfaceImpl;
 import it.polimi.gc06.mesos.network.socket.TCPServer;
 
+import java.io.IOException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+
+import static java.rmi.server.UnicastRemoteObject.unexportObject;
 
 /**
  * Entrypoint for the server application.
@@ -12,12 +15,14 @@ import java.rmi.registry.Registry;
  * sharing a common {@link MatchManager} instance between them.
  */
 public class ServerMain {
+
+    private static MatchManager sharedManager = new MatchManager();
     /**
      * Main method to start the server.
      *
      * @param args the first argument is the TCP port number, the second argument is the RMI port number
      */
-    static void main(String[] args) {
+    public static void main(String[] args) {
         int tcpPortNumber = 1234;
         int RMIPortNumber = 1099;
 
@@ -31,14 +36,12 @@ public class ServerMain {
                 return;
             }
 
-            MatchManager sharedManager = new MatchManager();
-
             System.out.println("Server started");
 
             //tries to start RMI protocol
             try {
                 RMIServerInterfaceImpl rmiImpl = new RMIServerInterfaceImpl(sharedManager);
-                Registry registry;
+                Registry registry = null;
                 try {
                     registry = LocateRegistry.createRegistry(RMIPortNumber);
                 } catch (Exception e) {
@@ -67,5 +70,14 @@ public class ServerMain {
             e.printStackTrace();
 
         }
+    }
+
+    /**
+     * MatchManager getter, should only be used in testing.
+     *
+     * @return the match manager.
+     */
+    public static MatchManager getMatchManager(){
+        return sharedManager;
     }
 }

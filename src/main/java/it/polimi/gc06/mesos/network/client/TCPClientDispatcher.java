@@ -1,4 +1,4 @@
-package it.polimi.gc06.mesos.network.socket;
+package it.polimi.gc06.mesos.network.client;
 
 import it.polimi.gc06.mesos.network.server.Match;
 import it.polimi.gc06.mesos.network.server.MatchManager;
@@ -11,13 +11,13 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 
 // ClientDispatcher is needed for deciding to what Match the client should participate
-public class ClientDispatcher implements Runnable {
+public class TCPClientDispatcher implements Runnable {
 
     private final Socket clientSocket;
     private final MatchManager sharedManager;
     private final static int TIMEOUT = 20 * 60 * 1000; //20 minutes
 
-    public ClientDispatcher(Socket clientSocket, MatchManager sharedManager) {
+    public TCPClientDispatcher(Socket clientSocket, MatchManager sharedManager) {
         this.clientSocket = clientSocket;
         this.sharedManager = sharedManager;
     }

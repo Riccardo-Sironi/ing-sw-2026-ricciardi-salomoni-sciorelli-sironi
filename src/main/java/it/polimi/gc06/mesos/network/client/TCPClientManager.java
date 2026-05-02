@@ -1,4 +1,4 @@
-package it.polimi.gc06.mesos.network.socket;
+package it.polimi.gc06.mesos.network.client;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

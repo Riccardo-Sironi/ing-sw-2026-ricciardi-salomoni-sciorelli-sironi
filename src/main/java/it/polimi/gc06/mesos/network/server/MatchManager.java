@@ -55,7 +55,7 @@ public class MatchManager {
         activeMatches.values().removeAll(removables);
         //creates match
         Match newMatch = new Match(idGenerator.getAndIncrement(), numOfPlayers);
-        activeMatches.put(idGenerator.getAndIncrement(), newMatch);
+        activeMatches.put(newMatch.getMatchId(), newMatch);
         return newMatch;
     }
 
@@ -96,5 +96,37 @@ public class MatchManager {
                 return false;
             }
         }
+    }
+
+    /**
+     * Checks if a user result logged by his nickname.
+     *
+     * @param nickname of the user that will be checked.
+     * @return if the user result logged.
+     */
+    public boolean isUserLogged(String nickname){
+        return loggedUsers.contains(nickname);
+    }
+
+    /**
+     * For testing.
+     *
+     * @param id the id of {@link Match} that will be checked.
+     * @return if the match has started.
+     */
+    public boolean hasMatchStarted(int id){
+        return activeMatches.values().stream().filter(m -> m.getMatchId() == id)
+                .allMatch(Match::hasStarted);
+    }
+
+    /**
+     * For testing.
+     *
+     * @param id the id of {@link Match} that will be checked.
+     * @return if the match has ended.
+     */
+    public boolean hasMatchEnded(int id){
+        return activeMatches.values().stream().filter(m -> m.getMatchId() == id)
+                .allMatch(Match::hasEnded);
     }
 }
