@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.ScrollPane?>
+
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.control.Button?>
+<BorderPane fx:id="boardRoot" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+            fx:controller="it.polimi.gc06.mesos.view.viewControllers.BoardController">
+    <top>
+        <HBox fx:id="topContainer" spacing="5" alignment="CENTER">
+            <ScrollPane fx:id="topRow" vbarPolicy="NEVER" hbarPolicy="NEVER" fitToHeight="true">
+                <HBox fx:id="topRowContainer" alignment="CENTER" spacing="5"/>
+            </ScrollPane>
+
+            <ScrollPane fx:id="topBuildings" vbarPolicy="NEVER" hbarPolicy="NEVER" fitToHeight="true">
+                <HBox fx:id="topBuildingsContainer" alignment="CENTER" spacing="5"/>
+            </ScrollPane>
+        </HBox>
+    </top>
+
+    <center>
+        <HBox fx:id="centerContainer" spacing="5" alignment="CENTER">
+            <HBox fx:id="deckBox" style="-fx-background-color: red;">
+                <ImageView fx:id="deckImage"/>
+            </HBox>
+
+            <HBox fx:id="tilesBox" spacing="2" style="-fx-background-color: blue;" alignment="CENTER"/>
+            <HBox fx:id="skipButtonBox" style="-fx-background-color: #84ff00;" alignment="CENTER">
+                <Button fx:id="skipButton" text="Skip"/>
+            </HBox>
+        </HBox>
+    </center>
+
+    <bottom>
+        <HBox fx:id="bottomContainer" spacing="5" alignment="CENTER">
+            <ScrollPane fx:id="bottomRow" vbarPolicy="NEVER" hbarPolicy="NEVER" fitToHeight="true">
+                <HBox fx:id="bottomRowContainer" alignment="CENTER" spacing="5"/>
+            </ScrollPane>
+
+            <ScrollPane fx:id="bottomBuildings" vbarPolicy="NEVER" hbarPolicy="NEVER" fitToHeight="true">
+                <HBox fx:id="bottomBuildingsContainer" alignment="CENTER" spacing="5"/>
+            </ScrollPane>
+        </HBox>
+    </bottom>
+</BorderPane>
+

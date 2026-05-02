@@ -101,7 +101,7 @@
                         <!-- Default configuration for running with: mvn clean javafx:run -->
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>it.polimi.gc06.mesos/it.polimi.gc06.mesos.HelloApplication</mainClass>
+                            <mainClass>it.polimi.gc06.mesos/it.polimi.gc06.mesos.view.GUI</mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>
                             <jlinkImageName>app</jlinkImageName>
