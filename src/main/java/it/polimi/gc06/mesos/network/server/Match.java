@@ -108,7 +108,7 @@ public class Match {
         }
         if (controller != null && controller.isGameFinished()) {
             try {
-                LeaderboardDAO.saveLeaderboard(controller.getLeaderboard());
+                LeaderboardDAO.saveLeaderboard(controller.getModel().getLeaderboard());
             } catch (Exception e) {
                 System.err.println("Something went wrong with leaderboard saving request, please check if mySql server is online");
                 e.printStackTrace();

@@ -209,17 +209,6 @@ public class GameController {
         return model.getBoard().isEndGame();
     }
 
-    public Leaderboard getLeaderboard() throws IllegalStateException {
-        if (!isGameFinished()) throw new IllegalStateException("Game is not finished yet");
-
-        Leaderboard leaderboard = new Leaderboard();
-        leaderboard.setTimestamp(Timestamp.from(Instant.now()));
-        for (Player p : model.getPlayers()) {
-            leaderboard.addScore(new Score(p.getNickname(), p.getPrestigeTokens()));
-        }
-        return leaderboard;
-    }
-
     public void addListener(PropertyChangeListener listener) {
         support.addPropertyChangeListener(listener);
     }

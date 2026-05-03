@@ -45,7 +45,8 @@ public class DAOTest {
         for(int i=0; i < nPlayers ;i++){
             Score s = new Score();
             s.setNickname(names[r.nextInt(0,50)]);
-            s.setScore(r.nextInt(0,401)-200);
+            s.setPrestigeScore(r.nextInt(0,401)-200);
+            s.setFoodScore(r.nextInt(0,30));
             l.addScore(s);
         }
         try {
@@ -65,7 +66,8 @@ public class DAOTest {
                 System.out.println(l.getTimestamp() + ":");
                 for (int w = 0; w < l.getScores().size(); w++) {
                     Score s = l.getScores().get(w);
-                    System.out.println("\t" + s.getNickname() + ": " + s.getScore());
+                    System.out.println("\t" + s.getNickname() + ": "
+                            + s.getPrestigeScore() + ", " + s.getFoodScore());
                 }
             }
         } catch (Exception e) {

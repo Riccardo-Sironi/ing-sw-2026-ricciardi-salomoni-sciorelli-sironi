@@ -14,6 +14,8 @@ import it.polimi.gc06.mesos.model.cards.events.EventListVisitor;
 import it.polimi.gc06.mesos.model.gameTurnManager.DrawObserver;
 import it.polimi.gc06.mesos.model.gameTurnManager.DrawSubject;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.*;
 
 public class Board implements DrawSubject {
@@ -31,6 +33,7 @@ public class Board implements DrawSubject {
     private Era currentEra;
 
     private boolean isEndGame;
+    private Timestamp endMatchTimestamp;
 
     private final ArrayList<DrawObserver> observers;
 
@@ -54,6 +57,7 @@ public class Board implements DrawSubject {
 
         currentEra = Era.ERA_I;
         isEndGame = false;
+        endMatchTimestamp = null;
     }
 
 
@@ -283,6 +287,8 @@ public class Board implements DrawSubject {
             // when we reach the end of the last era deck we need to add the final event cards to the top row
             if (currentEra.equals(Era.ERA_III) && model.getTribeCardsDeck().get(currentEra).isEmpty()) {
                 isEndGame = true;
+                endMatchTimestamp = Timestamp.from(Instant.now());
+
                 // if the deck is empty then we add to the top row the final event cards
                 topRow.addLast(model.getFinalEventCards()[0]);
                 topRow.addLast(model.getFinalEventCards()[1]);
@@ -307,12 +313,6 @@ public class Board implements DrawSubject {
             moveBuildingsFromTopToBottom();
             // populate the top building cards space with the cards from deck of the new current era
             populateTopBuildings();
-
-            // TODO : comunicare inizio nuova era ...
-        }
-
-        if (isEndGame) {
-            // TODO : comunicare end game ...
         }
     }
 
@@ -668,5 +668,16 @@ public class Board implements DrawSubject {
     @Override
     public void notifyObserverBuildings(Player player) {
         observers.forEach(observer -> observer.update(player));
+    }
+
+    /**
+     * Timestamp getter.
+     *
+     * @return the timestamp at which the match ended.
+     * @throws IllegalStateException if the game is not finished.
+     */
+    public Timestamp getEndedMatchTimestamp() throws IllegalStateException{
+        if(endMatchTimestamp == null) throw new IllegalStateException("Game not finished");
+        return endMatchTimestamp;
     }
 }

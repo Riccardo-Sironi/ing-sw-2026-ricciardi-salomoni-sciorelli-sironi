@@ -27,6 +27,7 @@ public class Leaderboard implements Comparable<Leaderboard>{
     public int getNumOfPlayers() {
         return scores.size();
     }
+
     /**
      * Adds a score to the current leaderboard.
      *
@@ -37,11 +38,13 @@ public class Leaderboard implements Comparable<Leaderboard>{
     }
 
     /**
-     * Scores getter.
+     * Scores getter, they are already ordered.
      *
      * @return an immutable list that represent the scores.
      */
     public List<Score> getScores(){
+        scores.sort((Score s1, Score s2) -> s2.getPrestigeScore()- s1.getPrestigeScore() == 0 ?
+                s2.getFoodScore() - s1.getFoodScore() : s2.getPrestigeScore()- s1.getPrestigeScore() );
         return Collections.unmodifiableList(scores);
     }
 

@@ -4,7 +4,6 @@ import it.polimi.gc06.mesos.view.PropertyChangeName;
 
 import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class ChangesHandler {
 
@@ -32,9 +31,7 @@ public class ChangesHandler {
         ArrayList<PropertyChangeEvent> changes = new ArrayList<>();
 
         if(model.getBoard().isEndGame()){
-            HashMap<String,Integer> leaderboard = new HashMap<>();
-            model.getPlayers().forEach(p -> leaderboard.put(p.getNickname(),p.getPrestigeTokens()));
-            changes.add(new PropertyChangeEvent(model,PropertyChangeName.IS_END_GAME.name(), null, leaderboard));
+            changes.add(new PropertyChangeEvent(model,PropertyChangeName.IS_END_GAME.name(), null, model.getLeaderboard()));
             return changes;
         }
 

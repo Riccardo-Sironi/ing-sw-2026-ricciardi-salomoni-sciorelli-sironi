@@ -14,7 +14,6 @@ import java.util.*;
  * 1. Application just started, DB is created and at the first read request all the data is extracted from DB.
  * 2. First read request already happened, local data is up to date, no need to request DB update.
  */
-//TODO: dare al client la possibilità di vedere la leaderboard con getLeaderboards()
 public class LeaderboardDAO {
 
     private final static List<Leaderboard> leaderboards = new ArrayList<>();
@@ -54,7 +53,8 @@ public class LeaderboardDAO {
             query = "CREATE TABLE IF NOT EXISTS scores(" +
                     "id INT AUTO_INCREMENT PRIMARY KEY, " +
                     "nickname VARCHAR(255) NOT NULL, " +
-                    "score INT NOT NULL," +
+                    "prestigeScore INT NOT NULL," +
+                    "foodScore INT NOT NULL," +
                     "leaderboardId INT NOT NULL REFERENCES leaderboards(id) ON UPDATE CASCADE ON DELETE NO ACTION)";
             connection.createStatement().execute(query);
 
@@ -88,7 +88,8 @@ public class LeaderboardDAO {
                 }
 
                 Score score = new Score();
-                score.setScore(result.getInt("score"));
+                score.setPrestigeScore(result.getInt("prestigeScore"));
+                score.setFoodScore(result.getInt("foodScore"));
                 score.setNickname(result.getString("nickname"));
                 tempLb.addScore(score);
             }
@@ -107,9 +108,9 @@ public class LeaderboardDAO {
         //request to save the leaderboard to DB
         connection.setAutoCommit(false);
         try {
-            String query = "INSERT INTO leaderboards (numOfPlayers, tstamp) " +
+            String lbQuery = "INSERT INTO leaderboards (numOfPlayers, tstamp) " +
                     "VALUES (?,?)";
-            PreparedStatement ps = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+            PreparedStatement ps = connection.prepareStatement(lbQuery, Statement.RETURN_GENERATED_KEYS);
             ps.setInt(1,l.getNumOfPlayers());
             ps.setTimestamp(2,l.getTimestamp());
             ps.executeUpdate();
@@ -117,15 +118,16 @@ public class LeaderboardDAO {
 
             if(result.next()) {
 
-                query = "INSERT INTO scores (nickname, score, leaderboardId) " +
-                        "VALUES ( ?, ?, ?)"; //prevents nickname SQL injection
-                ps = connection.prepareStatement(query);
+                String sQuery = "INSERT INTO scores (nickname, prestigeScore, foodScore, leaderboardId) " +
+                        "VALUES ( ?, ?, ?, ?)"; //prevents nickname SQL injection
+                ps = connection.prepareStatement(sQuery);
 
                 int id = result.getInt(1);
                 for (Score s : l.getScores()) {
                     ps.setString(1, s.getNickname());
-                    ps.setInt(2, s.getScore());
-                    ps.setInt(3, id);
+                    ps.setInt(2, s.getPrestigeScore());
+                    ps.setInt(3, s.getFoodScore());
+                    ps.setInt(4, id);
                     ps.addBatch();
                 }
                 ps.executeBatch();

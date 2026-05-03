@@ -3,16 +3,19 @@ package it.polimi.gc06.mesos.network.leaderboard;
 public class Score {
 
     private String nickname;
-    private int score;
+    private int prestigeScore;
+    private int foodScore;
 
     public Score(){
         nickname = null;
-        score = 0;
+        prestigeScore = -1;
+        foodScore = -1;
     }
 
-    public Score(String nickname, int score){
+    public Score(String nickname, int prestigeScore, int foodScore){
         this.nickname = nickname;
-        this.score = score;
+        this.prestigeScore = prestigeScore;
+        this.foodScore = foodScore;
     }
 
     public String getNickname() {
@@ -23,11 +26,19 @@ public class Score {
         this.nickname = nickname;
     }
 
-    public int getScore() {
-        return score;
+    public int getPrestigeScore() {
+        return prestigeScore;
     }
 
-    public void setScore(int score) {
-        this.score = score;
+    public void setPrestigeScore(int prestigeScore) {
+        this.prestigeScore = prestigeScore;
+    }
+
+    public int getFoodScore() {
+        return foodScore;
+    }
+
+    public void setFoodScore(int foodScore) {
+        this.foodScore = foodScore;
     }
 }

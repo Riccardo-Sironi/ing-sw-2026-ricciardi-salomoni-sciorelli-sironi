@@ -6,7 +6,11 @@ import it.polimi.gc06.mesos.model.cards.events.EventCard;
 import it.polimi.gc06.mesos.model.gameBoard.Board;
 import it.polimi.gc06.mesos.model.gameTurnManager.DrawObserver;
 import it.polimi.gc06.mesos.model.gameTurnManager.TurnManager;
+import it.polimi.gc06.mesos.network.leaderboard.Leaderboard;
+import it.polimi.gc06.mesos.network.leaderboard.Score;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -205,5 +209,22 @@ public class GameModel implements GameInfo {
      */
     public ChangesHandler getChangeHandler(){
         return changesHandler;
+    }
+
+    /**
+     * Leaderboard getter.
+     *
+     * @return the leaderboard of the match, with timestamp the moment of the call
+     * @throws IllegalStateException if the game is not finished yet.
+     */
+    public Leaderboard getLeaderboard() throws IllegalStateException{
+        if (!board.isEndGame()) throw new IllegalStateException("Game is not finished yet");
+
+        Leaderboard leaderboard = new Leaderboard();
+        leaderboard.setTimestamp(board.getEndedMatchTimestamp());
+        for (Player p : players) {
+            leaderboard.addScore(new Score(p.getNickname(), p.getPrestigeTokens(), p.getFoodTokens()));
+        }
+        return leaderboard;
     }
 }
