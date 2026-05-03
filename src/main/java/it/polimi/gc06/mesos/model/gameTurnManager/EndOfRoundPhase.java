@@ -156,4 +156,9 @@ public class EndOfRoundPhase extends Phase {
             turnManager.setPhase(new PlacingTotemPhase());
         }
     }
+
+    @Override
+    public String toString(){
+        return "End of round";
+    }
 }

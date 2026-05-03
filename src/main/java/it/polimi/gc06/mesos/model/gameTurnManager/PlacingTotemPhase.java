@@ -51,4 +51,8 @@ public class PlacingTotemPhase extends Phase {
         }
     }
 
+    @Override
+    public String toString(){
+        return "Placing totem";
+    }
 }

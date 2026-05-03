@@ -59,11 +59,12 @@ public class GameController {
             throw new IllegalPhaseActionException("The tile is already occupied !");
         }
 
+        model.getChangeHandler().registerState();
         turnManager.getPhase().placeTotem(turnManager, activePlayer, tile, model.getBoard());
 
         TotemMovedInfo info = new TotemMovedInfo(playerNickname, tileIndex);
         support.firePropertyChange(PropertyChangeName.TOTEM_MOVED.name(), null, info);
-
+        model.getChangeHandler().getChanges().forEach(support::firePropertyChange);
     }
 
     /**
@@ -85,13 +86,14 @@ public class GameController {
         TribeCard card = model.getBoard().getBottomCardFromIndex(cardIndex);
         CardPickedInfo info = new CardPickedInfo(playerNickname, cardIndex, card); //prepares the info if needed
 
+        model.getChangeHandler().registerState();
         CardBottomRowControllerVisitor cardPickerVisitor = new CardBottomRowControllerVisitor(turnManager, activePlayer, model);
 
         card.accept(cardPickerVisitor);
 
         //if the operation was not successful the notice won't be sent
         support.firePropertyChange(PropertyChangeName.PICK_FROM_BOTTOM_ROW.name(), null, info);
-
+        model.getChangeHandler().getChanges().forEach(support::firePropertyChange);
     }
 
     /**
@@ -114,13 +116,14 @@ public class GameController {
         TribeCard card = model.getBoard().getTopCardFromIndex(cardIndex);
         CardPickedInfo info = new CardPickedInfo(playerNickname, cardIndex, card); //prepares the info if needed
 
+        model.getChangeHandler().registerState();
         CardTopRowControllerVisitor cardPickerVisitor = new CardTopRowControllerVisitor(turnManager, activePlayer, model);
 
         card.accept(cardPickerVisitor);
 
         //if the operation was not successful the notice won't be sent
         support.firePropertyChange(PropertyChangeName.PICK_FROM_TOP_ROW.name(), null, info);
-
+        model.getChangeHandler().getChanges().forEach(support::firePropertyChange);
     }
 
     /**
@@ -145,10 +148,12 @@ public class GameController {
         BuildingCard card = model.getBoard().getBottomBuildingFromIndex(cardIndex);
         CardPickedInfo info = new CardPickedInfo(playerNickname, cardIndex, card); //prepares the info if needed
 
+        model.getChangeHandler().registerState();
         turnManager.getPhase().pickCardFromBottom(turnManager, activePlayer, card, model.getBoard());
 
         //if the operation was not successful the notice won't be sent
         support.firePropertyChange(PropertyChangeName.PICK_FROM_BOTTOM_BUILDINGS.name(), null, info);
+        model.getChangeHandler().getChanges().forEach(support::firePropertyChange);
     }
 
     /**
@@ -171,10 +176,12 @@ public class GameController {
         BuildingCard card = model.getBoard().getTopBuildingFromIndex(cardIndex);
         CardPickedInfo info = new CardPickedInfo(playerNickname, cardIndex, card); //prepares the info if needed
 
+        model.getChangeHandler().registerState();
         turnManager.getPhase().pickCardFromTop(turnManager, activePlayer, card, model.getBoard());
 
         //if the operation was not successful the notice won't be sent
         support.firePropertyChange(PropertyChangeName.PICK_FROM_TOP_BUILDINGS.name(), null, info);
+        model.getChangeHandler().getChanges().forEach(support::firePropertyChange);
     }
 
     /**
@@ -192,9 +199,10 @@ public class GameController {
             throw new IllegalPhaseActionException("It's not " + playerNickname + " turn !");
         }
 
+        model.getChangeHandler().registerState();
         turnManager.getPhase().skipPick(turnManager, activePlayer);
 
-        // TODO : property change
+        model.getChangeHandler().getChanges().forEach(support::firePropertyChange);
     }
 
     public boolean isGameFinished() {

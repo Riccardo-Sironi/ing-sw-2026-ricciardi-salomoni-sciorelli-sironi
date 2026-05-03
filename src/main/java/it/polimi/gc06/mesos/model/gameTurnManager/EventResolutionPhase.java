@@ -27,4 +27,9 @@ public class EventResolutionPhase extends Phase {
         turnManager.setPhase(new EndOfRoundPhase());
         turnManager.getPhase().endOfRound(turnManager, board, turnManager.getGameModel());
     }
+
+    @Override
+    public String toString(){
+        return "Event resolution";
+    }
 }

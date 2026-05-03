@@ -1,7 +1,7 @@
 package it.polimi.gc06.mesos.view;
 
 import it.polimi.gc06.mesos.network.socket.infos.CardPickedInfo;
-import java.util.function.Supplier;
+import it.polimi.gc06.mesos.network.socket.infos.TotemMovedInfo;
 
 public enum PropertyChangeName{
 
@@ -16,17 +16,15 @@ public enum PropertyChangeName{
     PICK_FROM_BOTTOM_BUILDINGS,
 
     /**
-     * Refill info should also update deck size
+     * Refill info should also update deck size, returns the array of cards.
      * */
     TOP_ROW_REFILL,
-    TOP_BUILDING_REFILL,
+    TOP_BUILDINGS_REFILL,
 
-    /**
-     * Miscellaneous
-     * */
-    TOTEM_MOVED,
-    PHASE_CHANGED,
-    ACTIVE_PLAYER_CHANGED,
-    ROUND_CHANGED,
-    IS_END_GAME
+    TOTEM_MOVED, /**returns the {@link TotemMovedInfo}*/
+    PHASE_CHANGED, /**returns the new phase as String*/
+    ACTIVE_PLAYER_CHANGED, /**returns the nickname of the new active player*/
+    ROUND_CHANGED, /**returns the new round as integer*/
+    ERA_CHANGED, /**client-side all buildings should be moved to bottom on this notify, returns the Era as String*/
+    IS_END_GAME /** returns the leaderboard*/
 }

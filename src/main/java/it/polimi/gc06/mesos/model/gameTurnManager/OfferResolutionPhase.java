@@ -195,4 +195,9 @@ public class OfferResolutionPhase extends Phase {
             throw new IllegalPhaseActionException("You can't skip the offer resolution phase!");
         }
     }
+
+    @Override
+    public String toString(){
+        return "Offer resolution";
+    }
 }

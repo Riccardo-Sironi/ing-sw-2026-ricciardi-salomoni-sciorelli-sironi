@@ -13,17 +13,14 @@ import java.util.Comparator;
 import java.util.EnumMap;
 
 public class GameModel implements GameInfo {
+
     private final Board board;
-
     private final EnumMap<Era, ArrayList<BuildingCard>> buildingCardsDecks;
-
     private final EnumMap<Era, ArrayList<TribeCard>> tribeCardsDeck;
-
     private final EventCard[] finalEventCards;
-
     private final ArrayList<Player> players;
-
     private final TurnManager turnManager;
+    private final ChangesHandler changesHandler;
 
     public GameModel(Board board, EnumMap<Era, ArrayList<BuildingCard>> buildingCardsDecks, EnumMap<Era, ArrayList<TribeCard>> tribeCardsDeck, EventCard[] finalEventCards, ArrayList<Player> players, TurnManager turnManager) {
         this.board = board;
@@ -32,6 +29,7 @@ public class GameModel implements GameInfo {
         this.finalEventCards = finalEventCards;
         this.players = players;
         this.turnManager = turnManager;
+        this.changesHandler = new ChangesHandler(this);
     }
 
     /**
@@ -198,5 +196,14 @@ public class GameModel implements GameInfo {
      */
     public TurnManager getTurnManager() {
         return turnManager;
+    }
+
+    /**
+     * this method returns the change handler.
+     *
+     * @return the current {@link ChangesHandler}
+     */
+    public ChangesHandler getChangeHandler(){
+        return changesHandler;
     }
 }

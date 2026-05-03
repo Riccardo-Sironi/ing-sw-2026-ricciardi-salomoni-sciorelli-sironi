@@ -12,13 +12,9 @@ public class TurnManager {
 
     final private List<Player> playersOrder;
     private Phase phase;
-
     private int round;
-
     private int activePlayerIndex;
-
     private final ModifierBuildingCard pickFromTopCard;
-
     private GameModel gameModel;
 
     public TurnManager(List<Player> playersOrder, ModifierBuildingsRegistry registry) {
