@@ -1,0 +1,46 @@
+#boardRoot {
+    -fx-background-color: white;
+}
+
+#boardRoot .scroll-pane {
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+
+#boardRoot .scroll-pane .viewport {
+    -fx-background-color: transparent;
+}
+
+#boardRoot #skipButton {
+    -fx-background-color: white;
+    -fx-border-color: red;
+    -fx-border-width: 1px;
+    -fx-text-fill: red;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-padding: 10px 20px;
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+    -fx-cursor: hand;
+}
+
+#boardRoot #skipButton:pressed {
+    -fx-background-color: #eeeeee;
+}
+
+#boardRoot #skipButton:disabled {
+    -fx-background-color: #a8a8a8;
+    -fx-border-color: grey;
+    -fx-text-fill: #000000;
+    -fx-opacity: 0.6;
+    -fx-cursor: default;
+}
+
+.card-image:disabled {
+    -fx-opacity: 0.6; /* Rende l'immagine leggermente trasparente */
+    -fx-cursor: default; /* Rimuove la manina */
+    -fx-focus-traversable: false;
+}

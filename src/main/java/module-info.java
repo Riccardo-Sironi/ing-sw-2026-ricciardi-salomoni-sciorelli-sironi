@@ -32,7 +32,7 @@ module it.polimi.gc06.mesos {
     exports it.polimi.gc06.mesos;
     opens it.polimi.gc06.mesos.view to javafx.graphics, javafx.fxml;
     exports it.polimi.gc06.mesos.view;
-    opens it.polimi.gc06.mesos.view.gui.viewControllers to javafx.fxml;
+    opens it.polimi.gc06.mesos.view.gui.controllers to javafx.fxml;
     exports it.polimi.gc06.mesos.network.rmi to java.rmi;
     exports it.polimi.gc06.mesos.view.gui;
     opens it.polimi.gc06.mesos.view.gui to javafx.fxml, javafx.graphics;

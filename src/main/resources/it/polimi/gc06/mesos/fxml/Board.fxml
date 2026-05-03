@@ -6,7 +6,7 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.control.Button?>
 <BorderPane fx:id="boardRoot" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
-            fx:controller="it.polimi.gc06.mesos.view.gui.viewControllers.BoardController">
+            fx:controller="it.polimi.gc06.mesos.view.gui.controllers.BoardController">
     <top>
         <HBox fx:id="topContainer" spacing="5" alignment="CENTER">
             <ScrollPane fx:id="topRow" vbarPolicy="NEVER" hbarPolicy="NEVER" fitToHeight="true">
@@ -21,12 +21,12 @@
 
     <center>
         <HBox fx:id="centerContainer" spacing="5" alignment="CENTER">
-            <HBox fx:id="deckBox" style="-fx-background-color: red;">
+            <HBox fx:id="deckBox" alignment="CENTER">
                 <ImageView fx:id="deckImage"/>
             </HBox>
 
-            <HBox fx:id="tilesBox" spacing="2" style="-fx-background-color: blue;" alignment="CENTER"/>
-            <HBox fx:id="skipButtonBox" style="-fx-background-color: #84ff00;" alignment="CENTER">
+            <HBox fx:id="tilesBox" spacing="2" alignment="CENTER"/>
+            <HBox fx:id="skipButtonBox" alignment="CENTER">
                 <Button fx:id="skipButton" text="Skip"/>
             </HBox>
         </HBox>

@@ -6,6 +6,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class GUI extends Application {
     public static int WIDTH = 1920;
@@ -14,8 +15,10 @@ public class GUI extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         FXMLLoader gameViewLoader = new FXMLLoader(getClass().getResource("/it/polimi/gc06/mesos/fxml/Mesos.fxml"));
-
         Scene scene = new Scene(gameViewLoader.load(), WIDTH, HEIGHT);
+
+        scene.getStylesheets().add(getClass().getResource("/it/polimi/gc06/mesos/css/board_style.css").toExternalForm());
+
         stage.setTitle("Mesos");
         stage.setScene(scene);
         stage.show();
