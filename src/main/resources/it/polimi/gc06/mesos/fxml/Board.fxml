@@ -25,7 +25,10 @@
                 <ImageView fx:id="deckImage"/>
             </HBox>
 
-            <HBox fx:id="tilesBox" spacing="2" alignment="CENTER"/>
+            <ScrollPane fx:id="tiles" vbarPolicy="NEVER" hbarPolicy="NEVER" fitToHeight="true">
+                <HBox fx:id="tilesContainer" alignment="CENTER" spacing="2"/>
+            </ScrollPane>
+
             <HBox fx:id="skipButtonBox" alignment="CENTER">
                 <Button fx:id="skipButton" text="Skip"/>
             </HBox>
