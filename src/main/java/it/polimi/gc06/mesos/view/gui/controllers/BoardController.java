@@ -97,15 +97,13 @@ public class BoardController implements PropertyChangeListener {
             bottomBuildingsContainer.getChildren().add(createCard(new Image("1.png")));
         }
 
-        int n = 8;
-
         tilesContainer.getChildren().add(createTurnOrderTile(new Image("turn_order_tile_5p.png")));
-        tilesContainer.getChildren().add(createOfferTile(new Image("offer_tile_A.png"), Totem.YELLOW));
-        tilesContainer.getChildren().add(createOfferTile(new Image("offer_tile_B.png"), Totem.NONE));
-        tilesContainer.getChildren().add(createOfferTile(new Image("offer_tile_C.png"), Totem.TURQUOISE, "Player 2"));
-        tilesContainer.getChildren().add(createOfferTile(new Image("offer_tile_D.png"), Totem.WHITE));
-        tilesContainer.getChildren().add(createOfferTile(new Image("offer_tile_E.png"), Totem.NONE));
-        tilesContainer.getChildren().add(createOfferTile(new Image("offer_tile_F.png"), Totem.PURPLE));
+        tilesContainer.getChildren().add(createOfferTile(new Image("offer_tile_A.png"), Totem.PURPLE, "dale"));
+        tilesContainer.getChildren().add(createOfferTile(new Image("offer_tile_B.png"), Totem.ORANGE));
+        tilesContainer.getChildren().add(createOfferTile(new Image("offer_tile_C.png"), Totem.ORANGE, "Player 2"));
+        tilesContainer.getChildren().add(createOfferTile(new Image("offer_tile_D.png"), Totem.TURQUOISE, "e dale"));
+        tilesContainer.getChildren().add(createOfferTile(new Image("offer_tile_E.png"), Totem.ORANGE));
+        tilesContainer.getChildren().add(createOfferTile(new Image("offer_tile_F.png"), Totem.NONE, "dale"));
         tilesContainer.getChildren().add(createOfferTile(new Image("offer_tile_G.png"), Totem.ORANGE, "Player 5"));
     }
 

@@ -60,8 +60,8 @@ public class OffertTileView extends TileView {
         });
 
         totemOverlay.setOnMouseMoved((event) -> {
-            playerNamePopup.setX(event.getScreenX() - 20);
-            playerNamePopup.setY(event.getScreenY() - 47);
+            playerNamePopup.setX(event.getScreenX() - 35);
+            playerNamePopup.setY(event.getScreenY() - 50);
         });
 
         totemOverlay.setOnMouseExited((event) -> {
@@ -69,55 +69,9 @@ public class OffertTileView extends TileView {
         });
     }
 
-    public Popup createPopup() {
-        Popup popup = new Popup();
-        popup.setAutoFix(true);
-
-        HBox popupContent = new HBox();
-        popupContent.setStyle(
-                "-fx-background-color: rgb(255, 255, 255, 0.37);" +
-                        "-fx-background-radius: 8px;" +
-                        "-fx-border-color: rgba(255, 255, 255, 0.2);" +
-                        "-fx-border-width: 1px;" +
-                        "-fx-border-radius: 8px;" +
-                        "-fx-padding: 6px 12px;"
-        );
-        popupContent.setAlignment(Pos.CENTER);
-        popupContent.setMouseTransparent(true);
-
-        Text playerNameText = new Text(playerName);
-        playerNameText.setFill(Color.WHITE);
-        playerNameText.setFont(Font.font("System", FontWeight.SEMI_BOLD, 13));
-        playerNameText.setMouseTransparent(true);
-
-        popupContent.setOpacity(0);
-        popupContent.setTranslateY(6);
-
-        popupContent.getChildren().add(playerNameText);
-        popup.getContent().add(popupContent);
-
-        return popup;
-    }
-
-    public ImageView getOverlay() {
-        return this.totemOverlay;
-    }
-
-    public Popup getPlayerNamePopup() {
-        return this.playerNamePopup;
-    }
-
-    public Totem getTotem() {
-        return this.totem;
-    }
-
     public void setTotem(Totem totem) {
         this.totem = totem;
         setupTotemOverlay();
-    }
-
-    public String getPlayerName() {
-        return this.playerName;
     }
 
     public void setPlayerName(String playerName) {
@@ -144,6 +98,36 @@ public class OffertTileView extends TileView {
         new ParallelTransition(fade, slide).play();
     }
 
+    public Popup createPopup() {
+        Popup popup = new Popup();
+        popup.setAutoFix(true);
+
+        HBox popupContent = new HBox();
+        popupContent.setStyle(
+                "-fx-background-color: " + totem.getTotemColorHex() + ";" +
+                        "-fx-background-radius: 8px;" +
+                        "-fx-border-color: rgba(255, 255, 255, 0.6);" +
+                        "-fx-border-width: 1px;" +
+                        "-fx-border-radius: 8px;" +
+                        "-fx-padding: 8px 15px;"
+        );
+        popupContent.setAlignment(Pos.CENTER);
+        popupContent.setMouseTransparent(true);
+
+        Text playerNameText = new Text(playerName);
+        playerNameText.setFill(Color.WHITE);
+        playerNameText.setFont(Font.font("System", FontWeight.BOLD, 13));
+        playerNameText.setMouseTransparent(true);
+
+        popupContent.setOpacity(0);
+        popupContent.setTranslateY(6);
+
+        popupContent.getChildren().add(playerNameText);
+        popup.getContent().add(popupContent);
+
+        return popup;
+    }
+
     private void playPopupOut(Popup popup) {
         HBox content = (HBox) popup.getContent().get(0);
 
@@ -151,8 +135,24 @@ public class OffertTileView extends TileView {
         fade.setFromValue(content.getOpacity());
         fade.setToValue(0);
         fade.setInterpolator(Interpolator.EASE_IN);
-        fade.setOnFinished(e -> popup.hide());   // nasconde DOPO il fade
+        fade.setOnFinished(e -> popup.hide());
 
         fade.play();
+    }
+
+    public ImageView getOverlay() {
+        return this.totemOverlay;
+    }
+
+    public Popup getPlayerNamePopup() {
+        return this.playerNamePopup;
+    }
+
+    public Totem getTotem() {
+        return this.totem;
+    }
+
+    public String getPlayerName() {
+        return this.playerName;
     }
 }
