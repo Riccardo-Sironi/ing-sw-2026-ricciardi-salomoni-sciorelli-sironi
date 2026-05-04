@@ -3,19 +3,17 @@ package it.polimi.gc06.mesos.view.gui.elements;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Paint;
-import javafx.scene.shape.Rectangle;
 
-public class TileView extends StackPane {
-
+public abstract class TileView extends StackPane {
     ImageView imageView;
 
     public TileView(Image image) {
         super();
+
         imageView = new ImageView(image);
         imageView.setPreserveRatio(true);
         imageView.setSmooth(true);
-        this.getChildren().add(imageView);
+        this.getChildren().addAll(imageView);
     }
 
     public ImageView getImageView() {

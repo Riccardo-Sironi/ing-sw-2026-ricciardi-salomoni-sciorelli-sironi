@@ -1,10 +1,8 @@
 package it.polimi.gc06.mesos.view.gui.controllers;
 
-import it.polimi.gc06.mesos.model.gameBoard.TileSlot;
 import it.polimi.gc06.mesos.view.PropertyChangeName;
 import it.polimi.gc06.mesos.view.SmallModel;
-import it.polimi.gc06.mesos.view.gui.elements.CardView;
-import it.polimi.gc06.mesos.view.gui.elements.TileView;
+import it.polimi.gc06.mesos.view.gui.elements.*;
 import javafx.application.Platform;
 import javafx.beans.binding.DoubleBinding;
 import javafx.fxml.FXML;
@@ -17,7 +15,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 
 import java.beans.PropertyChangeEvent;
@@ -87,29 +84,29 @@ public class BoardController implements PropertyChangeListener {
         deckImage.setImage(new Image("tribe_card_era_I_back.png"));
 
         for (int i = 0; i < 9; i++) {
-            topRowContainer.getChildren().add(drawCard(new Image("shaman_1_card.png")));
+            topRowContainer.getChildren().add(createCard(new Image("shaman_1_card.png")));
         }
 
         for (int i = 0; i < 7; i++) {
-            bottomRowContainer.getChildren().add(drawCard(new Image("shaman_1_card.png")));
+            bottomRowContainer.getChildren().add(createCard(new Image("shaman_1_card.png")));
         }
         for (int i = 0; i < 4; i++) {
-            topBuildingsContainer.getChildren().add(drawCard(new Image("1.png")));
+            topBuildingsContainer.getChildren().add(createCard(new Image("1.png")));
         }
         for (int i = 0; i < 4; i++) {
-            bottomBuildingsContainer.getChildren().add(drawCard(new Image("1.png")));
+            bottomBuildingsContainer.getChildren().add(createCard(new Image("1.png")));
         }
 
         int n = 8;
 
-        tilesContainer.getChildren().add(drawTile(new Image("turn_order_tile_5p.png"), n));
-        tilesContainer.getChildren().add(drawTile(new Image("offer_tile_A.png"), n));
-        tilesContainer.getChildren().add(drawTile(new Image("offer_tile_B.png"), n));
-        tilesContainer.getChildren().add(drawTile(new Image("offer_tile_C.png"), n));
-        tilesContainer.getChildren().add(drawTile(new Image("offer_tile_D.png"), n));
-        tilesContainer.getChildren().add(drawTile(new Image("offer_tile_E.png"), n));
-        tilesContainer.getChildren().add(drawTile(new Image("offer_tile_F.png"), n));
-        tilesContainer.getChildren().add(drawTile(new Image("offer_tile_G.png"), n));
+        tilesContainer.getChildren().add(createTurnOrderTile(new Image("turn_order_tile_5p.png")));
+        tilesContainer.getChildren().add(createOfferTile(new Image("offer_tile_A.png"), Totem.YELLOW));
+        tilesContainer.getChildren().add(createOfferTile(new Image("offer_tile_B.png"), Totem.NONE));
+        tilesContainer.getChildren().add(createOfferTile(new Image("offer_tile_C.png"), Totem.TURQUOISE, "Player 2"));
+        tilesContainer.getChildren().add(createOfferTile(new Image("offer_tile_D.png"), Totem.WHITE));
+        tilesContainer.getChildren().add(createOfferTile(new Image("offer_tile_E.png"), Totem.NONE));
+        tilesContainer.getChildren().add(createOfferTile(new Image("offer_tile_F.png"), Totem.PURPLE));
+        tilesContainer.getChildren().add(createOfferTile(new Image("offer_tile_G.png"), Totem.ORANGE, "Player 5"));
     }
 
 
@@ -159,18 +156,52 @@ public class BoardController implements PropertyChangeListener {
      * @param image The image of the card.
      * @return the {@link CardView} object.
      */
-    private CardView drawCard(Image image) {
+    private CardView createCard(Image image) {
         CardView card = new CardView(image);
         card.fitHeightProperty().bind(topRow.heightProperty().multiply(0.98));
 
         return card;
     }
 
-    private TileView drawTile(Image image, int numTiles) {
-        // TODO : this is provisory, the number of tiles should be base on the number of players (small model)
-        TileView tile = new TileView(image);
+    private TurnOrderTileView createTurnOrderTile(Image image) {
+        int nPlayers;
+        if (smallModel == null) {
+            nPlayers = 8;
+        } else {
+            nPlayers = smallModel.opponents().size() + 1;
+        }
+        TurnOrderTileView turnOrderTile = new TurnOrderTileView(image);
 
-        DoubleBinding tileSize = tiles.widthProperty().divide(numTiles).multiply(0.98);
+        DoubleBinding tileSize = tiles.widthProperty().divide(nPlayers).multiply(0.98);
+
+        turnOrderTile.prefWidthProperty().bind(tileSize);
+        turnOrderTile.maxWidthProperty().bind(tileSize);
+        turnOrderTile.prefHeightProperty().bind(tiles.heightProperty());
+        turnOrderTile.maxHeightProperty().bind(tiles.heightProperty());
+        turnOrderTile.getImageView().fitWidthProperty().bind(tileSize);
+        turnOrderTile.getImageView().fitHeightProperty().bind(tiles.heightProperty());
+
+        return turnOrderTile;
+
+    }
+
+    /**
+     * Create the {@link OffertTileView} based on the given image and totem.
+     *
+     * @param image Image of the tile
+     * @param totem The {@link Totem} associated to the player on the tile
+     * @return the {@link OffertTileView} object.
+     */
+    private OffertTileView createOfferTile(Image image, Totem totem) {
+        int nPlayers;
+        if (smallModel == null) {
+            nPlayers = 8;
+        } else {
+            nPlayers = smallModel.opponents().size() + 1;
+        }
+
+        OffertTileView tile = new OffertTileView(image, totem);
+        DoubleBinding tileSize = tiles.widthProperty().divide(nPlayers).multiply(0.98);
 
         tile.prefWidthProperty().bind(tileSize);
         tile.maxWidthProperty().bind(tileSize);
@@ -178,6 +209,25 @@ public class BoardController implements PropertyChangeListener {
         tile.maxHeightProperty().bind(tiles.heightProperty());
         tile.getImageView().fitWidthProperty().bind(tileSize);
         tile.getImageView().fitHeightProperty().bind(tiles.heightProperty());
+
+        tile.getOverlay().fitWidthProperty().bind(tileSize);
+        tile.getOverlay().fitHeightProperty().bind(tiles.heightProperty());
+
+        return tile;
+    }
+
+    /**
+     * Create the {@link OffertTileView} based on the given image, totem and player name.
+     *
+     * @param image      Image of the tile
+     * @param totem      The {@link Totem} associated to the player on the tile
+     * @param playerName The name of the player on the tile
+     * @return the {@link OffertTileView} object.
+     */
+    private OffertTileView createOfferTile(Image image, Totem totem, String playerName) {
+        OffertTileView tile = createOfferTile(image, totem);
+
+        tile.setPlayerName(playerName);
 
         return tile;
     }
@@ -190,10 +240,6 @@ public class BoardController implements PropertyChangeListener {
     private void drawOfferTrack() {
         // TODO : the tile view is not implemented yet
         // ...
-    }
-
-    private StackPane drawOfferTrackTile(Image image, TileSlot tileSlot) {
-        return null;
     }
 
     /**
@@ -301,7 +347,7 @@ public class BoardController implements PropertyChangeListener {
     private void drawTopRowCards() {
         topRowContainer.getChildren().clear();
         for (String cardPath : smallModel.topRow()) {
-            CardView card = drawCard(new Image(cardPath));
+            CardView card = createCard(new Image(cardPath));
 
             setCardEffect(card);
 
@@ -315,7 +361,7 @@ public class BoardController implements PropertyChangeListener {
     private void drawTopBuildingsCards() {
         topBuildingsContainer.getChildren().clear();
         for (String cardPath : smallModel.topBuilding()) {
-            CardView card = drawCard(new Image(cardPath));
+            CardView card = createCard(new Image(cardPath));
 
             setCardEffect(card);
 
@@ -329,7 +375,7 @@ public class BoardController implements PropertyChangeListener {
     private void drawBottomRowCards() {
         bottomRowContainer.getChildren().clear();
         for (String buildingPath : smallModel.bottomRow()) {
-            CardView card = drawCard(new Image(buildingPath));
+            CardView card = createCard(new Image(buildingPath));
 
             setCardEffect(card);
 
@@ -343,7 +389,7 @@ public class BoardController implements PropertyChangeListener {
     private void drawBottomBuildingCards() {
         bottomBuildingsContainer.getChildren().clear();
         for (String buildingPath : smallModel.bottomBuilding()) {
-            CardView card = drawCard(new Image(buildingPath));
+            CardView card = createCard(new Image(buildingPath));
 
             setCardEffect(card);
 
