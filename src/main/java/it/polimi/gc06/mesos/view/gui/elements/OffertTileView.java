@@ -80,25 +80,11 @@ public class OffertTileView extends TileView {
 
     }
 
-    private void playPopupIn(Popup popup) {
-        HBox content = (HBox) popup.getContent().get(0);
-        content.setOpacity(0);
-        content.setTranslateY(6);
-
-        FadeTransition fade = new FadeTransition(Duration.millis(100), content);
-        fade.setFromValue(0);
-        fade.setToValue(1);
-        fade.setInterpolator(Interpolator.EASE_OUT);
-
-        TranslateTransition slide = new TranslateTransition(Duration.millis(100), content);
-        slide.setFromY(6);
-        slide.setToY(0);
-        slide.setInterpolator(Interpolator.EASE_OUT);
-
-        new ParallelTransition(fade, slide).play();
-    }
-
     public Popup createPopup() {
+        if (totem == Totem.NONE) {
+            return new Popup();
+        }
+
         Popup popup = new Popup();
         popup.setAutoFix(true);
 
@@ -120,7 +106,6 @@ public class OffertTileView extends TileView {
         playerNameText.setMouseTransparent(true);
 
         popupContent.setOpacity(0);
-        popupContent.setTranslateY(6);
 
         popupContent.getChildren().add(playerNameText);
         popup.getContent().add(popupContent);
@@ -128,7 +113,28 @@ public class OffertTileView extends TileView {
         return popup;
     }
 
+    private void playPopupIn(Popup popup) {
+        if (popup.getContent().isEmpty()) return;
+        HBox content = (HBox) popup.getContent().get(0);
+        content.setOpacity(0);
+        content.setTranslateY(6);
+
+        FadeTransition fade = new FadeTransition(Duration.millis(100), content);
+        fade.setFromValue(0);
+        fade.setToValue(1);
+        fade.setInterpolator(Interpolator.EASE_OUT);
+
+        TranslateTransition slide = new TranslateTransition(Duration.millis(100), content);
+        slide.setFromY(6);
+        slide.setToY(0);
+        slide.setInterpolator(Interpolator.EASE_OUT);
+
+        new ParallelTransition(fade, slide).play();
+    }
+
     private void playPopupOut(Popup popup) {
+        if (popup.getContent().isEmpty()) return;
+        if (!popup.isShowing()) return;
         HBox content = (HBox) popup.getContent().get(0);
 
         FadeTransition fade = new FadeTransition(Duration.millis(100), content);
