@@ -10,7 +10,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Popup;
 import javafx.util.Duration;
@@ -21,6 +20,8 @@ public class OffertTileView extends TileView {
     private Totem totem;
     private String playerName;
     private Popup playerNamePopup;
+
+    private final Font mesosFont = Font.loadFont(this.getClass().getResourceAsStream("/it/polimi/gc06/mesos/fonts/KidKnowledge.otf"), 20);
 
     public OffertTileView(Image image, Totem totem) {
         super(image);
@@ -56,16 +57,16 @@ public class OffertTileView extends TileView {
 
         totemOverlay.setOnMouseEntered((event) -> {
             playerNamePopup.show(totemOverlay, event.getScreenX(), event.getScreenY());
-            playPopupIn(playerNamePopup);
+            PopupEffectsManager.playPopupIn(playerNamePopup);
         });
 
         totemOverlay.setOnMouseMoved((event) -> {
             playerNamePopup.setX(event.getScreenX() - 35);
-            playerNamePopup.setY(event.getScreenY() - 50);
+            playerNamePopup.setY(event.getScreenY() - 60);
         });
 
         totemOverlay.setOnMouseExited((event) -> {
-            playPopupOut(playerNamePopup);
+            PopupEffectsManager.playPopupOut(playerNamePopup);
         });
     }
 
@@ -102,7 +103,7 @@ public class OffertTileView extends TileView {
 
         Text playerNameText = new Text(playerName);
         playerNameText.setFill(Color.WHITE);
-        playerNameText.setFont(Font.font("System", FontWeight.BOLD, 13));
+        playerNameText.setFont(mesosFont);
         playerNameText.setMouseTransparent(true);
 
         popupContent.setOpacity(0);
@@ -111,39 +112,6 @@ public class OffertTileView extends TileView {
         popup.getContent().add(popupContent);
 
         return popup;
-    }
-
-    private void playPopupIn(Popup popup) {
-        if (popup.getContent().isEmpty()) return;
-        HBox content = (HBox) popup.getContent().get(0);
-        content.setOpacity(0);
-        content.setTranslateY(6);
-
-        FadeTransition fade = new FadeTransition(Duration.millis(100), content);
-        fade.setFromValue(0);
-        fade.setToValue(1);
-        fade.setInterpolator(Interpolator.EASE_OUT);
-
-        TranslateTransition slide = new TranslateTransition(Duration.millis(100), content);
-        slide.setFromY(6);
-        slide.setToY(0);
-        slide.setInterpolator(Interpolator.EASE_OUT);
-
-        new ParallelTransition(fade, slide).play();
-    }
-
-    private void playPopupOut(Popup popup) {
-        if (popup.getContent().isEmpty()) return;
-        if (!popup.isShowing()) return;
-        HBox content = (HBox) popup.getContent().get(0);
-
-        FadeTransition fade = new FadeTransition(Duration.millis(100), content);
-        fade.setFromValue(content.getOpacity());
-        fade.setToValue(0);
-        fade.setInterpolator(Interpolator.EASE_IN);
-        fade.setOnFinished(e -> popup.hide());
-
-        fade.play();
     }
 
     public ImageView getOverlay() {

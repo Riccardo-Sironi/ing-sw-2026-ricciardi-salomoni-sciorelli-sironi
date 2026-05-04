@@ -6,6 +6,7 @@ import it.polimi.gc06.mesos.view.gui.elements.*;
 import javafx.application.Platform;
 import javafx.beans.binding.DoubleBinding;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.effect.BlurType;
@@ -16,6 +17,10 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
+import javafx.stage.Popup;
+import it.polimi.gc06.mesos.view.gui.elements.OffertTileView;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -296,6 +301,48 @@ public class BoardController implements PropertyChangeListener {
         // drawDeck();
         deckImage.fitHeightProperty().bind(deckBox.prefHeightProperty().multiply(0.8));
         deckImage.setPreserveRatio(true);
+
+        Popup nCards = createDeckPopup();
+
+        deckImage.setOnMouseEntered((event -> {
+            nCards.show(deckImage, event.getScreenX(), event.getScreenY());
+            PopupEffectsManager.playPopupIn(nCards);
+        }));
+
+        deckImage.setOnMouseMoved((event -> {
+            nCards.setX(event.getScreenX() - 35);
+            nCards.setY(event.getScreenY() - 60);
+        }));
+
+        deckImage.setOnMouseExited((event -> {
+            nCards.hide();
+        }));
+    }
+
+    private Popup createDeckPopup() {
+        Popup popup = new Popup();
+
+        HBox popupContent = new HBox();
+        popupContent.setStyle(
+                "-fx-background-color:rgba(255,255,255,0.4);" +
+                        "-fx-background-radius: 8px;" +
+                        "-fx-border-color: rgba(255, 255, 255, 0.6);" +
+                        "-fx-border-width: 1px;" +
+                        "-fx-border-radius: 8px;" +
+                        "-fx-padding: 8px 15px;"
+        );
+        popupContent.setAlignment(Pos.CENTER);
+        popupContent.setMouseTransparent(true);
+
+        Text nCardsText = new Text();
+        nCardsText.setFont(Font.loadFont(this.getClass().getResourceAsStream("/it/polimi/gc06/mesos/fonts/KidKnowledge.otf"), 20));
+        nCardsText.setFill(Color.WHITE);
+        nCardsText.setText(smallModel == null ? "N/A" : "" + smallModel.tribeDeckSize());
+
+        popupContent.getChildren().add(nCardsText);
+        popup.getContent().add(popupContent);
+
+        return popup;
     }
 
     /**
