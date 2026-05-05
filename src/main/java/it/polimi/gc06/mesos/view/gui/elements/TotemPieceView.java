@@ -1,6 +1,5 @@
 package it.polimi.gc06.mesos.view.gui.elements;
 
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 public class TotemPieceView extends ImageView {
@@ -10,6 +9,7 @@ public class TotemPieceView extends ImageView {
     public TotemPieceView(Totem totem) {
         super(totem.getTotemStanding());
         this.setPreserveRatio(true);
+        this.setStyle("-fx-cursor: hand");
         this.setSmooth(true);
     }
 

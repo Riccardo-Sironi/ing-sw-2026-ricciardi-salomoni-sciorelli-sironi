@@ -25,6 +25,8 @@ import it.polimi.gc06.mesos.view.gui.elements.OffertTileView;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class BoardController implements PropertyChangeListener {
     @FXML
@@ -103,12 +105,8 @@ public class BoardController implements PropertyChangeListener {
             bottomBuildingsContainer.getChildren().add(createCard(new Image("1.png")));
         }
 
-        // ArrayList<Totem> totems = new ArrayList<>(Arrays.asList(Totem.YELLOW, Totem.ORANGE, Totem.TURQUOISE, Totem.PURPLE, Totem.WHITE));
-
-        // TurnOrderTileView turnOrderTile = createTurnOrderTile(new Image("turn_order_tile_5p.png"), totems);
-        TurnOrderTileView turnOrderTile = createTurnOrderTile(new Image("turn_order_tile_5p.png"));
+        TurnOrderTileView turnOrderTile = createTurnOrderTile(new Image("turn_order_tile_5p.png"), new ArrayList<>(Arrays.asList(Totem.YELLOW, Totem.TURQUOISE, Totem.PURPLE, Totem.WHITE, Totem.ORANGE)));
         tilesContainer.getChildren().add(turnOrderTile);
-
 
         tilesContainer.getChildren().add(createOfferTile(new Image("offer_tile_A.png"), Totem.YELLOW, "Player 1"));
         tilesContainer.getChildren().add(createOfferTile(new Image("offer_tile_B.png"), Totem.ORANGE, "Player 2"));
@@ -181,7 +179,7 @@ public class BoardController implements PropertyChangeListener {
             nPlayers = smallModel.opponents().size() + 1;
         }
 
-        TurnOrderTileView turnOrderTile = new TurnOrderTileView(image, new ArrayList<>());
+        TurnOrderTileView turnOrderTile = new TurnOrderTileView(image);
 
         DoubleBinding tileSize = tiles.widthProperty().divide(nPlayers).multiply(0.98);
 
@@ -195,34 +193,18 @@ public class BoardController implements PropertyChangeListener {
         return turnOrderTile;
     }
 
-//    private TurnOrderTileView createTurnOrderTile(Image image, ArrayList<Totem> totems) {
-//        int nPlayers;
-//        if (smallModel == null) {
-//            nPlayers = 8;
-//        } else {
-//            nPlayers = smallModel.opponents().size() + 1;
-//        }
-//
-//        ArrayList<TotemPieceView> totemPieces = new ArrayList<>();
-//
-//        for (Totem totem : totems) {
-//            totemPieces.add(new TotemPieceView(totem));
-//        }
-//
-//        TurnOrderTileView turnOrderTile = new TurnOrderTileView(image, totemPieces);
-//
-//        DoubleBinding tileSize = tiles.widthProperty().divide(nPlayers).multiply(0.98);
-//
-//        turnOrderTile.prefWidthProperty().bind(tileSize);
-//        turnOrderTile.maxWidthProperty().bind(tileSize);
-//        turnOrderTile.prefHeightProperty().bind(tiles.heightProperty());
-//        turnOrderTile.maxHeightProperty().bind(tiles.heightProperty());
-//        turnOrderTile.getImageView().fitWidthProperty().bind(tileSize);
-//        turnOrderTile.getImageView().fitHeightProperty().bind(tiles.heightProperty());
-//
-//        return turnOrderTile;
-//
-//    }
+    private TurnOrderTileView createTurnOrderTile(Image image, ArrayList<Totem> totems) {
+        TurnOrderTileView turnOrderTile = createTurnOrderTile(image);
+
+        ArrayList<TotemPieceView> totemPieces = new ArrayList<>();
+        for (Totem totem : totems) {
+            totemPieces.add(new TotemPieceView(totem));
+        }
+
+        turnOrderTile.setTotemPieces(totemPieces);
+
+        return turnOrderTile;
+    }
 
     private OffertTileView createOfferTile(Image image) {
         int nPlayers;

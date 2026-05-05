@@ -20,6 +20,10 @@ public enum Totem {
         return this.name().toLowerCase() + "_standing_totem.png";
     }
 
+    public String getTotemTurnOrderOverlay() {
+        return this.name().toLowerCase() + "_turn_order_totem_overlay.png";
+    }
+
     public Color getTotemColor() {
         return switch (this) {
             case ORANGE -> Color.web("D3523B");
