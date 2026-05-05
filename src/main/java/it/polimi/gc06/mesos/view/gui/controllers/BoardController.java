@@ -9,9 +9,6 @@ import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.effect.BlurType;
-import javafx.scene.effect.ColorAdjust;
-import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
@@ -20,13 +17,11 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Popup;
-import it.polimi.gc06.mesos.view.gui.elements.OffertTileView;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 public class BoardController implements PropertyChangeListener {
     @FXML
@@ -262,8 +257,6 @@ public class BoardController implements PropertyChangeListener {
     }
 
     private void drawTurnOrderTile() {
-
-
         // TODO : the tile view is not implemented yet
         // ...
     }
@@ -271,38 +264,6 @@ public class BoardController implements PropertyChangeListener {
     private void drawOfferTrack() {
         // TODO : the tile view is not implemented yet
         // ...
-    }
-
-    /**
-     * Sets the disabled effect on the card, which consist in adjust the color to a gray scale which suggest that the
-     * player cant performa an action on it.
-     *
-     * @param card Card on which the effect get applied.
-     */
-    private void disableCard(CardView card) {
-        ColorAdjust colorAdjust = new ColorAdjust();
-        colorAdjust.setHue(0);
-        colorAdjust.setSaturation(-1);
-        colorAdjust.setBrightness(0);
-        colorAdjust.setContrast(0);
-        card.setEffect(colorAdjust);
-        card.setDisable(true);
-    }
-
-    /**
-     * Sets the active effect on the card, which consist in a bluish shadow which suggest that an action can be performed.
-     *
-     * @param card Card on which the effect get applied.
-     */
-    private void activeCard(CardView card) {
-        DropShadow dropShadow = new DropShadow();
-        dropShadow.setOffsetX(1);
-        dropShadow.setOffsetY(1);
-        dropShadow.setSpread(0.5);
-        dropShadow.setBlurType(BlurType.GAUSSIAN);
-        dropShadow.setColor(Color.web("#348ceb", 0.2));
-        card.setEffect(dropShadow);
-        card.setStyle("-fx-cursor: hand");
     }
 
     /**
@@ -314,7 +275,7 @@ public class BoardController implements PropertyChangeListener {
         // TODO : this should be based on the card if its an event or not
 
         if (!smallModel.isActive()) {
-            disableCard(card);
+            EffectsManager.disableCard(card);
         } else {
             // TODO : should be based on event or character/building
             // ...
@@ -334,7 +295,7 @@ public class BoardController implements PropertyChangeListener {
 
         deckImage.setOnMouseEntered((event -> {
             nCards.show(deckImage, event.getScreenX(), event.getScreenY());
-            PopupEffectsManager.playPopupIn(nCards);
+            EffectsManager.playPopupIn(nCards);
         }));
 
         deckImage.setOnMouseMoved((event -> {

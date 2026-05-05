@@ -1,6 +1,5 @@
 package it.polimi.gc06.mesos.view.gui.elements;
 
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;

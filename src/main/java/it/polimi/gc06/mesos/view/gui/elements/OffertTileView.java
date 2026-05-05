@@ -1,9 +1,5 @@
 package it.polimi.gc06.mesos.view.gui.elements;
 
-import javafx.animation.FadeTransition;
-import javafx.animation.Interpolator;
-import javafx.animation.ParallelTransition;
-import javafx.animation.TranslateTransition;
 import javafx.geometry.Pos;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -12,7 +8,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Popup;
-import javafx.util.Duration;
 
 
 public class OffertTileView extends TileView {
@@ -65,7 +60,7 @@ public class OffertTileView extends TileView {
 
         totemOverlay.setOnMouseEntered((event) -> {
             playerNamePopup.show(totemOverlay, event.getScreenX(), event.getScreenY());
-            PopupEffectsManager.playPopupIn(playerNamePopup);
+            EffectsManager.playPopupIn(playerNamePopup);
         });
 
         totemOverlay.setOnMouseMoved((event) -> {
@@ -74,7 +69,7 @@ public class OffertTileView extends TileView {
         });
 
         totemOverlay.setOnMouseExited((event) -> {
-            PopupEffectsManager.playPopupOut(playerNamePopup);
+            EffectsManager.playPopupOut(playerNamePopup);
         });
     }
 

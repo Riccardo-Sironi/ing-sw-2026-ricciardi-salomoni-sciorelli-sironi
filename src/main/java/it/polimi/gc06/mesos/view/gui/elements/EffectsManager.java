@@ -4,11 +4,15 @@ import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
 import javafx.animation.ParallelTransition;
 import javafx.animation.TranslateTransition;
+import javafx.scene.effect.BlurType;
+import javafx.scene.effect.ColorAdjust;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Popup;
 import javafx.util.Duration;
 
-public class PopupEffectsManager {
+public class EffectsManager {
     public static void playPopupIn(Popup popup) {
         if (popup.getContent().isEmpty()) return;
         HBox content = (HBox) popup.getContent().get(0);
@@ -40,5 +44,37 @@ public class PopupEffectsManager {
         fade.setOnFinished(e -> popup.hide());
 
         fade.play();
+    }
+
+    /**
+     * Sets the disabled effect on the card, which consist in adjust the color to a gray scale which suggest that the
+     * player cant performa an action on it.
+     *
+     * @param card Card on which the effect get applied.
+     */
+    public static void disableCard(CardView card) {
+        ColorAdjust colorAdjust = new ColorAdjust();
+        colorAdjust.setHue(0);
+        colorAdjust.setSaturation(-1);
+        colorAdjust.setBrightness(0);
+        colorAdjust.setContrast(0);
+        card.setEffect(colorAdjust);
+        card.setDisable(true);
+    }
+
+    /**
+     * Sets the active effect on the card, which consist in a bluish shadow which suggest that an action can be performed.
+     *
+     * @param card Card on which the effect get applied.
+     */
+    public static void activeCard(CardView card) {
+        DropShadow dropShadow = new DropShadow();
+        dropShadow.setOffsetX(1);
+        dropShadow.setOffsetY(1);
+        dropShadow.setSpread(0.5);
+        dropShadow.setBlurType(BlurType.GAUSSIAN);
+        dropShadow.setColor(Color.web("#348ceb", 0.2));
+        card.setEffect(dropShadow);
+        card.setStyle("-fx-cursor: hand");
     }
 }
