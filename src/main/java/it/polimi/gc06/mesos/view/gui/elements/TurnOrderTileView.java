@@ -1,70 +1,49 @@
 package it.polimi.gc06.mesos.view.gui.elements;
 
+import javafx.geometry.Pos;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.image.WritableImage;
-import javafx.scene.paint.Color;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 
 import java.util.ArrayList;
 
 public class TurnOrderTileView extends TileView {
 
-    ArrayList<ImageView> totemOverlays;
-    ArrayList<Totem> totems;
-    ArrayList<String> playerNames;
+    private ArrayList<TotemPieceView> totemPieces;
+    //private VBox totemPiecesContainer;
 
-    public TurnOrderTileView(Image image) {
+    public TurnOrderTileView(Image image, ArrayList<TotemPieceView> totemPieces) {
         super(image);
-        totemOverlays = new ArrayList<>();
-        playerNames = new ArrayList<>();
-        totems = new ArrayList<>();
+        this.totemPieces = totemPieces;
+
+//        totemPiecesContainer = new VBox();
+//        totemPiecesContainer.setAlignment(Pos.CENTER);
+//        totemPiecesContainer.setSpacing(4);
+
+
+//        totemPiecesContainer.prefWidthProperty().bind(this.prefWidthProperty());
+//        totemPiecesContainer.prefHeightProperty().bind(this.prefHeightProperty());
+//
+//        for (TotemPieceView totemPiece : totemPieces) {
+//            totemPiece.fitWidthProperty().bind(
+//                    this.prefWidthProperty().multiply(0.45)
+//                            .divide(Math.max(1, totemPieces.size() / 2.0))
+//            );
+//            totemPiece.translateYProperty().bind(
+//                    this.prefHeightProperty().multiply(0.1)
+//                            .multiply(totemPieces.indexOf(totemPiece) / 2.0));
+//            totemPiecesContainer.getChildren().add(totemPiece);
+//        }
+//
+//        this.getChildren().add(totemPiecesContainer);
+//        StackPane.setAlignment(totemPiecesContainer, Pos.CENTER);
     }
 
-    public ArrayList<ImageView> getTotemOverlays() {
-        return totemOverlays;
+    public ArrayList<TotemPieceView> getTotemPieces() {
+        return totemPieces;
     }
 
-    public ArrayList<String> getPlayerNames() {
-        return playerNames;
-    }
-
-    public ArrayList<Totem> getTotems() {
-        return totems;
-    }
-
-    public void applyTotemColor(ImageView imageView, Totem totem) {
-        if (totem.equals(Totem.NONE)) {
-            return;
-        }
-
-        Image original = imageView.getImage();
-        int w = (int) original.getWidth();
-        int h = (int) original.getHeight();
-
-        Color targetColor = totem.getTotemColor();
-
-        WritableImage result = new WritableImage(w, h);
-        javafx.scene.image.PixelReader reader = original.getPixelReader();
-        javafx.scene.image.PixelWriter writer = result.getPixelWriter();
-
-        for (int y = 0; y < h; y++) {
-            for (int x = 0; x < w; x++) {
-                Color pixel = reader.getColor(x, y);
-
-                if (pixel.getRed() > 0.85 && pixel.getGreen() > 0.85 && pixel.getBlue() > 0.85) {
-                    writer.setColor(x, y, new Color(
-                            targetColor.getRed(),
-                            targetColor.getGreen(),
-                            targetColor.getBlue(),
-                            pixel.getOpacity()
-                    ));
-                } else {
-                    writer.setColor(x, y, pixel);
-                }
-            }
-        }
-
-        imageView.setImage(result);
-        imageView.setEffect(null);
+    public void setTotemPieces(ArrayList<TotemPieceView> totemPieces) {
+        this.totemPieces = totemPieces;
     }
 }

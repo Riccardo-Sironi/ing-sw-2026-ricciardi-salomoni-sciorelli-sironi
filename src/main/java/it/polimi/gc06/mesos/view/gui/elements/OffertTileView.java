@@ -23,6 +23,13 @@ public class OffertTileView extends TileView {
 
     private final Font mesosFont = Font.loadFont(this.getClass().getResourceAsStream("/it/polimi/gc06/mesos/fonts/KidKnowledge.otf"), 20);
 
+    public OffertTileView(Image image) {
+        super(image);
+        this.totem = Totem.NONE;
+        setupTotemOverlay();
+        this.getChildren().add(totemOverlay);
+    }
+
     public OffertTileView(Image image, Totem totem) {
         super(image);
 
@@ -50,6 +57,7 @@ public class OffertTileView extends TileView {
         totemOverlay.setPreserveRatio(true);
         totemOverlay.setSmooth(true);
         totemOverlay.setStyle("-fx-cursor: hand");
+        totemOverlay.setFitWidth(USE_COMPUTED_SIZE);
     }
 
     public void setupPlayerNamePopup() {
@@ -72,17 +80,19 @@ public class OffertTileView extends TileView {
 
     public void setTotem(Totem totem) {
         this.totem = totem;
-        setupTotemOverlay();
+        totemOverlay.setImage(new Image(this.totem.getTotemOverlay()));
     }
 
     public void setPlayerName(String playerName) {
         this.playerName = playerName;
+        if (this.playerNamePopup != null) {
+            this.playerNamePopup.hide(); // chiudi il vecchio prima di sostituirlo
+        }
         setupPlayerNamePopup();
-
     }
 
     public Popup createPopup() {
-        if (totem == Totem.NONE) {
+        if (totem == Totem.NONE || playerName == null) {
             return new Popup();
         }
 

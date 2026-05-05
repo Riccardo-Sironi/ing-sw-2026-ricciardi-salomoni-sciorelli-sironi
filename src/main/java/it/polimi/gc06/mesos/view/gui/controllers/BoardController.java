@@ -24,6 +24,7 @@ import it.polimi.gc06.mesos.view.gui.elements.OffertTileView;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
 
 public class BoardController implements PropertyChangeListener {
     @FXML
@@ -102,13 +103,19 @@ public class BoardController implements PropertyChangeListener {
             bottomBuildingsContainer.getChildren().add(createCard(new Image("1.png")));
         }
 
-        tilesContainer.getChildren().add(createTurnOrderTile(new Image("turn_order_tile_5p.png")));
+        // ArrayList<Totem> totems = new ArrayList<>(Arrays.asList(Totem.YELLOW, Totem.ORANGE, Totem.TURQUOISE, Totem.PURPLE, Totem.WHITE));
+
+        // TurnOrderTileView turnOrderTile = createTurnOrderTile(new Image("turn_order_tile_5p.png"), totems);
+        TurnOrderTileView turnOrderTile = createTurnOrderTile(new Image("turn_order_tile_5p.png"));
+        tilesContainer.getChildren().add(turnOrderTile);
+
+
         tilesContainer.getChildren().add(createOfferTile(new Image("offer_tile_A.png"), Totem.YELLOW, "Player 1"));
         tilesContainer.getChildren().add(createOfferTile(new Image("offer_tile_B.png"), Totem.ORANGE, "Player 2"));
-        tilesContainer.getChildren().add(createOfferTile(new Image("offer_tile_C.png"), Totem.NONE));
+        tilesContainer.getChildren().add(createOfferTile(new Image("offer_tile_C.png")));
         tilesContainer.getChildren().add(createOfferTile(new Image("offer_tile_D.png"), Totem.TURQUOISE, "Player 3"));
         tilesContainer.getChildren().add(createOfferTile(new Image("offer_tile_E.png"), Totem.PURPLE, "Player 4"));
-        tilesContainer.getChildren().add(createOfferTile(new Image("offer_tile_F.png"), Totem.NONE));
+        tilesContainer.getChildren().add(createOfferTile(new Image("offer_tile_F.png")));
         tilesContainer.getChildren().add(createOfferTile(new Image("offer_tile_G.png"), Totem.WHITE, "Player 5"));
     }
 
@@ -173,7 +180,8 @@ public class BoardController implements PropertyChangeListener {
         } else {
             nPlayers = smallModel.opponents().size() + 1;
         }
-        TurnOrderTileView turnOrderTile = new TurnOrderTileView(image);
+
+        TurnOrderTileView turnOrderTile = new TurnOrderTileView(image, new ArrayList<>());
 
         DoubleBinding tileSize = tiles.widthProperty().divide(nPlayers).multiply(0.98);
 
@@ -185,17 +193,38 @@ public class BoardController implements PropertyChangeListener {
         turnOrderTile.getImageView().fitHeightProperty().bind(tiles.heightProperty());
 
         return turnOrderTile;
-
     }
 
-    /**
-     * Create the {@link OffertTileView} based on the given image and totem.
-     *
-     * @param image Image of the tile
-     * @param totem The {@link Totem} associated to the player on the tile
-     * @return the {@link OffertTileView} object.
-     */
-    private OffertTileView createOfferTile(Image image, Totem totem) {
+//    private TurnOrderTileView createTurnOrderTile(Image image, ArrayList<Totem> totems) {
+//        int nPlayers;
+//        if (smallModel == null) {
+//            nPlayers = 8;
+//        } else {
+//            nPlayers = smallModel.opponents().size() + 1;
+//        }
+//
+//        ArrayList<TotemPieceView> totemPieces = new ArrayList<>();
+//
+//        for (Totem totem : totems) {
+//            totemPieces.add(new TotemPieceView(totem));
+//        }
+//
+//        TurnOrderTileView turnOrderTile = new TurnOrderTileView(image, totemPieces);
+//
+//        DoubleBinding tileSize = tiles.widthProperty().divide(nPlayers).multiply(0.98);
+//
+//        turnOrderTile.prefWidthProperty().bind(tileSize);
+//        turnOrderTile.maxWidthProperty().bind(tileSize);
+//        turnOrderTile.prefHeightProperty().bind(tiles.heightProperty());
+//        turnOrderTile.maxHeightProperty().bind(tiles.heightProperty());
+//        turnOrderTile.getImageView().fitWidthProperty().bind(tileSize);
+//        turnOrderTile.getImageView().fitHeightProperty().bind(tiles.heightProperty());
+//
+//        return turnOrderTile;
+//
+//    }
+
+    private OffertTileView createOfferTile(Image image) {
         int nPlayers;
         if (smallModel == null) {
             nPlayers = 8;
@@ -203,7 +232,7 @@ public class BoardController implements PropertyChangeListener {
             nPlayers = smallModel.opponents().size() + 1;
         }
 
-        OffertTileView tile = new OffertTileView(image, totem);
+        OffertTileView tile = new OffertTileView(image);
         DoubleBinding tileSize = tiles.widthProperty().divide(nPlayers).multiply(0.98);
 
         tile.prefWidthProperty().bind(tileSize);
@@ -215,6 +244,21 @@ public class BoardController implements PropertyChangeListener {
 
         tile.getOverlay().fitWidthProperty().bind(tileSize);
         tile.getOverlay().fitHeightProperty().bind(tiles.heightProperty());
+
+        return tile;
+    }
+
+    /**
+     * Create the {@link OffertTileView} based on the given image and totem.
+     *
+     * @param image Image of the tile
+     * @param totem The {@link Totem} associated to the player on the tile
+     * @return the {@link OffertTileView} object.
+     */
+    private OffertTileView createOfferTile(Image image, Totem totem) {
+        OffertTileView tile = createOfferTile(image);
+
+        tile.setTotem(totem);
 
         return tile;
     }
@@ -236,6 +280,8 @@ public class BoardController implements PropertyChangeListener {
     }
 
     private void drawTurnOrderTile() {
+
+
         // TODO : the tile view is not implemented yet
         // ...
     }

@@ -13,7 +13,7 @@ public abstract class TileView extends StackPane {
         imageView = new ImageView(image);
         imageView.setPreserveRatio(true);
         imageView.setSmooth(true);
-        this.getChildren().addAll(imageView);
+        this.getChildren().add(imageView);
     }
 
     public ImageView getImageView() {
