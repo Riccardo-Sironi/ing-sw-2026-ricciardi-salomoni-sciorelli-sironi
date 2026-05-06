@@ -5,6 +5,8 @@ import it.polimi.gc06.mesos.model.Player;
 import it.polimi.gc06.mesos.model.cards.CardVisitor;
 import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingRegistryKey;
 
+import java.util.Objects;
+
 public class PaintingsEvent extends EventCard {
 
     private int prestigeGain;
@@ -122,5 +124,17 @@ public class PaintingsEvent extends EventCard {
             player.addFoodTokens(0);
         }
 
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        PaintingsEvent that = (PaintingsEvent) o;
+        return prestigeGain == that.prestigeGain && prestigeLoss == that.prestigeLoss && minNumberOfArtists == that.minNumberOfArtists;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(prestigeGain, prestigeLoss, minNumberOfArtists);
     }
 }

@@ -30,4 +30,8 @@ public class ArtistCard extends CharacterCard {
         visitor.visit(this);
     }
 
+    @Override
+    public boolean equals(Object o){
+        return getClass() == o.getClass();
+    }
 }

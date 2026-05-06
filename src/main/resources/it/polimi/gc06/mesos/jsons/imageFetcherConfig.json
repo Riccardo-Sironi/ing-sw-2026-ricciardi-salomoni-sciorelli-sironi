@@ -1,0 +1,13 @@
+[
+  {
+    "cardInfo" : {
+      "class" : "BuilderCard",
+      "prestige" : 0,
+      "foodDiscount" : 0
+    },
+    "numOfPlayers" : 0,
+    "validImagesUrls" : [
+      "url1","url2"
+    ]
+  }
+]

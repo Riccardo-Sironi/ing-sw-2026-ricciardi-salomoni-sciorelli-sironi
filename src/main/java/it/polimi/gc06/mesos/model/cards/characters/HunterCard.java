@@ -3,6 +3,8 @@ package it.polimi.gc06.mesos.model.cards.characters;
 import it.polimi.gc06.mesos.model.cards.CardVisitor;
 import it.polimi.gc06.mesos.model.Era;
 
+import java.util.Objects;
+
 public class HunterCard extends CharacterCard {
     private boolean hasFoodIcon;
 
@@ -47,4 +49,15 @@ public class HunterCard extends CharacterCard {
     @Override
     public void accept(CardVisitor visitor) {visitor.visit(this);}
 
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        HunterCard that = (HunterCard) o;
+        return hasFoodIcon == that.hasFoodIcon;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(hasFoodIcon);
+    }
 }

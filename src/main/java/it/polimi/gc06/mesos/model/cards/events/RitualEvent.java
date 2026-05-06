@@ -5,6 +5,8 @@ import it.polimi.gc06.mesos.model.Player;
 import it.polimi.gc06.mesos.model.cards.CardVisitor;
 import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingRegistryKey;
 
+import java.util.Objects;
+
 public class RitualEvent extends EventCard {
 
     private int prestigeGain;
@@ -107,4 +109,15 @@ public class RitualEvent extends EventCard {
         }
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        RitualEvent that = (RitualEvent) o;
+        return prestigeGain == that.prestigeGain && prestigeLoss == that.prestigeLoss;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(prestigeGain, prestigeLoss);
+    }
 }

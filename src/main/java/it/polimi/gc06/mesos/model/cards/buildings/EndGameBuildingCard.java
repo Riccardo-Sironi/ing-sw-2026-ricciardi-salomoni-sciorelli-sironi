@@ -4,6 +4,7 @@ import it.polimi.gc06.mesos.model.Era;
 import it.polimi.gc06.mesos.model.Player;
 import it.polimi.gc06.mesos.model.cards.CardVisitor;
 
+import java.util.Objects;
 import java.util.function.ToIntFunction;
 
 public class EndGameBuildingCard extends BuildingCard {
@@ -58,4 +59,16 @@ public class EndGameBuildingCard extends BuildingCard {
      */
     @Override
     public void accept(CardVisitor visitor) {visitor.visit(this);}
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        EndGameBuildingCard that = (EndGameBuildingCard) o;
+        return Objects.equals(prestigeEffect, that.prestigeEffect);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(prestigeEffect);
+    }
 }

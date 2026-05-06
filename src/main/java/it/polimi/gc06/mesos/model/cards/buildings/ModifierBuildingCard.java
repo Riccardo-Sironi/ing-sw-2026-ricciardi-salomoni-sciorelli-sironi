@@ -2,6 +2,8 @@ package it.polimi.gc06.mesos.model.cards.buildings;
 
 import it.polimi.gc06.mesos.model.cards.CardVisitor;
 
+import java.util.Objects;
+
 //per gestione eventi + carta che ti fa pescare da sopra nella fase finale + carta del posizionamento totem
 public class ModifierBuildingCard extends BuildingCard {
 
@@ -43,4 +45,15 @@ public class ModifierBuildingCard extends BuildingCard {
     @Override
     public void accept(CardVisitor visitor) {visitor.visit(this);}
 
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        ModifierBuildingCard that = (ModifierBuildingCard) o;
+        return cardKey == that.cardKey;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(cardKey);
+    }
 }

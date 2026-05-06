@@ -5,6 +5,8 @@ import it.polimi.gc06.mesos.model.Player;
 import it.polimi.gc06.mesos.model.cards.CardVisitor;
 import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingRegistryKey;
 
+import java.util.Objects;
+
 public class HuntEvent extends EventCard {
 
     private int prestigeGain;
@@ -76,5 +78,17 @@ public class HuntEvent extends EventCard {
                     getRegistry().get(ModifierBuildingRegistryKey.HUNT_PRESTIGE_AND_FOOD_GAIN_CARD)
             ) ? (huntersCount * (prestigeGain + 1)) : huntersCount * prestigeGain);
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        HuntEvent huntEvent = (HuntEvent) o;
+        return prestigeGain == huntEvent.prestigeGain;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(prestigeGain);
     }
 }

@@ -5,6 +5,8 @@ import it.polimi.gc06.mesos.model.Player;
 import it.polimi.gc06.mesos.model.cards.CardVisitor;
 import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingRegistryKey;
 
+import java.util.Objects;
+
 public class SustenanceEvent extends EventCard {
 
     private static final int defaultGathererDiscount = 3;
@@ -118,5 +120,17 @@ public class SustenanceEvent extends EventCard {
             requiredFood = Math.max((requiredFood - inventorsCount), 0);
         }
         return requiredFood;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        SustenanceEvent that = (SustenanceEvent) o;
+        return numPrestigeLoss == that.numPrestigeLoss;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(numPrestigeLoss);
     }
 }

@@ -25,4 +25,8 @@ public class GathererCard extends CharacterCard {
     @Override
     public void accept(CardVisitor visitor) {visitor.visit(this);}
 
+    @Override
+    public boolean equals(Object o){
+        return getClass() == o.getClass();
+    }
 }

@@ -3,6 +3,8 @@ package it.polimi.gc06.mesos.model.cards.characters;
 import it.polimi.gc06.mesos.model.cards.CardVisitor;
 import it.polimi.gc06.mesos.model.Era;
 
+import java.util.Objects;
+
 public class InventorCard extends CharacterCard {
     private InventionIcon icon;
 
@@ -45,4 +47,16 @@ public class InventorCard extends CharacterCard {
      */
     @Override
     public void accept(CardVisitor visitor) {visitor.visit(this);}
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        InventorCard that = (InventorCard) o;
+        return icon == that.icon;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(icon);
+    }
 }

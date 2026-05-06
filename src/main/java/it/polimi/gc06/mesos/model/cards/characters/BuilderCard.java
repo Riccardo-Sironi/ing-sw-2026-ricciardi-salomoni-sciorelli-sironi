@@ -3,6 +3,8 @@ package it.polimi.gc06.mesos.model.cards.characters;
 import it.polimi.gc06.mesos.model.cards.CardVisitor;
 import it.polimi.gc06.mesos.model.Era;
 
+import java.util.Objects;
+
 public class BuilderCard extends CharacterCard {
     private int prestige;
     private int foodDiscount;
@@ -68,5 +70,17 @@ public class BuilderCard extends CharacterCard {
      */
     public int getFoodDiscount() {
         return foodDiscount;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        BuilderCard that = (BuilderCard) o;
+        return prestige == that.prestige && foodDiscount == that.foodDiscount;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(prestige, foodDiscount);
     }
 }

@@ -3,6 +3,8 @@ package it.polimi.gc06.mesos.model.cards.characters;
 import it.polimi.gc06.mesos.model.Era;
 import it.polimi.gc06.mesos.model.cards.CardVisitor;
 
+import java.util.Objects;
+
 public class ShamanCard extends CharacterCard {
     private int nStars;
 
@@ -48,4 +50,15 @@ public class ShamanCard extends CharacterCard {
         visitor.visit(this);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        ShamanCard that = (ShamanCard) o;
+        return nStars == that.nStars;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(nStars);
+    }
 }
