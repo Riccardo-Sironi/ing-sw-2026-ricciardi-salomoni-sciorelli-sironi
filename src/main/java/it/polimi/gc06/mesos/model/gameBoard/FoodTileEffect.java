@@ -10,15 +10,34 @@ public class FoodTileEffect implements TileEffect {
     private int numFood;
     private ModifierBuildingCard foodBonusCard;
 
-    public FoodTileEffect(){
+    public FoodTileEffect() {
         numFood = 0;
     }
 
+    public FoodTileEffect(int numFood) {
+        this.numFood = numFood;
+    }
+
+    /**
+     * numFood setter.This method should be use only once during initialization.
+     *
+     * @param numFood the number of food tokens the player will receive when executing the effect.
+     */
     public void setNumFood(int numFood) {
         this.numFood = numFood;
     }
 
-    public void setRegistry(ModifierBuildingsRegistry registry){
+    /**
+     * numFood getter.This method should be use only once during initialization.
+     *
+     * @return numFood the number of food tokens the player will receive when executing the effect.
+     */
+    public int getNumFood() {
+        return numFood;
+    }
+
+
+    public void setRegistry(ModifierBuildingsRegistry registry) {
         foodBonusCard = registry.get(ModifierBuildingRegistryKey.TILE_FOOD_BONUS);
     }
 
@@ -42,5 +61,7 @@ public class FoodTileEffect implements TileEffect {
      * @param visitor the visitor that will visit the card.
      */
     @Override
-    public void accept(TileEffectVisitor visitor) {visitor.visit(this);}
+    public void accept(TileEffectVisitor visitor) {
+        visitor.visit(this);
+    }
 }

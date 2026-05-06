@@ -15,13 +15,14 @@ public class ChooseCardTileEffect implements TileEffect {
         this.numOfBottomCards = numOfBottomCards;
     }
 
-    public ChooseCardTileEffect(){
+    public ChooseCardTileEffect() {
         numOfBottomCards = 0;
         numOfTopCards = 0;
     }
 
     /**
      * NumOfTopCards setter.This method should be use only once during initialization.
+     *
      * @param numOfTopCards the number of cards the player can draw from the top row.
      */
     public void setNumOfTopCards(int numOfTopCards) {
@@ -30,10 +31,29 @@ public class ChooseCardTileEffect implements TileEffect {
 
     /**
      * NumOfBottomCards setter. This method should be use only once during initialization.
+     *
      * @param numOfBottomCards the number of cards the player can draw from the bottom row.
      */
     public void setNumOfBottomCards(int numOfBottomCards) {
         this.numOfBottomCards = numOfBottomCards;
+    }
+
+    /**
+     * NumOfBottomCards getter.
+     *
+     * @return numOfBottomCards the number of cards the player can draw from the bottom row.
+     */
+    public int getNumOfBottomCards() {
+        return numOfBottomCards;
+    }
+
+    /**
+     * NumOfTopCards getter.
+     *
+     * @return numOfTopCards the number of cards the player can draw from the top row.
+     */
+    public int getNumOfTopCards() {
+        return numOfTopCards;
     }
 
     /**
@@ -56,5 +76,7 @@ public class ChooseCardTileEffect implements TileEffect {
      * @param visitor the visitor that will visit the card.
      */
     @Override
-    public void accept(TileEffectVisitor visitor) {visitor.visit(this);}
+    public void accept(TileEffectVisitor visitor) {
+        visitor.visit(this);
+    }
 }
