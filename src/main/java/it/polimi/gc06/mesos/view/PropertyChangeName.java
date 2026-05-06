@@ -1,6 +1,7 @@
 package it.polimi.gc06.mesos.view;
 
 import it.polimi.gc06.mesos.network.socket.infos.CardPickedInfo;
+import it.polimi.gc06.mesos.network.socket.infos.SkipRightInfo;
 import it.polimi.gc06.mesos.network.socket.infos.TotemMovedInfo;
 
 public enum PropertyChangeName{
@@ -24,6 +25,7 @@ public enum PropertyChangeName{
     TOTEM_MOVED, /**returns the {@link TotemMovedInfo}*/
     PHASE_CHANGED, /**returns the new phase as String*/
     ACTIVE_PLAYER_CHANGED, /**returns the nickname of the new active player*/
+    PLAYER_CAN_SKIP, /**returns the {@link SkipRightInfo}*/
     ROUND_CHANGED, /**returns the new round as integer*/
     ERA_CHANGED, /**client-side all buildings should be moved to bottom on this notify, returns the Era as String*/
     IS_END_GAME /** returns the leaderboard*/

@@ -102,7 +102,8 @@ public class EndOfRoundPhase extends Phase {
         }
     }
 
-    private boolean checkForRightToSkip(Player player, Board board) throws IllegalPhaseActionException {
+    @Override
+    public boolean checkForRightToSkip(Player player, Board board) throws IllegalPhaseActionException {
         if (player.getTopDrawNum() > 0) {
             CharactersPresenceVisitor charactersPresenceVisitor = new CharactersPresenceVisitor();
             board.getTopRow().forEach(card -> card.accept(charactersPresenceVisitor));

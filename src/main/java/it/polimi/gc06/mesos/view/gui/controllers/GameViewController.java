@@ -1,6 +1,6 @@
 package it.polimi.gc06.mesos.view.gui.controllers;
 
-import it.polimi.gc06.mesos.view.SmallModel;
+import it.polimi.gc06.mesos.view.smallModel.SmallModel;
 import javafx.fxml.FXML;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -19,7 +19,7 @@ public class GameViewController {
     private SmallModel smallModel;
 
     public void initialize() {
-        switchSetup(false);
+        switchSetup(true);
     }
 
     private void switchSetup(boolean setup) {

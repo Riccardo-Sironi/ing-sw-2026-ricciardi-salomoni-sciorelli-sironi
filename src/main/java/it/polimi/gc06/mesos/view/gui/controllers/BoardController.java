@@ -1,7 +1,7 @@
 package it.polimi.gc06.mesos.view.gui.controllers;
 
 import it.polimi.gc06.mesos.view.PropertyChangeName;
-import it.polimi.gc06.mesos.view.SmallModel;
+import it.polimi.gc06.mesos.view.smallModel.SmallModel;
 import it.polimi.gc06.mesos.view.gui.elements.*;
 import javafx.application.Platform;
 import javafx.beans.binding.DoubleBinding;
@@ -171,7 +171,7 @@ public class BoardController implements PropertyChangeListener {
         if (smallModel == null) {
             nPlayers = 8;
         } else {
-            nPlayers = smallModel.opponents().size() + 1;
+            nPlayers = smallModel.getOpponents().size() + 1;
         }
 
         TurnOrderTileView turnOrderTile = new TurnOrderTileView(image);
@@ -206,7 +206,7 @@ public class BoardController implements PropertyChangeListener {
         if (smallModel == null) {
             nPlayers = 8;
         } else {
-            nPlayers = smallModel.opponents().size() + 1;
+            nPlayers = smallModel.getOpponents().size() + 1;
         }
 
         OffertTileView tile = new OffertTileView(image);
@@ -326,7 +326,7 @@ public class BoardController implements PropertyChangeListener {
         Text nCardsText = new Text();
         nCardsText.setFont(Font.loadFont(this.getClass().getResourceAsStream("/it/polimi/gc06/mesos/fonts/KidKnowledge.otf"), 20));
         nCardsText.setFill(Color.WHITE);
-        nCardsText.setText(smallModel == null ? "N/A" : "" + smallModel.tribeDeckSize());
+        nCardsText.setText(smallModel == null ? "N/A" : "" + smallModel.getTribeDeckSize());
 
         popupContent.getChildren().add(nCardsText);
         popup.getContent().add(popupContent);
@@ -362,14 +362,14 @@ public class BoardController implements PropertyChangeListener {
      * Draws the deck based on the current era.
      */
     private void drawDeck() {
-        switch (smallModel.era()) {
-            case "ERA_I":
+        switch (smallModel.getEra()) {
+            case ERA_I:
                 deckImage.setImage(new Image("tribe_card_era_I_back.png"));
                 break;
-            case "ERA_II":
+            case ERA_II:
                 deckImage.setImage(new Image("tribe_card_era_II_back.png"));
                 break;
-            case "ERA_III":
+            case ERA_III:
                 deckImage.setImage(new Image("tribe_card_era_III_back.png"));
                 break;
         }

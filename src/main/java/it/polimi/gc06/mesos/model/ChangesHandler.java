@@ -1,9 +1,17 @@
 package it.polimi.gc06.mesos.model;
 
+import it.polimi.gc06.mesos.gameExceptions.IllegalPhaseActionException;
+import it.polimi.gc06.mesos.model.gameBoard.Board;
+import it.polimi.gc06.mesos.model.gameTurnManager.TurnManager;
+import it.polimi.gc06.mesos.network.socket.infos.SkipRightInfo;
 import it.polimi.gc06.mesos.view.PropertyChangeName;
 
 import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class ChangesHandler {
 
@@ -11,12 +19,18 @@ public class ChangesHandler {
     private String lastPhase;
     private String lastActivePlayer;
     private Era lastEra;
+    private Player playerWhoCouldSkip;
     private final GameModel model;
-
+    private final TurnManager turnManager;
+    private final Board board;
+    
     public ChangesHandler(GameModel model){
         this.model = model;
+        this.turnManager = model.getTurnManager();
+        this.board = model.getBoard();
         this.lastActivePlayer = null;
         this.lastPhase = null;
+        this.playerWhoCouldSkip = null;
         this.lastRound = -1;
         this.lastEra = null;
     }
@@ -30,30 +44,56 @@ public class ChangesHandler {
 
         ArrayList<PropertyChangeEvent> changes = new ArrayList<>();
 
-        if(model.getBoard().isEndGame()){
+        if(board.isEndGame()){
             changes.add(new PropertyChangeEvent(model,PropertyChangeName.IS_END_GAME.name(), null, model.getLeaderboard()));
             return changes;
         }
-
-        if(lastRound != model.getTurnManager().getRound()){
+        
+        //checks if the lastPlayerWhoCouldSkip can still skip
+        if(playerWhoCouldSkip != null) try{
+            if(!turnManager.getPhase().checkForRightToSkip(playerWhoCouldSkip,board)){
+                changes.add(new PropertyChangeEvent(model,PropertyChangeName.PLAYER_CAN_SKIP.name(), null, 
+                        new SkipRightInfo(playerWhoCouldSkip.getNickname(),false)));
+            }
+        }catch (IllegalPhaseActionException _){
+            changes.add(new PropertyChangeEvent(model,PropertyChangeName.PLAYER_CAN_SKIP.name(), null,
+                    new SkipRightInfo(playerWhoCouldSkip.getNickname(),false)));
+        }
+        
+        //check if the round has changed
+        if(lastRound != turnManager.getRound()){
             changes.add(new PropertyChangeEvent(model,PropertyChangeName.ROUND_CHANGED.name(),
-                    0,model.getTurnManager().getRound()));
+                    0,turnManager.getRound()));
         }
-        if(!lastEra.equals(model.getBoard().getCurrentEra())){
+        
+        //checks last era
+        if(lastEra == null || !lastEra.equals(board.getCurrentEra())){
             changes.add(new PropertyChangeEvent(model,PropertyChangeName.ERA_CHANGED.name(),
-                    null,model.getBoard().getCurrentEra()));
+                    null,board.getCurrentEra()));
             changes.add(new PropertyChangeEvent(model,PropertyChangeName.TOP_ROW_REFILL.name(),
-                    null,model.getBoard().getTopRow()));
+                    null,board.getTopRow()));
             changes.add(new PropertyChangeEvent(model,PropertyChangeName.TOP_BUILDINGS_REFILL.name(),
-                    null,model.getBoard().getTopBuildings()));
+                    null,board.getTopBuildings()));
         }
-        if(!lastPhase.equals(model.getTurnManager().getPhase().toString())){
+        
+        //check last phase
+        if(lastPhase == null ||!lastPhase.equals(turnManager.getPhase().toString())){
             changes.add(new PropertyChangeEvent(model,PropertyChangeName.PHASE_CHANGED.name(),
-                    null,model.getTurnManager().getPhase().toString()));
+                    null,turnManager.getPhase().toString()));
         }
-        if(!lastActivePlayer.equals(model.getTurnManager().getActivePlayer().getNickname())){
+        
+        //check active player change and right to skip of the new player
+        if(lastActivePlayer == null || !lastActivePlayer.equals(turnManager.getActivePlayer().getNickname())){
             changes.add(new PropertyChangeEvent(model,PropertyChangeName.ACTIVE_PLAYER_CHANGED.name(),
-                    null,model.getTurnManager().getActivePlayer().getNickname()));
+                    null,turnManager.getActivePlayer().getNickname()));
+            try {
+                if(turnManager.getPhase().checkForRightToSkip(
+                        turnManager.getActivePlayer(),board
+                )){
+                    changes.add(new PropertyChangeEvent(model, PropertyChangeName.PLAYER_CAN_SKIP.name(), null,
+                            new SkipRightInfo(turnManager.getActivePlayer().getNickname(), true)));
+                }
+            }catch (IllegalPhaseActionException _){}
         }
         return changes;
     }
@@ -62,10 +102,16 @@ public class ChangesHandler {
      * Internally saves the state to prepare next getChanges()
      */
     public void registerState() {
-        lastRound = model.getTurnManager().getRound();
-        lastPhase = model.getTurnManager().getPhase().toString();
-        lastActivePlayer = model.getTurnManager().getActivePlayer().getNickname();
-        lastEra = model.getBoard().getCurrentEra();
+        lastRound = turnManager.getRound();
+        lastPhase = turnManager.getPhase().toString();
+        lastActivePlayer = turnManager.getActivePlayer().getNickname();
+        lastEra = board.getCurrentEra();
+        try{
+            if(turnManager.getPhase().checkForRightToSkip(
+                    turnManager.getActivePlayer(),board)){
+                playerWhoCouldSkip = turnManager.getActivePlayer();
+            }
+        } catch (IllegalPhaseActionException _) {}
     }
 
 }

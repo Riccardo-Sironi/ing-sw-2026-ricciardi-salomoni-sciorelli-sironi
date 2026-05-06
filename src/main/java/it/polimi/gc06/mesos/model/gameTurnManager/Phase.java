@@ -63,4 +63,8 @@ public abstract class Phase {
     public void skipPick(TurnManager turnManager, Player player) throws IllegalPhaseActionException {
         throw new IllegalPhaseActionException("You can't skip top pick in this phase!");
     }
+
+    public boolean checkForRightToSkip(Player player, Board board) throws IllegalPhaseActionException{
+        throw new IllegalPhaseActionException("You can't skip top pick in this phase!");
+    }
 }
