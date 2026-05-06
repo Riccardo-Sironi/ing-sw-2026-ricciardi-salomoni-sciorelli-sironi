@@ -3,74 +3,75 @@ package it.polimi.gc06.mesos.view.gui.elements;
 import javafx.geometry.Pos;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Popup;
-
+import javafx.scene.layout.HBox;
 
 public class OffertTileView extends TileView {
-    private ImageView totemOverlay;
+
+    private ImageView totemOverlay; // version with transparent background and the totem piece
+
+    private TotemPieceView totemPiece; // version with single images of the totem piece
+
     private Totem totem;
     private String playerName;
+
     private Popup playerNamePopup;
 
-    private final Font mesosFont = Font.loadFont(this.getClass().getResourceAsStream("/it/polimi/gc06/mesos/fonts/KidKnowledge.otf"), 20);
+    private final Font mesosFont = Font.loadFont(
+            this.getClass().getResourceAsStream("/it/polimi/gc06/mesos/fonts/KidKnowledge.otf"), 20
+    );
 
     public OffertTileView(Image image) {
         super(image);
         this.totem = Totem.NONE;
+        //setupTotemPiece();
         setupTotemOverlay();
-        this.getChildren().add(totemOverlay);
     }
 
-    public OffertTileView(Image image, Totem totem) {
-        super(image);
+//    public OffertTileView(Image image, Totem totem) {
+//        super(image);
+//        this.totem = totem;
+//        setupTotemOverlay();
+//        //setupTotemPiece();
+//    }
+//
+//    public OffertTileView(Image image, Totem totem, String playerName) {
+//        super(image);
+//        this.totem = totem;
+//        this.playerName = playerName;
+//        setupTotemOverlay();
+//        //setupTotemPiece();
+//        //setupPlayerNamePopup();
+//    }
 
-        this.totem = totem;
-
-        setupTotemOverlay();
-
-        this.getChildren().add(totemOverlay);
-    }
-
-    public OffertTileView(Image image, Totem totem, String playerName) {
-        super(image);
-
-        this.playerName = playerName;
-        this.totem = totem;
-
-        setupTotemOverlay();
-        setupPlayerNamePopup();
-
-        this.getChildren().add(totemOverlay);
-    }
-
-    public void setupTotemOverlay() {
+    private void setupTotemOverlay() {
         totemOverlay = new ImageView(new Image(this.totem.getTotemOverlay()));
         totemOverlay.setPreserveRatio(true);
         totemOverlay.setSmooth(true);
         totemOverlay.setStyle("-fx-cursor: hand");
         totemOverlay.setFitWidth(USE_COMPUTED_SIZE);
+
+        this.getChildren().add(totemOverlay);
     }
 
-    public void setupPlayerNamePopup() {
-        this.playerNamePopup = createPopup();
+    private void setupTotemPiece() {
+        totemPiece = new TotemPieceView(totem);
 
-        totemOverlay.setOnMouseEntered((event) -> {
-            playerNamePopup.show(totemOverlay, event.getScreenX(), event.getScreenY());
-            EffectsManager.playPopupIn(playerNamePopup);
-        });
+        totemPiece.fitWidthProperty().unbind();
+        totemPiece.fitWidthProperty().bind(
+                this.widthProperty().multiply(0.32)
+        );
 
-        totemOverlay.setOnMouseMoved((event) -> {
-            playerNamePopup.setX(event.getScreenX() - 35);
-            playerNamePopup.setY(event.getScreenY() - 60);
-        });
+        StackPane.setAlignment(totemPiece, Pos.CENTER);
+        totemPiece.translateYProperty().bind(
+                this.heightProperty().multiply(-0.2).add(-20)
+        );
 
-        totemOverlay.setOnMouseExited((event) -> {
-            EffectsManager.playPopupOut(playerNamePopup);
-        });
+        this.getChildren().add(totemPiece);
     }
 
     public void setTotem(Totem totem) {
@@ -78,12 +79,48 @@ public class OffertTileView extends TileView {
         totemOverlay.setImage(new Image(this.totem.getTotemOverlay()));
     }
 
+//    public void setTotem(Totem totem) {
+//        this.totem = totem;
+//        this.totemPiece.setImage(new Image(this.totem.getTotemOverlay()));
+//        this.getChildren().remove(totemPiece);
+//        setupTotemPiece();
+//        if (playerName != null) setupPlayerNamePopup();
+//    }
+
     public void setPlayerName(String playerName) {
         this.playerName = playerName;
         if (this.playerNamePopup != null) {
-            this.playerNamePopup.hide(); // chiudi il vecchio prima di sostituirlo
+            this.playerNamePopup.hide();
         }
-        setupPlayerNamePopup();
+        setupPlayerNamePopup(totemOverlay);
+    }
+
+//    public void setPlayerName(String playerName) {
+//        this.playerName = playerName;
+//        if (this.playerNamePopup != null) {
+//            this.playerNamePopup.hide();
+//        }
+//        setupPlayerNamePopup(totemOverlay);
+//    }
+
+    private void setupPlayerNamePopup(ImageView actor) {
+        if (actor == null) return;
+
+        this.playerNamePopup = createPopup();
+
+        actor.setOnMouseEntered((event) -> {
+            playerNamePopup.show(actor, event.getScreenX(), event.getScreenY());
+            EffectsManager.playPopupIn(playerNamePopup);
+        });
+
+        actor.setOnMouseMoved((event) -> {
+            playerNamePopup.setX(event.getScreenX() - 35);
+            playerNamePopup.setY(event.getScreenY() - 60);
+        });
+
+        actor.setOnMouseExited((event) -> {
+            EffectsManager.playPopupOut(playerNamePopup);
+        });
     }
 
     public Popup createPopup() {
@@ -112,14 +149,17 @@ public class OffertTileView extends TileView {
         playerNameText.setMouseTransparent(true);
 
         popupContent.setOpacity(0);
-
         popupContent.getChildren().add(playerNameText);
         popup.getContent().add(popupContent);
 
         return popup;
     }
 
-    public ImageView getOverlay() {
+    public TotemPieceView getTotemPiece() {
+        return this.totemPiece;
+    }
+
+    public ImageView getTotemOverlay() {
         return this.totemOverlay;
     }
 

@@ -1,7 +1,6 @@
 package it.polimi.gc06.mesos.view.gui.controllers;
 
 import it.polimi.gc06.mesos.view.PropertyChangeName;
-import it.polimi.gc06.mesos.view.smallModel.SmallModel;
 import it.polimi.gc06.mesos.view.gui.elements.*;
 import javafx.application.Platform;
 import javafx.beans.binding.DoubleBinding;
@@ -22,6 +21,8 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import static it.polimi.gc06.mesos.view.gui.GUI.smallModel;
 
 public class BoardController implements PropertyChangeListener {
     @FXML
@@ -60,8 +61,6 @@ public class BoardController implements PropertyChangeListener {
     private ScrollPane bottomBuildings;
     @FXML
     private HBox bottomBuildingsContainer;
-
-    private SmallModel smallModel;
 
     private static final int DEFAULT_SPACING = 5;
 
@@ -219,8 +218,11 @@ public class BoardController implements PropertyChangeListener {
         tile.getImageView().fitWidthProperty().bind(tileSize);
         tile.getImageView().fitHeightProperty().bind(tiles.heightProperty());
 
-        tile.getOverlay().fitWidthProperty().bind(tileSize);
-        tile.getOverlay().fitHeightProperty().bind(tiles.heightProperty());
+        //tile.getTotemPiece().fitWidthProperty().bind(tileSize);
+        //tile.getTotemPiece().fitHeightProperty().bind(tiles.heightProperty());
+
+        tile.getTotemOverlay().fitWidthProperty().bind(tileSize);
+        tile.getTotemOverlay().fitHeightProperty().bind(tiles.heightProperty());
 
         return tile;
     }
@@ -379,56 +381,56 @@ public class BoardController implements PropertyChangeListener {
      * Draws the top row cards and sets the effect based on player and card status.
      */
     private void drawTopRowCards() {
-        topRowContainer.getChildren().clear();
-        for (String cardPath : smallModel.topRow()) {
-            CardView card = createCard(new Image(cardPath));
-
-            setCardEffect(card);
-
-            topRowContainer.getChildren().add(card);
-        }
+//        topRowContainer.getChildren().clear();
+//        for (String cardPath : smallModel.topRow()) {
+//            CardView card = createCard(new Image(cardPath));
+//
+//            setCardEffect(card);
+//
+//            topRowContainer.getChildren().add(card);
+//        }
     }
 
     /**
      * Draws the top buildings cards and sets the effect based on player and card status.
      */
     private void drawTopBuildingsCards() {
-        topBuildingsContainer.getChildren().clear();
-        for (String cardPath : smallModel.topBuilding()) {
-            CardView card = createCard(new Image(cardPath));
-
-            setCardEffect(card);
-
-            topBuildingsContainer.getChildren().add(card);
-        }
+//        topBuildingsContainer.getChildren().clear();
+//        for (String cardPath : smallModel.topBuilding()) {
+//            CardView card = createCard(new Image(cardPath));
+//
+//            setCardEffect(card);
+//
+//            topBuildingsContainer.getChildren().add(card);
+//        }
     }
 
     /**
      * Draws the bottom row cards and sets the effect based on player and card status.
      */
     private void drawBottomRowCards() {
-        bottomRowContainer.getChildren().clear();
-        for (String buildingPath : smallModel.bottomRow()) {
-            CardView card = createCard(new Image(buildingPath));
-
-            setCardEffect(card);
-
-            bottomRowContainer.getChildren().add(card);
-        }
+//        bottomRowContainer.getChildren().clear();
+//        for (String buildingPath : smallModel.bottomRow()) {
+//            CardView card = createCard(new Image(buildingPath));
+//
+//            setCardEffect(card);
+//
+//            bottomRowContainer.getChildren().add(card);
+//        }
     }
 
     /**
      * Draws the bottom buildings cards and sets the effect based on player and card status.
      */
     private void drawBottomBuildingCards() {
-        bottomBuildingsContainer.getChildren().clear();
-        for (String buildingPath : smallModel.bottomBuilding()) {
-            CardView card = createCard(new Image(buildingPath));
-
-            setCardEffect(card);
-
-            bottomBuildingsContainer.getChildren().add(card);
-        }
+//        bottomBuildingsContainer.getChildren().clear();
+//        for (String buildingPath : smallModel.bottomBuilding()) {
+//            CardView card = createCard(new Image(buildingPath));
+//
+//            setCardEffect(card);
+//
+//            bottomBuildingsContainer.getChildren().add(card);
+//        }
     }
 
     @Override

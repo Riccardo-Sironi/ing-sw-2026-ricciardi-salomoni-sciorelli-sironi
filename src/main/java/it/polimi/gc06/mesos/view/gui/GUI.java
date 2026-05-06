@@ -1,6 +1,6 @@
 package it.polimi.gc06.mesos.view.gui;
 
-import it.polimi.gc06.mesos.view.SmallModel;
+import it.polimi.gc06.mesos.view.smallModel.SmallModel;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -12,7 +12,7 @@ public class GUI extends Application {
     public static int WIDTH = 1920;
     public static int HEIGHT = 1080;
 
-    //static SmallModel smallModel = new SmallModel();
+    public static SmallModel smallModel;
 
     @Override
     public void start(Stage stage) throws IOException {
