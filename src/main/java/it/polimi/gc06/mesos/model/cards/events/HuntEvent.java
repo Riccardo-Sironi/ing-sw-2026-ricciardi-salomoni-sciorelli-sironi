@@ -1,14 +1,14 @@
 package it.polimi.gc06.mesos.model.cards.events;
 
-import it.polimi.gc06.mesos.model.cards.CardVisitor;
 import it.polimi.gc06.mesos.model.Era;
 import it.polimi.gc06.mesos.model.Player;
+import it.polimi.gc06.mesos.model.cards.CardVisitor;
 import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingRegistryKey;
 
 public class HuntEvent extends EventCard {
 
     private int prestigeGain;
-    
+
     public HuntEvent() {
         super(false);
         this.prestigeGain = -1;
@@ -30,6 +30,16 @@ public class HuntEvent extends EventCard {
     public void setPrestigeGain(int prestigeGain) {
         this.prestigeGain = prestigeGain;
     }
+
+    /**
+     * Prestige getter.
+     *
+     * @return prestigeGain the prestige gained for each hunter.
+     */
+    public int getPrestigeGain() {
+        return this.prestigeGain;
+    }
+
 
     /**
      * this method is used to accept a visitor that will visit the card and apply

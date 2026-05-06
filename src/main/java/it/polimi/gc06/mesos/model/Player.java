@@ -1,7 +1,6 @@
 package it.polimi.gc06.mesos.model;
 
 import it.polimi.gc06.mesos.gameExceptions.GameObjectNotFoundException;
-import it.polimi.gc06.mesos.model.cards.CardVisitor;
 import it.polimi.gc06.mesos.model.cards.buildings.*;
 import it.polimi.gc06.mesos.model.cards.characters.*;
 
@@ -258,7 +257,7 @@ public class Player {
      *
      * @return the enum value of the color of the player
      */
-    protected Color getPlayerColor() {
+    public Color getPlayerColor() {
         return this.color;
     }
 
@@ -528,15 +527,16 @@ public class Player {
 
     /**
      * Get the number of different inventor icons.
+     *
      * @return the number of different inventor icons.
      */
     public int getNumOfIcon() {
         InventorIconVisitor visitor = new InventorIconVisitor();
         Set<InventionIcon> iconSet = new HashSet<>();
-        for(CharacterCard card : characterDeck.get(CharacterType.INVENTOR)){
+        for (CharacterCard card : characterDeck.get(CharacterType.INVENTOR)) {
             visitor.visit(card);
             InventionIcon icon = visitor.getAndClearIcon();
-            if(icon != null) iconSet.add(icon);
+            if (icon != null) iconSet.add(icon);
         }
         return iconSet.size();
     }

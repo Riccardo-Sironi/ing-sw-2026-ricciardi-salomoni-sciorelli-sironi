@@ -1,7 +1,7 @@
 package it.polimi.gc06.mesos.model.cards.characters;
 
-import it.polimi.gc06.mesos.model.cards.CardVisitor;
 import it.polimi.gc06.mesos.model.Era;
+import it.polimi.gc06.mesos.model.cards.CardVisitor;
 
 public class ShamanCard extends CharacterCard {
     private int nStars;
@@ -24,7 +24,7 @@ public class ShamanCard extends CharacterCard {
      *
      * @param nStars the number of star on the shaman card.
      */
-    public void setnStars(int nStars) {
+    private void setnStars(int nStars) {
         this.nStars = nStars;
     }
 
@@ -44,6 +44,8 @@ public class ShamanCard extends CharacterCard {
      * @param visitor the visitor that will visit the card.
      */
     @Override
-    public void accept(CardVisitor visitor) {visitor.visit(this);}
+    public void accept(CardVisitor visitor) {
+        visitor.visit(this);
+    }
 
 }

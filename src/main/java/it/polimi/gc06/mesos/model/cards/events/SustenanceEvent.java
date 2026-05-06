@@ -1,8 +1,8 @@
 package it.polimi.gc06.mesos.model.cards.events;
 
-import it.polimi.gc06.mesos.model.cards.CardVisitor;
 import it.polimi.gc06.mesos.model.Era;
 import it.polimi.gc06.mesos.model.Player;
+import it.polimi.gc06.mesos.model.cards.CardVisitor;
 import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingRegistryKey;
 
 public class SustenanceEvent extends EventCard {
@@ -28,6 +28,16 @@ public class SustenanceEvent extends EventCard {
     public void setPrestigeLoss(int prestigeLoss) {
         this.numPrestigeLoss = prestigeLoss;
     }
+
+    /**
+     * Prestige lost getter
+     *
+     * @return prestigeLoss the prestige lost if the player loses the event.
+     */
+    public int getPrestigeLoss() {
+        return this.numPrestigeLoss;
+    }
+
 
     /**
      * this method is used to accept a visitor that will visit the card and apply

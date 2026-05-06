@@ -1,8 +1,8 @@
 package it.polimi.gc06.mesos.model.cards.events;
 
-import it.polimi.gc06.mesos.model.cards.CardVisitor;
 import it.polimi.gc06.mesos.model.Era;
 import it.polimi.gc06.mesos.model.Player;
+import it.polimi.gc06.mesos.model.cards.CardVisitor;
 import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingRegistryKey;
 
 public class PaintingsEvent extends EventCard {
@@ -47,6 +47,24 @@ public class PaintingsEvent extends EventCard {
     }
 
     /**
+     * Prestige gained getter.
+     *
+     * @return prestigeGain the prestige given by the event.
+     */
+    public int getPrestigeGain() {
+        return this.prestigeGain;
+    }
+
+    /**
+     * Prestige lost getter.
+     *
+     * @return prestigeLoss the prestige lost if the player loses the event.
+     */
+    public int getPrestigeLoss() {
+        return this.prestigeLoss;
+    }
+
+    /**
      * Minimum number of artist setter. This should be called only once during initialization.
      *
      * @param minNumberOfArtists the minimum number of artist to not lose the event.
@@ -54,6 +72,16 @@ public class PaintingsEvent extends EventCard {
     public void setMinNumberOfArtists(int minNumberOfArtists) {
         this.minNumberOfArtists = minNumberOfArtists;
     }
+
+    /**
+     * Minimum number of artist getter.
+     *
+     * @return minNumberOfArtists the minimum number of artist to not lose the event.
+     */
+    public int getMinNumberOfArtists() {
+        return this.minNumberOfArtists;
+    }
+
 
     /**
      * this method is used to accept a visitor that will visit the card and apply

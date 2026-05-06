@@ -1,8 +1,8 @@
 package it.polimi.gc06.mesos.model.cards.events;
 
-import it.polimi.gc06.mesos.model.cards.CardVisitor;
 import it.polimi.gc06.mesos.model.Era;
 import it.polimi.gc06.mesos.model.Player;
+import it.polimi.gc06.mesos.model.cards.CardVisitor;
 import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingRegistryKey;
 
 public class RitualEvent extends EventCard {
@@ -41,6 +41,24 @@ public class RitualEvent extends EventCard {
      */
     public void setPrestigeLoss(int prestigeLoss) {
         this.prestigeLoss = prestigeLoss;
+    }
+
+    /**
+     * Prestige gained getter.
+     *
+     * @return prestigeGain the prestige given by the event.
+     */
+    public int getPrestigeGain() {
+        return this.prestigeGain;
+    }
+
+    /**
+     * Prestige lost getter.
+     *
+     * @return prestigeLoss the prestige lost if the player loses the event.
+     */
+    public int getPrestigeLoss() {
+        return this.prestigeLoss;
     }
 
     /**
