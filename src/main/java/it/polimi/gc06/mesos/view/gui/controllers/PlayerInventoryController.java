@@ -101,8 +101,9 @@ public class PlayerInventoryController implements PropertyChangeListener {
     @FXML
     public Text foodTokensText;
 
-    private static final double CARDS_PERCENTAGE = 0.5;
-    private static final double TOKENS_PERCENTAGE = 0.3;
+    private static final double CARDS_PERCENTAGE = 0.6;
+    private static final double TOKENS_PERCENTAGE = 0.15;
+    private static final double STATS_PERCENTAGE = 0.15;
 
     private final Font mesosFont = Font.loadFont(
             this.getClass().getResourceAsStream(
@@ -113,6 +114,7 @@ public class PlayerInventoryController implements PropertyChangeListener {
 
     @FXML
     public void initialize() {
+        initStatsContainer();
         initPlayerCardInventory();
         initTokensContainer();
 
@@ -123,11 +125,9 @@ public class PlayerInventoryController implements PropertyChangeListener {
     }
 
     public void initPlayerCardInventory() {
-        cards
-                .prefWidthProperty()
-                .bind(
-                        playerInventoryRoot.widthProperty().multiply(CARDS_PERCENTAGE)
-                );
+        cards.prefWidthProperty().bind(
+                playerInventoryRoot.widthProperty().multiply(CARDS_PERCENTAGE)
+        );
         cards.prefHeightProperty().bind(playerInventoryRoot.heightProperty());
 
         cardsContainer.prefWidthProperty().bind(cards.widthProperty());
@@ -135,25 +135,19 @@ public class PlayerInventoryController implements PropertyChangeListener {
     }
 
     public void initTokensContainer() {
-        tokens
-                .prefWidthProperty()
-                .bind(
-                        playerInventoryRoot.widthProperty().multiply(TOKENS_PERCENTAGE)
-                );
+        tokens.prefWidthProperty().bind(
+                playerInventoryRoot.widthProperty().multiply(TOKENS_PERCENTAGE)
+        );
 
         // Enforce max height bounds to prevent infinite expansion
         tokens.maxHeightProperty().bind(playerInventoryRoot.heightProperty());
         tokens.prefHeightProperty().bind(playerInventoryRoot.heightProperty());
 
-        prestigeTokens
-                .prefWidthProperty()
-                .bind(tokens.widthProperty().multiply(0.5));
+        prestigeTokens.prefWidthProperty().bind(tokens.widthProperty().multiply(0.5));
         prestigeTokens.maxHeightProperty().bind(tokens.heightProperty());
         prestigeTokens.prefHeightProperty().bind(tokens.heightProperty());
 
-        foodTokens
-                .prefWidthProperty()
-                .bind(tokens.widthProperty().multiply(0.5));
+        foodTokens.prefWidthProperty().bind(tokens.widthProperty().multiply(0.5));
         foodTokens.maxHeightProperty().bind(tokens.heightProperty());
         foodTokens.prefHeightProperty().bind(tokens.heightProperty());
 
@@ -166,28 +160,19 @@ public class PlayerInventoryController implements PropertyChangeListener {
         prestigeTokensImage.setPreserveRatio(true);
         prestigeTokensImage.setSmooth(true);
 
-        // Bind directly to the root to skip the VBox in the size calculation
-        prestigeTokensImage
-                .fitHeightProperty()
-                .bind(playerInventoryRoot.heightProperty().multiply(0.34));
+        prestigeTokensImage.fitHeightProperty().bind(playerInventoryRoot.heightProperty().multiply(0.35));
 
         prestigeTokensText.setText("10");
         prestigeTokensText.setFont(mesosFont);
         prestigeTokensText.setTextAlignment(TextAlignment.CENTER);
-        prestigeTokensText
-                .wrappingWidthProperty()
-                .bind(prestigeTokens.widthProperty());
+        prestigeTokensText.wrappingWidthProperty().bind(prestigeTokens.widthProperty());
     }
 
     public void initFoodContainer() {
         foodTokensImage.setImage(new Image("food_token.png"));
         foodTokensImage.setPreserveRatio(true);
         foodTokensImage.setSmooth(true);
-
-        // Bind directly to the root
-        foodTokensImage
-                .fitHeightProperty()
-                .bind(playerInventoryRoot.heightProperty().multiply(0.35));
+        foodTokensImage.fitHeightProperty().bind(playerInventoryRoot.heightProperty().multiply(0.35));
 
         foodTokensText.setText("15");
         foodTokensText.setFont(mesosFont);
@@ -196,45 +181,106 @@ public class PlayerInventoryController implements PropertyChangeListener {
     }
 
     public void initStatsContainer() {
-        stats
-                .prefWidthProperty()
-                .bind(
-                        playerInventoryRoot.widthProperty().multiply(TOKENS_PERCENTAGE)
-                );
-
+        stats.prefWidthProperty().bind(playerInventoryRoot.widthProperty().multiply(STATS_PERCENTAGE));
         stats.maxHeightProperty().bind(playerInventoryRoot.heightProperty());
         stats.prefHeightProperty().bind(playerInventoryRoot.heightProperty());
 
+        initShamanStarsContainer();
+        initGathererQuantityContainer();
+        initHunterQuantityContainer();
+        initArtistQuantityContainer();
+        initBuildersDiscountContainer();
+    }
+
+    public void initShamanStarsContainer() {
         shamanStars.prefWidthProperty().bind(stats.widthProperty().divide(5));
         shamanStars.maxHeightProperty().bind(stats.heightProperty());
         shamanStars.prefHeightProperty().bind(stats.heightProperty());
 
-        gathererQuantity
-                .prefWidthProperty()
-                .bind(stats.widthProperty().divide(5));
+        shamanStarsImage.setImage(new Image("blank_token.png"));
+        shamanStarsImage.setPreserveRatio(true);
+        shamanStarsImage.setSmooth(true);
+        shamanStarsImage.fitHeightProperty()
+                .bind(playerInventoryRoot.heightProperty().multiply(0.35));
+
+        shamanStarsText.setText("15");
+        shamanStarsText.setFont(mesosFont);
+        shamanStarsText.setTextAlignment(TextAlignment.CENTER);
+        shamanStarsText.wrappingWidthProperty()
+                .bind(shamanStars.widthProperty()); // was: foodTokens.widthProperty()
+    }
+
+    public void initGathererQuantityContainer() {
+        gathererQuantity.prefWidthProperty().bind(stats.widthProperty().divide(5));
         gathererQuantity.maxHeightProperty().bind(stats.heightProperty());
         gathererQuantity.prefHeightProperty().bind(stats.heightProperty());
 
-        hunterQuantity
-                .prefWidthProperty()
-                .bind(stats.widthProperty().divide(5));
+        gathererQuantityImage.setImage(new Image("blank_token.png"));
+        gathererQuantityImage.setPreserveRatio(true);
+        gathererQuantityImage.setSmooth(true);
+        gathererQuantityImage.fitHeightProperty()
+                .bind(playerInventoryRoot.heightProperty().multiply(0.35)); // was: no multiplier
+
+        gathererQuantityText.setText("15");
+        gathererQuantityText.setFont(mesosFont);
+        gathererQuantityText.setTextAlignment(TextAlignment.CENTER);
+        gathererQuantityText.wrappingWidthProperty()
+                .bind(gathererQuantity.widthProperty());
+    }
+
+    public void initHunterQuantityContainer() {
+        hunterQuantity.prefWidthProperty().bind(stats.widthProperty().divide(5));
         hunterQuantity.maxHeightProperty().bind(stats.heightProperty());
         hunterQuantity.prefHeightProperty().bind(stats.heightProperty());
 
-        artistQuantity
-                .prefWidthProperty()
-                .bind(stats.widthProperty().divide(5));
+        hunterQuantityImage.setImage(new Image("blank_token.png"));
+        hunterQuantityImage.setPreserveRatio(true);
+        hunterQuantityImage.setSmooth(true);
+        hunterQuantityImage.fitHeightProperty()
+                .bind(playerInventoryRoot.heightProperty().multiply(0.35)); // was: no multiplier
+
+        hunterQuantityText.setText("15");
+        hunterQuantityText.setFont(mesosFont);
+        hunterQuantityText.setTextAlignment(TextAlignment.CENTER);
+        hunterQuantityText.wrappingWidthProperty()
+                .bind(hunterQuantity.widthProperty()); // was: gathererQuantity.widthProperty()
+    }
+
+    public void initArtistQuantityContainer() {
+        artistQuantity.prefWidthProperty().bind(stats.widthProperty().divide(5));
         artistQuantity.maxHeightProperty().bind(stats.heightProperty());
         artistQuantity.prefHeightProperty().bind(stats.heightProperty());
 
-        buildersDiscount
-                .prefWidthProperty()
-                .bind(stats.widthProperty().divide(5));
-        buildersDiscount.maxHeightProperty().bind(stats.heightProperty());
-        buildersDiscount.prefHeightProperty().bind(stats.heightProperty());
+        artistQuantityImage.setImage(new Image("blank_token.png"));
+        artistQuantityImage.setPreserveRatio(true);
+        artistQuantityImage.setSmooth(true);
+        artistQuantityImage.fitHeightProperty()
+                .bind(playerInventoryRoot.heightProperty().multiply(0.35)); // was: no multiplier
+
+        artistQuantityText.setText("15");
+        artistQuantityText.setFont(mesosFont);
+        artistQuantityText.setTextAlignment(TextAlignment.CENTER);
+        artistQuantityText.wrappingWidthProperty()
+                .bind(artistQuantity.widthProperty()); // was: gathererQuantity.widthProperty()
     }
 
-    // ... containers
+    public void initBuildersDiscountContainer() {
+        buildersDiscount.prefWidthProperty().bind(stats.widthProperty().divide(5));
+        buildersDiscount.maxHeightProperty().bind(stats.heightProperty());
+        buildersDiscount.prefHeightProperty().bind(stats.heightProperty());
+
+        buildersDiscountImage.setImage(new Image("blank_token.png"));
+        buildersDiscountImage.setPreserveRatio(true);
+        buildersDiscountImage.setSmooth(true);
+        buildersDiscountImage.fitHeightProperty()
+                .bind(playerInventoryRoot.heightProperty().multiply(0.35)); // was: no multiplier
+
+        buildersDiscountText.setText("15");
+        buildersDiscountText.setFont(mesosFont);
+        buildersDiscountText.setTextAlignment(TextAlignment.CENTER);
+        buildersDiscountText.wrappingWidthProperty()
+                .bind(buildersDiscount.widthProperty()); // was: gathererQuantity.widthProperty()
+    }
 
     private CardView createCard(Image image) {
         CardView card = new CardView(image);
