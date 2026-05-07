@@ -1,0 +1,55 @@
+{
+  "2": {
+    "offerTiles": [
+      {
+        "tileEffect": {
+          "class": "FoodTileEffect",
+          "numFood": 1
+        },
+        "offerTileUrl": "/images/tiles/food_1.png"
+      },
+      {
+        "tileEffect": {
+          "class": "ChooseCardTileEffect",
+          "numOfTopCards": 1,
+          "numOfBottomCards": 0
+        },
+        "offerTileUrl": "/images/tiles/choose_top_1.png"
+      }
+    ],
+    "turnOrderTileUrl": "/images/tiles/turn_order_2p.png"
+  },
+  "3": {
+    "offerTiles": [
+      {
+        "tileEffect": {
+          "class": "FoodTileEffect",
+          "numFood": 2
+        },
+        "offerTileUrl": "/images/tiles/food_2.png"
+      },
+      {
+        "tileEffect": {
+          "class": "ChooseCardTileEffect",
+          "numOfTopCards": 0,
+          "numOfBottomCards": 1
+        },
+        "offerTileUrl": "/images/tiles/choose_bottom_1.png"
+      }
+    ],
+    "turnOrderTileUrl": "/images/tiles/turn_order_3p.png"
+  },
+  "4": {
+    "offerTiles": [
+      {
+        "tileEffect": {
+          "class": "ChooseCardTileEffect",
+          "numOfTopCards": 1,
+          "numOfBottomCards": 1
+        },
+        "offerTileUrl": "/images/tiles/choose_both_1.png"
+      }
+    ],
+    "turnOrderTileUrl": "/images/tiles/turn_order_4p.png"
+  }
+}

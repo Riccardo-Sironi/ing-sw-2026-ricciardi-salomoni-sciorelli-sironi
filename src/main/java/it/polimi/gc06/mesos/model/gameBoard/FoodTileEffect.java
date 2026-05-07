@@ -5,6 +5,8 @@ import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingCard;
 import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingRegistryKey;
 import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingsRegistry;
 
+import java.util.Objects;
+
 public class FoodTileEffect implements TileEffect {
 
     private int numFood;
@@ -63,5 +65,17 @@ public class FoodTileEffect implements TileEffect {
     @Override
     public void accept(TileEffectVisitor visitor) {
         visitor.visit(this);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        FoodTileEffect that = (FoodTileEffect) o;
+        return numFood == that.numFood && Objects.equals(foodBonusCard, that.foodBonusCard);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(numFood, foodBonusCard);
     }
 }

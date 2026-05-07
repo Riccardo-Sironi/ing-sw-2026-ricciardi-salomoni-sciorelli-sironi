@@ -2,6 +2,8 @@ package it.polimi.gc06.mesos.model.gameBoard;
 
 import it.polimi.gc06.mesos.model.Player;
 
+import java.util.Objects;
+
 public class ChooseCardTileEffect implements TileEffect {
 
     private int numOfTopCards;
@@ -78,5 +80,17 @@ public class ChooseCardTileEffect implements TileEffect {
     @Override
     public void accept(TileEffectVisitor visitor) {
         visitor.visit(this);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        ChooseCardTileEffect that = (ChooseCardTileEffect) o;
+        return numOfTopCards == that.numOfTopCards && numOfBottomCards == that.numOfBottomCards;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(numOfTopCards, numOfBottomCards);
     }
 }
