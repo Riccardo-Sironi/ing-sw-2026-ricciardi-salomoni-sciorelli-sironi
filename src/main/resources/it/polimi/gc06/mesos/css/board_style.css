@@ -38,13 +38,6 @@
     -fx-text-fill: #000000;
 }
 
-.card-image:disabled {
-    -fx-opacity: 0.6; /* Rende l'immagine leggermente trasparente */
-    -fx-cursor: default; /* Rimuove la manina */
-    -fx-focus-traversable: false;
-}
-
-
 /* PLAYER */
 
 #playerInventoryRoot {

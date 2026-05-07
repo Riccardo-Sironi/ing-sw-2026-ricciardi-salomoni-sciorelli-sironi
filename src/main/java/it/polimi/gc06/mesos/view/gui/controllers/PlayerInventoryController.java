@@ -186,11 +186,11 @@ public class PlayerInventoryController implements PropertyChangeListener {
         stats.prefHeightProperty().bind(playerInventoryRoot.heightProperty());
 
 
-        initContainer(shamanStars, shamanStarsImage, new Image("shaman_stars_token.png"), shamanStarsText, "");
-        initContainer(gathererQuantity, gathererQuantityImage, new Image("gatherers_token.png"), gathererQuantityText, "");
-        initContainer(hunterQuantity, hunterQuantityImage, new Image("hunters_token.png"), hunterQuantityText, "");
-        initContainer(artistQuantity, artistQuantityImage, new Image("artists_token.png"), artistQuantityText, "");
-        initContainer(buildersDiscount, buildersDiscountImage, new Image("blank_token.png"), buildersDiscountText, "");
+        initContainer(shamanStars, shamanStarsImage, new Image("shaman_stars_token.png"), shamanStarsText, "1");
+        initContainer(gathererQuantity, gathererQuantityImage, new Image("gatherers_token.png"), gathererQuantityText, "2");
+        initContainer(hunterQuantity, hunterQuantityImage, new Image("hunters_token.png"), hunterQuantityText, "0");
+        initContainer(artistQuantity, artistQuantityImage, new Image("artists_token.png"), artistQuantityText, "4");
+        initContainer(buildersDiscount, buildersDiscountImage, new Image("blank_token.png"), buildersDiscountText, "6");
     }
 
     private void initContainer(VBox container, ImageView containerImageView,

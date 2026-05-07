@@ -26,8 +26,8 @@ public class EffectsManager {
         fade.setInterpolator(Interpolator.EASE_OUT);
 
         TranslateTransition slide = new TranslateTransition(
-            Duration.millis(100),
-            content
+                Duration.millis(100),
+                content
         );
         slide.setFromY(6);
         slide.setToY(0);
@@ -63,7 +63,7 @@ public class EffectsManager {
         colorAdjust.setBrightness(0);
         colorAdjust.setContrast(0);
         card.setEffect(colorAdjust);
-        card.setDisable(true);
+        card.setStyle("-fx-cursor: default; -fx-focus-traversable: false");
     }
 
     /**
@@ -77,7 +77,7 @@ public class EffectsManager {
         dropShadow.setOffsetY(1);
         dropShadow.setSpread(0.5);
         dropShadow.setBlurType(BlurType.GAUSSIAN);
-        dropShadow.setColor(Color.web("#348ceb", 0.2));
+        dropShadow.setColor(Color.web("#348ceb", 0.4));
         card.setEffect(dropShadow);
         card.setStyle("-fx-cursor: hand");
     }

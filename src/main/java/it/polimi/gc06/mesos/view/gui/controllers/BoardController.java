@@ -119,12 +119,14 @@ public class BoardController implements PropertyChangeListener {
         for (int i = 0; i < 9; i++) {
             CardView card = new CardView(new Image("shaman_1_card.png"));
             card.fitHeightProperty().bind(topRow.prefHeightProperty().multiply(0.98));
+            EffectsManager.activeCard(card);
             topRowContainer.getChildren().add(card);
         }
 
         for (int i = 0; i < 7; i++) {
             CardView card = new CardView(new Image("shaman_1_card.png"));
             card.fitHeightProperty().bind(bottomRow.prefHeightProperty().multiply(0.98));
+            EffectsManager.disableCard(card);
             bottomRowContainer.getChildren().add(card);
         }
 
