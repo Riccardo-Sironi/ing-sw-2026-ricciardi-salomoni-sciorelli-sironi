@@ -1,3 +1,5 @@
+/* BOARD */
+
 #boardRoot {
     -fx-background-color: white;
 }
@@ -43,4 +45,23 @@
     -fx-opacity: 0.6; /* Rende l'immagine leggermente trasparente */
     -fx-cursor: default; /* Rimuove la manina */
     -fx-focus-traversable: false;
+}
+
+
+/* PLAYER */
+
+#playerInventoryRoot {
+    -fx-background-color: white;
+}
+
+#playerInventoryRoot .scroll-pane {
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+
+#playerInventoryRoot .scroll-pane .viewport {
+    -fx-background-color: transparent;
 }

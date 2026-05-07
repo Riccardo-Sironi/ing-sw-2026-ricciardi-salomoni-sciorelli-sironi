@@ -113,25 +113,33 @@ public class BoardController implements PropertyChangeListener {
         deckImage.setImage(new Image("tribe_card_era_I_back.png"));
 
         for (int i = 0; i < 9; i++) {
+            CardView card = new CardView(new Image("shaman_1_card.png"));
+            card.fitHeightProperty().bind(topRow.heightProperty().multiply(0.98));
             topRowContainer
                     .getChildren()
-                    .add(createCard(new Image("shaman_1_card.png")));
+                    .add(card);
         }
 
         for (int i = 0; i < 7; i++) {
+            CardView card = new CardView(new Image("shaman_1_card.png"));
+            card.fitHeightProperty().bind(bottomRow.heightProperty().multiply(0.98));
             bottomRowContainer
                     .getChildren()
-                    .add(createCard(new Image("shaman_1_card.png")));
+                    .add(card);
         }
         for (int i = 0; i < 4; i++) {
+            CardView building = new CardView(new Image("1.png"));
+            building.fitHeightProperty().bind(topBuildings.heightProperty().multiply(0.98));
             topBuildingsContainer
                     .getChildren()
-                    .add(createCard(new Image("1.png")));
+                    .add(building);
         }
         for (int i = 0; i < 4; i++) {
+            CardView building = new CardView(new Image("1.png"));
+            building.fitHeightProperty().bind(bottomBuildings.heightProperty().multiply(0.98));
             bottomBuildingsContainer
                     .getChildren()
-                    .add(createCard(new Image("1.png")));
+                    .add(building);
         }
 
         TurnOrderTileView turnOrderTile = createTurnOrderTile(
@@ -285,10 +293,9 @@ public class BoardController implements PropertyChangeListener {
      * @param image The image of the card.
      * @return the {@link CardView} object.
      */
-    private CardView createCard(Image image) {
+    private CardView createCard(Image image, HBox container) {
         CardView card = new CardView(image);
-        card.fitHeightProperty().bind(topRow.heightProperty().multiply(0.98));
-
+        //card.fitHeightProperty().bind(container.heightProperty().multiply(0.98));
         return card;
     }
 
@@ -548,7 +555,8 @@ public class BoardController implements PropertyChangeListener {
         // TODO : obviously not the final implementation (we can't re-draw everything every time)
         topRowContainer.getChildren().clear();
         for (Card card : smallModel.getTopRow()) {
-            CardView cardView = createCard(new Image(imageFetcher.fetch(card)));
+            CardView cardView = new CardView(new Image(imageFetcher.fetch(card)));
+            cardView.fitHeightProperty().bind(topRow.prefHeightProperty().multiply(0.98));
             setCardEffect(cardView);
             cardView.setCard(card);
             topRowContainer.getChildren().add(cardView);
@@ -562,9 +570,10 @@ public class BoardController implements PropertyChangeListener {
         // TODO : obviously not the final implementation (we can't re-draw everything every time)
         topBuildingsContainer.getChildren().clear();
         for (Card building : smallModel.getTopBuilding()) {
-            CardView cardView = createCard(
+            CardView cardView = new CardView(
                     new Image(imageFetcher.fetch(building))
             );
+            cardView.fitHeightProperty().bind(topBuildings.prefHeightProperty().multiply(0.98));
             setCardEffect(cardView);
             cardView.setCard(building);
             topBuildingsContainer.getChildren().add(cardView);
@@ -578,7 +587,8 @@ public class BoardController implements PropertyChangeListener {
         // TODO : obviously not the final implementation (we can't re-draw everything every time)
         bottomRowContainer.getChildren().clear();
         for (Card card : smallModel.getBottomRow()) {
-            CardView cardView = createCard(new Image(imageFetcher.fetch(card)));
+            CardView cardView = new CardView(new Image(imageFetcher.fetch(card)));
+            cardView.fitHeightProperty().bind(bottomRow.prefHeightProperty().multiply(0.98));
             setCardEffect(cardView);
             cardView.setCard(card);
             bottomRowContainer.getChildren().add(cardView);
@@ -592,9 +602,10 @@ public class BoardController implements PropertyChangeListener {
         // TODO : obviously not the final implementation (we can't re-draw everything every time)
         bottomBuildingsContainer.getChildren().clear();
         for (Card building : smallModel.getBottomBuilding()) {
-            CardView cardView = createCard(
+            CardView cardView = new CardView(
                     new Image(imageFetcher.fetch(building))
             );
+            cardView.fitHeightProperty().bind(bottomBuildings.prefHeightProperty().multiply(0.98));
             setCardEffect(cardView);
             cardView.setCard(building);
             bottomBuildingsContainer.getChildren().add(cardView);

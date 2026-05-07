@@ -21,7 +21,7 @@
         </center>
 
         <bottom>
-            <HBox fx:id="playerInventory"/>
+            <fx:include source="PlayerInventory.fxml" fx:id="playerInventory"/>
         </bottom>
     </BorderPane>
 
