@@ -1,7 +1,18 @@
 package it.polimi.gc06.mesos.view.gui.controllers;
 
+import static it.polimi.gc06.mesos.view.gui.GUI.imageFetcher;
+import static it.polimi.gc06.mesos.view.gui.GUI.smallModel;
+
+import it.polimi.gc06.mesos.model.cards.Card;
 import it.polimi.gc06.mesos.view.PropertyChangeName;
 import it.polimi.gc06.mesos.view.gui.elements.*;
+import it.polimi.gc06.mesos.view.gui.visitors.CardEffectVisitor;
+
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import javafx.application.Platform;
 import javafx.beans.binding.DoubleBinding;
 import javafx.fxml.FXML;
@@ -17,62 +28,77 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Popup;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
-import java.util.Arrays;
-
-import static it.polimi.gc06.mesos.view.gui.GUI.smallModel;
-
 public class BoardController implements PropertyChangeListener {
+
     @FXML
     private BorderPane boardRoot;
+
     @FXML
     private HBox topContainer;
+
     @FXML
     private ScrollPane topRow;
+
     @FXML
     private HBox topRowContainer;
+
     @FXML
     private ScrollPane topBuildings;
+
     @FXML
     private HBox topBuildingsContainer;
+
     @FXML
     private HBox centerContainer;
+
     @FXML
     private HBox deckBox;
+
     @FXML
     public ImageView deckImage;
+
     @FXML
     public ScrollPane tiles;
+
     @FXML
     public HBox tilesContainer;
+
     @FXML
     private HBox skipButtonBox;
+
     @FXML
     public Button skipButton;
+
     @FXML
     private HBox bottomContainer;
+
     @FXML
     private ScrollPane bottomRow;
+
     @FXML
     private HBox bottomRowContainer;
+
     @FXML
     private ScrollPane bottomBuildings;
+
     @FXML
     private HBox bottomBuildingsContainer;
 
     private static final int DEFAULT_SPACING = 5;
 
     private static final double CARD_ROWS_HEIGHT_PERCENTAGE = 0.3;
-    private static final double CENTER_ZONE_HEIGHT_PERCENTAGE = 1 - (CARD_ROWS_HEIGHT_PERCENTAGE * 2);
+    private static final double CENTER_ZONE_HEIGHT_PERCENTAGE =
+            1 - (CARD_ROWS_HEIGHT_PERCENTAGE * 2);
 
     private static final double TRIBE_CARDS_WIDTH_PERCENTAGE = 0.7;
-    private static final double BUILDING_CARDS_WIDTH_PERCENTAGE = 1 - TRIBE_CARDS_WIDTH_PERCENTAGE;
+    private static final double BUILDING_CARDS_WIDTH_PERCENTAGE =
+            1 - TRIBE_CARDS_WIDTH_PERCENTAGE;
 
     private static final double TILES_BOX_WIDTH_PERCENTAGE = 0.7;
-    private static final double DECK_BOX_WIDTH_PERCENTAGE = (1 - TILES_BOX_WIDTH_PERCENTAGE) / 2;
-    private static final double SKIP_BUTTON_BOX_WIDTH_PERCENTAGE = (1 - TILES_BOX_WIDTH_PERCENTAGE) / 2;
+    private static final double DECK_BOX_WIDTH_PERCENTAGE =
+            (1 - TILES_BOX_WIDTH_PERCENTAGE) / 2;
+    private static final double SKIP_BUTTON_BOX_WIDTH_PERCENTAGE =
+            (1 - TILES_BOX_WIDTH_PERCENTAGE) / 2;
 
     @FXML
     public void initialize() {
@@ -86,69 +112,169 @@ public class BoardController implements PropertyChangeListener {
         deckImage.setImage(new Image("tribe_card_era_I_back.png"));
 
         for (int i = 0; i < 9; i++) {
-            topRowContainer.getChildren().add(createCard(new Image("shaman_1_card.png")));
+            topRowContainer
+                    .getChildren()
+                    .add(createCard(new Image("shaman_1_card.png")));
         }
 
         for (int i = 0; i < 7; i++) {
-            bottomRowContainer.getChildren().add(createCard(new Image("shaman_1_card.png")));
+            bottomRowContainer
+                    .getChildren()
+                    .add(createCard(new Image("shaman_1_card.png")));
         }
         for (int i = 0; i < 4; i++) {
-            topBuildingsContainer.getChildren().add(createCard(new Image("1.png")));
+            topBuildingsContainer
+                    .getChildren()
+                    .add(createCard(new Image("1.png")));
         }
         for (int i = 0; i < 4; i++) {
-            bottomBuildingsContainer.getChildren().add(createCard(new Image("1.png")));
+            bottomBuildingsContainer
+                    .getChildren()
+                    .add(createCard(new Image("1.png")));
         }
 
-        TurnOrderTileView turnOrderTile = createTurnOrderTile(new Image("turn_order_tile_5p.png"), new ArrayList<>(Arrays.asList(Totem.YELLOW, Totem.TURQUOISE, Totem.PURPLE, Totem.WHITE, Totem.ORANGE)));
+        TurnOrderTileView turnOrderTile = createTurnOrderTile(
+                new Image("turn_order_tile_5p.png"),
+                new ArrayList<>(
+                        Arrays.asList(
+                                Totem.YELLOW,
+                                Totem.TURQUOISE,
+                                Totem.PURPLE,
+                                Totem.WHITE,
+                                Totem.ORANGE
+                        )
+                )
+        );
         tilesContainer.getChildren().add(turnOrderTile);
 
-        tilesContainer.getChildren().add(createOfferTile(new Image("offer_tile_A.png"), Totem.YELLOW, "Player 1"));
-        tilesContainer.getChildren().add(createOfferTile(new Image("offer_tile_B.png"), Totem.ORANGE, "Player 2"));
-        tilesContainer.getChildren().add(createOfferTile(new Image("offer_tile_C.png")));
-        tilesContainer.getChildren().add(createOfferTile(new Image("offer_tile_D.png"), Totem.TURQUOISE, "Player 3"));
-        tilesContainer.getChildren().add(createOfferTile(new Image("offer_tile_E.png"), Totem.PURPLE, "Player 4"));
-        tilesContainer.getChildren().add(createOfferTile(new Image("offer_tile_F.png")));
-        tilesContainer.getChildren().add(createOfferTile(new Image("offer_tile_G.png"), Totem.WHITE, "Player 5"));
+        tilesContainer
+                .getChildren()
+                .add(
+                        createOfferTile(
+                                new Image("offer_tile_A.png"),
+                                Totem.YELLOW,
+                                "Player 1"
+                        )
+                );
+        tilesContainer
+                .getChildren()
+                .add(
+                        createOfferTile(
+                                new Image("offer_tile_B.png"),
+                                Totem.ORANGE,
+                                "Player 2"
+                        )
+                );
+        tilesContainer
+                .getChildren()
+                .add(createOfferTile(new Image("offer_tile_C.png")));
+        tilesContainer
+                .getChildren()
+                .add(
+                        createOfferTile(
+                                new Image("offer_tile_D.png"),
+                                Totem.TURQUOISE,
+                                "Player 3"
+                        )
+                );
+        tilesContainer
+                .getChildren()
+                .add(
+                        createOfferTile(
+                                new Image("offer_tile_E.png"),
+                                Totem.PURPLE,
+                                "Player 4"
+                        )
+                );
+        tilesContainer
+                .getChildren()
+                .add(createOfferTile(new Image("offer_tile_F.png")));
+        tilesContainer
+                .getChildren()
+                .add(
+                        createOfferTile(
+                                new Image("offer_tile_G.png"),
+                                Totem.WHITE,
+                                "Player 5"
+                        )
+                );
     }
 
-
     private void topContainerInit() {
-        topContainer.prefHeightProperty().bind(boardRoot.heightProperty().multiply(CARD_ROWS_HEIGHT_PERCENTAGE));
-        DoubleBinding topWidth = topContainer.widthProperty().subtract(DEFAULT_SPACING);
+        topContainer
+                .prefHeightProperty()
+                .bind(
+                        boardRoot.heightProperty().multiply(CARD_ROWS_HEIGHT_PERCENTAGE)
+                );
+        DoubleBinding topWidth = topContainer
+                .widthProperty()
+                .subtract(DEFAULT_SPACING);
 
-        topRow.prefWidthProperty().bind(topWidth.multiply(TRIBE_CARDS_WIDTH_PERCENTAGE));
+        topRow
+                .prefWidthProperty()
+                .bind(topWidth.multiply(TRIBE_CARDS_WIDTH_PERCENTAGE));
         topRow.prefHeightProperty().bind(topContainer.heightProperty());
 
-        topBuildings.prefWidthProperty().bind(topWidth.multiply(BUILDING_CARDS_WIDTH_PERCENTAGE));
+        topBuildings
+                .prefWidthProperty()
+                .bind(topWidth.multiply(BUILDING_CARDS_WIDTH_PERCENTAGE));
         topBuildings.prefHeightProperty().bind(topContainer.heightProperty());
     }
 
     private void centerContainerInit() {
-        centerContainer.prefHeightProperty().bind(boardRoot.heightProperty().multiply(CENTER_ZONE_HEIGHT_PERCENTAGE));
+        centerContainer
+                .prefHeightProperty()
+                .bind(
+                        boardRoot
+                                .heightProperty()
+                                .multiply(CENTER_ZONE_HEIGHT_PERCENTAGE)
+                );
 
-        DoubleBinding centerWidth = centerContainer.widthProperty().subtract(DEFAULT_SPACING);
+        DoubleBinding centerWidth = centerContainer
+                .widthProperty()
+                .subtract(DEFAULT_SPACING);
 
-        deckBox.prefWidthProperty().bind(centerWidth.multiply(DECK_BOX_WIDTH_PERCENTAGE));
+        deckBox
+                .prefWidthProperty()
+                .bind(centerWidth.multiply(DECK_BOX_WIDTH_PERCENTAGE));
         deckBox.prefHeightProperty().bind(centerContainer.prefHeightProperty());
 
-        tiles.prefWidthProperty().bind(centerWidth.multiply(TILES_BOX_WIDTH_PERCENTAGE));
+        tiles
+                .prefWidthProperty()
+                .bind(centerWidth.multiply(TILES_BOX_WIDTH_PERCENTAGE));
         tiles.prefHeightProperty().bind(centerContainer.prefHeightProperty());
         tilesContainer.prefWidthProperty().bind(tiles.widthProperty());
         tilesContainer.prefHeightProperty().bind(tiles.heightProperty());
 
-        skipButtonBox.prefWidthProperty().bind(centerWidth.multiply(SKIP_BUTTON_BOX_WIDTH_PERCENTAGE));
-        skipButtonBox.prefHeightProperty().bind(centerContainer.prefHeightProperty());
+        skipButtonBox
+                .prefWidthProperty()
+                .bind(centerWidth.multiply(SKIP_BUTTON_BOX_WIDTH_PERCENTAGE));
+        skipButtonBox
+                .prefHeightProperty()
+                .bind(centerContainer.prefHeightProperty());
     }
 
     private void bottomContainerInit() {
-        bottomContainer.prefHeightProperty().bind(boardRoot.heightProperty().multiply(CARD_ROWS_HEIGHT_PERCENTAGE));
-        DoubleBinding bottomWidth = bottomContainer.widthProperty().subtract(DEFAULT_SPACING);
+        bottomContainer
+                .prefHeightProperty()
+                .bind(
+                        boardRoot.heightProperty().multiply(CARD_ROWS_HEIGHT_PERCENTAGE)
+                );
+        DoubleBinding bottomWidth = bottomContainer
+                .widthProperty()
+                .subtract(DEFAULT_SPACING);
 
-        bottomRow.prefWidthProperty().bind(bottomWidth.multiply(TRIBE_CARDS_WIDTH_PERCENTAGE));
+        bottomRow
+                .prefWidthProperty()
+                .bind(bottomWidth.multiply(TRIBE_CARDS_WIDTH_PERCENTAGE));
         bottomRow.prefHeightProperty().bind(bottomContainer.heightProperty());
 
-        bottomBuildings.prefWidthProperty().bind(bottomWidth.multiply(BUILDING_CARDS_WIDTH_PERCENTAGE));
-        bottomBuildings.prefHeightProperty().bind(bottomContainer.heightProperty());
+        bottomBuildings
+                .prefWidthProperty()
+                .bind(bottomWidth.multiply(BUILDING_CARDS_WIDTH_PERCENTAGE));
+        bottomBuildings
+                .prefHeightProperty()
+                .bind(bottomContainer.heightProperty());
     }
 
     /**
@@ -175,19 +301,28 @@ public class BoardController implements PropertyChangeListener {
 
         TurnOrderTileView turnOrderTile = new TurnOrderTileView(image);
 
-        DoubleBinding tileSize = tiles.widthProperty().divide(nPlayers).multiply(0.98);
+        DoubleBinding tileSize = tiles
+                .widthProperty()
+                .divide(nPlayers)
+                .multiply(0.98);
 
         turnOrderTile.prefWidthProperty().bind(tileSize);
         turnOrderTile.maxWidthProperty().bind(tileSize);
         turnOrderTile.prefHeightProperty().bind(tiles.heightProperty());
         turnOrderTile.maxHeightProperty().bind(tiles.heightProperty());
         turnOrderTile.getImageView().fitWidthProperty().bind(tileSize);
-        turnOrderTile.getImageView().fitHeightProperty().bind(tiles.heightProperty());
+        turnOrderTile
+                .getImageView()
+                .fitHeightProperty()
+                .bind(tiles.heightProperty());
 
         return turnOrderTile;
     }
 
-    private TurnOrderTileView createTurnOrderTile(Image image, ArrayList<Totem> totems) {
+    private TurnOrderTileView createTurnOrderTile(
+            Image image,
+            ArrayList<Totem> totems
+    ) {
         TurnOrderTileView turnOrderTile = createTurnOrderTile(image);
 
         ArrayList<TotemPieceView> totemPieces = new ArrayList<>();
@@ -209,7 +344,10 @@ public class BoardController implements PropertyChangeListener {
         }
 
         OffertTileView tile = new OffertTileView(image);
-        DoubleBinding tileSize = tiles.widthProperty().divide(nPlayers).multiply(0.98);
+        DoubleBinding tileSize = tiles
+                .widthProperty()
+                .divide(nPlayers)
+                .multiply(0.98);
 
         tile.prefWidthProperty().bind(tileSize);
         tile.maxWidthProperty().bind(tileSize);
@@ -250,7 +388,11 @@ public class BoardController implements PropertyChangeListener {
      * @param playerName The name of the player on the tile
      * @return the {@link OffertTileView} object.
      */
-    private OffertTileView createOfferTile(Image image, Totem totem, String playerName) {
+    private OffertTileView createOfferTile(
+            Image image,
+            Totem totem,
+            String playerName
+    ) {
         OffertTileView tile = createOfferTile(image, totem);
 
         tile.setPlayerName(playerName);
@@ -271,17 +413,11 @@ public class BoardController implements PropertyChangeListener {
     /**
      * sets the card effect based on player state and card type.
      *
-     * @param card Card on which the effects get applied.
+     * @param cardView {@link CardView} on which the effects get applied.
      */
-    private void setCardEffect(CardView card) {
-        // TODO : this should be based on the card if its an event or not
-
-        if (!smallModel.isActive()) {
-            EffectsManager.disableCard(card);
-        } else {
-            // TODO : should be based on event or character/building
-            // ...
-        }
+    private void setCardEffect(CardView cardView) {
+        CardEffectVisitor visitor = new CardEffectVisitor(cardView);
+        cardView.getCard().accept(visitor);
     }
 
     /**
@@ -290,24 +426,36 @@ public class BoardController implements PropertyChangeListener {
      */
     private void deckInit() {
         // drawDeck();
-        deckImage.fitHeightProperty().bind(deckBox.prefHeightProperty().multiply(0.8));
+        deckImage
+                .fitHeightProperty()
+                .bind(deckBox.prefHeightProperty().multiply(0.8));
         deckImage.setPreserveRatio(true);
 
+        setupDeckPopup();
+    }
+
+    private void setupDeckPopup() {
         Popup nCards = createDeckPopup();
 
-        deckImage.setOnMouseEntered((event -> {
-            nCards.show(deckImage, event.getScreenX(), event.getScreenY());
-            EffectsManager.playPopupIn(nCards);
-        }));
+        deckImage.setOnMouseEntered(
+                (event -> {
+                    nCards.show(deckImage, event.getScreenX(), event.getScreenY());
+                    EffectsManager.playPopupIn(nCards);
+                })
+        );
 
-        deckImage.setOnMouseMoved((event -> {
-            nCards.setX(event.getScreenX() - 35);
-            nCards.setY(event.getScreenY() - 60);
-        }));
+        deckImage.setOnMouseMoved(
+                (event -> {
+                    nCards.setX(event.getScreenX() - 35);
+                    nCards.setY(event.getScreenY() - 60);
+                })
+        );
 
-        deckImage.setOnMouseExited((event -> {
-            nCards.hide();
-        }));
+        deckImage.setOnMouseExited(
+                (event -> {
+                    nCards.hide();
+                })
+        );
     }
 
     private Popup createDeckPopup() {
@@ -326,9 +474,18 @@ public class BoardController implements PropertyChangeListener {
         popupContent.setMouseTransparent(true);
 
         Text nCardsText = new Text();
-        nCardsText.setFont(Font.loadFont(this.getClass().getResourceAsStream("/it/polimi/gc06/mesos/fonts/KidKnowledge.otf"), 20));
+        nCardsText.setFont(
+                Font.loadFont(
+                        this.getClass().getResourceAsStream(
+                                "/it/polimi/gc06/mesos/fonts/KidKnowledge.otf"
+                        ),
+                        20
+                )
+        );
         nCardsText.setFill(Color.WHITE);
-        nCardsText.setText(smallModel == null ? "N/A" : "" + smallModel.getTribeDeckSize());
+        nCardsText.setText(
+                smallModel == null ? "N/A" : "" + smallModel.getTribeDeckSize()
+        );
 
         popupContent.getChildren().add(nCardsText);
         popup.getContent().add(popupContent);
@@ -341,24 +498,24 @@ public class BoardController implements PropertyChangeListener {
      */
     private void skipButtonBoxInit() {
         // drawSkipButton();
-        skipButton.prefWidthProperty().bind(skipButtonBox.prefHeightProperty().multiply(0.3));
-        skipButton.prefHeightProperty().bind(skipButtonBox.prefWidthProperty().multiply(0.3));
-        skipButton.setDisable(false);
+        skipButton
+                .prefWidthProperty()
+                .bind(skipButtonBox.prefHeightProperty().multiply(0.3));
+        skipButton
+                .prefHeightProperty()
+                .bind(skipButtonBox.prefWidthProperty().multiply(0.3));
     }
 
     /**
      * Draws the skip button based on the player possibility to skip and player state.
      */
     private void drawSkipButton() {
-        // TODO : this should be based on the player possibility to skip
-
-        if (!smallModel.isActive()) {
+        if (!smallModel.isActive() || !smallModel.isCanSkip()) {
             skipButton.setDisable(true);
+        } else {
+            skipButton.setDisable(false);
         }
-
-        // ...
     }
-
 
     /**
      * Draws the deck based on the current era.
@@ -381,56 +538,60 @@ public class BoardController implements PropertyChangeListener {
      * Draws the top row cards and sets the effect based on player and card status.
      */
     private void drawTopRowCards() {
-//        topRowContainer.getChildren().clear();
-//        for (String cardPath : smallModel.topRow()) {
-//            CardView card = createCard(new Image(cardPath));
-//
-//            setCardEffect(card);
-//
-//            topRowContainer.getChildren().add(card);
-//        }
+        // TODO : obviously not the final implementation (we can't re-draw everything every time)
+        topRowContainer.getChildren().clear();
+        for (Card card : smallModel.getTopRow()) {
+            CardView cardView = createCard(new Image(imageFetcher.fetch(card)));
+            setCardEffect(cardView);
+            cardView.setCard(card);
+            topRowContainer.getChildren().add(cardView);
+        }
     }
 
     /**
      * Draws the top buildings cards and sets the effect based on player and card status.
      */
     private void drawTopBuildingsCards() {
-//        topBuildingsContainer.getChildren().clear();
-//        for (String cardPath : smallModel.topBuilding()) {
-//            CardView card = createCard(new Image(cardPath));
-//
-//            setCardEffect(card);
-//
-//            topBuildingsContainer.getChildren().add(card);
-//        }
+        // TODO : obviously not the final implementation (we can't re-draw everything every time)
+        topBuildingsContainer.getChildren().clear();
+        for (Card building : smallModel.getTopBuilding()) {
+            CardView cardView = createCard(
+                    new Image(imageFetcher.fetch(building))
+            );
+            setCardEffect(cardView);
+            cardView.setCard(building);
+            topBuildingsContainer.getChildren().add(cardView);
+        }
     }
 
     /**
      * Draws the bottom row cards and sets the effect based on player and card status.
      */
     private void drawBottomRowCards() {
-//        bottomRowContainer.getChildren().clear();
-//        for (String buildingPath : smallModel.bottomRow()) {
-//            CardView card = createCard(new Image(buildingPath));
-//
-//            setCardEffect(card);
-//
-//            bottomRowContainer.getChildren().add(card);
-//        }
+        // TODO : obviously not the final implementation (we can't re-draw everything every time)
+        bottomRowContainer.getChildren().clear();
+        for (Card card : smallModel.getBottomRow()) {
+            CardView cardView = createCard(new Image(imageFetcher.fetch(card)));
+            setCardEffect(cardView);
+            cardView.setCard(card);
+            bottomRowContainer.getChildren().add(cardView);
+        }
     }
 
     /**
      * Draws the bottom buildings cards and sets the effect based on player and card status.
      */
     private void drawBottomBuildingCards() {
-//        bottomBuildingsContainer.getChildren().clear();
-//        for (String buildingPath : smallModel.bottomBuilding()) {
-//            CardView card = createCard(new Image(buildingPath));
-//
-//            setCardEffect(card);
-//
-//            bottomBuildingsContainer.getChildren().add(card);
-//        }
+        // TODO : obviously not the final implementation (we can't re-draw everything every time)
+        bottomBuildingsContainer.getChildren().clear();
+        for (Card building : smallModel.getBottomBuilding()) {
+            CardView cardView = createCard(
+                    new Image(imageFetcher.fetch(building))
+            );
+            setCardEffect(cardView);
+            cardView.setCard(building);
+            bottomBuildingsContainer.getChildren().add(cardView);
+        }
     }
 
     @Override

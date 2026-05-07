@@ -13,6 +13,7 @@ import javafx.stage.Popup;
 import javafx.util.Duration;
 
 public class EffectsManager {
+
     public static void playPopupIn(Popup popup) {
         if (popup.getContent().isEmpty()) return;
         HBox content = (HBox) popup.getContent().get(0);
@@ -24,7 +25,10 @@ public class EffectsManager {
         fade.setToValue(1);
         fade.setInterpolator(Interpolator.EASE_OUT);
 
-        TranslateTransition slide = new TranslateTransition(Duration.millis(100), content);
+        TranslateTransition slide = new TranslateTransition(
+            Duration.millis(100),
+            content
+        );
         slide.setFromY(6);
         slide.setToY(0);
         slide.setInterpolator(Interpolator.EASE_OUT);
