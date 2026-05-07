@@ -5,7 +5,9 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <StackPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
-           fx:controller="it.polimi.gc06.mesos.view.gui.controllers.GameViewController">
+           fx:controller="it.polimi.gc06.mesos.view.gui.controllers.GameViewController"
+           fx:id="root"
+>
 
     <padding>
         <Insets top="10" right="10" bottom="10" left="10"/>

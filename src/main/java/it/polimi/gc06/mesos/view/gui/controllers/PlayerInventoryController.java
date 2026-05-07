@@ -185,101 +185,30 @@ public class PlayerInventoryController implements PropertyChangeListener {
         stats.maxHeightProperty().bind(playerInventoryRoot.heightProperty());
         stats.prefHeightProperty().bind(playerInventoryRoot.heightProperty());
 
-        initShamanStarsContainer();
-        initGathererQuantityContainer();
-        initHunterQuantityContainer();
-        initArtistQuantityContainer();
-        initBuildersDiscountContainer();
+
+        initContainer(shamanStars, shamanStarsImage, new Image("shaman_stars_token.png"), shamanStarsText, "");
+        initContainer(gathererQuantity, gathererQuantityImage, new Image("gatherers_token.png"), gathererQuantityText, "");
+        initContainer(hunterQuantity, hunterQuantityImage, new Image("hunters_token.png"), hunterQuantityText, "");
+        initContainer(artistQuantity, artistQuantityImage, new Image("artists_token.png"), artistQuantityText, "");
+        initContainer(buildersDiscount, buildersDiscountImage, new Image("blank_token.png"), buildersDiscountText, "");
     }
 
-    public void initShamanStarsContainer() {
-        shamanStars.prefWidthProperty().bind(stats.widthProperty().divide(5));
-        shamanStars.maxHeightProperty().bind(stats.heightProperty());
-        shamanStars.prefHeightProperty().bind(stats.heightProperty());
+    private void initContainer(VBox container, ImageView containerImageView,
+                               Image containerImage, Text containerText, String containerTextLabel) {
+        container.prefWidthProperty().bind(stats.widthProperty().divide(5));
+        container.maxHeightProperty().bind(stats.heightProperty());
+        container.prefHeightProperty().bind(stats.heightProperty());
 
-        shamanStarsImage.setImage(new Image("blank_token.png"));
-        shamanStarsImage.setPreserveRatio(true);
-        shamanStarsImage.setSmooth(true);
-        shamanStarsImage.fitHeightProperty()
+        containerImageView.setImage(containerImage);
+        containerImageView.setPreserveRatio(true);
+        containerImageView.setSmooth(true);
+        containerImageView.fitHeightProperty()
                 .bind(playerInventoryRoot.heightProperty().multiply(0.35));
 
-        shamanStarsText.setText("15");
-        shamanStarsText.setFont(mesosFont);
-        shamanStarsText.setTextAlignment(TextAlignment.CENTER);
-        shamanStarsText.wrappingWidthProperty()
-                .bind(shamanStars.widthProperty()); // was: foodTokens.widthProperty()
-    }
-
-    public void initGathererQuantityContainer() {
-        gathererQuantity.prefWidthProperty().bind(stats.widthProperty().divide(5));
-        gathererQuantity.maxHeightProperty().bind(stats.heightProperty());
-        gathererQuantity.prefHeightProperty().bind(stats.heightProperty());
-
-        gathererQuantityImage.setImage(new Image("blank_token.png"));
-        gathererQuantityImage.setPreserveRatio(true);
-        gathererQuantityImage.setSmooth(true);
-        gathererQuantityImage.fitHeightProperty()
-                .bind(playerInventoryRoot.heightProperty().multiply(0.35)); // was: no multiplier
-
-        gathererQuantityText.setText("15");
-        gathererQuantityText.setFont(mesosFont);
-        gathererQuantityText.setTextAlignment(TextAlignment.CENTER);
-        gathererQuantityText.wrappingWidthProperty()
-                .bind(gathererQuantity.widthProperty());
-    }
-
-    public void initHunterQuantityContainer() {
-        hunterQuantity.prefWidthProperty().bind(stats.widthProperty().divide(5));
-        hunterQuantity.maxHeightProperty().bind(stats.heightProperty());
-        hunterQuantity.prefHeightProperty().bind(stats.heightProperty());
-
-        hunterQuantityImage.setImage(new Image("blank_token.png"));
-        hunterQuantityImage.setPreserveRatio(true);
-        hunterQuantityImage.setSmooth(true);
-        hunterQuantityImage.fitHeightProperty()
-                .bind(playerInventoryRoot.heightProperty().multiply(0.35)); // was: no multiplier
-
-        hunterQuantityText.setText("15");
-        hunterQuantityText.setFont(mesosFont);
-        hunterQuantityText.setTextAlignment(TextAlignment.CENTER);
-        hunterQuantityText.wrappingWidthProperty()
-                .bind(hunterQuantity.widthProperty()); // was: gathererQuantity.widthProperty()
-    }
-
-    public void initArtistQuantityContainer() {
-        artistQuantity.prefWidthProperty().bind(stats.widthProperty().divide(5));
-        artistQuantity.maxHeightProperty().bind(stats.heightProperty());
-        artistQuantity.prefHeightProperty().bind(stats.heightProperty());
-
-        artistQuantityImage.setImage(new Image("blank_token.png"));
-        artistQuantityImage.setPreserveRatio(true);
-        artistQuantityImage.setSmooth(true);
-        artistQuantityImage.fitHeightProperty()
-                .bind(playerInventoryRoot.heightProperty().multiply(0.35)); // was: no multiplier
-
-        artistQuantityText.setText("15");
-        artistQuantityText.setFont(mesosFont);
-        artistQuantityText.setTextAlignment(TextAlignment.CENTER);
-        artistQuantityText.wrappingWidthProperty()
-                .bind(artistQuantity.widthProperty()); // was: gathererQuantity.widthProperty()
-    }
-
-    public void initBuildersDiscountContainer() {
-        buildersDiscount.prefWidthProperty().bind(stats.widthProperty().divide(5));
-        buildersDiscount.maxHeightProperty().bind(stats.heightProperty());
-        buildersDiscount.prefHeightProperty().bind(stats.heightProperty());
-
-        buildersDiscountImage.setImage(new Image("blank_token.png"));
-        buildersDiscountImage.setPreserveRatio(true);
-        buildersDiscountImage.setSmooth(true);
-        buildersDiscountImage.fitHeightProperty()
-                .bind(playerInventoryRoot.heightProperty().multiply(0.35)); // was: no multiplier
-
-        buildersDiscountText.setText("15");
-        buildersDiscountText.setFont(mesosFont);
-        buildersDiscountText.setTextAlignment(TextAlignment.CENTER);
-        buildersDiscountText.wrappingWidthProperty()
-                .bind(buildersDiscount.widthProperty()); // was: gathererQuantity.widthProperty()
+        containerText.setText(containerTextLabel);
+        containerText.setFont(mesosFont);
+        containerText.setTextAlignment(TextAlignment.CENTER);
+        containerText.wrappingWidthProperty().bind(container.widthProperty());
     }
 
     private CardView createCard(Image image) {
