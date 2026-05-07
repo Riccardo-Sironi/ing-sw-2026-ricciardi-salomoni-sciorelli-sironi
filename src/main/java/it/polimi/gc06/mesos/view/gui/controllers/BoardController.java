@@ -17,6 +17,7 @@ import javafx.application.Platform;
 import javafx.beans.binding.DoubleBinding;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
@@ -420,6 +421,12 @@ public class BoardController implements PropertyChangeListener {
         cardView.getCard().accept(visitor);
     }
 
+    private void applyEffectToContainerCardViews(HBox container) {
+        for (Node node : container.getChildren()) {
+            setCardEffect((CardView) node);
+        }
+    }
+
     /**
      * Init the deck image and bind its height to the deck box height with a percentage to ensure that it fits well in
      * the container.
@@ -594,6 +601,66 @@ public class BoardController implements PropertyChangeListener {
         }
     }
 
+    private void handleTopRowRefill() {
+        drawTopRowCards();
+        drawDeck();
+    }
+
+    private void handleTopBuildingsRefill() {
+        drawTopBuildingsCards();
+        drawBottomRowCards();
+    }
+
+    private void handleTopRowPick() {
+        // need to know if player can pick from top to enable/disable the cards
+        drawTopRowCards();
+        applyEffectToContainerCardViews(topBuildingsContainer);
+        drawSkipButton();
+    }
+
+    private void handleBottomRowPick() {
+        // need to know if player can pick from bottom to enable/disable the cards
+        drawBottomRowCards();
+        applyEffectToContainerCardViews(bottomBuildingsContainer);
+        drawSkipButton();
+    }
+
+    private void handleTopBuildingsPick() {
+        // need to know if player can pick from top to enable/disable the cards
+        drawTopBuildingsCards();
+        applyEffectToContainerCardViews(topRowContainer);
+        drawSkipButton();
+    }
+
+    private void handleBottomBuildingsPick() {
+        // need to know if player can pick from bottom to enable/disable the cards
+        drawBottomBuildingCards();
+        applyEffectToContainerCardViews(bottomRowContainer);
+        drawSkipButton();
+    }
+
+    private void handleTotemMoved() {
+        drawTurnOrderTile();
+        drawOfferTrack();
+    }
+
+    private void handleRoundChanged() {
+        // not sure, probably this will be triggered as well from refills
+        drawDeck();
+        drawTopRowCards();
+        drawTopBuildingsCards();
+        drawBottomRowCards();
+        drawBottomBuildingCards();
+    }
+
+    private void handleActivePlayerChanged() {
+        applyEffectToContainerCardViews(topRowContainer);
+        applyEffectToContainerCardViews(topBuildingsContainer);
+        applyEffectToContainerCardViews(bottomRowContainer);
+        applyEffectToContainerCardViews(bottomBuildingsContainer);
+        drawSkipButton();
+    }
+
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         PropertyChangeName eventName;
@@ -608,40 +675,37 @@ public class BoardController implements PropertyChangeListener {
         Platform.runLater(() -> {
             switch (eventName) {
                 case TOP_ROW_REFILL:
-                    drawTopRowCards();
-                    drawDeck();
+                    handleTopRowRefill();
                     break;
                 case TOP_BUILDINGS_REFILL:
-                    drawTopBuildingsCards();
-                    drawBottomRowCards();
+                    handleTopBuildingsRefill();
                     break;
                 case PICK_FROM_TOP_ROW:
-                    drawTopRowCards();
-                    drawSkipButton();
+                    handleTopRowPick();
                     break;
                 case PICK_FROM_BOTTOM_ROW:
-                    drawBottomRowCards();
-                    drawSkipButton();
+                    handleBottomRowPick();
                     break;
                 case PICK_FROM_TOP_BUILDINGS:
-                    drawTopBuildingsCards();
+                    handleTopBuildingsPick();
                     break;
                 case PICK_FROM_BOTTOM_BUILDINGS:
-                    drawBottomBuildingCards();
+                    handleBottomBuildingsPick();
                     break;
                 case TOTEM_MOVED:
-                    drawOfferTrack();
-                    drawTurnOrderTile();
+                    handleTotemMoved();
                     break;
                 case PHASE_CHANGED:
                     break;
                 case ERA_CHANGED:
                     break;
                 case ROUND_CHANGED:
+                    handleRoundChanged();
                     break;
                 case IS_END_GAME:
                     break;
                 case ACTIVE_PLAYER_CHANGED:
+                    handleActivePlayerChanged();
                     break;
                 default:
                     break;
