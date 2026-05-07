@@ -18,6 +18,7 @@ import javafx.application.Platform;
 import javafx.beans.binding.DoubleBinding;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
@@ -29,6 +30,9 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Popup;
+
+import javafx.css.PseudoClass;
+
 
 public class BoardController implements PropertyChangeListener {
 
@@ -86,6 +90,11 @@ public class BoardController implements PropertyChangeListener {
     @FXML
     private HBox bottomBuildingsContainer;
 
+
+    private static final PseudoClass DISABLED_STYLE = PseudoClass.getPseudoClass("skip-disabled");
+
+    private final Font mesosFont = Font.loadFont(this.getClass().getResourceAsStream("/it/polimi/gc06/mesos/fonts/KidKnowledge.otf"), 20);
+
     private static final int DEFAULT_SPACING = 5;
 
     private static final double CARD_ROWS_HEIGHT_PERCENTAGE = 0.3;
@@ -110,6 +119,7 @@ public class BoardController implements PropertyChangeListener {
 
         deckInit();
         skipButtonBoxInit();
+        toggleSkipButton(false);
 
         deckImage.setImage(new Image("tribe_card_era_I_back.png"));
 
@@ -466,17 +476,25 @@ public class BoardController implements PropertyChangeListener {
         return popup;
     }
 
+    private void toggleSkipButton(boolean canSkip) {
+        skipButton.pseudoClassStateChanged(DISABLED_STYLE, !canSkip);
+        skipButton.applyCss();
+        skipButton.setCursor(canSkip ? Cursor.HAND : Cursor.DEFAULT);
+    }
+
     /**
      * Init the skip button and bind its dimension to its container.
      */
     private void skipButtonBoxInit() {
         // drawSkipButton();
-        skipButton
-                .prefWidthProperty()
-                .bind(skipButtonBox.prefHeightProperty().multiply(0.3));
-        skipButton
-                .prefHeightProperty()
-                .bind(skipButtonBox.prefWidthProperty().multiply(0.3));
+        DoubleBinding btnWidth = skipButtonBox.prefWidthProperty().multiply(0.4);
+        DoubleBinding btnHeight = skipButtonBox.prefHeightProperty().multiply(0.15);
+
+        skipButton.prefWidthProperty().bind(btnWidth);
+        skipButton.maxWidthProperty().bind(btnWidth);      // ← ADD THIS
+        skipButton.prefHeightProperty().bind(btnHeight);
+        skipButton.maxHeightProperty().bind(btnHeight);    // ← ADD THIS
+        skipButton.setFont(mesosFont);
     }
 
     /**

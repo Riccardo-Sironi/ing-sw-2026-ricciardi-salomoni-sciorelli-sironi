@@ -1,7 +1,14 @@
+#root {
+
+}
+
 /* BOARD */
 
 #boardRoot {
     -fx-background-color: white;
+    -fx-border-width: 1px;
+    -fx-border-color: #208FA5;
+    -fx-border-radius: 10px;
 }
 
 #boardRoot .scroll-pane {
@@ -21,24 +28,14 @@
     -fx-border-color: red;
     -fx-border-width: 1px;
     -fx-text-fill: red;
-    -fx-font-size: 16px;
-    -fx-font-weight: bold;
     -fx-padding: 10px 20px;
-    -fx-background-radius: 8px;
     -fx-border-radius: 8px;
-    -fx-cursor: hand;
 }
 
-#boardRoot #skipButton:pressed {
-    -fx-background-color: #eeeeee;
-}
-
-#boardRoot #skipButton:disabled {
+#boardRoot #skipButton:skip-disabled {
     -fx-background-color: #a8a8a8;
     -fx-border-color: grey;
     -fx-text-fill: #000000;
-    -fx-opacity: 0.6;
-    -fx-cursor: default;
 }
 
 .card-image:disabled {
@@ -52,6 +49,9 @@
 
 #playerInventoryRoot {
     -fx-background-color: white;
+    -fx-border-radius: 10px;
+    -fx-border-width: 3px;
+    -fx-border-color: #208FA5;
 }
 
 #playerInventoryRoot .scroll-pane {
