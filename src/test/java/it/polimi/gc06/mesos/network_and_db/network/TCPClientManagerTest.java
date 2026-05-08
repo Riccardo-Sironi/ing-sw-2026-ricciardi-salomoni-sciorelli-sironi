@@ -2,6 +2,7 @@ package it.polimi.gc06.mesos.network_and_db.network;
 
 import it.polimi.gc06.mesos.network.server.ServerMain;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -81,9 +82,12 @@ public class TCPClientManagerTest {
         assertTrue(ServerMain.getMatchManager().hasMatchStarted(0),"Match started check");
     }
 
-    private List<String> getNames(int n){
+    @Test
+    public void testGameStart(){
         String[] names = {"Alice","Bob","Carl","David","Eva"};
-        return new ArrayList<>(Arrays.asList(names).subList(0, n));
+        startSimpleMatch(List.of(names));
     }
+
+
 
 }

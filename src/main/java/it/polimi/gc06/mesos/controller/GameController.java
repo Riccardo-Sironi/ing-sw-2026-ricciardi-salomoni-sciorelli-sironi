@@ -8,16 +8,12 @@ import it.polimi.gc06.mesos.model.cards.TribeCard;
 import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
 import it.polimi.gc06.mesos.model.gameBoard.TileSlot;
 import it.polimi.gc06.mesos.model.gameTurnManager.TurnManager;
-import it.polimi.gc06.mesos.network.leaderboard.Leaderboard;
-import it.polimi.gc06.mesos.network.leaderboard.Score;
 import it.polimi.gc06.mesos.network.socket.infos.CardPickedInfo;
 import it.polimi.gc06.mesos.network.socket.infos.TotemMovedInfo;
 import it.polimi.gc06.mesos.view.PropertyChangeName;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.sql.Timestamp;
-import java.time.Instant;
 import java.util.List;
 
 public class GameController {
@@ -63,7 +59,7 @@ public class GameController {
         turnManager.getPhase().placeTotem(turnManager, activePlayer, tile, model.getBoard());
 
         TotemMovedInfo info = new TotemMovedInfo(playerNickname, tileIndex);
-        support.firePropertyChange(PropertyChangeName.TOTEM_MOVED.name(), null, info);
+        support.firePropertyChange(PropertyChangeName.TOTEM_MOVED_OFFER.name(), null, info);
         model.getChangeHandler().getChanges().forEach(support::firePropertyChange);
     }
 

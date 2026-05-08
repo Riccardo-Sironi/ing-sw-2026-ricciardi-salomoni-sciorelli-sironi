@@ -556,7 +556,7 @@ public class BoardController implements PropertyChangeListener {
                 case PICK_FROM_BOTTOM_BUILDINGS:
                     handleBottomBuildingsPick();
                     break;
-                case TOTEM_MOVED:
+                case TOTEM_MOVED_OFFER:
                     handleTotemMoved();
                     break;
                 case PHASE_CHANGED:

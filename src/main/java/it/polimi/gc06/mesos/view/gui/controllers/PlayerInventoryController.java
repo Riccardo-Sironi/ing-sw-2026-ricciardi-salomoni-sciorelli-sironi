@@ -250,7 +250,7 @@ public class PlayerInventoryController implements PropertyChangeListener {
                     break;
                 case PICK_FROM_BOTTOM_BUILDINGS:
                     break;
-                case TOTEM_MOVED:
+                case TOTEM_MOVED_OFFER:
                     break;
                 case PHASE_CHANGED:
                     break;
