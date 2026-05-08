@@ -143,7 +143,7 @@ public class BoardController implements PropertyChangeListener {
         }
 
         TurnOrderTileView turnOrderTile = createTurnOrderTile(
-                new Image("turn_order_tile_5p.png"),
+                new Image("turn_order_tile_5_players.png"),
                 new ArrayList<>(
                         Arrays.asList(
                                 new TotemPieceView(Totem.YELLOW, "Player 1"),
@@ -245,11 +245,6 @@ public class BoardController implements PropertyChangeListener {
         bottomBuildings.maxHeightProperty().bind(bottomContainer.heightProperty());
     }
 
-    private CardView createCard(Image image, HBox container) {
-        CardView card = new CardView(image);
-        return card;
-    }
-
     private TurnOrderTileView createTurnOrderTile(Image image) {
         int nPlayers;
         if (smallModel == null) {
@@ -326,7 +321,7 @@ public class BoardController implements PropertyChangeListener {
     private void drawOfferTrack() {
         for (TileSlot tile : smallModel.getOfferTrack()) {
             // TODO : give the player a Totem or retrive it somewhere
-            tilesContainer.getChildren().add(createOfferTile(new Image(imageFetcher.fetch(tile)), new TotemPieceView(Totem.TURQUOISE, tile.getPlayer().getNickname())));
+            tilesContainer.getChildren().add(createOfferTile(new Image(imageFetcher.fetch(tile)), new TotemPieceView(Totem.NONE, tile.getPlayer().getNickname())));
         }
     }
 

@@ -32,23 +32,21 @@ public class TurnOrderTileView extends TileView {
                 new Point2D(0.5, 0.59),
                 new Point2D(0.5, 0.767)
         ));
-
-        //TODO: calculate the correct percentage to put the totem in the exact center of the tile
+        
         SLOTS.put(4, List.of(
-                new Point2D(0, 0),
-                new Point2D(0, 0),
-                new Point2D(0, 0),
-                new Point2D(0, 0),
-                new Point2D(0, 0)
+                new Point2D(0.5, 0.125),
+                new Point2D(0.5, 0.3),
+                new Point2D(0.5, 0.475),
+                new Point2D(0.5, 0.65)
         ));
         SLOTS.put(3, List.of(
-                new Point2D(0, 0),
-                new Point2D(0, 0),
-                new Point2D(0, 0)
+                new Point2D(0.5, 0.175),
+                new Point2D(0.5, 0.35),
+                new Point2D(0.5, 0.52)
         ));
         SLOTS.put(2, List.of(
-                new Point2D(0, 0),
-                new Point2D(0, 0)
+                new Point2D(0.5, 0.22),
+                new Point2D(0.5, 0.39)
         ));
     }
 
