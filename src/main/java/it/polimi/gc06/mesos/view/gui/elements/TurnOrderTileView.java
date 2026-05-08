@@ -20,36 +20,7 @@ import java.util.Map;
 public class TurnOrderTileView extends TileView {
     private ArrayList<TotemPieceView> totemPieces;
     private final int numPlayers;
-
-    private static final Map<Integer, List<Point2D>> SLOTS = new HashMap<>();
-
-
-    static {
-        SLOTS.put(5, List.of(
-                new Point2D(0.5, 0.074),
-                new Point2D(0.5, 0.25),
-                new Point2D(0.5, 0.42),
-                new Point2D(0.5, 0.59),
-                new Point2D(0.5, 0.767)
-        ));
-        
-        SLOTS.put(4, List.of(
-                new Point2D(0.5, 0.125),
-                new Point2D(0.5, 0.3),
-                new Point2D(0.5, 0.475),
-                new Point2D(0.5, 0.65)
-        ));
-        SLOTS.put(3, List.of(
-                new Point2D(0.5, 0.175),
-                new Point2D(0.5, 0.35),
-                new Point2D(0.5, 0.52)
-        ));
-        SLOTS.put(2, List.of(
-                new Point2D(0.5, 0.22),
-                new Point2D(0.5, 0.39)
-        ));
-    }
-
+    
     public TurnOrderTileView(Image image, int numPlayers) {
         super(image);
         this.numPlayers = numPlayers;
@@ -94,8 +65,10 @@ public class TurnOrderTileView extends TileView {
         wrapper.prefWidthProperty().bind(trueW);
         wrapper.prefHeightProperty().bind(trueH);
 
-        if (!totemPieces.isEmpty() && SLOTS.containsKey(numPlayers)) {
-            List<Point2D> points = SLOTS.get(numPlayers);
+        TurnOrderTileInfo slots = TurnOrderTileInfo.getInfo(numPlayers);
+
+        if (!totemPieces.isEmpty() && slots != null) {
+            List<Point2D> points = slots.getPoints();
 
             for (int i = 0; i < totemPieces.size(); i++) {
                 if (i >= points.size()) break;

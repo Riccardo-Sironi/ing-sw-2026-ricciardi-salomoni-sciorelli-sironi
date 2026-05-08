@@ -245,15 +245,14 @@ public class BoardController implements PropertyChangeListener {
         bottomBuildings.maxHeightProperty().bind(bottomContainer.heightProperty());
     }
 
-    private TurnOrderTileView createTurnOrderTile(Image image) {
-        int nPlayers;
+    private TurnOrderTileView createTurnOrderTile(Image image, int numPlayers) {
+        TurnOrderTileView turnOrderTile;
         if (smallModel == null) {
-            nPlayers = 5;
+            turnOrderTile = new TurnOrderTileView(image, numPlayers);
         } else {
-            nPlayers = smallModel.getOpponents().size() + 1;
+            int nPlayers = smallModel.getOpponents().size() + 1;
+            turnOrderTile = new TurnOrderTileView(image, nPlayers);
         }
-
-        TurnOrderTileView turnOrderTile = new TurnOrderTileView(image, nPlayers);
 
         int totalTilesOnScreen = 8;
         DoubleBinding tileSize = tiles.widthProperty().divide(totalTilesOnScreen).multiply(0.95);
@@ -270,7 +269,7 @@ public class BoardController implements PropertyChangeListener {
     }
 
     private TurnOrderTileView createTurnOrderTile(Image image, ArrayList<TotemPieceView> totems) {
-        TurnOrderTileView turnOrderTile = createTurnOrderTile(image);
+        TurnOrderTileView turnOrderTile = createTurnOrderTile(image, totems.size());
 
         ArrayList<TotemPieceView> totemPieces = new ArrayList<>(totems);
 
