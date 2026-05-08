@@ -16,22 +16,20 @@ public class OffertTileView extends TileView {
 
     private Point2D centerSlot = new Point2D(0.50, 0.50);
 
-    private Totem totem;
-    private String playerName;
-    private Popup playerNamePopup;
     private TotemPieceView currentTotemView;
+    private Popup playerNamePopup;
 
     private final Font mesosFont = Font.loadFont(this.getClass().getResourceAsStream("/it/polimi/gc06/mesos/fonts/KidKnowledge.otf"), 20);
 
     public OffertTileView(Image image) {
         super(image);
-        this.totem = Totem.NONE;
         this.imageView.setPreserveRatio(true);
     }
 
     private DoubleBinding getTrueWidthBinding() {
         return Bindings.createDoubleBinding(() -> {
-            if (imageView.getImage() == null || imageView.getFitWidth() <= 0 || imageView.getFitHeight() <= 0) return 0.0;
+            if (imageView.getImage() == null || imageView.getFitWidth() <= 0 || imageView.getFitHeight() <= 0)
+                return 0.0;
             double scale = Math.min(imageView.getFitWidth() / imageView.getImage().getWidth(), imageView.getFitHeight() / imageView.getImage().getHeight());
             return imageView.getImage().getWidth() * scale;
         }, imageView.fitWidthProperty(), imageView.fitHeightProperty(), imageView.imageProperty());
@@ -39,7 +37,8 @@ public class OffertTileView extends TileView {
 
     private DoubleBinding getTrueHeightBinding() {
         return Bindings.createDoubleBinding(() -> {
-            if (imageView.getImage() == null || imageView.getFitWidth() <= 0 || imageView.getFitHeight() <= 0) return 0.0;
+            if (imageView.getImage() == null || imageView.getFitWidth() <= 0 || imageView.getFitHeight() <= 0)
+                return 0.0;
             double scale = Math.min(imageView.getFitWidth() / imageView.getImage().getWidth(), imageView.getFitHeight() / imageView.getImage().getHeight());
             return imageView.getImage().getHeight() * scale;
         }, imageView.fitWidthProperty(), imageView.fitHeightProperty(), imageView.imageProperty());
@@ -61,11 +60,8 @@ public class OffertTileView extends TileView {
         }
     }
 
-    public void setTotem(Totem totemType) {
-        this.totem = totemType;
-
+    public void setTotem(TotemPieceView totemPieceView) {
         this.getChildren().removeIf(node -> node instanceof Pane);
-        if (totemType == Totem.NONE) return;
 
         Pane layer = new Pane();
         DoubleBinding trueW = getTrueWidthBinding();
@@ -76,7 +72,7 @@ public class OffertTileView extends TileView {
         layer.prefWidthProperty().bind(trueW);
         layer.prefHeightProperty().bind(trueH);
 
-        this.currentTotemView = new TotemPieceView(totemType);
+        this.currentTotemView = totemPieceView;
 
         this.currentTotemView.fitHeightProperty().bind(trueH.multiply(0.25));
 
@@ -89,23 +85,23 @@ public class OffertTileView extends TileView {
         layer.getChildren().add(this.currentTotemView);
         this.getChildren().add(layer);
 
-        if (this.playerName != null) {
+        if (this.currentTotemView.getPlayerName() != null) {
             setupPlayerNamePopup();
         }
     }
 
-    public void setPlayerName(String playerName) {
-        this.playerName = playerName;
-        if (this.playerNamePopup != null) {
-            this.playerNamePopup.hide();
-        }
-        setupPlayerNamePopup();
-    }
+//    public void setPlayerName(String playerName) {
+//        this.playerName = playerName;
+//        if (this.playerNamePopup != null) {
+//            this.playerNamePopup.hide();
+//        }
+//        setupPlayerNamePopup();
+//    }
 
     private void setupPlayerNamePopup() {
         if (this.currentTotemView == null) return;
 
-        this.playerNamePopup = createPopup();
+        this.playerNamePopup = EffectsManager.createTotemPopup(currentTotemView.getTotemType(), currentTotemView.getPlayerName());
 
         this.currentTotemView.setOnMouseEntered((event) -> {
             playerNamePopup.show(this.currentTotemView, event.getScreenX(), event.getScreenY());
@@ -122,45 +118,41 @@ public class OffertTileView extends TileView {
         });
     }
 
-    private Popup createPopup() {
-        if (totem == Totem.NONE || playerName == null) {
-            return new Popup();
-        }
+//    private Popup createPopup() {
+//        if (totem == Totem.NONE || playerName == null) {
+//            return new Popup();
+//        }
+//
+//        Popup popup = new Popup();
+//        popup.setAutoFix(true);
+//
+//        HBox popupContent = new HBox();
+//        popupContent.setStyle(
+//                "-fx-background-color: " + totem.getTotemColorHex() + ";" +
+//                        "-fx-background-radius: 8px;" +
+//                        "-fx-border-color: rgba(255, 255, 255, 0.6);" +
+//                        "-fx-border-width: 1px;" +
+//                        "-fx-border-radius: 8px;" +
+//                        "-fx-padding: 8px 15px;"
+//        );
+//        popupContent.setAlignment(Pos.CENTER);
+//        popupContent.setMouseTransparent(true);
+//
+//        Text playerNameText = new Text(playerName);
+//        playerNameText.setFill(Color.WHITE);
+//        if (mesosFont != null) {
+//            playerNameText.setFont(mesosFont);
+//        }
+//        playerNameText.setMouseTransparent(true);
+//
+//        popupContent.setOpacity(0);
+//        popupContent.getChildren().add(playerNameText);
+//        popup.getContent().add(popupContent);
+//
+//        return popup;
+//    }
 
-        Popup popup = new Popup();
-        popup.setAutoFix(true);
-
-        HBox popupContent = new HBox();
-        popupContent.setStyle(
-                "-fx-background-color: " + totem.getTotemColorHex() + ";" +
-                        "-fx-background-radius: 8px;" +
-                        "-fx-border-color: rgba(255, 255, 255, 0.6);" +
-                        "-fx-border-width: 1px;" +
-                        "-fx-border-radius: 8px;" +
-                        "-fx-padding: 8px 15px;"
-        );
-        popupContent.setAlignment(Pos.CENTER);
-        popupContent.setMouseTransparent(true);
-
-        Text playerNameText = new Text(playerName);
-        playerNameText.setFill(Color.WHITE);
-        if (mesosFont != null) {
-            playerNameText.setFont(mesosFont);
-        }
-        playerNameText.setMouseTransparent(true);
-
-        popupContent.setOpacity(0);
-        popupContent.getChildren().add(playerNameText);
-        popup.getContent().add(popupContent);
-
-        return popup;
-    }
-
-    public Totem getTotem() {
-        return this.totem;
-    }
-
-    public String getPlayerName() {
-        return this.playerName;
+    public TotemPieceView getTotem() {
+        return this.currentTotemView;
     }
 }

@@ -146,48 +146,48 @@ public class BoardController implements PropertyChangeListener {
                 new Image("turn_order_tile_5p.png"),
                 new ArrayList<>(
                         Arrays.asList(
-                                Totem.YELLOW,
-                                Totem.TURQUOISE,
-                                Totem.PURPLE,
-                                Totem.WHITE,
-                                Totem.ORANGE
+                                new TotemPieceView(Totem.YELLOW, "Player 1"),
+                                new TotemPieceView(Totem.TURQUOISE, "Player 2"),
+                                new TotemPieceView(Totem.PURPLE, "Player 3"),
+                                new TotemPieceView(Totem.WHITE, "Player 4"),
+                                new TotemPieceView(Totem.ORANGE, "Player 5")
                         )
                 )
         );
         tilesContainer.getChildren().add(turnOrderTile);
 
         //OK
-        OffertTileView tileA = createOfferTile(new Image("offer_tile_A.png"), Totem.YELLOW, "Player 1");
+        OffertTileView tileA = createOfferTile(new Image("offer_tile_A.png"), new TotemPieceView(Totem.YELLOW, "Player 1"));
         tileA.setCenterPercentage(0.53, 0.2);
         tilesContainer.getChildren().add(tileA);
 
 
-        OffertTileView tileB = createOfferTile(new Image("offer_tile_B.png"), Totem.YELLOW, "Mock Player");
+        OffertTileView tileB = createOfferTile(new Image("offer_tile_B.png"));
         tileB.setCenterPercentage(0.497, 0.2);
         tilesContainer.getChildren().add(tileB);
 
         //OK
-        OffertTileView tileC = createOfferTile(new Image("offer_tile_C.png"), Totem.ORANGE, "Player 2");
+        OffertTileView tileC = createOfferTile(new Image("offer_tile_C.png"), new TotemPieceView(Totem.ORANGE, "Player 2"));
         tileC.setCenterPercentage(0.465, 0.2);
         tilesContainer.getChildren().add(tileC);
 
         //OK
-        OffertTileView tileD = createOfferTile(new Image("offer_tile_D.png"), Totem.TURQUOISE, "Player 3");
+        OffertTileView tileD = createOfferTile(new Image("offer_tile_D.png"), new TotemPieceView(Totem.TURQUOISE, "Player 3"));
         tileD.setCenterPercentage(0.5, 0.2);
         tilesContainer.getChildren().add(tileD);
 
         //OK
-        OffertTileView tileE = createOfferTile(new Image("offer_tile_E.png"), Totem.PURPLE, "Player 4");
+        OffertTileView tileE = createOfferTile(new Image("offer_tile_E.png"), new TotemPieceView(Totem.PURPLE, "Player 4"));
         tileE.setCenterPercentage(0.527, 0.2);
         tilesContainer.getChildren().add(tileE);
 
         //OK
-        OffertTileView tileF = createOfferTile(new Image("offer_tile_F.png"), Totem.YELLOW, "Mock Player");
+        OffertTileView tileF = createOfferTile(new Image("offer_tile_F.png"));
         tileF.setCenterPercentage(0.53, 0.2);
         tilesContainer.getChildren().add(tileF);
 
         //OK
-        OffertTileView tileG = createOfferTile(new Image("offer_tile_G.png"), Totem.WHITE, "Player 5");
+        OffertTileView tileG = createOfferTile(new Image("offer_tile_G.png"), new TotemPieceView(Totem.WHITE, "Player 5"));
         tileG.setCenterPercentage(0.48, 0.2);
         tilesContainer.getChildren().add(tileG);
     }
@@ -274,13 +274,10 @@ public class BoardController implements PropertyChangeListener {
         return turnOrderTile;
     }
 
-    private TurnOrderTileView createTurnOrderTile(Image image, ArrayList<Totem> totems) {
+    private TurnOrderTileView createTurnOrderTile(Image image, ArrayList<TotemPieceView> totems) {
         TurnOrderTileView turnOrderTile = createTurnOrderTile(image);
 
-        ArrayList<TotemPieceView> totemPieces = new ArrayList<>();
-        for (Totem totem : totems) {
-            totemPieces.add(new TotemPieceView(totem));
-        }
+        ArrayList<TotemPieceView> totemPieces = new ArrayList<>(totems);
 
         turnOrderTile.setTotemPieces(totemPieces);
         return turnOrderTile;
@@ -303,15 +300,9 @@ public class BoardController implements PropertyChangeListener {
         return tile;
     }
 
-    private OffertTileView createOfferTile(Image image, Totem totem) {
+    private OffertTileView createOfferTile(Image image, TotemPieceView totemPieceView) {
         OffertTileView tile = createOfferTile(image);
-        tile.setTotem(totem);
-        return tile;
-    }
-
-    private OffertTileView createOfferTile(Image image, Totem totem, String playerName) {
-        OffertTileView tile = createOfferTile(image, totem);
-        tile.setPlayerName(playerName);
+        tile.setTotem(totemPieceView);
         return tile;
     }
 
@@ -335,7 +326,7 @@ public class BoardController implements PropertyChangeListener {
     private void drawOfferTrack() {
         for (TileSlot tile : smallModel.getOfferTrack()) {
             // TODO : give the player a Totem or retrive it somewhere
-            tilesContainer.getChildren().add(createOfferTile(new Image(imageFetcher.fetch(tile)), Totem.TURQUOISE, tile.getPlayer().getNickname()));
+            tilesContainer.getChildren().add(createOfferTile(new Image(imageFetcher.fetch(tile)), new TotemPieceView(Totem.TURQUOISE, tile.getPlayer().getNickname())));
         }
     }
 

@@ -5,8 +5,13 @@ import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 
 public class TotemPieceView extends ImageView {
-    public TotemPieceView(Totem totem) {
+    private Totem totemType;
+    private String playerName;
+
+    public TotemPieceView(Totem totem, String playerName) {
         super(totem.getTotemStanding());
+        this.totemType = totem;
+        this.playerName = playerName;
         this.setPreserveRatio(true);
         this.setSmooth(true);
 
@@ -16,5 +21,21 @@ public class TotemPieceView extends ImageView {
         shadow.setOffsetY(3);
         shadow.setColor(Color.color(0, 0, 0, 0.5));
         this.setEffect(shadow);
+    }
+
+    public void setTotemType(Totem totemType) {
+        this.totemType = totemType;
+    }
+
+    public void setPlayerName(String playerName) {
+        this.playerName = playerName;
+    }
+
+    public Totem getTotemType() {
+        return totemType;
+    }
+
+    public String getPlayerName() {
+        return playerName;
     }
 }

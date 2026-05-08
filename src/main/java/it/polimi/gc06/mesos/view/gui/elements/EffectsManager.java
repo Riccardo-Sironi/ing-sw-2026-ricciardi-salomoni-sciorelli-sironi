@@ -1,18 +1,29 @@
 package it.polimi.gc06.mesos.view.gui.elements;
 
+import it.polimi.gc06.mesos.view.gui.controllers.GameViewController;
+import it.polimi.gc06.mesos.view.gui.controllers.PlayerInventoryController;
 import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
 import javafx.animation.ParallelTransition;
 import javafx.animation.TranslateTransition;
+import javafx.geometry.Pos;
 import javafx.scene.effect.BlurType;
 import javafx.scene.effect.ColorAdjust;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.stage.Popup;
 import javafx.util.Duration;
 
 public class EffectsManager {
+
+    private static final Font mesosFont = Font.loadFont(
+            GameViewController.class.getResourceAsStream(
+                    "/it/polimi/gc06/mesos/fonts/KidKnowledge.otf"
+            ), 20
+    );
 
     public static void playPopupIn(Popup popup) {
         if (popup.getContent().isEmpty()) return;
@@ -80,5 +91,35 @@ public class EffectsManager {
         dropShadow.setColor(Color.web("#348ceb", 0.4));
         card.setEffect(dropShadow);
         card.setStyle("-fx-cursor: hand");
+    }
+
+    public static Popup createTotemPopup(Totem totemType, String playerName) {
+        Popup popup = new Popup();
+        popup.setAutoFix(true);
+
+        HBox popupContent = new HBox();
+        popupContent.setStyle(
+                "-fx-background-color: " + totemType.getTotemColorHex() + ";" +
+                        "-fx-background-radius: 8px;" +
+                        "-fx-border-color: rgba(255, 255, 255, 0.6);" +
+                        "-fx-border-width: 1px;" +
+                        "-fx-border-radius: 8px;" +
+                        "-fx-padding: 8px 15px;"
+        );
+        popupContent.setAlignment(Pos.CENTER);
+        popupContent.setMouseTransparent(true);
+
+        Text playerNameText = new Text(playerName);
+        playerNameText.setFill(Color.WHITE);
+        if (mesosFont != null) {
+            playerNameText.setFont(mesosFont);
+        }
+        playerNameText.setMouseTransparent(true);
+
+        popupContent.setOpacity(0);
+        popupContent.getChildren().add(playerNameText);
+        popup.getContent().add(popupContent);
+
+        return popup;
     }
 }
