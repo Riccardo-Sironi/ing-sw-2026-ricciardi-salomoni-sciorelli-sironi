@@ -1,7 +1,10 @@
 package it.polimi.gc06.mesos.view.tui;
 
+import it.polimi.gc06.mesos.model.Color;
 import it.polimi.gc06.mesos.model.Era;
+import it.polimi.gc06.mesos.model.Player;
 import it.polimi.gc06.mesos.model.cards.Card;
+import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingsRegistry;
 import it.polimi.gc06.mesos.model.cards.characters.*;
 import it.polimi.gc06.mesos.model.cards.events.HuntEvent;
 import it.polimi.gc06.mesos.model.cards.events.PaintingsEvent;
@@ -10,6 +13,7 @@ import it.polimi.gc06.mesos.model.cards.events.SustenanceEvent;
 import it.polimi.gc06.mesos.model.gameBoard.ChooseCardTileEffect;
 import it.polimi.gc06.mesos.model.gameBoard.FoodTileEffect;
 import it.polimi.gc06.mesos.model.gameBoard.TileSlot;
+import it.polimi.gc06.mesos.view.smallModel.PlayerView;
 import org.jline.reader.*;
 import org.jline.reader.impl.completer.AggregateCompleter;
 import org.jline.reader.impl.completer.ArgumentCompleter;
@@ -61,14 +65,20 @@ public class TuiView {
             topCards.add(new RitualEvent(Era.ERA_II, 2, 1));
             topCards.add(new PaintingsEvent(Era.ERA_I, 3, 4, 2));
 
+
+            ModifierBuildingsRegistry mbr = new ModifierBuildingsRegistry();
+
+            Player player1 = new Player("pippo", Color.BLUE, mbr);
+            Player player2 = new Player("player2", Color.RED, mbr);
+
             List<TileSlot> offerTrack = new ArrayList<>();
             TileSlot firstSlot = new TileSlot();
             firstSlot.setTileEffect(new FoodTileEffect(3));
-            //  firstSlot.setPlayer(new Player("Player1", Color.RED, new ModifierBuildingsRegistry()));
+            firstSlot.setPlayer(player2);
 
             TileSlot secondSlot = new TileSlot();
             secondSlot.setTileEffect(new ChooseCardTileEffect(2, 1));
-            // firstSlot.setPlayer(new Player("Player1", Color.PURPLE, new ModifierBuildingsRegistry()));
+            secondSlot.setPlayer(player1);
 
             offerTrack.add(firstSlot);
             offerTrack.add(secondSlot);
@@ -82,6 +92,15 @@ public class TuiView {
             bottomCards.add(new SustenanceEvent(Era.ERA_I, 3));
 
             String statusMessage = "";
+
+            List<PlayerView> players = new ArrayList<>();
+
+            PlayerView playerview1 = new PlayerView("pippo", Color.BLUE);
+            PlayerView playerview2 = new PlayerView("player2", Color.RED);
+
+            players.add(playerview1);
+            players.add(playerview2);
+
 
             String[] titleAscii = {
                     " ██████   ██████ ██████████  █████████     ███████     █████████ ",
@@ -149,6 +168,7 @@ public class TuiView {
                     tuiBoardRenderer.printCardRow(topCards);
                     tuiBoardRenderer.printOfferTrack(offerTrack);
                     tuiBoardRenderer.printCardRow(bottomCards);
+                    tuiBoardRenderer.printPlayerInfo(players);
 
                     if (!statusMessage.isEmpty()) {
                         terminal.writer().println("\nSystem: " + statusMessage);
@@ -202,7 +222,7 @@ public class TuiView {
                                         statusMessage = "Picking card " + cardId + " from " + rowType + " row";
                                         break;
                                     default:
-                                        statusMessage = "Invalid row type: " + tokens[1] + ". Use 'top' or 'bottom'.";
+                                        statusMessage = Style.RED + "Invalid row type: " + tokens[1] + ". Use 'top' or 'bottom'." + Style.RESET;
                                 }
                             }
                             break;
@@ -213,11 +233,12 @@ public class TuiView {
                             statusMessage = "Available commands: /place_totem, /pick_card, /end_turn, quit";
                             break;
                         default:
-                            statusMessage = "Unknown command: " + command + ". Type /help for a list of commands.";
+                            statusMessage = Style.RED + "Unknown command: " + command + ". Type /help for a list of commands." + Style.RESET;
                     }
                     // Handle Ctrl + C and Ctrl + D shutdown
                 } catch (UserInterruptException | EndOfFileException e) {
                     terminal.writer().println("Quitting...");
+                    terminal.writer().println("Bye bye!");
                     System.exit(0);
                     // Handle unexpected error
                 } catch (Exception e) {

@@ -8,7 +8,7 @@ import it.polimi.gc06.mesos.model.cards.events.PaintingsEvent;
 import it.polimi.gc06.mesos.model.cards.events.RitualEvent;
 import it.polimi.gc06.mesos.model.cards.events.SustenanceEvent;
 
-public class TuiCardRendererVisitor extends CardVisitor {
+public class TuiCardRendererVisitor extends CardVisitor implements TuiRenderer<Card> {
 
     private String eraStr = "";
     private String topRight = "";
@@ -16,20 +16,7 @@ public class TuiCardRendererVisitor extends CardVisitor {
     private String bottomRight = "";
     private String center = "";
 
-    // Helper method to center text in a fixed width
-    private String centerText(String text, int width) {
-        // If no text was input, set it to an empty string
-        if (text == null) text = "";
-        // if the text is larger than the card width, clamp it to the expected width
-        if (text.length() >= width) return text.substring(0, width);
-
-        // Calculate the padding from the left, and padding from the right
-        int padLeft = (width - text.length()) / 2;
-        int padRight = width - text.length() - padLeft;
-        // Return the centered text
-        return " ".repeat(padLeft) + text + " ".repeat(padRight);
-    }
-
+    @Override
     public String[] render(Card card) {
 
         // A card is composed of seven strings (rows)
@@ -101,7 +88,7 @@ public class TuiCardRendererVisitor extends CardVisitor {
         eraStr = card.getEra().name().replace("ERA_", "");
         center = "[SUST]";
         bottomLeft = "-" + card.getPrestigeLoss();
-        bottomRight = "*\uD83C\uDF08";
+        bottomRight = "*\uD83D\uDC64";
     }
 
     public void visit(HuntEvent card) {
@@ -141,5 +128,3 @@ public class TuiCardRendererVisitor extends CardVisitor {
         };
     }
 }
-
-
