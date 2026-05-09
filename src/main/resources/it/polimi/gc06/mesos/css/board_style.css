@@ -1,60 +1,37 @@
-#root {
-
-}
-
-/* BOARD */
-
 #boardRoot {
-    -fx-background-color: white;
-    -fx-border-width: 1px;
-    -fx-border-color: #208FA5;
-    -fx-border-radius: 10px;
+    -fx-background-color: #1e1e1e; /* Sfondo scuro per contrasto */
+    -fx-padding: 0px;
 }
 
-#boardRoot .scroll-pane {
-    -fx-focus-color: transparent;
-    -fx-faint-focus-color: transparent;
+.scroll-pane {
     -fx-background-color: transparent;
     -fx-background-insets: 0;
     -fx-padding: 0;
 }
-
-#boardRoot .scroll-pane .viewport {
+.scroll-pane .viewport {
     -fx-background-color: transparent;
 }
 
-#boardRoot #skipButton {
+/* ========================================================= */
+/* COLORI DI DEBUG PER LE PROPORZIONI */
+/* ========================================================= */
+#topBar { -fx-background-color: rgba(255, 0, 0, 0.3); }         /* 1.0/10 - Rosso */
+#topRowBox { -fx-background-color: rgba(255, 165, 0, 0.3); }      /* 2.5/10 - Arancione */
+#centerRowBox { -fx-background-color: rgba(0, 255, 0, 0.3); }     /* 2.5/10 - Verde */
+#bottomRowBox { -fx-background-color: rgba(0, 0, 255, 0.3); }     /* 2.5/10 - Blu */
+#inventoryBox { -fx-background-color: rgba(128, 0, 128, 0.3); }   /* 1.5/10 - Viola */
+
+#topCharactersScroll { -fx-border-color: rgba(255, 165, 0, 0.8); -fx-border-width: 2px; }
+#buildingsScroll { -fx-border-color: rgba(200, 100, 0, 0.8); -fx-border-width: 2px; }
+#bottomCharactersScroll { -fx-border-color: rgba(0, 0, 255, 0.8); -fx-border-width: 2px; }
+
+#skipButton {
     -fx-background-color: white;
-    -fx-border-color: red;
-    -fx-border-width: 1px;
-    -fx-text-fill: red;
+    -fx-border-color: #D3523B;
+    -fx-border-width: 2px;
+    -fx-text-fill: #D3523B;
     -fx-padding: 10px 20px;
-    -fx-border-radius: 8px;
-}
-
-#boardRoot #skipButton:skip-disabled {
-    -fx-background-color: #a8a8a8;
-    -fx-border-color: grey;
-    -fx-text-fill: #000000;
-}
-
-/* PLAYER */
-
-#playerInventoryRoot {
-    -fx-background-color: white;
-    -fx-border-radius: 10px;
-    -fx-border-width: 3px;
-    -fx-border-color: #208FA5;
-}
-
-#playerInventoryRoot .scroll-pane {
-    -fx-focus-color: transparent;
-    -fx-faint-focus-color: transparent;
-    -fx-background-color: transparent;
-    -fx-background-insets: 0;
-    -fx-padding: 0;
-}
-
-#playerInventoryRoot .scroll-pane .viewport {
-    -fx-background-color: transparent;
+    -fx-border-radius: 12px;
+    -fx-background-radius: 12px;
+    -fx-font-weight: bold;
 }
