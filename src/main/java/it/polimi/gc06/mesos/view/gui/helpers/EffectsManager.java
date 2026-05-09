@@ -1,7 +1,7 @@
-package it.polimi.gc06.mesos.view.gui.elements;
+package it.polimi.gc06.mesos.view.gui.helpers;
 
 import it.polimi.gc06.mesos.view.gui.controllers.GameViewController;
-import it.polimi.gc06.mesos.view.gui.controllers.PlayerInventoryController;
+import it.polimi.gc06.mesos.view.gui.elements.CardView;
 import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
 import javafx.animation.ParallelTransition;

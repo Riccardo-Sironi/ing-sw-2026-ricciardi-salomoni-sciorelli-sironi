@@ -1,26 +1,21 @@
 package it.polimi.gc06.mesos.view.gui.elements;
 
+import it.polimi.gc06.mesos.view.gui.helpers.EffectsManager;
+import it.polimi.gc06.mesos.view.gui.helpers.TurnOrderTileInfo;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
 import javafx.geometry.Point2D;
-import javafx.geometry.Pos;
 import javafx.scene.image.Image;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 import javafx.stage.Popup;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class TurnOrderTileView extends TileView {
     private ArrayList<TotemPieceView> totemPieces;
     private final int numPlayers;
-    
+
     public TurnOrderTileView(Image image, int numPlayers) {
         super(image);
         this.numPlayers = numPlayers;

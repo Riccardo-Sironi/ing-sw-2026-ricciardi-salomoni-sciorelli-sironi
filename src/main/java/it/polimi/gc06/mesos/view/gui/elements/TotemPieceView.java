@@ -1,5 +1,6 @@
 package it.polimi.gc06.mesos.view.gui.elements;
 
+import it.polimi.gc06.mesos.view.gui.helpers.Totem;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;

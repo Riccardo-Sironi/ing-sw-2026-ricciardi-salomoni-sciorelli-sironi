@@ -1,4 +1,4 @@
-package it.polimi.gc06.mesos.view.gui.elements;
+package it.polimi.gc06.mesos.view.gui.helpers;
 
 import javafx.geometry.Point2D;
 

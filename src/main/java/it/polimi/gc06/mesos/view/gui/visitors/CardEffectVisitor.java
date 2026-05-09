@@ -7,7 +7,7 @@ import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
 import it.polimi.gc06.mesos.model.cards.characters.CharacterCard;
 import it.polimi.gc06.mesos.model.cards.events.EventCard;
 import it.polimi.gc06.mesos.view.gui.elements.CardView;
-import it.polimi.gc06.mesos.view.gui.elements.EffectsManager;
+import it.polimi.gc06.mesos.view.gui.helpers.EffectsManager;
 
 public class CardEffectVisitor extends CardVisitor {
 
