@@ -37,34 +37,57 @@ import javafx.css.PseudoClass;
 
 public class BoardController implements PropertyChangeListener {
 
-    @FXML private HBox mainRoot;
-    @FXML private VBox leftZone;
-    @FXML private VBox opponentsSidebar;
+    @FXML
+    private HBox mainRoot;
+    @FXML
+    private VBox leftZone;
+    @FXML
+    private VBox opponentsSidebar;
 
-    @FXML private VBox boardRoot;
-    @FXML private HBox inventoryBox;
+    @FXML
+    private VBox boardRoot;
+    @FXML
+    private HBox inventoryBox;
 
-    @FXML private HBox topBar;
+    @FXML
+    private HBox topBar;
 
-    @FXML private HBox topRowBox;
-    @FXML private ScrollPane topCharactersScroll;
-    @FXML private HBox topCharactersContainer;
-    @FXML private ScrollPane buildingsScroll;
-    @FXML private HBox buildingsContainer;
+    @FXML
+    private HBox topRowBox;
+    @FXML
+    private ScrollPane topCharactersScroll;
+    @FXML
+    private HBox topCharactersContainer;
+    @FXML
+    private ScrollPane buildingsScroll;
+    @FXML
+    private HBox buildingsContainer;
 
-    @FXML private HBox centerRowBox;
-    @FXML private HBox deckContainer;
-    @FXML public ImageView deckImage;
-    @FXML private HBox turnOrderContainer;
-    @FXML private HBox offerTrackContainer;
-    @FXML private HBox skipButtonContainer;
-    @FXML public Button skipButton;
+    @FXML
+    private HBox centerRowBox;
+    @FXML
+    private HBox deckContainer;
+    @FXML
+    public ImageView deckImage;
+    @FXML
+    private HBox turnOrderContainer;
+    @FXML
+    private HBox offerTrackContainer;
+    @FXML
+    private HBox skipButtonContainer;
+    @FXML
+    public Button skipButton;
 
-    @FXML private HBox bottomRowBox;
-    @FXML private ScrollPane bottomCharactersScroll;
-    @FXML private HBox bottomCharactersContainer;
-    @FXML private ScrollPane bottomBuildingsScroll;
-    @FXML private HBox bottomBuildingsContainer;
+    @FXML
+    private HBox bottomRowBox;
+    @FXML
+    private ScrollPane bottomCharactersScroll;
+    @FXML
+    private HBox bottomCharactersContainer;
+    @FXML
+    private ScrollPane bottomBuildingsScroll;
+    @FXML
+    private HBox bottomBuildingsContainer;
 
     private static final PseudoClass DISABLED_STYLE = PseudoClass.getPseudoClass("skip-disabled");
 
@@ -84,8 +107,7 @@ public class BoardController implements PropertyChangeListener {
             drawTurnOrderTile();
             drawOfferTrack();
             drawSkipButton();
-        }
-        else {
+        } else {
             deckImage.setImage(loadImage("tribe_card_era_I_back.png"));
 
             for (int i = 0; i < 7; i++) {
@@ -233,9 +255,15 @@ public class BoardController implements PropertyChangeListener {
     private void drawDeck() {
         if (smallModel == null) return;
         switch (smallModel.getEra()) {
-            case ERA_I: deckImage.setImage(loadImage("tribe_card_era_I_back.png")); break;
-            case ERA_II: deckImage.setImage(loadImage("tribe_card_era_II_back.png")); break;
-            case ERA_III: deckImage.setImage(loadImage("tribe_card_era_III_back.png")); break;
+            case ERA_I:
+                deckImage.setImage(loadImage("tribe_card_era_I_back.png"));
+                break;
+            case ERA_II:
+                deckImage.setImage(loadImage("tribe_card_era_II_back.png"));
+                break;
+            case ERA_III:
+                deckImage.setImage(loadImage("tribe_card_era_III_back.png"));
+                break;
         }
     }
 
@@ -301,7 +329,7 @@ public class BoardController implements PropertyChangeListener {
     }
 
     private void setupDeckPopup() {
-        Popup nCards = createDeckPopup();
+        Popup nCards = EffectsManager.createDeckPopup();
         deckImage.setOnMouseEntered((event -> {
             nCards.show(deckImage, event.getScreenX(), event.getScreenY());
             EffectsManager.playPopupIn(nCards);
@@ -313,30 +341,6 @@ public class BoardController implements PropertyChangeListener {
         deckImage.setOnMouseExited((event -> {
             nCards.hide();
         }));
-    }
-
-    private Popup createDeckPopup() {
-        Popup popup = new Popup();
-        HBox popupContent = new HBox();
-        popupContent.setStyle(
-                "-fx-background-color:rgba(255,255,255,0.4);" +
-                        "-fx-background-radius: 8px;" +
-                        "-fx-border-color: rgba(255, 255, 255, 0.6);" +
-                        "-fx-border-width: 1px;" +
-                        "-fx-border-radius: 8px;" +
-                        "-fx-padding: 8px 15px;"
-        );
-        popupContent.setAlignment(Pos.CENTER);
-        popupContent.setMouseTransparent(true);
-
-        Text nCardsText = new Text();
-        nCardsText.setFont(Font.loadFont(this.getClass().getResourceAsStream("/it/polimi/gc06/mesos/fonts/KidKnowledge.otf"), 20));
-        nCardsText.setFill(Color.WHITE);
-        nCardsText.setText(smallModel == null ? "N/A" : "" + smallModel.getTribeDeckSize());
-
-        popupContent.getChildren().add(nCardsText);
-        popup.getContent().add(popupContent);
-        return popup;
     }
 
     private void setCardEffect(CardView cardView) {
@@ -403,18 +407,36 @@ public class BoardController implements PropertyChangeListener {
 
         Platform.runLater(() -> {
             switch (eventName) {
-                case PICK_FROM_TOP_ROW: handleTopRowPick(); break;
-                case PICK_FROM_BOTTOM_ROW: handleBottomRowPick(); break;
-                case PICK_FROM_TOP_BUILDINGS: handleTopBuildingsPick(); break;
-                case PICK_FROM_BOTTOM_BUILDINGS: handleBottomBuildingsPick(); break;
-                case TOP_ROW_REFILL: handleTopRowRefill(); break;
-                case TOP_BUILDINGS_REFILL: handleTopBuildingsRefill(); break;
+                case PICK_FROM_TOP_ROW:
+                    handleTopRowPick();
+                    break;
+                case PICK_FROM_BOTTOM_ROW:
+                    handleBottomRowPick();
+                    break;
+                case PICK_FROM_TOP_BUILDINGS:
+                    handleTopBuildingsPick();
+                    break;
+                case PICK_FROM_BOTTOM_BUILDINGS:
+                    handleBottomBuildingsPick();
+                    break;
+                case TOP_ROW_REFILL:
+                    handleTopRowRefill();
+                    break;
+                case TOP_BUILDINGS_REFILL:
+                    handleTopBuildingsRefill();
+                    break;
 
                 case TOTEM_MOVED_OFFER:
-                case TOTEM_PLACEMENT_TURN: handleTotemMoved(); break;
+                case TOTEM_PLACEMENT_TURN:
+                    handleTotemMoved();
+                    break;
 
-                case ROUND_CHANGED: handleRoundChanged(); break;
-                case ACTIVE_PLAYER_CHANGED: handleActivePlayerChanged(); break;
+                case ROUND_CHANGED:
+                    handleRoundChanged();
+                    break;
+                case ACTIVE_PLAYER_CHANGED:
+                    handleActivePlayerChanged();
+                    break;
 
                 // Da implementare
                 case PLAYER_CAN_SKIP:
