@@ -117,12 +117,9 @@ public class BoardController implements PropertyChangeListener {
         }
     }
 
-    /**
-     * Metodo temporaneo per testare visivamente il tabellone
-     * variando il numero di giocatori.
-     */
+
     private void setupMockData(int numPlayers) {
-        // 1. CARICAMENTO MAZZO E CARTE (Fisso per test)
+
         deckImage.setImage(loadImage("tribe_card_era_I_back.png"));
 
         topCharactersContainer.getChildren().clear();
@@ -140,22 +137,18 @@ public class BoardController implements PropertyChangeListener {
             bottomCharactersContainer.getChildren().add(bCard);
         }
 
-        // 2. TURN ORDER TILE DINAMICA
         turnOrderContainer.getChildren().clear();
 
-        // Recuperiamo le info dall'enum in base al numero di giocatori
         TurnOrderTileInfo tileInfo = TurnOrderTileInfo.getInfo(numPlayers);
         if (tileInfo == null) {
-            tileInfo = TurnOrderTileInfo.TURN_ORDER_TILE_5_PLAYERS; // Fallback di sicurezza
+            tileInfo = TurnOrderTileInfo.TURN_ORDER_TILE_5_PLAYERS;
         }
 
-        // Carichiamo l'immagine direttamente dal path fornito dall'enum
         Image toImage = loadImage(tileInfo.getImagePath());
         if (toImage == null) {
             toImage = loadImage(TurnOrderTileInfo.TURN_ORDER_TILE_5_PLAYERS.getImagePath());
         }
 
-        // Genera i Totem esatti in base al numero di giocatori
         Totem[] tuttiITotem = {Totem.YELLOW, Totem.TURQUOISE, Totem.PURPLE, Totem.WHITE, Totem.ORANGE};
         ArrayList<Totem> totemAttivi = new ArrayList<>();
         for (int i = 0; i < numPlayers && i < tuttiITotem.length; i++) {
@@ -165,7 +158,6 @@ public class BoardController implements PropertyChangeListener {
         TurnOrderTileView turnOrderTile = createTurnOrderTile(toImage, totemAttivi);
         turnOrderContainer.getChildren().add(turnOrderTile);
 
-        // 3. OFFER TRACK DINAMICA (Secondo il Regolamento Ufficiale)
         offerTrackContainer.getChildren().clear();
 
         String[] offerImages;
@@ -232,7 +224,16 @@ public class BoardController implements PropertyChangeListener {
                 playerName = "Player " + (i + 1);
             }
 
-            OffertTileView tile = createOfferTile(loadImage(offerImages[i]), t, playerName, OfferTileInfo.valueOf("OFFER_TILE_" + offerImages[i].split("_")[2].split("\\.")[0]).getXPercent());
+            OffertTileView tile = createOfferTile(
+                    loadImage(offerImages[i]),
+                    t,
+                    playerName,
+                    OfferTileInfo.valueOf(
+                            "OFFER_TILE_" + offerImages[i].split("_")[2].split("\\.")[0]).getXPercent(),
+                    OfferTileInfo.valueOf(
+                            "OFFER_TILE_" + offerImages[i].split("_")[2].split("\\.")[0]).getYPercent()
+            );
+
             offerTrackContainer.getChildren().add(tile);
         }
     }
@@ -270,8 +271,8 @@ public class BoardController implements PropertyChangeListener {
 
         DoubleBinding singleTileWidth = leftZone.widthProperty().multiply(0.60).divide(8);
         turnOrderContainer.prefWidthProperty().bind(singleTileWidth);
-        turnOrderContainer.setAlignment(Pos.CENTER);
-        // Moltiplica la larghezza per il numero esatto di carte presenti
+        turnOrderContainer.setAlignment(Pos.CENTER_RIGHT);
+
         offerTrackContainer.prefWidthProperty().bind( singleTileWidth.multiply(Bindings.size(offerTrackContainer.getChildren())));
         offerTrackContainer.setAlignment(Pos.CENTER);
         offerTrackContainer.setSpacing(-2);
@@ -347,7 +348,7 @@ public class BoardController implements PropertyChangeListener {
             String nickname = tile.getPlayer() != null ? tile.getPlayer().getNickname() : "Empty";
             Totem t = Totem.NONE;
 
-            offerTrackContainer.getChildren().add(createOfferTile(img, t, nickname, 0.50));
+            offerTrackContainer.getChildren().add(createOfferTile(img, t, nickname, 0.50, 0.20));
         }
     }
 
@@ -477,7 +478,7 @@ public class BoardController implements PropertyChangeListener {
         return turnOrderTile;
     }
 
-    private OffertTileView createOfferTile(Image image, Totem totem, String playerName, double xPercent) {
+    private OffertTileView createOfferTile(Image image, Totem totem, String playerName, double xPercent, double yPercent) {
         OffertTileView tile = new OffertTileView(image);
         tile.setMinSize(0, 0);
         tile.setMinWidth(javafx.scene.layout.Region.USE_PREF_SIZE);
@@ -487,7 +488,7 @@ public class BoardController implements PropertyChangeListener {
         if (totem != null) {
             tile.setTotem(new TotemPieceView(totem, playerName));
         }
-        tile.setCenterPercentage(xPercent, 0.2);
+        tile.setCenterPercentage(xPercent, yPercent);
         return tile;
     }
 
