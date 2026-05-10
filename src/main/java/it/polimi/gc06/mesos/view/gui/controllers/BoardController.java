@@ -9,6 +9,7 @@ import it.polimi.gc06.mesos.view.gui.elements.*;
 import it.polimi.gc06.mesos.view.gui.helpers.EffectsManager;
 import it.polimi.gc06.mesos.view.gui.helpers.OfferTileInfo;
 import it.polimi.gc06.mesos.view.gui.helpers.Totem;
+import it.polimi.gc06.mesos.view.gui.helpers.TurnOrderTileInfo;
 import it.polimi.gc06.mesos.view.gui.visitors.CardEffectVisitor;
 
 import java.beans.PropertyChangeEvent;
@@ -18,6 +19,7 @@ import java.util.Arrays;
 import java.util.Objects;
 
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
@@ -98,6 +100,7 @@ public class BoardController implements PropertyChangeListener {
 
         setupDeckPopup();
 
+        // SE IL GIOCO E' COLLEGATO (smallModel esiste): Disegna la board reale
         if (smallModel != null) {
             drawDeck();
             drawTopRowCards();
@@ -107,36 +110,130 @@ public class BoardController implements PropertyChangeListener {
             drawTurnOrderTile();
             drawOfferTrack();
             drawSkipButton();
-        } else {
-            deckImage.setImage(loadImage("tribe_card_era_I_back.png"));
+        }
+        else {
+            int testNumPlayers = 2;
+            setupMockData(testNumPlayers);
+        }
+    }
 
-            for (int i = 0; i < 7; i++) {
-                CardView card = new CardView(loadImage("shaman_1_card.png"));
-                card.fitHeightProperty().bind(topRowBox.heightProperty().multiply(0.85));
-                EffectsManager.activeCard(card);
-                topCharactersContainer.getChildren().add(card);
+    /**
+     * Metodo temporaneo per testare visivamente il tabellone
+     * variando il numero di giocatori.
+     */
+    private void setupMockData(int numPlayers) {
+        // 1. CARICAMENTO MAZZO E CARTE (Fisso per test)
+        deckImage.setImage(loadImage("tribe_card_era_I_back.png"));
+
+        topCharactersContainer.getChildren().clear();
+        bottomCharactersContainer.getChildren().clear();
+
+        for (int i = 0; i < 7; i++) {
+            CardView card = new CardView(loadImage("shaman_1_card.png"));
+            card.fitHeightProperty().bind(topRowBox.heightProperty().multiply(0.85));
+            EffectsManager.activeCard(card);
+            topCharactersContainer.getChildren().add(card);
+
+            CardView bCard = new CardView(loadImage("shaman_1_card.png"));
+            bCard.fitHeightProperty().bind(bottomRowBox.heightProperty().multiply(0.85));
+            EffectsManager.disableCard(bCard);
+            bottomCharactersContainer.getChildren().add(bCard);
+        }
+
+        // 2. TURN ORDER TILE DINAMICA
+        turnOrderContainer.getChildren().clear();
+
+        // Recuperiamo le info dall'enum in base al numero di giocatori
+        TurnOrderTileInfo tileInfo = TurnOrderTileInfo.getInfo(numPlayers);
+        if (tileInfo == null) {
+            tileInfo = TurnOrderTileInfo.TURN_ORDER_TILE_5_PLAYERS; // Fallback di sicurezza
+        }
+
+        // Carichiamo l'immagine direttamente dal path fornito dall'enum
+        Image toImage = loadImage(tileInfo.getImagePath());
+        if (toImage == null) {
+            toImage = loadImage(TurnOrderTileInfo.TURN_ORDER_TILE_5_PLAYERS.getImagePath());
+        }
+
+        // Genera i Totem esatti in base al numero di giocatori
+        Totem[] tuttiITotem = {Totem.YELLOW, Totem.TURQUOISE, Totem.PURPLE, Totem.WHITE, Totem.ORANGE};
+        ArrayList<Totem> totemAttivi = new ArrayList<>();
+        for (int i = 0; i < numPlayers && i < tuttiITotem.length; i++) {
+            totemAttivi.add(tuttiITotem[i]);
+        }
+
+        TurnOrderTileView turnOrderTile = createTurnOrderTile(toImage, totemAttivi);
+        turnOrderContainer.getChildren().add(turnOrderTile);
+
+        // 3. OFFER TRACK DINAMICA (Secondo il Regolamento Ufficiale)
+        offerTrackContainer.getChildren().clear();
+
+        String[] offerImages;
+
+        switch (numPlayers) {
+            case 5:
+                // 5 Players: A, B, C, D, E, F, G
+                offerImages = new String[]{
+                        "offer_tile_A.png",
+                        "offer_tile_B.png",
+                        "offer_tile_C.png",
+                        "offer_tile_D.png",
+                        "offer_tile_E.png",
+                        "offer_tile_F.png",
+                        "offer_tile_G.png"
+                };
+                break;
+            case 4:
+                // 4 Players: B, C, D, E, F, G
+                offerImages = new String[]{
+                        "offer_tile_B.png",
+                        "offer_tile_C.png",
+                        "offer_tile_D.png",
+                        "offer_tile_E.png",
+                        "offer_tile_F.png",
+                        "offer_tile_G.png"
+                };
+                break;
+            case 3:
+                // 3 Players: B, C, D, E, F
+                offerImages = new String[]{
+                        "offer_tile_B.png",
+                        "offer_tile_C.png",
+                        "offer_tile_D.png",
+                        "offer_tile_E.png",
+                        "offer_tile_F.png"
+                };
+                break;
+            case 2:
+                // 2 Players: B, C, E, F
+                offerImages = new String[]{
+                        "offer_tile_B.png",
+                        "offer_tile_C.png",
+                        "offer_tile_E.png",
+                        "offer_tile_F.png"
+                };
+                break;
+            default:
+                offerImages = new String[]{
+                        "offer_tile_B.png",
+                        "offer_tile_C.png",
+                        "offer_tile_E.png",
+                        "offer_tile_F.png"
+                };
+                break;
+        }
+
+        for (int i = 0; i < offerImages.length; i++) {
+            Totem t = null;
+            String playerName = null;
+
+            if (i < totemAttivi.size()) {
+                t = totemAttivi.get(i);
+                playerName = "Player " + (i + 1);
             }
 
-            for (int i = 0; i < 7; i++) {
-                CardView bCard = new CardView(loadImage("shaman_1_card.png"));
-                bCard.fitHeightProperty().bind(bottomRowBox.heightProperty().multiply(0.85));
-                EffectsManager.disableCard(bCard);
-                bottomCharactersContainer.getChildren().add(bCard);
-            }
-
-            ArrayList<Totem> totemList = new ArrayList<>(Arrays.asList(Totem.YELLOW, Totem.TURQUOISE, Totem.PURPLE, Totem.WHITE, Totem.ORANGE));
-            TurnOrderTileView turnOrderTile = createTurnOrderTile(loadImage("turn_order_tile_5_players.png"), totemList);
-            turnOrderContainer.getChildren().add(turnOrderTile);
-
-            OffertTileView tileA = createOfferTile(loadImage("offer_tile_A.png"), Totem.YELLOW, "Player 1", OfferTileInfo.OFFER_TILE_A.getXPercent());
-            OffertTileView tileB = createOfferTile(loadImage("offer_tile_B.png"), Totem.YELLOW, "Mock Player", OfferTileInfo.OFFER_TILE_B.getXPercent());
-            OffertTileView tileC = createOfferTile(loadImage("offer_tile_C.png"), Totem.ORANGE, "Player 2", OfferTileInfo.OFFER_TILE_C.getXPercent());
-            OffertTileView tileD = createOfferTile(loadImage("offer_tile_D.png"), Totem.TURQUOISE, "Player 3", OfferTileInfo.OFFER_TILE_D.getXPercent());
-            OffertTileView tileE = createOfferTile(loadImage("offer_tile_E.png"), Totem.PURPLE, "Player 4", OfferTileInfo.OFFER_TILE_E.getXPercent());
-            OffertTileView tileF = createOfferTile(loadImage("offer_tile_F.png"), Totem.YELLOW, "Mock Player", OfferTileInfo.OFFER_TILE_F.getXPercent());
-            OffertTileView tileG = createOfferTile(loadImage("offer_tile_G.png"), Totem.WHITE, "Player 5", OfferTileInfo.OFFER_TILE_G.getXPercent());
-
-            offerTrackContainer.getChildren().addAll(tileA, tileB, tileC, tileD, tileE, tileF, tileG);
+            OffertTileView tile = createOfferTile(loadImage(offerImages[i]), t, playerName, OfferTileInfo.valueOf("OFFER_TILE_" + offerImages[i].split("_")[2].split("\\.")[0]).getXPercent());
+            offerTrackContainer.getChildren().add(tile);
         }
     }
 
@@ -154,10 +251,10 @@ public class BoardController implements PropertyChangeListener {
         boardRoot.prefHeightProperty().bind(leftZone.heightProperty().multiply(HEIGHT_BOARD));
         inventoryBox.prefHeightProperty().bind(leftZone.heightProperty().multiply(HEIGHT_INVENTORY));
 
-        topBar.prefHeightProperty().bind(boardRoot.heightProperty().multiply(0.10));
-        topRowBox.prefHeightProperty().bind(boardRoot.heightProperty().multiply(0.35));
+        topBar.prefHeightProperty().bind(boardRoot.heightProperty().multiply(0.1));
+        topRowBox.prefHeightProperty().bind(boardRoot.heightProperty().multiply(0.30));
         centerRowBox.prefHeightProperty().bind(boardRoot.heightProperty().multiply(0.30));
-        bottomRowBox.prefHeightProperty().bind(boardRoot.heightProperty().multiply(0.35));
+        bottomRowBox.prefHeightProperty().bind(boardRoot.heightProperty().multiply(0.30));
 
         topRowBox.setAlignment(Pos.CENTER);
         topRowBox.setSpacing(20);
@@ -174,7 +271,9 @@ public class BoardController implements PropertyChangeListener {
         DoubleBinding singleTileWidth = leftZone.widthProperty().multiply(0.60).divide(8);
         turnOrderContainer.prefWidthProperty().bind(singleTileWidth);
         turnOrderContainer.setAlignment(Pos.CENTER);
-        offerTrackContainer.prefWidthProperty().bind(singleTileWidth.multiply(7));
+        // Moltiplica la larghezza per il numero esatto di carte presenti
+        offerTrackContainer.prefWidthProperty().bind( singleTileWidth.multiply(Bindings.size(offerTrackContainer.getChildren())));
+        offerTrackContainer.setAlignment(Pos.CENTER);
         offerTrackContainer.setSpacing(-2);
 
         skipButtonContainer.prefWidthProperty().bind(leftZone.widthProperty().multiply(0.15));
@@ -358,8 +457,10 @@ public class BoardController implements PropertyChangeListener {
     }
 
     private TurnOrderTileView createTurnOrderTile(Image image, ArrayList<Totem> totems) {
-        int nPlayers = (smallModel == null) ? 5 : smallModel.getOpponents().size() + 1;
+        int nPlayers = (smallModel == null) ? totems.size() : smallModel.getOpponents().size() + 1;
+
         TurnOrderTileView turnOrderTile = new TurnOrderTileView(image, nPlayers);
+
         turnOrderTile.setMinSize(0, 0);
         turnOrderTile.prefHeightProperty().bind(turnOrderContainer.heightProperty());
         turnOrderTile.maxHeightProperty().bind(turnOrderContainer.heightProperty());
@@ -371,6 +472,7 @@ public class BoardController implements PropertyChangeListener {
             totemPieces.add(new TotemPieceView(totem, "Player " + count));
             count++;
         }
+
         turnOrderTile.setTotemPieces(totemPieces);
         return turnOrderTile;
     }
