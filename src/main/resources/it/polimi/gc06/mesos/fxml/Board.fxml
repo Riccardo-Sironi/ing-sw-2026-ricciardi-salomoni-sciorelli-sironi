@@ -5,43 +5,39 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.control.Button?>
 
-<VBox fx:id="boardRoot" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+<HBox fx:id="mainRoot" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
       fx:controller="it.polimi.gc06.mesos.view.gui.controllers.BoardController"
-      alignment="TOP_CENTER" spacing="0">
+      spacing="0" alignment="CENTER_LEFT">
 
-    <HBox fx:id="topBar" alignment="CENTER" />
+    <VBox fx:id="leftZone" alignment="TOP_CENTER" spacing="0">
 
-    <HBox fx:id="topRowBox" alignment="CENTER">
-        <ScrollPane fx:id="topCharactersScroll" vbarPolicy="NEVER" hbarPolicy="NEVER" fitToHeight="true">
-            <HBox fx:id="topCharactersContainer" alignment="CENTER_LEFT" />
-        </ScrollPane>
+        <VBox fx:id="boardRoot" alignment="TOP_CENTER" spacing="0">
+            <HBox fx:id="topBar" alignment="CENTER" />
 
-        <ScrollPane fx:id="buildingsScroll" vbarPolicy="NEVER" hbarPolicy="NEVER" fitToHeight="true">
-            <HBox fx:id="buildingsContainer" alignment="CENTER_RIGHT" />
-        </ScrollPane>
-    </HBox>
+            <HBox fx:id="topRowBox" alignment="CENTER">
+                <ScrollPane fx:id="topCharactersScroll" fitToHeight="true"><HBox fx:id="topCharactersContainer" alignment="CENTER" /></ScrollPane>
+                <ScrollPane fx:id="buildingsScroll" fitToHeight="true"><HBox fx:id="buildingsContainer" alignment="CENTER" /></ScrollPane>
+            </HBox>
 
-    <HBox fx:id="centerRowBox" alignment="CENTER">
-        <HBox fx:id="deckContainer" alignment="CENTER">
-            <ImageView fx:id="deckImage" preserveRatio="true" />
+            <HBox fx:id="centerRowBox" alignment="CENTER">
+                <HBox fx:id="deckContainer"><ImageView fx:id="deckImage" preserveRatio="true" /></HBox>
+                <HBox fx:id="turnOrderContainer" />
+                <HBox fx:id="offerTrackContainer" />
+                <HBox fx:id="skipButtonContainer"><Button fx:id="skipButton" text="Skip" /></HBox>
+            </HBox>
+
+            <HBox fx:id="bottomRowBox" alignment="CENTER">
+                <ScrollPane fx:id="bottomCharactersScroll" fitToHeight="true"><HBox fx:id="bottomCharactersContainer" alignment="CENTER" /></ScrollPane>
+                <ScrollPane fx:id="bottomBuildingsScroll" fitToHeight="true"><HBox fx:id="bottomBuildingsContainer" alignment="CENTER" /></ScrollPane>
+            </HBox>
+        </VBox>
+
+        <HBox fx:id="inventoryBox" alignment="CENTER" style="-fx-background-color: rgba(128, 0, 128, 0.15);">
         </HBox>
 
-        <HBox fx:id="turnOrderContainer" alignment="CENTER" />
+    </VBox>
 
-        <HBox fx:id="offerTrackContainer" alignment="BOTTOM_CENTER" />
+    <VBox fx:id="opponentsSidebar" alignment="TOP_CENTER" style="-fx-background-color: rgba(255, 255, 0, 0.15);">
+    </VBox>
 
-        <HBox fx:id="skipButtonContainer" alignment="CENTER">
-            <Button fx:id="skipButton" text="Skip" />
-        </HBox>
-    </HBox>
-
-    <HBox fx:id="bottomRowBox" alignment="CENTER">
-        <ScrollPane fx:id="bottomCharactersScroll" vbarPolicy="NEVER" hbarPolicy="NEVER" fitToHeight="true">
-            <HBox fx:id="bottomCharactersContainer" alignment="CENTER" />
-        </ScrollPane>
-    </HBox>
-
-    <HBox fx:id="inventoryBox" alignment="CENTER">
-    </HBox>
-
-</VBox>
+</HBox>

@@ -12,6 +12,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Objects;
 
 import javafx.application.Platform;
 import javafx.beans.binding.DoubleBinding;
@@ -26,10 +27,14 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.css.PseudoClass;
 
-
 public class BoardController implements PropertyChangeListener {
 
+    @FXML private HBox mainRoot;
+    @FXML private VBox leftZone;
+    @FXML private VBox opponentsSidebar;
+
     @FXML private VBox boardRoot;
+    @FXML private HBox inventoryBox;
 
     @FXML private HBox topBar;
 
@@ -50,8 +55,8 @@ public class BoardController implements PropertyChangeListener {
     @FXML private HBox bottomRowBox;
     @FXML private ScrollPane bottomCharactersScroll;
     @FXML private HBox bottomCharactersContainer;
-
-    @FXML private HBox inventoryBox;
+    @FXML private ScrollPane bottomBuildingsScroll;
+    @FXML private HBox bottomBuildingsContainer;
 
     private static final PseudoClass DISABLED_STYLE = PseudoClass.getPseudoClass("skip-disabled");
 
@@ -59,9 +64,10 @@ public class BoardController implements PropertyChangeListener {
     public void initialize() {
         setupArchitecturalLayout();
 
+        // TEST IMAGES ------------------------------------------------
         deckImage.setImage(loadImage("tribe_card_era_I_back.png"));
 
-        for (int i = 0; i < 12; i++) {
+        for (int i = 0; i < 7; i++) {
             CardView card = new CardView(loadImage("shaman_1_card.png"));
             card.fitHeightProperty().bind(topRowBox.heightProperty().multiply(0.85));
             EffectsManager.activeCard(card);
@@ -75,16 +81,14 @@ public class BoardController implements PropertyChangeListener {
         }
 
         for (int i = 0; i < 7; i++) {
-            CardView card = new CardView(loadImage("shaman_1_card.png"));
-            card.fitHeightProperty().bind(bottomRowBox.heightProperty().multiply(0.85));
-            EffectsManager.disableCard(card);
-            bottomCharactersContainer.getChildren().add(card);
+            CardView bCard = new CardView(loadImage("shaman_1_card.png"));
+            bCard.fitHeightProperty().bind(bottomRowBox.heightProperty().multiply(0.85));
+            EffectsManager.disableCard(bCard);
+            bottomCharactersContainer.getChildren().add(bCard);
         }
 
-        TurnOrderTileView turnOrderTile = createTurnOrderTile(
-                loadImage("turn_order_tile_5_players.png"),
-                new ArrayList<>(Arrays.asList(Totem.YELLOW, Totem.TURQUOISE, Totem.PURPLE, Totem.WHITE, Totem.ORANGE))
-        );
+        ArrayList<Totem> totemList = new ArrayList<>(Arrays.asList(Totem.YELLOW, Totem.TURQUOISE, Totem.PURPLE, Totem.WHITE, Totem.ORANGE));
+        TurnOrderTileView turnOrderTile = createTurnOrderTile(loadImage("turn_order_tile_5_players.png"), totemList);
         turnOrderContainer.getChildren().add(turnOrderTile);
 
         OffertTileView tileA = createOfferTile(loadImage("offer_tile_A.png"), Totem.YELLOW, "Player 1", 0.53);
@@ -96,6 +100,8 @@ public class BoardController implements PropertyChangeListener {
         OffertTileView tileG = createOfferTile(loadImage("offer_tile_G.png"), Totem.WHITE, "Player 5", 0.48);
 
         offerTrackContainer.getChildren().addAll(tileA, tileB, tileC, tileD, tileE, tileF, tileG);
+
+        // -------------------------------------------------------
     }
 
     private Image loadImage(String path) {
@@ -103,7 +109,7 @@ public class BoardController implements PropertyChangeListener {
             if (!path.startsWith("/")) {
                 path = "/" + path;
             }
-            return new Image(getClass().getResourceAsStream(path));
+            return new Image(Objects.requireNonNull(getClass().getResourceAsStream(path)));
         } catch (Exception e) {
             System.err.println("Immagine non trovata, controlla il percorso: " + path);
             return null;
@@ -112,79 +118,94 @@ public class BoardController implements PropertyChangeListener {
 
     private void setupArchitecturalLayout() {
 
-        final double HEIGHT_TOP_BAR    = 0.05;
-        final double HEIGHT_TOP_ROW    = 0.25;
-        final double HEIGHT_CENTER_ROW = 0.2;
-        final double HEIGHT_BOTTOM_ROW = 0.25;
-        final double HEIGHT_INVENTORY  = 0.25;
+        final double WIDTH_LEFT_ZONE = 0.85;
+        final double WIDTH_OPPONENTS = 0.15;
 
-        topBar.prefHeightProperty().bind(boardRoot.heightProperty().multiply(HEIGHT_TOP_BAR));
-        topRowBox.prefHeightProperty().bind(boardRoot.heightProperty().multiply(HEIGHT_TOP_ROW));
-        centerRowBox.prefHeightProperty().bind(boardRoot.heightProperty().multiply(HEIGHT_CENTER_ROW));
-        bottomRowBox.prefHeightProperty().bind(boardRoot.heightProperty().multiply(HEIGHT_BOTTOM_ROW));
-        inventoryBox.prefHeightProperty().bind(boardRoot.heightProperty().multiply(HEIGHT_INVENTORY));
+        leftZone.prefWidthProperty().bind(mainRoot.widthProperty().multiply(WIDTH_LEFT_ZONE));
+
+        opponentsSidebar.prefWidthProperty().bind(mainRoot.widthProperty().multiply(WIDTH_OPPONENTS));
+        opponentsSidebar.prefHeightProperty().bind(mainRoot.heightProperty());
+
+        final double HEIGHT_BOARD = 0.7;
+        final double HEIGHT_INVENTORY = 0.3;
+
+        boardRoot.prefHeightProperty().bind(leftZone.heightProperty().multiply(HEIGHT_BOARD));
+        inventoryBox.prefHeightProperty().bind(leftZone.heightProperty().multiply(HEIGHT_INVENTORY));
+
+        topBar.prefHeightProperty().bind(boardRoot.heightProperty().multiply(0.05));
+        topRowBox.prefHeightProperty().bind(boardRoot.heightProperty().multiply(0.35));
+        centerRowBox.prefHeightProperty().bind(boardRoot.heightProperty().multiply(0.25));
+        bottomRowBox.prefHeightProperty().bind(boardRoot.heightProperty().multiply(0.35));
 
         topRowBox.setAlignment(Pos.CENTER);
         topRowBox.setSpacing(20);
+        DoubleBinding topWidth = leftZone.widthProperty().multiply(0.80).subtract(40);
+        configureScrollPane(topCharactersScroll, topCharactersContainer, topWidth.multiply(0.75));
+        configureScrollPane(buildingsScroll, buildingsContainer, topWidth.multiply(0.25));
 
-        DoubleBinding topWidth = topRowBox.widthProperty().multiply(0.80).subtract(40);
-
-        topCharactersScroll.prefWidthProperty().bind(topWidth.multiply(0.75));
-        topCharactersScroll.setFitToWidth(true);
-        topCharactersScroll.setFitToHeight(true);
-
-        buildingsScroll.prefWidthProperty().bind(topWidth.multiply(0.25));
-        buildingsScroll.setFitToWidth(true);
-        buildingsScroll.setFitToHeight(true);
-
-        topCharactersContainer.setAlignment(Pos.CENTER);
-        topCharactersContainer.setSpacing(10);
-        buildingsContainer.setAlignment(Pos.CENTER);
-        buildingsContainer.setSpacing(10);
-
+        // --- SETUP CENTER ROW ---
         centerRowBox.setAlignment(Pos.CENTER);
         centerRowBox.setSpacing(30);
-
-        deckContainer.prefWidthProperty().bind(centerRowBox.widthProperty().multiply(0.15));
+        deckContainer.prefWidthProperty().bind(leftZone.widthProperty().multiply(0.15));
         deckContainer.setAlignment(Pos.CENTER);
         deckImage.fitHeightProperty().bind(centerRowBox.heightProperty().multiply(0.85));
 
-        DoubleBinding singleTileWidth = centerRowBox.widthProperty().multiply(0.60).divide(8);
-
+        DoubleBinding singleTileWidth = leftZone.widthProperty().multiply(0.60).divide(8);
         turnOrderContainer.prefWidthProperty().bind(singleTileWidth);
         turnOrderContainer.setAlignment(Pos.CENTER);
-
         offerTrackContainer.prefWidthProperty().bind(singleTileWidth.multiply(7));
-        offerTrackContainer.setAlignment(Pos.BOTTOM_CENTER);
         offerTrackContainer.setSpacing(-2);
 
-        skipButtonContainer.prefWidthProperty().bind(centerRowBox.widthProperty().multiply(0.15));
+        skipButtonContainer.prefWidthProperty().bind(leftZone.widthProperty().multiply(0.15));
         skipButtonContainer.setAlignment(Pos.CENTER);
-
-        bottomRowBox.setAlignment(Pos.CENTER);
-
-        bottomCharactersScroll.prefWidthProperty().bind(bottomRowBox.widthProperty().multiply(0.60));
-        bottomCharactersScroll.setFitToWidth(true);
-        bottomCharactersScroll.setFitToHeight(true);
-
-        bottomCharactersContainer.setAlignment(Pos.CENTER);
-        bottomCharactersContainer.setSpacing(10);
     }
 
-    private TurnOrderTileView createTurnOrderTile(Image image, int nPlayers) {
-        TurnOrderTileView turnOrderTile = new TurnOrderTileView(image, nPlayers);
-        turnOrderTile.setMinSize(0, 0);
-        turnOrderTile.prefHeightProperty().bind(turnOrderContainer.heightProperty());
-        turnOrderTile.maxHeightProperty().bind(turnOrderContainer.heightProperty());
-        turnOrderTile.getImageView().fitHeightProperty().bind(turnOrderContainer.heightProperty());
-        return turnOrderTile;
+    public void updateBottomRowLayout(boolean showBuildings) {
+        bottomRowBox.setAlignment(Pos.CENTER);
+        bottomRowBox.setSpacing(showBuildings ? 40 : 0);
+
+        DoubleBinding bottomWidth = leftZone.widthProperty().multiply(0.60);
+        if (showBuildings) bottomWidth = bottomWidth.subtract(40);
+
+        if (showBuildings) {
+            configureScrollPane(bottomCharactersScroll, bottomCharactersContainer, bottomWidth.multiply(0.75));
+            if (bottomBuildingsScroll != null) {
+                bottomBuildingsScroll.setVisible(true);
+                bottomBuildingsScroll.setManaged(true);
+                configureScrollPane(bottomBuildingsScroll, bottomBuildingsContainer, bottomWidth.multiply(0.25));
+            }
+        } else {
+            configureScrollPane(bottomCharactersScroll, bottomCharactersContainer, bottomWidth);
+            if (bottomBuildingsScroll != null) {
+                bottomBuildingsScroll.setVisible(false);
+                bottomBuildingsScroll.setManaged(false);
+            }
+        }
+    }
+
+    private void configureScrollPane(ScrollPane scroll, HBox container, DoubleBinding widthBinding) {
+        if (scroll == null || container == null) return;
+        scroll.prefWidthProperty().bind(widthBinding);
+        scroll.setFitToWidth(true);
+        scroll.setFitToHeight(true);
+        scroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scroll.setStyle("-fx-background-color: transparent;");
+
+        container.setAlignment(Pos.CENTER);
+        container.setSpacing(10);
     }
 
     private TurnOrderTileView createTurnOrderTile(Image image, ArrayList<Totem> totems) {
         int nPlayers = (smallModel == null) ? 5 : smallModel.getOpponents().size() + 1;
-        TurnOrderTileView turnOrderTile = createTurnOrderTile(image, nPlayers);
-        ArrayList<TotemPieceView> totemPieces = new ArrayList<>();
+        TurnOrderTileView turnOrderTile = new TurnOrderTileView(image, nPlayers);
 
+        turnOrderTile.setMinSize(0, 0);
+        turnOrderTile.prefHeightProperty().bind(turnOrderContainer.heightProperty());
+        turnOrderTile.maxHeightProperty().bind(turnOrderContainer.heightProperty());
+        turnOrderTile.getImageView().fitHeightProperty().bind(turnOrderContainer.heightProperty());
+
+        ArrayList<TotemPieceView> totemPieces = new ArrayList<>();
         int count = 1;
         for (Totem totem : totems) {
             totemPieces.add(new TotemPieceView(totem, "Player " + count));
@@ -234,24 +255,17 @@ public class BoardController implements PropertyChangeListener {
 
         Platform.runLater(() -> {
             switch (eventName) {
-                // --- PICKING ---
                 case PICK_FROM_TOP_ROW: handleTopRowPick(); break;
                 case PICK_FROM_BOTTOM_ROW: handleBottomRowPick(); break;
                 case PICK_FROM_TOP_BUILDINGS: handleTopBuildingsPick(); break;
                 case PICK_FROM_BOTTOM_BUILDINGS: handleBottomBuildingsPick(); break;
-
-                // --- REFILL ---
                 case TOP_ROW_REFILL: handleTopRowRefill(); break;
                 case TOP_BUILDINGS_REFILL: handleTopBuildingsRefill(); break;
-
-                // --- PLAYER INFO ---
                 case PLAYER_CAN_SKIP: handlePlayerCanSkip(); break;
                 case FOOD_CHANGED: handleFoodChanged(); break;
                 case PRESTIGE_CHANGED: handlePrestigeChanged(); break;
                 case TOP_NUM_DRAW_CHANGED: handleTopNumDrawChanged(); break;
                 case BOTTOM_NUM_DRAW_CHANGED: handleBottomNumDrawChanged(); break;
-
-                // --- MISCELLANEOUS ---
                 case TOTEM_MOVED_OFFER: handleTotemMovedOffer(); break;
                 case TOTEM_PLACEMENT_TURN: handleTotemPlacementTurn(); break;
                 case PHASE_CHANGED: handlePhaseChanged(); break;
@@ -265,7 +279,7 @@ public class BoardController implements PropertyChangeListener {
     }
 
     // =========================================================================
-    // TODO: METODI VUOTI DA IMPLEMENTARE PER LA LOGICA DI GIOCO
+    // METODI DA IMPLEMENTARE PER LA LOGICA DI GIOCO
     // =========================================================================
     private void handleTopRowPick() {}
     private void handleBottomRowPick() {}
