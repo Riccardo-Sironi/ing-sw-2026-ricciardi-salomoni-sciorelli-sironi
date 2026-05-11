@@ -1,6 +1,8 @@
 package it.polimi.gc06.mesos.network.rmi;
 
 import it.polimi.gc06.mesos.controller.GameController;
+import it.polimi.gc06.mesos.network.client.RMIClientInterface;
+import it.polimi.gc06.mesos.network.client.RMIClientManager;
 import it.polimi.gc06.mesos.network.server.MatchManager;
 import it.polimi.gc06.mesos.network.socket.commands.Command;
 import it.polimi.gc06.mesos.network.socket.commands.Request;

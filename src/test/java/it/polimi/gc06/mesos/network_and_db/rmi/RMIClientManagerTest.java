@@ -2,8 +2,8 @@ package it.polimi.gc06.mesos.network_and_db.rmi;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.polimi.gc06.mesos.controller.GameController;
-import it.polimi.gc06.mesos.network.rmi.RMIClientInterface;
-import it.polimi.gc06.mesos.network.rmi.RMIClientManager;
+import it.polimi.gc06.mesos.network.client.RMIClientInterface;
+import it.polimi.gc06.mesos.network.client.RMIClientManager;
 import it.polimi.gc06.mesos.network.server.MatchManager;
 import it.polimi.gc06.mesos.network.socket.commands.Command;
 import org.junit.jupiter.api.*;
@@ -54,14 +54,14 @@ class RMIClientManagerTest {
 
     @Test
     @DisplayName("Initialization and getters")
-    void testInitAndGetters(){
+    void testInitAndGetters() {
         assertEquals(testNickname, clientManager.getNickname());
         assertNull(clientManager.getController());
     }
 
     @Test
     @DisplayName("Set Controller links the listener")
-    void testSetController(){
+    void testSetController() {
         clientManager.setController(controllerMock);
 
         assertEquals(controllerMock, clientManager.getController());
@@ -105,7 +105,7 @@ class RMIClientManagerTest {
     @DisplayName("Enqueue Command handles InterruptedException properly")
     void testEnqueueCommandWhenInterrupted() throws InterruptedException {
         clientManager.setActionQueue(actionQueueMock);
-        doThrow(new InterruptedException()).when(actionQueueMock).put(any(Command.class ));
+        doThrow(new InterruptedException()).when(actionQueueMock).put(any(Command.class));
         clientManager.enqueueCommand(commandMock);
 
         assertTrue(Thread.currentThread().isInterrupted());
@@ -137,7 +137,7 @@ class RMIClientManagerTest {
 
     @Test
     @DisplayName("PropertyChange adds events to noticeQueue")
-    void testPropertyChange(){
+    void testPropertyChange() {
         PropertyChangeEvent event = new PropertyChangeEvent(this, "TEST", "old", "new");
         clientManager.propertyChange(event);
 
@@ -149,16 +149,16 @@ class RMIClientManagerTest {
     @DisplayName("Close Connection performs cleanup")
     void testCloseConnection() {
         clientManager.setController(controllerMock);
-        
+
         clientManager.closeConnection();
         verify(sharedManagerMock, times(1)).logout(testNickname);
         verify(controllerMock, times(1)).removeListener(clientManager);
-        
+
         clientManager.closeConnection();
         verify(sharedManagerMock, times(1)).logout(testNickname);
         verify(controllerMock, times(1)).removeListener(clientManager);
     }
-    
+
     @Test
     @DisplayName("Close connection handles null controller")
     void testCloseConnectionWhenControllerIsNull() {

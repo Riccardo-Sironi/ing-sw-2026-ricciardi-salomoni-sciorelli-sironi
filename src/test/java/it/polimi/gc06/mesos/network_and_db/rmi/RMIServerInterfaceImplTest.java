@@ -1,12 +1,11 @@
 package it.polimi.gc06.mesos.network_and_db.rmi;
 
 import it.polimi.gc06.mesos.controller.GameController;
-import it.polimi.gc06.mesos.network.rmi.RMIClientInterface;
-import it.polimi.gc06.mesos.network.rmi.RMIClientManager;
+import it.polimi.gc06.mesos.network.client.RMIClientInterface;
+import it.polimi.gc06.mesos.network.client.RMIClientManager;
 import it.polimi.gc06.mesos.network.rmi.RMIServerInterfaceImpl;
 import it.polimi.gc06.mesos.network.server.MatchManager;
 import it.polimi.gc06.mesos.network.socket.commands.Command;
-
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;

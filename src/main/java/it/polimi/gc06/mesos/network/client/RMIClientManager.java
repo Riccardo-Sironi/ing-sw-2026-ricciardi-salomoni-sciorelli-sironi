@@ -1,9 +1,8 @@
-package it.polimi.gc06.mesos.network.rmi;
+package it.polimi.gc06.mesos.network.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.polimi.gc06.mesos.controller.GameController;
 import it.polimi.gc06.mesos.network.server.MatchManager;
-import it.polimi.gc06.mesos.network.server.VirtualClient;
 import it.polimi.gc06.mesos.network.socket.commands.Command;
 
 import java.beans.PropertyChangeEvent;

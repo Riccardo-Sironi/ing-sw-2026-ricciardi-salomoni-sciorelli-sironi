@@ -38,4 +38,5 @@ module it.polimi.gc06.mesos {
     opens it.polimi.gc06.mesos.view.gui to javafx.fxml, javafx.graphics;
     exports it.polimi.gc06.mesos.view.smallModel;
     opens it.polimi.gc06.mesos.view.smallModel to javafx.fxml, javafx.graphics;
+    exports it.polimi.gc06.mesos.network.client to java.rmi;
 }

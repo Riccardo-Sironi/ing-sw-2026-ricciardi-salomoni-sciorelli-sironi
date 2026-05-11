@@ -1,5 +1,7 @@
 package it.polimi.gc06.mesos.network.server;
 
+import it.polimi.gc06.mesos.network.client.VirtualClient;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -104,7 +106,7 @@ public class MatchManager {
      * @param nickname of the user that will be checked.
      * @return if the user result logged.
      */
-    public boolean isUserLogged(String nickname){
+    public boolean isUserLogged(String nickname) {
         return loggedUsers.contains(nickname);
     }
 
@@ -114,7 +116,7 @@ public class MatchManager {
      * @param id the id of {@link Match} that will be checked.
      * @return if the match has started.
      */
-    public boolean hasMatchStarted(int id){
+    public boolean hasMatchStarted(int id) {
         return activeMatches.values().stream().filter(m -> m.getMatchId() == id)
                 .allMatch(Match::hasStarted);
     }
@@ -125,7 +127,7 @@ public class MatchManager {
      * @param id the id of {@link Match} that will be checked.
      * @return if the match has ended.
      */
-    public boolean hasMatchEnded(int id){
+    public boolean hasMatchEnded(int id) {
         return activeMatches.values().stream().filter(m -> m.getMatchId() == id)
                 .allMatch(Match::hasEnded);
     }
