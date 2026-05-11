@@ -3,14 +3,13 @@ package it.polimi.gc06.mesos.view.smallModel;
 import it.polimi.gc06.mesos.model.Color;
 import it.polimi.gc06.mesos.model.Era;
 import it.polimi.gc06.mesos.model.cards.Card;
-import it.polimi.gc06.mesos.model.gameBoard.TileSlot;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class SmallModel{
+public class SmallModel {
 
     //cards
     private final ArrayList<Card> topRow;
@@ -18,7 +17,7 @@ public class SmallModel{
     private final ArrayList<Card> topBuilding;
     private final ArrayList<Card> bottomBuilding;
     private final ArrayList<PlayerView> turnOrderTile;
-    private final ArrayList<TileSlot> offerTrack;
+    private final ArrayList<TileSlotView> offerTrack;
 
     //state
     private Era era;
@@ -32,7 +31,7 @@ public class SmallModel{
     private final PlayerView player;
     private final List<PlayerView> opponents; //is immutable
 
-    public SmallModel(String nickname, Color color, Map<Color,String> opponentsMap){
+    public SmallModel(String nickname, Color color, Map<Color, String> opponentsMap) {
         this.topRow = new ArrayList<>();
         this.bottomRow = new ArrayList<>();
         this.topBuilding = new ArrayList<>();
@@ -45,9 +44,9 @@ public class SmallModel{
         this.isActive = false;
         this.isEndgame = false;
         this.canSkip = false;
-        this.player = new PlayerView(nickname,color);
+        this.player = new PlayerView(nickname, color);
         this.opponents = opponentsMap.entrySet().stream().map(
-                x -> new PlayerView(x.getValue(),x.getKey())
+                x -> new PlayerView(x.getValue(), x.getKey())
         ).collect(Collectors.toList());
     }
 
@@ -99,7 +98,7 @@ public class SmallModel{
         this.era = era;
     }
 
-    public PlayerView getPlayer(){
+    public PlayerView getPlayer() {
         return player;
     }
 
@@ -108,7 +107,7 @@ public class SmallModel{
      *
      * @return an immutable list of the opponents.
      */
-    public List<PlayerView> getOpponents(){
+    public List<PlayerView> getOpponents() {
         return opponents;
     }
 
@@ -132,7 +131,7 @@ public class SmallModel{
         return turnOrderTile;
     }
 
-    public ArrayList<TileSlot> getOfferTrack() {
+    public ArrayList<TileSlotView> getOfferTrack() {
         return offerTrack;
     }
 }

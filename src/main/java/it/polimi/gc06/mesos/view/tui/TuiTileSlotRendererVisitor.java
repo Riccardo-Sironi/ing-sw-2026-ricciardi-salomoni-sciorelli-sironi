@@ -2,8 +2,9 @@ package it.polimi.gc06.mesos.view.tui;
 
 import it.polimi.gc06.mesos.model.Color;
 import it.polimi.gc06.mesos.model.gameBoard.*;
+import it.polimi.gc06.mesos.view.smallModel.TileSlotView;
 
-public class TuiTileSlotRendererVisitor implements TuiRenderer<TileSlot>, TileEffectVisitor {
+public class TuiTileSlotRendererVisitor implements TuiRenderer<TileSlotView>, TileEffectVisitor {
 
     private String effectString = "";
 
@@ -32,25 +33,25 @@ public class TuiTileSlotRendererVisitor implements TuiRenderer<TileSlot>, TileEf
         effectString = " ";
     }
 
-    public String[] render(TileSlot slot) {
-        String[] card = new String[7];
+    public String[] render(TileSlotView slot) {
+        String[] card = new String[5];
 
         slot.getTileEffect().accept(this);
 
         card[0] = "┌─────────┐";
         // Center the player totem placeholder, if present, within 9 characters (11 - 2 for the borders)
         if (!slot.isEmpty()) {
-            String playerString = toString(slot.getPlayer().getPlayerColor()) + centerText("P", 9) + Style.RESET;
+            String playerString = toString(slot.getPlayer().getColor()) + centerText("P", 9) + Style.RESET;
             card[1] = "│" + playerString + "│";
         } else {
             card[1] = "│         │";
         }
-        card[2] = "│         │";
+        //card[2] = "│         │";
         // Center the effect string, within 9 characters (11 - 2 for the borders)
+        //card[4] = "│         │";
+        card[2] = "│         │";
         card[3] = "│" + centerText(effectString, 9) + "│";
-        card[4] = "│         │";
-        card[5] = "│         │";
-        card[6] = "└─────────┘";
+        card[4] = "└─────────┘";
 
         // Clear strings
         effectString = "";
