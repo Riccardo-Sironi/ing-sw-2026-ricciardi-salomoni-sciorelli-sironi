@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.control.Button?>
-
-<?import javafx.scene.text.Text?>
+<?import javafx.scene.text.*?>
 <HBox fx:id="mainRoot" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
       fx:controller="it.polimi.gc06.mesos.view.gui.controllers.BoardController" alignment="CENTER_LEFT">
 
@@ -44,7 +42,7 @@
             </HBox>
         </VBox>
 
-        <HBox fx:id="inventoryBox" alignment="CENTER">
+        <HBox fx:id="inventoryBox" alignment="CENTER" spacing="10">
             <HBox fx:id="playerStatsBox" alignment="CENTER">
                 <VBox fx:id="shamanStarsBox" spacing="10" alignment="CENTER">
                     <ImageView fx:id="shamanStarsImage"/>

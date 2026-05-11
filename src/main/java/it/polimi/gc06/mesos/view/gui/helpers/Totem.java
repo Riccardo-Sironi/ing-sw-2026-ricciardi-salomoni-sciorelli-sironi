@@ -44,4 +44,16 @@ public enum Totem {
                 (int) (c.getBlue() * 255)
         );
     }
+
+    public String getTotemColorRGB() {
+        return switch (this) {
+            case ORANGE -> "211, 82, 59";
+            case TURQUOISE -> "32, 143, 165";
+            case WHITE -> "230, 230, 225";
+            case YELLOW -> "240, 193, 53";
+            case PURPLE -> "45, 18, 32";
+            case NONE -> "128, 128, 128";
+            default -> null;
+        };
+    }
 }

@@ -1,5 +1,5 @@
 #boardRoot {
-    -fx-background-color: #1e1e1e; /* Sfondo scuro per contrasto */
+    -fx-background-color: #ffffff;
     -fx-padding: 0px;
 }
 
@@ -8,22 +8,46 @@
     -fx-background-insets: 0;
     -fx-padding: 0;
 }
+
 .scroll-pane .viewport {
     -fx-background-color: transparent;
 }
 
-/* ========================================================= */
-/* COLORI DI DEBUG PER LE PROPORZIONI */
-/* ========================================================= */
-#topBar { -fx-background-color: rgba(255, 0, 0, 0.3); }         /* 1.0/10 - Rosso */
-#topRowBox { -fx-background-color: rgba(255, 165, 0, 0.3); }      /* 2.5/10 - Arancione */
-#centerRowBox { -fx-background-color: rgba(0, 255, 0, 0.3); }     /* 2.5/10 - Verde */
-#bottomRowBox { -fx-background-color: rgba(0, 0, 255, 0.3); }     /* 2.5/10 - Blu */
-#inventoryBox { -fx-background-color: rgba(128, 0, 128, 0.3); }   /* 1.5/10 - Viola */
+/*#topBar {*/
+/*    -fx-background-color: rgba(255, 0, 0, 0.3);*/
+/*}*/
 
-#topCharactersScroll { -fx-border-color: rgba(255, 165, 0, 0.8); -fx-border-width: 2px; }
-#buildingsScroll { -fx-border-color: rgba(200, 100, 0, 0.8); -fx-border-width: 2px; }
-#bottomCharactersScroll { -fx-border-color: rgba(0, 0, 255, 0.8); -fx-border-width: 2px; }
+/*!* 1.0/10 - Rosso *!*/
+/*#topRowBox {*/
+/*    -fx-background-color: rgba(255, 165, 0, 0.3);*/
+/*}*/
+
+/*!* 2.5/10 - Arancione *!*/
+/*#centerRowBox {*/
+/*    -fx-background-color: rgba(0, 255, 0, 0.3);*/
+/*}*/
+
+/*!* 2.5/10 - Verde *!*/
+/*#bottomRowBox {*/
+/*    -fx-background-color: rgba(0, 0, 255, 0.3);*/
+/*}*/
+
+/*!* 1.5/10 - Viola *!*/
+
+/*#topCharactersScroll {*/
+/*    -fx-border-color: rgba(255, 165, 0, 0.8);*/
+/*    -fx-border-width: 2px;*/
+/*}*/
+
+/*#buildingsScroll {*/
+/*    -fx-border-color: rgba(200, 100, 0, 0.8);*/
+/*    -fx-border-width: 2px;*/
+/*}*/
+
+/*#bottomCharactersScroll {*/
+/*    -fx-border-color: rgba(0, 0, 255, 0.8);*/
+/*    -fx-border-width: 2px;*/
+/*}*/
 
 #skipButton {
     -fx-background-color: white;
@@ -34,4 +58,26 @@
     -fx-border-radius: 12px;
     -fx-background-radius: 12px;
     -fx-font-weight: bold;
+}
+
+/* ==========================INVENTORY=============================== */
+
+#inventoryBox {;
+    -fx-border-width: 2px;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+}
+
+#cardsScroll {
+    -fx-background-color: transparent;
+    -fx-border-width: 2px;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+    -fx-padding: 0;
+}
+
+#playerStatsBox {
+    -fx-border-width: 2px;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
 }

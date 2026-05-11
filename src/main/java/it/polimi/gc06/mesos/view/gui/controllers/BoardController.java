@@ -1,26 +1,20 @@
 package it.polimi.gc06.mesos.view.gui.controllers;
 
-import static it.polimi.gc06.mesos.view.gui.GUI.imageFetcher;
-import static it.polimi.gc06.mesos.view.gui.GUI.smallModel;
-
 import it.polimi.gc06.mesos.model.cards.Card;
 import it.polimi.gc06.mesos.view.PropertyChangeName;
-import it.polimi.gc06.mesos.view.gui.elements.*;
+import it.polimi.gc06.mesos.view.gui.elements.CardView;
+import it.polimi.gc06.mesos.view.gui.elements.OffertTileView;
+import it.polimi.gc06.mesos.view.gui.elements.TotemPieceView;
+import it.polimi.gc06.mesos.view.gui.elements.TurnOrderTileView;
 import it.polimi.gc06.mesos.view.gui.helpers.EffectsManager;
 import it.polimi.gc06.mesos.view.gui.helpers.OfferTileInfo;
 import it.polimi.gc06.mesos.view.gui.helpers.Totem;
 import it.polimi.gc06.mesos.view.gui.helpers.TurnOrderTileInfo;
 import it.polimi.gc06.mesos.view.gui.visitors.CardEffectVisitor;
-
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Objects;
-
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
+import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
@@ -30,13 +24,22 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Popup;
-import javafx.css.PseudoClass;
+
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Objects;
+
+import static it.polimi.gc06.mesos.view.gui.GUI.imageFetcher;
+import static it.polimi.gc06.mesos.view.gui.GUI.smallModel;
 
 public class BoardController implements PropertyChangeListener {
 
@@ -307,9 +310,15 @@ public class BoardController implements PropertyChangeListener {
         boardRoot.prefHeightProperty().bind(leftZone.heightProperty().multiply(HEIGHT_BOARD));
         inventoryBox.prefHeightProperty().bind(leftZone.heightProperty().multiply(HEIGHT_INVENTORY));
 
+        inventoryBox.setAlignment(Pos.CENTER);
+
+        configureInventoryStyle();
+
         playerStatsBox.prefWidthProperty().bind(leftZone.widthProperty().multiply(0.3));
         configureScrollPane(cardsScroll, playerCardsContainer, leftZone.widthProperty().multiply(0.55));
         tokensBox.prefWidthProperty().bind(leftZone.widthProperty().multiply(0.15));
+
+        cardsScroll.setMaxHeight(Region.USE_PREF_SIZE);
 
         tokensBox.setAlignment(Pos.CENTER);
         tokensBox.setSpacing(5);
@@ -391,6 +400,49 @@ public class BoardController implements PropertyChangeListener {
         containerText.wrappingWidthProperty().bind(container.widthProperty());
     }
 
+    private void configureScrollPane(ScrollPane scroll, HBox container, DoubleBinding widthBinding) {
+        if (scroll == null || container == null) return;
+        scroll.prefWidthProperty().bind(widthBinding);
+        scroll.setFitToWidth(true);
+        scroll.setFitToHeight(true);
+        scroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scroll.setStyle("-fx-background-color: transparent;");
+
+        container.setAlignment(Pos.CENTER);
+        container.setSpacing(10);
+    }
+
+    private void configureInventoryStyle() {
+        String color = "";
+
+        if (smallModel == null) {
+            color = Totem.TURQUOISE.getTotemColorRGB();
+
+        } else {
+            // TODO : color based on player's totem
+        }
+
+        String backgroundInventoryStyle = "-fx-background-color: rgb(" + color + ", 0.6);";
+        String borderInventoryStyle = "-fx-border-color: rgb(" + color + ",1); -fx-border-width: 2px;";
+
+        inventoryBox.setStyle(backgroundInventoryStyle + borderInventoryStyle);
+
+        String playerCardsBackgroundStyle = "-fx-background-color: rgb(255,255,255);";
+
+        playerCardsContainer.setStyle(playerCardsBackgroundStyle);
+
+        double radius = 10;
+        cardsScroll.layoutBoundsProperty().addListener((obs, oldBounds, newBounds) -> {
+            Rectangle clip = new Rectangle(newBounds.getWidth(), newBounds.getHeight());
+            clip.setArcWidth(radius * 2);
+            clip.setArcHeight(radius * 2);
+            cardsScroll.setClip(clip);
+        });
+
+        // TODO : same white box for the stats
+    }
+
     public void updateBottomRowLayout(boolean showBuildings) {
         bottomRowBox.setAlignment(Pos.CENTER);
         bottomRowBox.setSpacing(showBuildings ? 40 : 0);
@@ -412,19 +464,6 @@ public class BoardController implements PropertyChangeListener {
                 bottomBuildingsScroll.setManaged(false);
             }
         }
-    }
-
-    private void configureScrollPane(ScrollPane scroll, HBox container, DoubleBinding widthBinding) {
-        if (scroll == null || container == null) return;
-        scroll.prefWidthProperty().bind(widthBinding);
-        scroll.setFitToWidth(true);
-        scroll.setFitToHeight(true);
-        scroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        scroll.setStyle("-fx-background-color: transparent;");
-
-        container.setAlignment(Pos.CENTER);
-        container.setSpacing(10);
     }
 
     private Image loadImage(String path) {

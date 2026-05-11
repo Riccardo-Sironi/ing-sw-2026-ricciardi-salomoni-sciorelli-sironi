@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import javafx.scene.layout.StackPane?>
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
 <StackPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="it.polimi.gc06.mesos.view.gui.controllers.GameViewController"
            fx:id="root">
+
+    <padding>
+        <Insets top="10" right="10" bottom="10" left="10"/>
+    </padding>
 
     <BorderPane fx:id="mainPane">
         <top>
@@ -16,7 +20,7 @@
         <center>
             <fx:include source="Board.fxml" fx:id="board"/>
         </center>
-        
+
     </BorderPane>
 
 
