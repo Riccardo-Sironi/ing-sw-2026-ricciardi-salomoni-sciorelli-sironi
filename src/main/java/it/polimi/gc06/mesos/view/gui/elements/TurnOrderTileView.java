@@ -7,6 +7,7 @@ import javafx.beans.binding.DoubleBinding;
 import javafx.geometry.Point2D;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.Region;
 import javafx.stage.Popup;
 
 import java.util.ArrayList;
@@ -51,16 +52,19 @@ public class TurnOrderTileView extends TileView {
         this.getChildren().removeIf(node -> node instanceof Pane);
 
         Pane layer = new Pane();
+
+        DoubleBinding trueW = getTrueWidth();
+        DoubleBinding trueH = getTrueHeight();
+
+        layer.prefWidthProperty().bind(trueW);
+        layer.prefHeightProperty().bind(trueH);
+        layer.setMaxSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
+
         this.getChildren().add(layer);
 
         TurnOrderTileInfo slots = TurnOrderTileInfo.getInfo(numPlayers);
         if (totemPieces != null && !totemPieces.isEmpty() && slots != null) {
             List<Point2D> points = slots.getPoints();
-
-            DoubleBinding trueW = getTrueWidth();
-            DoubleBinding trueH = getTrueHeight();
-            DoubleBinding offsetX = widthProperty().subtract(trueW).divide(2);
-            DoubleBinding offsetY = heightProperty().subtract(trueH).divide(2);
 
             for (int i = 0; i < totemPieces.size(); i++) {
                 if (i >= points.size()) break;
@@ -72,15 +76,11 @@ public class TurnOrderTileView extends TileView {
                 t.fitHeightProperty().bind(trueH.multiply(0.25));
                 t.setPreserveRatio(true);
 
-                DoubleBinding halfWidth = t.fitHeightProperty().multiply(0.35); // Approx 70% aspect ratio
+                DoubleBinding halfWidth = t.fitHeightProperty().multiply(0.35);
                 DoubleBinding halfHeight = t.fitHeightProperty().multiply(0.5);
 
-                t.translateXProperty().bind(
-                        offsetX.add(trueW.multiply(p.getX())).subtract(halfWidth)
-                );
-                t.translateYProperty().bind(
-                        offsetY.add(trueH.multiply(p.getY())).subtract(halfHeight)
-                );
+                t.layoutXProperty().bind(trueW.multiply(p.getX()).subtract(halfWidth));
+                t.layoutYProperty().bind(trueH.multiply(p.getY()).subtract(halfHeight));
 
                 layer.getChildren().add(t);
             }

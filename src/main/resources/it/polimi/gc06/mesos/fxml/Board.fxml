@@ -25,8 +25,12 @@
                 <HBox fx:id="deckContainer">
                     <ImageView fx:id="deckImage" preserveRatio="true"/>
                 </HBox>
-                <HBox fx:id="turnOrderContainer"/>
-                <HBox fx:id="offerTrackContainer"/>
+                <HBox fx:id="tracksWrapper" alignment="CENTER" spacing="10">
+
+                    <HBox fx:id="turnOrderContainer" alignment="CENTER_RIGHT"/>
+                    <HBox fx:id="offerTrackContainer" alignment="CENTER"/>
+
+                </HBox>
                 <HBox fx:id="skipButtonContainer">
                     <Button fx:id="skipButton" text="Skip"/>
                 </HBox>

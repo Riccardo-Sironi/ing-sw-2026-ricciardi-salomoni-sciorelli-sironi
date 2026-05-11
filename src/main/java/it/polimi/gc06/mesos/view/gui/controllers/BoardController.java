@@ -128,6 +128,8 @@ public class BoardController implements PropertyChangeListener {
     @FXML
     public ImageView deckImage;
     @FXML
+    public HBox tracksWrapper;
+    @FXML
     private HBox turnOrderContainer;
     @FXML
     private HBox offerTrackContainer;
@@ -164,7 +166,6 @@ public class BoardController implements PropertyChangeListener {
 
         setupDeckPopup();
 
-        // SE IL GIOCO E' COLLEGATO (smallModel esiste): Disegna la board reale
         if (smallModel != null) {
             drawDeck();
             drawTopRowCards();
@@ -178,7 +179,12 @@ public class BoardController implements PropertyChangeListener {
             int testNumPlayers = 4;
             setupMockData(testNumPlayers);
         }
+
+        Platform.runLater(() -> {
+            mainRoot.requestLayout();
+        });
     }
+
 
     private void setupMockData(int numPlayers) {
 
@@ -352,11 +358,8 @@ public class BoardController implements PropertyChangeListener {
         deckContainer.setAlignment(Pos.CENTER);
         deckImage.fitHeightProperty().bind(centerRowBox.heightProperty().multiply(0.85));
 
-        DoubleBinding singleTileWidth = leftZone.widthProperty().multiply(0.60).divide(8);
-        turnOrderContainer.prefWidthProperty().bind(singleTileWidth);
         turnOrderContainer.setAlignment(Pos.CENTER_RIGHT);
 
-        offerTrackContainer.prefWidthProperty().bind(singleTileWidth.multiply(Bindings.size(offerTrackContainer.getChildren())));
         offerTrackContainer.setAlignment(Pos.CENTER);
         offerTrackContainer.setSpacing(-2);
 
@@ -608,13 +611,15 @@ public class BoardController implements PropertyChangeListener {
 
     private TurnOrderTileView createTurnOrderTile(Image image, ArrayList<Totem> totems) {
         int nPlayers = (smallModel == null) ? totems.size() : smallModel.getOpponents().size() + 1;
-
         TurnOrderTileView turnOrderTile = new TurnOrderTileView(image, nPlayers);
 
-        turnOrderTile.setMinSize(0, 0);
-        turnOrderTile.prefHeightProperty().bind(turnOrderContainer.heightProperty());
-        turnOrderTile.maxHeightProperty().bind(turnOrderContainer.heightProperty());
-        turnOrderTile.getImageView().fitHeightProperty().bind(turnOrderContainer.heightProperty());
+        turnOrderTile.prefHeightProperty().bind(centerRowBox.heightProperty().multiply(0.85));
+        turnOrderTile.maxHeightProperty().bind(centerRowBox.heightProperty().multiply(0.85));
+        turnOrderTile.getImageView().fitHeightProperty().bind(centerRowBox.heightProperty().multiply(0.85));
+
+        double ratio = image.getWidth() / image.getHeight();
+        turnOrderTile.minWidthProperty().bind(turnOrderTile.prefHeightProperty().multiply(ratio));
+        turnOrderTile.prefWidthProperty().bind(turnOrderTile.prefHeightProperty().multiply(ratio));
 
         ArrayList<TotemPieceView> totemPieces = new ArrayList<>();
         int count = 1;
@@ -629,11 +634,15 @@ public class BoardController implements PropertyChangeListener {
 
     private OffertTileView createOfferTile(Image image, Totem totem, String playerName, double xPercent, double yPercent) {
         OffertTileView tile = new OffertTileView(image);
-        tile.setMinSize(0, 0);
-        tile.setMinWidth(javafx.scene.layout.Region.USE_PREF_SIZE);
-        tile.prefHeightProperty().bind(offerTrackContainer.heightProperty());
-        tile.maxHeightProperty().bind(offerTrackContainer.heightProperty());
-        tile.getImageView().fitHeightProperty().bind(offerTrackContainer.heightProperty());
+
+        tile.prefHeightProperty().bind(centerRowBox.heightProperty().multiply(0.85));
+        tile.maxHeightProperty().bind(centerRowBox.heightProperty().multiply(0.85));
+        tile.getImageView().fitHeightProperty().bind(centerRowBox.heightProperty().multiply(0.85));
+
+        double ratio = image.getWidth() / image.getHeight();
+        tile.minWidthProperty().bind(tile.prefHeightProperty().multiply(ratio));
+        tile.prefWidthProperty().bind(tile.prefHeightProperty().multiply(ratio));
+
         if (totem != null) {
             tile.setTotem(new TotemPieceView(totem, playerName));
         }
