@@ -34,6 +34,7 @@ public class GUI extends Application {
 
         stage.setTitle("Mesos");
         stage.setScene(scene);
+        stage.sizeToScene();
         stage.show();
         javafx.application.Platform.runLater(() -> stage.setMaximized(true));
     }
