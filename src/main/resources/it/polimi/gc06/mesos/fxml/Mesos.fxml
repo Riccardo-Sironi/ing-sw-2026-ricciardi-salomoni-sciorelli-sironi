@@ -6,12 +6,7 @@
 <?import javafx.scene.layout.HBox?>
 <StackPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="it.polimi.gc06.mesos.view.gui.controllers.GameViewController"
-           fx:id="root"
->
-
-    <padding>
-        <Insets top="10" right="10" bottom="10" left="10"/>
-    </padding>
+           fx:id="root">
 
     <BorderPane fx:id="mainPane">
         <top>
@@ -21,10 +16,7 @@
         <center>
             <fx:include source="Board.fxml" fx:id="board"/>
         </center>
-
-        <bottom>
-            <fx:include source="PlayerInventory.fxml" fx:id="playerInventory"/>
-        </bottom>
+        
     </BorderPane>
 
 

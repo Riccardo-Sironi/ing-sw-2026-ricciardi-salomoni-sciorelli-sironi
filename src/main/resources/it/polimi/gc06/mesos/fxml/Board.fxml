@@ -5,34 +5,88 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.control.Button?>
 
+<?import javafx.scene.text.Text?>
 <HBox fx:id="mainRoot" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="it.polimi.gc06.mesos.view.gui.controllers.BoardController"
-      spacing="0" alignment="CENTER_LEFT">
+      fx:controller="it.polimi.gc06.mesos.view.gui.controllers.BoardController" alignment="CENTER_LEFT">
 
-    <VBox fx:id="leftZone" alignment="TOP_CENTER" spacing="0">
+    <VBox fx:id="leftZone" alignment="TOP_CENTER">
 
-        <VBox fx:id="boardRoot" alignment="TOP_CENTER" spacing="0">
-            <HBox fx:id="topBar" alignment="CENTER" />
+        <VBox fx:id="boardRoot" alignment="TOP_CENTER">
+            <HBox fx:id="topBar" alignment="CENTER"/>
 
             <HBox fx:id="topRowBox" alignment="CENTER">
-                <ScrollPane fx:id="topCharactersScroll" fitToHeight="true"><HBox fx:id="topCharactersContainer" alignment="CENTER" /></ScrollPane>
-                <ScrollPane fx:id="buildingsScroll" fitToHeight="true"><HBox fx:id="buildingsContainer" alignment="CENTER" /></ScrollPane>
+                <ScrollPane fx:id="topCharactersScroll" fitToHeight="true">
+                    <HBox fx:id="topCharactersContainer" alignment="CENTER"/>
+                </ScrollPane>
+                <ScrollPane fx:id="buildingsScroll" fitToHeight="true">
+                    <HBox fx:id="buildingsContainer" alignment="CENTER"/>
+                </ScrollPane>
             </HBox>
 
             <HBox fx:id="centerRowBox" alignment="CENTER">
-                <HBox fx:id="deckContainer"><ImageView fx:id="deckImage" preserveRatio="true" /></HBox>
-                <HBox fx:id="turnOrderContainer" />
-                <HBox fx:id="offerTrackContainer" />
-                <HBox fx:id="skipButtonContainer"><Button fx:id="skipButton" text="Skip" /></HBox>
+                <HBox fx:id="deckContainer">
+                    <ImageView fx:id="deckImage" preserveRatio="true"/>
+                </HBox>
+                <HBox fx:id="turnOrderContainer"/>
+                <HBox fx:id="offerTrackContainer"/>
+                <HBox fx:id="skipButtonContainer">
+                    <Button fx:id="skipButton" text="Skip"/>
+                </HBox>
             </HBox>
 
             <HBox fx:id="bottomRowBox" alignment="CENTER">
-                <ScrollPane fx:id="bottomCharactersScroll" fitToHeight="true"><HBox fx:id="bottomCharactersContainer" alignment="CENTER" /></ScrollPane>
-                <ScrollPane fx:id="bottomBuildingsScroll" fitToHeight="true"><HBox fx:id="bottomBuildingsContainer" alignment="CENTER" /></ScrollPane>
+                <ScrollPane fx:id="bottomCharactersScroll" fitToHeight="true">
+                    <HBox fx:id="bottomCharactersContainer" alignment="CENTER"/>
+                </ScrollPane>
+                <ScrollPane fx:id="bottomBuildingsScroll" fitToHeight="true">
+                    <HBox fx:id="bottomBuildingsContainer" alignment="CENTER"/>
+                </ScrollPane>
             </HBox>
         </VBox>
 
-        <HBox fx:id="inventoryBox" alignment="CENTER" style="-fx-background-color: rgba(128, 0, 128, 0.15);">
+        <HBox fx:id="inventoryBox" alignment="CENTER">
+            <HBox fx:id="playerStatsBox" alignment="CENTER">
+                <VBox fx:id="shamanStarsBox" spacing="10" alignment="CENTER">
+                    <ImageView fx:id="shamanStarsImage"/>
+                    <Text fx:id="shamanStarsText"/>
+                </VBox>
+
+                <VBox fx:id="gathererQuantityBox" spacing="10" alignment="CENTER">
+                    <ImageView fx:id="gathererQuantityImage"/>
+                    <Text fx:id="gathererQuantityText"/>
+                </VBox>
+
+                <VBox fx:id="hunterQuantityBox" spacing="10" alignment="CENTER">
+                    <ImageView fx:id="hunterQuantityImage"/>
+                    <Text fx:id="hunterQuantityText"/>
+                </VBox>
+
+                <VBox fx:id="artistQuantityBox" spacing="10" alignment="CENTER">
+                    <ImageView fx:id="artistQuantityImage"/>
+                    <Text fx:id="artistQuantityText"/>
+                </VBox>
+
+                <VBox fx:id="buildersDiscountBox" spacing="10" alignment="CENTER">
+                    <ImageView fx:id="buildersDiscountImage"/>
+                    <Text fx:id="buildersDiscountText"/>
+                </VBox>
+
+            </HBox>
+
+            <ScrollPane fx:id="cardsScroll" vbarPolicy="NEVER" hbarPolicy="NEVER" fitToHeight="true">
+                <HBox fx:id="playerCardsContainer" spacing="5" alignment="CENTER"/>
+            </ScrollPane>
+
+            <HBox fx:id="tokensBox" spacing="5" alignment="CENTER">
+                <VBox fx:id="prestigeTokensBox" spacing="10" alignment="CENTER">
+                    <ImageView fx:id="prestigeTokensImage"/>
+                    <Text fx:id="prestigeTokensText"/>
+                </VBox>
+                <VBox fx:id="foodTokensBox" spacing="10" alignment="CENTER">
+                    <ImageView fx:id="foodTokensImage"/>
+                    <Text fx:id="foodTokensText"/>
+                </VBox>
+            </HBox>
         </HBox>
 
     </VBox>

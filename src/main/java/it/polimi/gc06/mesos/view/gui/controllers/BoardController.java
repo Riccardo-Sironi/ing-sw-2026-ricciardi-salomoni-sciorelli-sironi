@@ -34,6 +34,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Popup;
 import javafx.css.PseudoClass;
 
@@ -48,8 +49,60 @@ public class BoardController implements PropertyChangeListener {
 
     @FXML
     private VBox boardRoot;
+
     @FXML
     private HBox inventoryBox;
+
+    @FXML
+    public HBox playerStatsBox;
+    @FXML
+    public VBox shamanStarsBox;
+    @FXML
+    public ImageView shamanStarsImage;
+    @FXML
+    public Text shamanStarsText;
+    @FXML
+    public VBox gathererQuantityBox;
+    @FXML
+    public ImageView gathererQuantityImage;
+    @FXML
+    public Text gathererQuantityText;
+    @FXML
+    public VBox hunterQuantityBox;
+    @FXML
+    public ImageView hunterQuantityImage;
+    @FXML
+    public Text hunterQuantityText;
+    @FXML
+    public VBox artistQuantityBox;
+    @FXML
+    public ImageView artistQuantityImage;
+    @FXML
+    public Text artistQuantityText;
+    @FXML
+    public VBox buildersDiscountBox;
+    @FXML
+    public ImageView buildersDiscountImage;
+    @FXML
+    public Text buildersDiscountText;
+    @FXML
+    public ScrollPane cardsScroll;
+    @FXML
+    public HBox playerCardsContainer;
+    @FXML
+    public HBox tokensBox;
+    @FXML
+    public VBox prestigeTokensBox;
+    @FXML
+    public ImageView prestigeTokensImage;
+    @FXML
+    public Text prestigeTokensText;
+    @FXML
+    public VBox foodTokensBox;
+    @FXML
+    public ImageView foodTokensImage;
+    @FXML
+    public Text foodTokensText;
 
     @FXML
     private HBox topBar;
@@ -93,6 +146,14 @@ public class BoardController implements PropertyChangeListener {
 
     private static final PseudoClass DISABLED_STYLE = PseudoClass.getPseudoClass("skip-disabled");
 
+    private final Font mesosFont = Font.loadFont(
+            this.getClass().getResourceAsStream(
+                    "/it/polimi/gc06/mesos/fonts/KidKnowledge.otf"
+            ), 20
+    );
+
+    private static final double RESIZE_CARD_FACTOR = 0.85;
+
     @FXML
     public void initialize() {
         setupArchitecturalLayout();
@@ -110,13 +171,11 @@ public class BoardController implements PropertyChangeListener {
             drawTurnOrderTile();
             drawOfferTrack();
             drawSkipButton();
-        }
-        else {
-            int testNumPlayers = 2;
+        } else {
+            int testNumPlayers = 4;
             setupMockData(testNumPlayers);
         }
     }
-
 
     private void setupMockData(int numPlayers) {
 
@@ -125,16 +184,20 @@ public class BoardController implements PropertyChangeListener {
         topCharactersContainer.getChildren().clear();
         bottomCharactersContainer.getChildren().clear();
 
-        for (int i = 0; i < 7; i++) {
+        for (int i = 0; i < 10; i++) {
             CardView card = new CardView(loadImage("shaman_1_card.png"));
-            card.fitHeightProperty().bind(topRowBox.heightProperty().multiply(0.85));
+            card.fitHeightProperty().bind(topRowBox.heightProperty().multiply(RESIZE_CARD_FACTOR));
             EffectsManager.activeCard(card);
             topCharactersContainer.getChildren().add(card);
 
             CardView bCard = new CardView(loadImage("shaman_1_card.png"));
-            bCard.fitHeightProperty().bind(bottomRowBox.heightProperty().multiply(0.85));
+            bCard.fitHeightProperty().bind(bottomRowBox.heightProperty().multiply(RESIZE_CARD_FACTOR));
             EffectsManager.disableCard(bCard);
             bottomCharactersContainer.getChildren().add(bCard);
+
+            CardView pCard = new CardView(loadImage("shaman_1_card.png"));
+            pCard.fitHeightProperty().bind(inventoryBox.heightProperty().multiply(RESIZE_CARD_FACTOR));
+            playerCardsContainer.getChildren().add(pCard);
         }
 
         turnOrderContainer.getChildren().clear();
@@ -160,60 +223,52 @@ public class BoardController implements PropertyChangeListener {
 
         offerTrackContainer.getChildren().clear();
 
-        String[] offerImages;
-
-        switch (numPlayers) {
-            case 5:
+        String[] offerImages = switch (numPlayers) {
+            case 5 ->
                 // 5 Players: A, B, C, D, E, F, G
-                offerImages = new String[]{
-                        "offer_tile_A.png",
-                        "offer_tile_B.png",
-                        "offer_tile_C.png",
-                        "offer_tile_D.png",
-                        "offer_tile_E.png",
-                        "offer_tile_F.png",
-                        "offer_tile_G.png"
-                };
-                break;
-            case 4:
+                    new String[]{
+                            "offer_tile_A.png",
+                            "offer_tile_B.png",
+                            "offer_tile_C.png",
+                            "offer_tile_D.png",
+                            "offer_tile_E.png",
+                            "offer_tile_F.png",
+                            "offer_tile_G.png"
+                    };
+            case 4 ->
                 // 4 Players: B, C, D, E, F, G
-                offerImages = new String[]{
-                        "offer_tile_B.png",
-                        "offer_tile_C.png",
-                        "offer_tile_D.png",
-                        "offer_tile_E.png",
-                        "offer_tile_F.png",
-                        "offer_tile_G.png"
-                };
-                break;
-            case 3:
+                    new String[]{
+                            "offer_tile_B.png",
+                            "offer_tile_C.png",
+                            "offer_tile_D.png",
+                            "offer_tile_E.png",
+                            "offer_tile_F.png",
+                            "offer_tile_G.png"
+                    };
+            case 3 ->
                 // 3 Players: B, C, D, E, F
-                offerImages = new String[]{
-                        "offer_tile_B.png",
-                        "offer_tile_C.png",
-                        "offer_tile_D.png",
-                        "offer_tile_E.png",
-                        "offer_tile_F.png"
-                };
-                break;
-            case 2:
+                    new String[]{
+                            "offer_tile_B.png",
+                            "offer_tile_C.png",
+                            "offer_tile_D.png",
+                            "offer_tile_E.png",
+                            "offer_tile_F.png"
+                    };
+            case 2 ->
                 // 2 Players: B, C, E, F
-                offerImages = new String[]{
-                        "offer_tile_B.png",
-                        "offer_tile_C.png",
-                        "offer_tile_E.png",
-                        "offer_tile_F.png"
-                };
-                break;
-            default:
-                offerImages = new String[]{
-                        "offer_tile_B.png",
-                        "offer_tile_C.png",
-                        "offer_tile_E.png",
-                        "offer_tile_F.png"
-                };
-                break;
-        }
+                    new String[]{
+                            "offer_tile_B.png",
+                            "offer_tile_C.png",
+                            "offer_tile_E.png",
+                            "offer_tile_F.png"
+                    };
+            default -> new String[]{
+                    "offer_tile_B.png",
+                    "offer_tile_C.png",
+                    "offer_tile_E.png",
+                    "offer_tile_F.png"
+            };
+        };
 
         for (int i = 0; i < offerImages.length; i++) {
             Totem t = null;
@@ -246,11 +301,30 @@ public class BoardController implements PropertyChangeListener {
         opponentsSidebar.prefWidthProperty().bind(mainRoot.widthProperty().multiply(WIDTH_OPPONENTS));
         opponentsSidebar.prefHeightProperty().bind(mainRoot.heightProperty());
 
-        final double HEIGHT_BOARD = 0.7;
-        final double HEIGHT_INVENTORY = 0.3;
+        final double HEIGHT_BOARD = 0.75;
+        final double HEIGHT_INVENTORY = 0.25;
 
         boardRoot.prefHeightProperty().bind(leftZone.heightProperty().multiply(HEIGHT_BOARD));
         inventoryBox.prefHeightProperty().bind(leftZone.heightProperty().multiply(HEIGHT_INVENTORY));
+
+        playerStatsBox.prefWidthProperty().bind(leftZone.widthProperty().multiply(0.3));
+        configureScrollPane(cardsScroll, playerCardsContainer, leftZone.widthProperty().multiply(0.55));
+        tokensBox.prefWidthProperty().bind(leftZone.widthProperty().multiply(0.15));
+
+        tokensBox.setAlignment(Pos.CENTER);
+        tokensBox.setSpacing(5);
+
+        configureTokensContainer(prestigeTokensBox, prestigeTokensImage, loadImage("prestige_token.png"), prestigeTokensText, "0");
+        configureTokensContainer(foodTokensBox, foodTokensImage, loadImage("food_token.png"), foodTokensText, "0");
+
+        playerStatsBox.setAlignment(Pos.CENTER);
+        playerStatsBox.setSpacing(5);
+
+        configureStatContainer(shamanStarsBox, shamanStarsImage, loadImage("shaman_stars_token.png"), shamanStarsText, "0");
+        configureStatContainer(gathererQuantityBox, gathererQuantityImage, loadImage("gatherers_token.png"), gathererQuantityText, "0");
+        configureStatContainer(hunterQuantityBox, hunterQuantityImage, loadImage("hunters_token.png"), hunterQuantityText, "0");
+        configureStatContainer(artistQuantityBox, artistQuantityImage, loadImage("artists_token.png"), artistQuantityText, "0");
+        configureStatContainer(buildersDiscountBox, buildersDiscountImage, loadImage("blank_token.png"), buildersDiscountText, "0");
 
         topBar.prefHeightProperty().bind(boardRoot.heightProperty().multiply(0.1));
         topRowBox.prefHeightProperty().bind(boardRoot.heightProperty().multiply(0.30));
@@ -273,12 +347,48 @@ public class BoardController implements PropertyChangeListener {
         turnOrderContainer.prefWidthProperty().bind(singleTileWidth);
         turnOrderContainer.setAlignment(Pos.CENTER_RIGHT);
 
-        offerTrackContainer.prefWidthProperty().bind( singleTileWidth.multiply(Bindings.size(offerTrackContainer.getChildren())));
+        offerTrackContainer.prefWidthProperty().bind(singleTileWidth.multiply(Bindings.size(offerTrackContainer.getChildren())));
         offerTrackContainer.setAlignment(Pos.CENTER);
         offerTrackContainer.setSpacing(-2);
 
         skipButtonContainer.prefWidthProperty().bind(leftZone.widthProperty().multiply(0.15));
         skipButtonContainer.setAlignment(Pos.CENTER);
+    }
+
+    private void configureTokensContainer(VBox container, ImageView containerImageView, Image containerImage,
+                                          Text containerText, String containerTextLabel) {
+        container.prefWidthProperty().bind(tokensBox.widthProperty().divide(2));
+        container.prefHeightProperty().bind(tokensBox.heightProperty());
+        container.maxHeightProperty().bind(tokensBox.heightProperty());
+        container.setMinWidth(0);
+
+        containerImageView.setImage(containerImage);
+        containerImageView.setPreserveRatio(true);
+        containerImageView.setSmooth(true);
+        containerImageView.fitHeightProperty().bind(inventoryBox.heightProperty().multiply(0.3));
+
+        containerText.setText(containerTextLabel);
+        containerText.setFont(mesosFont);
+        containerText.setTextAlignment(TextAlignment.CENTER);
+        containerText.wrappingWidthProperty().bind(container.widthProperty());
+    }
+
+    private void configureStatContainer(VBox container, ImageView containerImageView,
+                                        Image containerImage, Text containerText, String containerTextLabel) {
+        container.prefWidthProperty().bind(playerStatsBox.widthProperty().divide(5));
+        container.maxHeightProperty().bind(playerStatsBox.heightProperty());
+        container.prefHeightProperty().bind(playerStatsBox.heightProperty());
+        container.setMinWidth(0);
+
+        containerImageView.setImage(containerImage);
+        containerImageView.setPreserveRatio(true);
+        containerImageView.setSmooth(true);
+        containerImageView.fitHeightProperty().bind(container.heightProperty().multiply(0.3));
+
+        containerText.setText(containerTextLabel);
+        containerText.setFont(mesosFont);
+        containerText.setTextAlignment(TextAlignment.CENTER);
+        containerText.wrappingWidthProperty().bind(container.widthProperty());
     }
 
     public void updateBottomRowLayout(boolean showBuildings) {

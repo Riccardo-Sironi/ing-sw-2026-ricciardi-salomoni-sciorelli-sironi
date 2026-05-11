@@ -19,9 +19,6 @@ public class GameViewController {
     @FXML
     public HBox board;
 
-    @FXML
-    public HBox playerInventory;
-
     private SmallModel smallModel;
 
     public void initialize() {
@@ -29,12 +26,6 @@ public class GameViewController {
         if (opponentsContainer != null) {
             opponentsContainer.setVisible(false);
             opponentsContainer.setManaged(false);
-        }
-
-
-        if (playerInventory != null) {
-            playerInventory.setVisible(false);
-            playerInventory.setManaged(false);
         }
 
         if (board != null) {
