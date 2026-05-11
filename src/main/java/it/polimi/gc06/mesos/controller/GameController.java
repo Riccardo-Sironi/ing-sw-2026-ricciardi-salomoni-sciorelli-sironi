@@ -1,5 +1,6 @@
 package it.polimi.gc06.mesos.controller;
 
+import it.polimi.gc06.mesos.DTOs.*;
 import it.polimi.gc06.mesos.gameExceptions.IllegalGameActionException;
 import it.polimi.gc06.mesos.gameExceptions.IllegalPhaseActionException;
 import it.polimi.gc06.mesos.model.GameModel;
@@ -8,22 +9,17 @@ import it.polimi.gc06.mesos.model.cards.TribeCard;
 import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
 import it.polimi.gc06.mesos.model.gameBoard.TileSlot;
 import it.polimi.gc06.mesos.model.gameTurnManager.TurnManager;
-import it.polimi.gc06.mesos.network.socket.infos.CardPickedInfo;
-import it.polimi.gc06.mesos.network.socket.infos.TotemMovedInfo;
-import it.polimi.gc06.mesos.view.PropertyChangeName;
 
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.util.List;
 
 public class GameController {
 
     private final GameModel model;
-    private final PropertyChangeSupport support;
 
     public GameController(GameModel model) {
         this.model = model;
-        support = new PropertyChangeSupport(this);
     }
 
     public GameModel getModel() {
@@ -58,7 +54,7 @@ public class GameController {
         model.getChangeHandler().registerState();
         turnManager.getPhase().placeTotem(turnManager, activePlayer, tile, model.getBoard());
 
-        TotemMovedInfo info = new TotemMovedInfo(playerNickname, tileIndex);
+        TotemMovedDTO dto = new TotemMovedDTO(playerNickname,tileIndex);
         support.firePropertyChange(PropertyChangeName.TOTEM_MOVED_OFFER.name(), null, info);
         model.getChangeHandler().getChanges().forEach(support::firePropertyChange);
     }
@@ -80,7 +76,7 @@ public class GameController {
         }
 
         TribeCard card = model.getBoard().getBottomCardFromIndex(cardIndex);
-        CardPickedInfo info = new CardPickedInfo(playerNickname, cardIndex, card); //prepares the info if needed
+        PickBottomRowDTO dto = new PickBottomRowDTO(playerNickname,cardIndex); //prepares the dto if needed
 
         model.getChangeHandler().registerState();
         CardBottomRowControllerVisitor cardPickerVisitor = new CardBottomRowControllerVisitor(turnManager, activePlayer, model);
@@ -110,7 +106,7 @@ public class GameController {
         }
 
         TribeCard card = model.getBoard().getTopCardFromIndex(cardIndex);
-        CardPickedInfo info = new CardPickedInfo(playerNickname, cardIndex, card); //prepares the info if needed
+        PickTopRowDTO dto = new PickTopRowDTO(playerNickname,cardIndex); //prepares the dto if needed
 
         model.getChangeHandler().registerState();
         CardTopRowControllerVisitor cardPickerVisitor = new CardTopRowControllerVisitor(turnManager, activePlayer, model);
@@ -142,7 +138,7 @@ public class GameController {
         }
 
         BuildingCard card = model.getBoard().getBottomBuildingFromIndex(cardIndex);
-        CardPickedInfo info = new CardPickedInfo(playerNickname, cardIndex, card); //prepares the info if needed
+        PickBottomBuildingsDTO dto = new PickBottomBuildingsDTO(playerNickname,cardIndex); //prepares the dto if needed
 
         model.getChangeHandler().registerState();
         turnManager.getPhase().pickCardFromBottom(turnManager, activePlayer, card, model.getBoard());
@@ -170,7 +166,7 @@ public class GameController {
         }
 
         BuildingCard card = model.getBoard().getTopBuildingFromIndex(cardIndex);
-        CardPickedInfo info = new CardPickedInfo(playerNickname, cardIndex, card); //prepares the info if needed
+        PickTopBuildingsDTO dto = new PickTopBuildingsDTO(playerNickname,cardIndex); //prepares the dto if needed
 
         model.getChangeHandler().registerState();
         turnManager.getPhase().pickCardFromTop(turnManager, activePlayer, card, model.getBoard());
@@ -199,6 +195,17 @@ public class GameController {
         turnManager.getPhase().skipPick(turnManager, activePlayer);
 
         model.getChangeHandler().getChanges().forEach(support::firePropertyChange);
+    }
+
+    /**
+     * Sends to the clients the info for the initial game state as property change event.
+     * @throws IllegalStateException if the game has already ended.
+     */
+    public void sendGameStartInfo() throws IllegalStateException{
+        if(isGameFinished()) throw new IllegalStateException();
+        for(PropertyChangeEvent event : model.getChangeHandler().getStartingStateAsChanges()){
+            support.firePropertyChange(event);
+        }
     }
 
     public boolean isGameFinished() {

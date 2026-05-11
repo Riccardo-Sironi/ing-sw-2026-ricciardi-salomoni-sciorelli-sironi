@@ -9,6 +9,8 @@ import it.polimi.gc06.mesos.model.cards.events.PaintingsEvent;
 import it.polimi.gc06.mesos.model.cards.events.RitualEvent;
 import it.polimi.gc06.mesos.model.cards.events.SustenanceEvent;
 
+import java.io.Serializable;
+
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.PROPERTY,
@@ -31,7 +33,7 @@ import it.polimi.gc06.mesos.model.cards.events.SustenanceEvent;
         @JsonSubTypes.Type(value = SustenanceEvent.class, name = "SustenanceEvent")
 })
 
-public interface Card {
+public interface Card extends Serializable {
 
     public void accept(CardVisitor visitor);
 }

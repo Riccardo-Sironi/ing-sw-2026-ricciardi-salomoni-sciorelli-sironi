@@ -1,14 +1,18 @@
-package it.polimi.gc06.mesos.model;
+package it.polimi.gc06.mesos.controller;
 
+import it.polimi.gc06.mesos.DTOs.*;
 import it.polimi.gc06.mesos.gameExceptions.IllegalPhaseActionException;
+import it.polimi.gc06.mesos.model.Color;
+import it.polimi.gc06.mesos.model.Era;
+import it.polimi.gc06.mesos.model.GameModel;
+import it.polimi.gc06.mesos.model.Player;
 import it.polimi.gc06.mesos.model.gameBoard.Board;
 import it.polimi.gc06.mesos.model.gameTurnManager.TurnManager;
-import it.polimi.gc06.mesos.network.socket.infos.ResourcesInfo;
-import it.polimi.gc06.mesos.network.socket.infos.SkipRightInfo;
-import it.polimi.gc06.mesos.view.PropertyChangeName;
 
 import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ChangesHandler {
 
@@ -39,12 +43,12 @@ public class ChangesHandler {
      *
      * @return all the {@link PropertyChangeEvent} reassuming the changes.
      */
-    public ArrayList<PropertyChangeEvent> getChanges(){
+    public ArrayList<SmallModelEditor> getChanges(){
 
-        ArrayList<PropertyChangeEvent> changes = new ArrayList<>();
+        ArrayList<SmallModelEditor> changes = new ArrayList<>();
 
         if(board.isEndGame()){
-            changes.add(new PropertyChangeEvent(model,PropertyChangeName.IS_END_GAME.name(), null, model.getLeaderboard()));
+            changes.add(new GameStateChangeDTO(model.getLeaderboard().getScores()));
             return changes;
         }
 
@@ -52,63 +56,54 @@ public class ChangesHandler {
         for(Player p : model.getPlayers()) {
             PlayerState ps = lastPlayersState.stream().filter(s -> s.getPlayer().getNickname().equals(p.getNickname()))
                     .findFirst().orElseThrow(IllegalStateException::new);
-            int diff = p.getFoodTokens() - ps.getFood();
-            if(diff != 0) changes.add(new PropertyChangeEvent(model,PropertyChangeName.FOOD_CHANGED.name(),
-                    0, diff));
-            diff = p.getTopDrawNum() - ps.getTopDraw();
-            if(diff != 0) changes.add(new PropertyChangeEvent(model,PropertyChangeName.TOP_NUM_DRAW_CHANGED.name(),
-                    0, diff));
-            diff = p.getBottomDrawNum() - ps.getBottomDraw();
-            if(diff != 0) changes.add(new PropertyChangeEvent(model,PropertyChangeName.BOTTOM_NUM_DRAW_CHANGED.name(),
-                    0, diff));
-            diff = p.getPrestigeTokens() - ps.getPrestige();
-            if(diff != 0) changes.add(new PropertyChangeEvent(model,PropertyChangeName.PRESTIGE_CHANGED.name(),
-                    0, diff));
+            changes.add(new PlayerResourcesChangeDTO(
+                    ps.player.getNickname(), p.getTopDrawNum()-ps.getTopDraw(), p.getBottomDrawNum()-ps.getBottomDraw(),
+                    p.getFoodTokens()- ps.getFood(),p.getPrestigeTokens()-ps.getPrestige()
+            ));
         }
 
         //checks if the lastPlayerWhoCouldSkip can still skip
         if(getPlayerWhoCouldSkip() != null) try{
             if(!turnManager.getPhase().checkForRightToSkip(getPlayerWhoCouldSkip(),board)){
-                changes.add(new PropertyChangeEvent(model,PropertyChangeName.PLAYER_CAN_SKIP.name(), null,
-                        new SkipRightInfo(getPlayerWhoCouldSkip().getNickname(),false)));
+                PlayerStateChangeDTO dto = new PlayerStateChangeDTO(getPlayerWhoCouldSkip().getNickname());
+                dto.setCanSkip(false);
+                changes.add(dto);
             }
         }catch (IllegalPhaseActionException _){
-            changes.add(new PropertyChangeEvent(model,PropertyChangeName.PLAYER_CAN_SKIP.name(), null,
-                    new SkipRightInfo(getPlayerWhoCouldSkip().getNickname(),false)));
+            PlayerStateChangeDTO dto = new PlayerStateChangeDTO(getPlayerWhoCouldSkip().getNickname());
+            dto.setCanSkip(false);
+            changes.add(dto);
         }
         
         //check if the round has changed
         if(lastRound != turnManager.getRound()){
-            changes.add(new PropertyChangeEvent(model,PropertyChangeName.ROUND_CHANGED.name(),
-                    0,turnManager.getRound()));
+            changes.add(new GameStateChangeDTO(turnManager.getRound()));
         }
         
         //checks last era
         if(lastEra == null || !lastEra.equals(board.getCurrentEra())){
-            changes.add(new PropertyChangeEvent(model,PropertyChangeName.ERA_CHANGED.name(),
-                    null,board.getCurrentEra()));
-            changes.add(new PropertyChangeEvent(model,PropertyChangeName.TOP_ROW_REFILL.name(),
-                    null,board.getTopRow()));
-            changes.add(new PropertyChangeEvent(model,PropertyChangeName.TOP_BUILDINGS_REFILL.name(),
-                    null,board.getTopBuildings()));
+            changes.add(new GameStateChangeDTO(board.getCurrentEra()));
+            changes.add(new TopRowRefillDTO(new ArrayList<>(board.getTopRow())));
+            changes.add(new BuildingsRefillDTO(new ArrayList<>(board.getTopBuildings())));
         }
         
         //check last phase
         if(lastPhase == null ||!lastPhase.equals(turnManager.getPhase().toString())){
-            changes.add(new PropertyChangeEvent(model,PropertyChangeName.PHASE_CHANGED.name(),
-                    null,turnManager.getPhase().toString()));
+            changes.add(new GameStateChangeDTO(turnManager.getPhase().toString()));
         }
         
         //check active player change and right to skip of the new player
         if(getLastActivePlayer() == null || !getLastActivePlayer().getNickname().equals(turnManager.getActivePlayer().getNickname())){
-            changes.add(new PropertyChangeEvent(model,PropertyChangeName.ACTIVE_PLAYER_CHANGED.name(),
-                    null,turnManager.getActivePlayer().getNickname()));
+            PlayerStateChangeDTO dto = new PlayerStateChangeDTO(turnManager.getActivePlayer().getNickname());
+            dto.setIsActive(true);
+            changes.add(dto);
             try {
                 if(turnManager.getPhase().checkForRightToSkip(
                         turnManager.getActivePlayer(),board
                 )){
-                    changes.add(new PropertyChangeEvent(model, PropertyChangeName.PLAYER_CAN_SKIP.name(), null,
-                            new SkipRightInfo(turnManager.getActivePlayer().getNickname(), true)));
+                    dto = new PlayerStateChangeDTO(turnManager.getActivePlayer().getNickname());
+                    dto.setCanSkip(true);
+                    changes.add(dto);
                 }
             }catch (IllegalPhaseActionException _){}
         }
@@ -165,29 +160,20 @@ public class ChangesHandler {
      *
      * @return an {@link ArrayList} containing the changes from an empty model.
      */
-    public ArrayList<PropertyChangeEvent> getStartingStateAsChanges(){
-        ArrayList<PropertyChangeEvent> changes = new ArrayList<>();
+    public SmallModelEditor getStartingStateAsDTO(){
 
-        changes.add(new PropertyChangeEvent(model,PropertyChangeName.ERA_CHANGED.name(),
-                null,board.getCurrentEra()));
-        changes.add(new PropertyChangeEvent(model,PropertyChangeName.ROUND_CHANGED.name(),
-                0,turnManager.getRound()));
-        changes.add(new PropertyChangeEvent(model,PropertyChangeName.PHASE_CHANGED.name(),
-                null,turnManager.getPhase().toString()));
-        changes.add(new PropertyChangeEvent(model,PropertyChangeName.TOP_ROW_REFILL.name(),
-                null,board.getTopRow()));
-        changes.add(new PropertyChangeEvent(model,PropertyChangeName.TOP_BUILDINGS_REFILL.name(),
-                null,board.getTopBuildings()));
-
+        Map<String, Integer> foodMap = new HashMap<>();
+        Map<String, Color> colorMap = new HashMap<>();
         //each player notification
         for(Player p : model.getPlayers()){
-            changes.add(new PropertyChangeEvent(model, PropertyChangeName.FOOD_CHANGED.name(), null,
-                    new ResourcesInfo(p.getNickname(),p.getFoodTokens())));
-            changes.add(new PropertyChangeEvent(model, PropertyChangeName.TOTEM_PLACEMENT_TURN.name(), null,
-                    turnManager.getPlayersOrder().indexOf(p)));
+            foodMap.put(p.getNickname(),p.getFoodTokens());
+            colorMap.put(p.getNickname(),p.getPlayerColor());
         }
 
-        return changes;
+        return new GameStartedDTO(
+                new ArrayList<>(turnManager.getPlayersOrder().stream().map(Player::getNickname).toList()),
+                colorMap, foodMap, new ArrayList<>(board.getTopRow()), new ArrayList<>(board.getTopBuildings())
+        );
     }
 
     

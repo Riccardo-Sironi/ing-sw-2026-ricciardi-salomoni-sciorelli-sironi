@@ -6,7 +6,7 @@ import it.polimi.gc06.mesos.model.GameModel;
 import it.polimi.gc06.mesos.model.InstancesManager.ModelInstancesManager;
 import it.polimi.gc06.mesos.network.client.VirtualClient;
 import it.polimi.gc06.mesos.network.leaderboard.LeaderboardDAO;
-import it.polimi.gc06.mesos.network.socket.commands.Command;
+import it.polimi.gc06.mesos.network.socket.commands.ControllerCommand;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ public class Match {
     private final BlockingQueue<VirtualClient> players;
     private final BlockingQueue<Thread> playersThreads;
 
-    private final BlockingQueue<Command> actionQueue;
+    private final BlockingQueue<ControllerCommand> actionQueue;
     private Thread matchExecutorThread;
 
 
@@ -71,6 +71,8 @@ public class Match {
         players.forEach(c -> playersThreads.add(new Thread(c, c.getNickname())));
         playersThreads.forEach(Thread::start);
 
+        controller.sendGameStartInfo();
+
         matchExecutorThread = new Thread(this::matchLoop, "MatchExecutorThread-" + matchId);
         matchExecutorThread.start();
 
@@ -85,7 +87,7 @@ public class Match {
     private void matchLoop() {
         while (!hasEnded()) {
             try {
-                Command action = actionQueue.take();
+                ControllerCommand action = actionQueue.take();
 
                 try {
                     action.execute(controller);

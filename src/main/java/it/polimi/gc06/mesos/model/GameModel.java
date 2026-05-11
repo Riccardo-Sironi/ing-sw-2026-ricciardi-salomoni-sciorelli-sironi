@@ -1,5 +1,6 @@
 package it.polimi.gc06.mesos.model;
 
+import it.polimi.gc06.mesos.controller.ChangesHandler;
 import it.polimi.gc06.mesos.model.cards.TribeCard;
 import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
 import it.polimi.gc06.mesos.model.cards.events.EventCard;
@@ -9,8 +10,6 @@ import it.polimi.gc06.mesos.model.gameTurnManager.TurnManager;
 import it.polimi.gc06.mesos.network.leaderboard.Leaderboard;
 import it.polimi.gc06.mesos.network.leaderboard.Score;
 
-import java.sql.Timestamp;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;

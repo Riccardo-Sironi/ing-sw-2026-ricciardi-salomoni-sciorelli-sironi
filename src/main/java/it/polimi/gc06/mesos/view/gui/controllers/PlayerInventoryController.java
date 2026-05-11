@@ -4,7 +4,6 @@ import static it.polimi.gc06.mesos.view.gui.GUI.imageFetcher;
 import static it.polimi.gc06.mesos.view.gui.GUI.smallModel;
 
 import it.polimi.gc06.mesos.model.cards.Card;
-import it.polimi.gc06.mesos.view.PropertyChangeName;
 import it.polimi.gc06.mesos.view.gui.elements.CardView;
 
 import java.beans.PropertyChangeEvent;

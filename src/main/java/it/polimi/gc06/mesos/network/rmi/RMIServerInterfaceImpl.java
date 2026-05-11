@@ -4,7 +4,7 @@ import it.polimi.gc06.mesos.controller.GameController;
 import it.polimi.gc06.mesos.network.client.RMIClientInterface;
 import it.polimi.gc06.mesos.network.client.RMIClientManager;
 import it.polimi.gc06.mesos.network.server.MatchManager;
-import it.polimi.gc06.mesos.network.socket.commands.Command;
+import it.polimi.gc06.mesos.network.socket.commands.ControllerCommand;
 import it.polimi.gc06.mesos.network.socket.commands.Request;
 
 import java.rmi.RemoteException;
@@ -68,7 +68,7 @@ public class RMIServerInterfaceImpl extends UnicastRemoteObject implements RMISe
             throw new RemoteException("User not found: " + nickname);
         }
 
-        Command command = new Command(nickname, tileIndex, Request.OFFER_TRACK_REQUEST);
+        ControllerCommand command = new ControllerCommand(nickname, tileIndex, Request.OFFER_TRACK_REQUEST);
 
         manager.enqueueCommand(command);
     }
@@ -80,7 +80,7 @@ public class RMIServerInterfaceImpl extends UnicastRemoteObject implements RMISe
             throw new RemoteException("User not found: " + nickname);
         }
 
-        Command command = new Command(nickname, cardIndex, Request.BOTTOM_CARD_REQUEST);
+        ControllerCommand command = new ControllerCommand(nickname, cardIndex, Request.BOTTOM_CARD_REQUEST);
 
         manager.enqueueCommand(command);
     }
@@ -92,7 +92,7 @@ public class RMIServerInterfaceImpl extends UnicastRemoteObject implements RMISe
             throw new RemoteException("User not found: " + nickname);
         }
 
-        Command command = new Command(nickname, cardIndex, Request.TOP_CARD_REQUEST);
+        ControllerCommand command = new ControllerCommand(nickname, cardIndex, Request.TOP_CARD_REQUEST);
 
         manager.enqueueCommand(command);
     }
@@ -104,7 +104,7 @@ public class RMIServerInterfaceImpl extends UnicastRemoteObject implements RMISe
             throw new RemoteException("User not found: " + nickname);
         }
 
-        Command command = new Command(nickname, cardIndex, Request.BOTTOM_BUILDING_REQUEST);
+        ControllerCommand command = new ControllerCommand(nickname, cardIndex, Request.BOTTOM_BUILDING_REQUEST);
 
         manager.enqueueCommand(command);
     }
@@ -116,7 +116,7 @@ public class RMIServerInterfaceImpl extends UnicastRemoteObject implements RMISe
             throw new RemoteException("User not found: " + nickname);
         }
 
-        Command command = new Command(nickname, cardIndex, Request.TOP_BUILDING_REQUEST);
+        ControllerCommand command = new ControllerCommand(nickname, cardIndex, Request.TOP_BUILDING_REQUEST);
 
         manager.enqueueCommand(command);
     }
@@ -128,7 +128,7 @@ public class RMIServerInterfaceImpl extends UnicastRemoteObject implements RMISe
             throw new RemoteException("User not found: " + nickname);
         }
 
-        Command command = new Command(nickname, 0, Request.SKIP_REQUEST);
+        ControllerCommand command = new ControllerCommand(nickname, 0, Request.SKIP_REQUEST);
 
         manager.enqueueCommand(command);
     }

@@ -3,7 +3,7 @@ package it.polimi.gc06.mesos.network.client;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.polimi.gc06.mesos.controller.GameController;
 import it.polimi.gc06.mesos.network.server.MatchManager;
-import it.polimi.gc06.mesos.network.socket.commands.Command;
+import it.polimi.gc06.mesos.network.socket.commands.ControllerCommand;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -17,7 +17,7 @@ public class RMIClientManager implements VirtualClient, PropertyChangeListener {
     private final MatchManager sharedManager;
     private GameController controller;
     private final BlockingQueue<PropertyChangeEvent> noticeQueue;
-    private BlockingQueue<Command> actionQueue;
+    private BlockingQueue<ControllerCommand> actionQueue;
     private boolean closed;
 
     public RMIClientManager(String nickname, RMIClientInterface rmiClient, MatchManager sharedManager) {
@@ -41,11 +41,11 @@ public class RMIClientManager implements VirtualClient, PropertyChangeListener {
     }
 
     @Override
-    public void setActionQueue(BlockingQueue<Command> queue) {
+    public void setActionQueue(BlockingQueue<ControllerCommand> queue) {
         this.actionQueue = queue;
     }
 
-    public void enqueueCommand(Command command) {
+    public void enqueueCommand(ControllerCommand command) {
         if (actionQueue != null) {
             try {
                 actionQueue.put(command);

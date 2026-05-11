@@ -3,8 +3,10 @@ package it.polimi.gc06.mesos.view.smallModel;
 import it.polimi.gc06.mesos.model.Color;
 import it.polimi.gc06.mesos.model.Era;
 import it.polimi.gc06.mesos.model.cards.Card;
+import it.polimi.gc06.mesos.network.leaderboard.Score;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -14,40 +16,46 @@ public class SmallModel {
     //cards
     private final ArrayList<Card> topRow;
     private final ArrayList<Card> bottomRow;
-    private final ArrayList<Card> topBuilding;
-    private final ArrayList<Card> bottomBuilding;
+    private final ArrayList<Card> topBuildings;
+    private final ArrayList<Card> bottomBuildings;
     private final ArrayList<PlayerView> turnOrderTile;
     private final ArrayList<TileSlotView> offerTrack;
 
     //state
     private Era era;
+    private String phase;
     private int tribeDeckSize;
     private int round;
+    private int topDrawNum;
+    private int bottomDrawNum;
     private boolean isActive;
-    private boolean isEndgame;
     private boolean canSkip;
 
     //context
     private final PlayerView player;
     private final List<PlayerView> opponents; //is immutable
+    private final ArrayList<Score> leaderboard;
 
     public SmallModel(String nickname, Color color, Map<Color, String> opponentsMap) {
         this.topRow = new ArrayList<>();
         this.bottomRow = new ArrayList<>();
-        this.topBuilding = new ArrayList<>();
-        this.bottomBuilding = new ArrayList<>();
+        this.topBuildings = new ArrayList<>();
+        this.bottomBuildings = new ArrayList<>();
         this.turnOrderTile = new ArrayList<>();
         this.offerTrack = new ArrayList<>();
         this.era = null;
+        this.phase = null;
         this.tribeDeckSize = -1;
         this.round = -1;
+        this.topDrawNum = -1;
+        this.bottomDrawNum = -1;
         this.isActive = false;
-        this.isEndgame = false;
         this.canSkip = false;
         this.player = new PlayerView(nickname, color);
         this.opponents = opponentsMap.entrySet().stream().map(
                 x -> new PlayerView(x.getValue(), x.getKey())
         ).collect(Collectors.toList());
+        this.leaderboard = new ArrayList<>();
     }
 
     public boolean isActive() {
@@ -59,11 +67,7 @@ public class SmallModel {
     }
 
     public boolean isEndgame() {
-        return isEndgame;
-    }
-
-    public void setEndgame(boolean endgame) {
-        isEndgame = endgame;
+        return !leaderboard.isEmpty();
     }
 
     public boolean isCanSkip() {
@@ -98,7 +102,23 @@ public class SmallModel {
         this.era = era;
     }
 
-    public PlayerView getPlayer() {
+    public int getTopDrawNum() {
+        return topDrawNum;
+    }
+
+    public void setTopDrawNum(int topDrawNum) {
+        this.topDrawNum = topDrawNum;
+    }
+
+    public int getBottomDrawNum() {
+        return bottomDrawNum;
+    }
+
+    public void setBottomDrawNum(int bottomDrawNum) {
+        this.bottomDrawNum = bottomDrawNum;
+    }
+
+    public PlayerView getPlayer(){
         return player;
     }
 
@@ -119,12 +139,12 @@ public class SmallModel {
         return bottomRow;
     }
 
-    public ArrayList<Card> getTopBuilding() {
-        return topBuilding;
+    public ArrayList<Card> getTopBuildings() {
+        return topBuildings;
     }
 
-    public ArrayList<Card> getBottomBuilding() {
-        return bottomBuilding;
+    public ArrayList<Card> getBottomBuildings() {
+        return bottomBuildings;
     }
 
     public ArrayList<PlayerView> getTurnOrderTile() {
@@ -133,5 +153,21 @@ public class SmallModel {
 
     public ArrayList<TileSlotView> getOfferTrack() {
         return offerTrack;
+    }
+
+    public void setLeaderboard(Collection<Score> leaderboard) {
+        this.leaderboard.addAll(leaderboard);
+    }
+
+    public ArrayList<Score> getLeaderboard() {
+        return leaderboard;
+    }
+
+    public String getPhase() {
+        return phase;
+    }
+
+    public void setPhase(String phase) {
+        this.phase = phase;
     }
 }

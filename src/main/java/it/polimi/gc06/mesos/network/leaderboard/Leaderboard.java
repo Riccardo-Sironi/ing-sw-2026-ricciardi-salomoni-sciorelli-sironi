@@ -1,5 +1,6 @@
 package it.polimi.gc06.mesos.network.leaderboard;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;

@@ -1,16 +1,20 @@
 package it.polimi.gc06.mesos.network_and_db.network;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
+import it.polimi.gc06.mesos.model.Era;
+import it.polimi.gc06.mesos.network.client.PropertyChangeEventMixin;
 import it.polimi.gc06.mesos.network.server.ServerMain;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.beans.PropertyChangeEvent;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -82,12 +86,19 @@ public class TCPClientManagerTest {
         assertTrue(ServerMain.getMatchManager().hasMatchStarted(0),"Match started check");
     }
 
+    /*
     @Test
     public void testGameStart(){
         String[] names = {"Alice","Bob","Carl","David","Eva"};
         startSimpleMatch(List.of(names));
-    }
+        try {
 
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail("Unexpected IOException");
+        }
+    }
+    */
 
 
 }

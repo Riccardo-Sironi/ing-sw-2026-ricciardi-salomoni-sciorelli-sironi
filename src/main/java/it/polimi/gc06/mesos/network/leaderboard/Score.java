@@ -1,6 +1,8 @@
 package it.polimi.gc06.mesos.network.leaderboard;
 
-public class Score {
+import java.io.Serializable;
+
+public class Score implements Serializable{
 
     private String nickname;
     private int prestigeScore;
