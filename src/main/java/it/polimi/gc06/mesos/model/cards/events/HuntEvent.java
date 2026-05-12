@@ -80,6 +80,14 @@ public class HuntEvent extends EventCard {
         }
     }
 
+
+    /**
+     * this method compares this HuntEvent to the specified object.
+     * Two HuntEvents are considered equal if they provide the same prestige gain.
+     *
+     * @param o the reference object with which to compare.
+     * @return true if this object has the same prestige gain as the argument; false otherwise.
+     */
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
@@ -87,6 +95,12 @@ public class HuntEvent extends EventCard {
         return prestigeGain == huntEvent.prestigeGain;
     }
 
+
+    /**
+     * this method calculate the hash code of the HuntEvent based on its prestige gain.
+     *
+     * @return the hash code of the HuntEvent.
+     */
     @Override
     public int hashCode() {
         return Objects.hashCode(prestigeGain);

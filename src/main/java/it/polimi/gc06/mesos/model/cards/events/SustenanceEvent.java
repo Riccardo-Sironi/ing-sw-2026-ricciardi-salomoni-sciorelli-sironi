@@ -122,6 +122,14 @@ public class SustenanceEvent extends EventCard {
         return requiredFood;
     }
 
+
+    /**
+     * this method compares this SustenanceEvent to the specified object.
+     * two SustenanceEvents are considered equal if they have the same prestige loss penalty.
+     *
+     * @param o the reference object with which to compare.
+     * @return true if this object has the same penalty as the argument; false otherwise.
+     */
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
@@ -129,6 +137,12 @@ public class SustenanceEvent extends EventCard {
         return numPrestigeLoss == that.numPrestigeLoss;
     }
 
+
+    /**
+     * this method calculates the hash code of the SustenanceEvent based on its num of prestige loss.
+     *
+     * @return the hash code of the SustenanceEvent.
+     */
     @Override
     public int hashCode() {
         return Objects.hashCode(numPrestigeLoss);

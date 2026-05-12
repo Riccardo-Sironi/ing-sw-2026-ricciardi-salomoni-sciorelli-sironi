@@ -109,6 +109,14 @@ public class RitualEvent extends EventCard {
         }
     }
 
+
+    /**
+     * this method compares this RitualEvent to the specified object.
+     * two RitualEvents are considered equal if they have the same prestige gain and loss.
+     *
+     * @param o the reference object with which to compare.
+     * @return true if this object has the same attributes as the argument; false otherwise.
+     */
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
@@ -116,6 +124,12 @@ public class RitualEvent extends EventCard {
         return prestigeGain == that.prestigeGain && prestigeLoss == that.prestigeLoss;
     }
 
+
+    /**
+     * this method calculates the hash code of the RitualEvent based on its attributes.
+     *
+     * @return the hash code of the RitualEvent.
+     */
     @Override
     public int hashCode() {
         return Objects.hash(prestigeGain, prestigeLoss);

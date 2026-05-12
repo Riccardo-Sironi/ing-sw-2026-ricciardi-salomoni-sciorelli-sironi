@@ -11,21 +11,44 @@ public class EventListVisitor extends CardVisitor {
         this.events = events;
     }
 
+    /**
+     * this method visits a RitualEvent and adds it to the event list.
+     *
+     * @param ritual the RitualEvent to be added.
+     */
     @Override
     public void visit(RitualEvent ritual) {
         events.add(ritual);
     }
 
+
+    /**
+     * this method visits a RitualEvent and adds it to the event list.
+     *
+     * @param sustenance the SustenanceEvent to be added.
+     */
     @Override
     public void visit(SustenanceEvent sustenance) {
         events.add(sustenance);
     }
 
+
+    /**
+     * this method visits a RitualEvent and adds it to the event list.
+     *
+     * @param hunt the HuntEvent to be added.
+     */
     @Override
     public void visit(HuntEvent hunt) {
         events.add(hunt);
     }
 
+
+    /**
+     * this method visits a RitualEvent and adds it to the event list.
+     *
+     * @param paintings the PaintingsEvent to be added.
+     */
     @Override
     public void visit(PaintingsEvent paintings) {
         events.add(paintings);

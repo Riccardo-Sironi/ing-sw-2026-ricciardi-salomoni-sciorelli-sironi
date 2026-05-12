@@ -126,13 +126,31 @@ public class PaintingsEvent extends EventCard {
 
     }
 
+
+    /**
+     * this method compares this PaintingsEvent to the specified object.
+     * Two PaintingsEvents are considered equal if they have the same prestige gain,
+     * prestige loss, and minimum number of artists required.
+     *
+     * @param o the reference object with which to compare.
+     * @return true if this object has the same attributes as the argument; false otherwise.
+     */
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         PaintingsEvent that = (PaintingsEvent) o;
-        return prestigeGain == that.prestigeGain && prestigeLoss == that.prestigeLoss && minNumberOfArtists == that.minNumberOfArtists;
+        return  prestigeGain == that.prestigeGain &&
+                prestigeLoss == that.prestigeLoss &&
+                minNumberOfArtists == that.minNumberOfArtists;
     }
 
+
+    /**
+     * this method calculate the hash code of the PaintingsEvent based on its prestige gain,
+     * prestige loss and min number of artists.
+     *
+     * @return the hash code of the HuntEvent.
+     */
     @Override
     public int hashCode() {
         return Objects.hash(prestigeGain, prestigeLoss, minNumberOfArtists);
