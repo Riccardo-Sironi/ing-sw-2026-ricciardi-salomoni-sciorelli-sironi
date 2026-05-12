@@ -12,16 +12,8 @@
         <Insets top="10" right="10" bottom="10" left="10"/>
     </padding>
 
-    <BorderPane fx:id="mainPane">
-        <top>
-            <HBox fx:id="opponentsContainer"/>
-        </top>
+    <fx:include source="Board.fxml" fx:id="board"/>
 
-        <center>
-            <fx:include source="Board.fxml" fx:id="board"/>
-        </center>
-
-    </BorderPane>
-
+    <HBox fx:id="overlaysBox"/>
 
 </StackPane>

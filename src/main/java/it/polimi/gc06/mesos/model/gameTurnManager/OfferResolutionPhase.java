@@ -197,12 +197,12 @@ public class OfferResolutionPhase extends Phase {
     }
 
     @Override
-    public boolean checkForRightToSkip(Player player, Board board){
-        return checkForRightToSkipTop(player,board) && checkForRightToSkipBottom(player,board);
+    public boolean checkForRightToSkip(Player player, Board board) {
+        return checkForRightToSkipTop(player, board) && checkForRightToSkipBottom(player, board);
     }
 
     @Override
-    public String toString(){
-        return "Offer resolution";
+    public String toString() {
+        return "offer_resolution";
     }
 }

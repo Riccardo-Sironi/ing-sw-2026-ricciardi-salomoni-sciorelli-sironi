@@ -159,7 +159,7 @@ public class EndOfRoundPhase extends Phase {
     }
 
     @Override
-    public String toString(){
-        return "End of round";
+    public String toString() {
+        return "end_of_round";
     }
 }

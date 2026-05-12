@@ -29,7 +29,7 @@ public class EventResolutionPhase extends Phase {
     }
 
     @Override
-    public String toString(){
-        return "Event resolution";
+    public String toString() {
+        return "event_resolution";
     }
 }
