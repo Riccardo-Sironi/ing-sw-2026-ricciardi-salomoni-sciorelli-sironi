@@ -1,17 +1,17 @@
 package it.polimi.gc06.mesos.view.gui.helpers;
 
 public enum PhaseOverlays {
-    TOTEM_PHASE,
-    OFFER_PHASE,
-    EVENT_PHASE,
-    END_PHASE;
+    PLACING_TOTEM,
+    OFFER_RESOLUTION,
+    EVENT_RESOLUTION,
+    END_OF_ROUND;
 
     public static PhaseOverlays getPhase(String phase) {
         return switch (phase) {
-            case "placing_totem" -> TOTEM_PHASE;
-            case "offer_resolution" -> OFFER_PHASE;
-            case "event_resolution" -> EVENT_PHASE;
-            case "end_of_round" -> END_PHASE;
+            case "placing_totem" -> PLACING_TOTEM;
+            case "offer_resolution" -> OFFER_RESOLUTION;
+            case "event_resolution" -> EVENT_RESOLUTION;
+            case "end_of_round" -> END_OF_ROUND;
             default -> null;
         };
     }
@@ -20,5 +20,3 @@ public enum PhaseOverlays {
         return this.name().toLowerCase() + "_phase_overlay.png";
     }
 }
-
-
