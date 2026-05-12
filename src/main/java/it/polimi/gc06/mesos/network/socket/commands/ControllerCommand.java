@@ -2,7 +2,9 @@ package it.polimi.gc06.mesos.network.socket.commands;
 
 import it.polimi.gc06.mesos.controller.GameController;
 
-public class ControllerCommand {
+import java.io.Serializable;
+
+public class ControllerCommand implements Serializable {
 
     private Request request;
     private int index;

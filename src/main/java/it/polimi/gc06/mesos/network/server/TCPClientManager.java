@@ -1,6 +1,5 @@
 package it.polimi.gc06.mesos.network.server;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.polimi.gc06.mesos.controller.GameController;
 import it.polimi.gc06.mesos.controller.ModelListener;
@@ -8,10 +7,7 @@ import it.polimi.gc06.mesos.dtos.ErrorDTO;
 import it.polimi.gc06.mesos.dtos.SmallModelEditor;
 import it.polimi.gc06.mesos.network.socket.commands.ControllerCommand;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.Socket;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -24,17 +20,18 @@ public class TCPClientManager implements VirtualClient, ModelListener {
     private final MatchManager sharedManager;
     private GameController controller;
     private final BlockingQueue<SmallModelEditor> noticeQueue;
-    private BufferedReader inFromClient;
-    private ObjectOutputStream outToClient;
+    private final ObjectInputStream inFromClient;
+    private final ObjectOutputStream outToClient;
     private boolean closed;
 
-    public TCPClientManager(Socket socket, String nickname, MatchManager sharedManager) {
+    public TCPClientManager(Socket socket, String nickname, MatchManager sharedManager, ObjectInputStream inFromClient,
+                            ObjectOutputStream outToClient) {
         this.socket = socket;
         this.nickname = nickname;
         this.sharedManager = sharedManager;
         noticeQueue = new LinkedBlockingQueue<>();
-        inFromClient = null;
-        outToClient = null;
+        this.inFromClient = inFromClient;
+        this.outToClient = outToClient;
         closed = false;
         actionQueue = null;
     }
@@ -63,48 +60,37 @@ public class TCPClientManager implements VirtualClient, ModelListener {
         //prepares the sender that responds to listener notice, necessary to ensure thread-safe notice
         Thread sender = new Thread(this::senderLoop);
         sender.start();
-
-        ObjectMapper mapper = new ObjectMapper();
+        //client input loop
+        ControllerCommand command;
 
         try {
-            //prepares input object
-            inFromClient = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            while (true) {
 
-            //client input loop
-            String input = "";
-            while ((input = inFromClient.readLine()) != null) {
-
+                command = (ControllerCommand) inFromClient.readObject();
                 //handling client input
-                System.out.println("'" + nickname + "' client sent: " + input);
+                System.out.println("'" + nickname + "' client sent: " + command);
                 try {
-
-                    ControllerCommand command = mapper.readValue(input, ControllerCommand.class);
-
                     if (actionQueue != null) {
                         actionQueue.put(command);
                     } else {
                         sendErrorMessage("The match hasn't started yet!");
                     }
-                } catch (JsonProcessingException e) {
-                    System.err.print("Error on '" + nickname + "' client request: ");
-
-                    //TODO Questo potrebbe essere un modo per propagare l'errore al sender
-                    sendErrorMessage(e.getMessage());
-                    e.printStackTrace();
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                     break;
                 } catch (Exception e) {
-
-                    //TODO Questo potrebbe essere un modo per propagare l'errore al sender
                     sendErrorMessage(e.getMessage());
                     System.err.println("['" + nickname + "'] Unexpected error: " + e.getMessage());
                     e.printStackTrace();
                 }
             }
-        } catch (IOException e) {
+        } catch (ClassNotFoundException e) {
             System.err.print("Error on '" + nickname + "' client thread: ");
             e.printStackTrace();
+        } catch (EOFException _){
+            System.out.println(nickname+" disconnected");
+        } catch (IOException _){
+            System.err.println("Error on '" + nickname + "' client read: ");
         }
 
         closeConnection();
@@ -124,16 +110,6 @@ public class TCPClientManager implements VirtualClient, ModelListener {
     //it should never be called directly! only usable by a different Thread
     private void senderLoop() {
 
-        //prepares the output object
-        try {
-            outToClient = new ObjectOutputStream(socket.getOutputStream());
-        } catch (IOException e) {
-            System.err.print("Error on '" + nickname + "' client notice thread: ");
-            e.printStackTrace();
-            if (nickname != null) sharedManager.logout(nickname);
-            return;
-        }
-
         //notice loop
         while (!closed) {
             ObjectMapper mapper = new ObjectMapper();
@@ -144,6 +120,8 @@ public class TCPClientManager implements VirtualClient, ModelListener {
                 return;
             }
             try {
+                //lazy initialization: to avoid conflict with the ClientDispatcher stream the ObjectOutputStream
+                //is created at the last possible moment (since when it's created it sends setup data on the stream)
                 outToClient.writeObject(notice);
             } catch (IOException e) {
                 System.err.print("Error on '" + nickname + "' notice dispatch: ");

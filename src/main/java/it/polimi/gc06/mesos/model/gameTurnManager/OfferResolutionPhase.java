@@ -13,11 +13,6 @@ public class OfferResolutionPhase extends Phase {
 
     private boolean isStarted = false;
 
-    // TODO : la possibilità di skippare la fase la si da solo se non ci sono carte character da pescare VVVVV
-    // TODO : deve essere differenziarta fra top e bottom VVVV
-    // TODO : deve essere ricontrollato ogni volta che si pesca una carta VVVV
-    // TODO : capire poi come si capiscese siamo nel pecaggio top o bottom
-
     @Override
     public void startPlayerOfferResolution(TurnManager turnManager, Player player, TileSlot tileSlot) throws IllegalPhaseActionException {
         if (turnManager.getActivePlayer() != player) {
@@ -32,8 +27,6 @@ public class OfferResolutionPhase extends Phase {
         isStarted = true;
 
         checkIfPlayerIsFinished(turnManager, player, turnManager.getGameModel().getBoard());
-
-        // TODO Notify Buildings on Draw
     }
 
     @Override
@@ -189,8 +182,6 @@ public class OfferResolutionPhase extends Phase {
         if (checkForRightToSkipTop(player, turnManager.getGameModel().getBoard()) && checkForRightToSkipBottom(player, turnManager.getGameModel().getBoard())) {
             player.setTopDrawNum(0);
             player.setBottomDrawNum(0);
-
-            checkForRightToSkipTop(player, turnManager.getGameModel().getBoard()); //TODO togliere?
         } else {
             throw new IllegalPhaseActionException("You can't skip the offer resolution phase!");
         }

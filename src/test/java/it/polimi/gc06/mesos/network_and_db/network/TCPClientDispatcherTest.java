@@ -30,12 +30,12 @@ public class TCPClientDispatcherTest {
         try (Socket socket = new Socket("localhost", 1234)) {
             assertTrue(socket.isConnected());
 
-            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-            out.println("Alice"); //sends nickname
-            assertTrue(in.readLine().equals("OK"));
+            ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+            ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+            out.writeObject("Alice"); //sends nickname
+            assertTrue(((String)in.readObject()).equals("OK"));
 
-        } catch (IOException e) {
+        } catch (IOException | ClassNotFoundException e) {
             fail("Error during communication");
         }
     }
@@ -45,17 +45,25 @@ public class TCPClientDispatcherTest {
         try (Socket socket = new Socket("localhost", 1234)) {
             assertTrue(socket.isConnected());
 
-            BufferedReader in1 = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            PrintWriter out1 = new PrintWriter(socket.getOutputStream(), true);
+            ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+            ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
             String nickname = "Alice";
-            out1.println(nickname); //sends nickname
-            assertEquals("OK", in1.readLine(), "Nickname sent.");
-            BufferedReader in2 = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            PrintWriter out2 = new PrintWriter(socket.getOutputStream(), true);
-            out2.println(nickname); //sends nickname
-            assertEquals("KO", in2.readLine(), "Nickname sent.");
+            out.writeObject(nickname); //sends nickname
+            assertEquals("OK", (String) in.readObject(), "Nickname sent.");
 
-        } catch (IOException e) {
+        } catch (ClassNotFoundException | IOException e) {
+            fail("Error during communication");
+        }
+        try (Socket socket = new Socket("localhost", 1234)) {
+            assertTrue(socket.isConnected());
+
+            ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+            ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+            String nickname = "Alice";
+            out.writeObject(nickname); //sends nickname
+            assertEquals("KO", (String) in.readObject(), "Nickname sent.");
+
+        } catch (ClassNotFoundException | IOException e) {
             fail("Error during communication");
         }
     }
@@ -67,17 +75,17 @@ public class TCPClientDispatcherTest {
             Socket socket = new Socket("localhost", 1234);
             assertTrue(socket.isConnected());
 
-            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+            ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+            ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
             String nickname = "Alice";
-            out.println(nickname); //sends nickname
-            assertEquals("OK", in.readLine(), "Nickname sent");
+            out.writeObject(nickname); //sends nickname
+            assertEquals("OK", (String) in.readObject(), "Nickname sent.");
             socket.close();
-            try { Thread.sleep(1000); } catch (InterruptedException _) {}
+            try { Thread.sleep(500); } catch (InterruptedException _) {}
             assertFalse(manager.isUserLogged(nickname));
 
 
-        } catch (IOException e) {
+        } catch (ClassNotFoundException | IOException e) {
             fail("Error during communication");
         }
     }
@@ -89,28 +97,26 @@ public class TCPClientDispatcherTest {
             Socket socket = new Socket("localhost", 1234);
             assertTrue(socket.isConnected());
 
-            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-            out.println(nickname); //sends nickname
-            assertEquals("OK", in.readLine(), "Nickname sent");
+            ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+            ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+            out.writeObject(nickname); //sends nickname
+            assertEquals("OK", (String) in.readObject(), "Nickname sent.");
             socket.close();
-            try { Thread.sleep(1000); } catch (InterruptedException _) {}
-            assertFalse(ServerMain.getMatchManager().isUserLogged(nickname));
+            try { Thread.sleep(500); } catch (InterruptedException _) {}
 
-        } catch (IOException e) {
+        } catch (ClassNotFoundException | IOException e) {
             fail("Error during communication");
         }
         //2nd login with the same nickname
         try{
             Socket socket = new Socket("localhost", 1234);
             assertTrue(socket.isConnected());
+            ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+            ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+            out.writeObject(nickname); //sends nickname
+            assertEquals("OK", (String) in.readObject(), "Nickname sent.");
 
-            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-            out.println(nickname); //sends nickname
-            assertEquals("OK", in.readLine(), "Nickname sent");
-
-        } catch (IOException e) {
+        } catch (ClassNotFoundException | IOException e) {
             fail("Error during communication");
         }
     }
@@ -120,18 +126,17 @@ public class TCPClientDispatcherTest {
     void testMatchCreation(int numOfPlayers){
         try (Socket socket = new Socket("localhost", 1234)) {
             assertTrue(socket.isConnected());
-
-            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-            out.println("Alice"); //sends nickname
-            assertEquals("OK", in.readLine(), "Nickname sent");
-            out.println("CREATE");
-            assertEquals("OK", in.readLine(), "CREATE request sent");
-            out.println("1");
-            assertEquals("KO", in.readLine(), "Errata numOfPlayer sent");
-            out.println(String.valueOf(numOfPlayers));
-            assertEquals("OK", in.readLine(), "Correct numOfPlayer sent");
-        } catch (IOException e) {
+            ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+            ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+            out.writeObject("Alice"); //sends nickname
+            assertEquals("OK", (String) in.readObject(), "Nickname sent.");
+            out.writeObject("CREATE");
+            assertEquals("OK", (String) in.readObject(), "CREATE request sent");
+            out.writeObject("1");
+            assertEquals("KO", (String) in.readObject(), "Errata num of player sent.");
+            out.writeObject(String.valueOf(numOfPlayers));
+            assertEquals("OK", (String) in.readObject(), "Correct numOfPlayer sent");
+        } catch (ClassNotFoundException | IOException e) {
             fail("Error during communication");
         }
     }
@@ -140,22 +145,23 @@ public class TCPClientDispatcherTest {
         try (Socket socket = new Socket("localhost", 1234)) {
             assertTrue(socket.isConnected());
 
-            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-            out.println(nickname); //sends nickname
-            assertEquals("OK", in.readLine(), "Nickname sent");
-            out.println("CREATE");
-            assertEquals("OK", in.readLine(), "CREATE request sent");
-            out.println(String.valueOf(numOfPlayers));
-            assertEquals("OK", in.readLine(), "NumOfPlayer sent");
-        } catch (IOException e) {
+            ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+            ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+            out.writeObject(nickname); //sends nickname
+            assertEquals("OK", (String) in.readObject(), "Nickname sent.");
+            out.writeObject("CREATE");
+            assertEquals("OK", (String) in.readObject(), "CREATE request sent");
+            out.writeObject(String.valueOf(numOfPlayers));
+            assertEquals("OK", (String) in.readObject(), "Correct numOfPlayer sent");
+
+        } catch (ClassNotFoundException | IOException e) {
             fail("Error during communication");
         }
     }
 
-    /*TODO with previous version of test we have seen that if a player disconnects when match is created but not started
+    /*With previous version of test we have seen that if a player disconnects when match is created but not started
        the server does not see this disconnection until the match has started so the cannot relog with the same nickname
-       until match si started, is it ok? */
+       until match si started. */
     @ParameterizedTest
     @ValueSource(ints = {5})
     void testMultipleMatchCreation(int n){
@@ -174,19 +180,19 @@ public class TCPClientDispatcherTest {
         try (Socket socket = new Socket("localhost", 1234)) {
             assertTrue(socket.isConnected());
 
-            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-            out.println("Bob"); //sends nickname
-            assertEquals("OK", in.readLine(), "Nickname sent");
-            out.println("JOIN");
-            in.readLine(); //waits for the server input
-            out.println("a!'/");
-            assertNotEquals("OK",in.readLine(),"Not numeric match id sent");
-            out.println("1");
-            assertNotEquals("OK",in.readLine(),"Not existing match id sent");
-            out.println("0");
-            assertEquals("OK",in.readLine(),"Correct match id sent");
-        } catch (IOException e) {
+            ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+            ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+            out.writeObject("Bob"); //sends nickname
+            assertEquals("OK", (String) in.readObject(), "Nickname sent");
+            out.writeObject("JOIN");
+            in.readObject(); //waits for the server input
+            out.writeObject("a!'/");
+            assertNotEquals("OK",(String) in.readObject(),"Not numeric match id sent");
+            out.writeObject("1");
+            assertNotEquals("OK",(String) in.readObject(),"Not existing match id sent");
+            out.writeObject("0");
+            assertEquals("OK",(String) in.readObject(),"Correct match id sent");
+        } catch (ClassNotFoundException | IOException e) {
             fail("Error during communication");
         }
     }
@@ -195,15 +201,15 @@ public class TCPClientDispatcherTest {
         try (Socket socket = new Socket("localhost", 1234)) {
             assertTrue(socket.isConnected());
 
-            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-            out.println(nickname); //sends nickname
-            assertEquals("OK", in.readLine(), "Nickname sent");
-            out.println("JOIN");
-            in.readLine(); //waits for server input
-            out.println(String.valueOf(id));
-            assertEquals("OK", in.readLine(), "Match id sent");
-        } catch (IOException e) {
+            ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+            ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+            out.writeObject(nickname); //sends nickname
+            assertEquals("OK", (String) in.readObject(), "Nickname sent");
+            out.writeObject("JOIN");
+            in.readObject(); //waits for the server input
+            out.writeObject(String.valueOf(id));
+            assertEquals("OK",(String) in.readObject(),"Correct match id sent");
+        } catch (ClassNotFoundException | IOException e) {
             fail("Error during communication");
         }
     }

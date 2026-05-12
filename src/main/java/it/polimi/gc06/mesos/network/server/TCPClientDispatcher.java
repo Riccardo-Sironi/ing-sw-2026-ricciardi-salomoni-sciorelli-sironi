@@ -1,9 +1,6 @@
 package it.polimi.gc06.mesos.network.server;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 
@@ -22,61 +19,65 @@ public class TCPClientDispatcher implements Runnable {
     @Override
     public void run() {
 
-        PrintWriter outToClient = null;
-        BufferedReader inFromClient = null;
+        ObjectOutputStream outToClient = null;
+        ObjectInputStream inFromClient = null;
         String nickname = null;
 
         try {
             clientSocket.setSoTimeout(TIMEOUT);
 
-            inFromClient = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-            outToClient = new PrintWriter(clientSocket.getOutputStream(), true);
+            outToClient = new ObjectOutputStream(clientSocket.getOutputStream());
+            inFromClient = new ObjectInputStream(clientSocket.getInputStream());
             String input;
-            String output;
 
             //nickname handling
-            nickname = inFromClient.readLine(); //client side: nickname request
+            nickname = (String)inFromClient.readObject(); //client side: nickname request
             while (!sharedManager.login(nickname)) {
-                outToClient.println("KO");
-                nickname = inFromClient.readLine();
+                outToClient.writeObject("KO");
+                nickname = (String)inFromClient.readObject();
             }
-            outToClient.println("OK");
+            outToClient.writeObject("OK");
 
             //match handling
             boolean success = false; //whether ot not the match request was dispatched
             while (!success) {
-                input = inFromClient.readLine(); //client side: create match or join match decision
+                input = (String)inFromClient.readObject(); //client side: create match or join match decision
                 if (input.equals("CREATE")) {
-                    outToClient.println("OK");
-                    input = inFromClient.readLine(); //client side: num of player request
+                    outToClient.writeObject("OK");
+                    input = (String)inFromClient.readObject(); //client side: num of player request
                     if (input == null) throw new NullPointerException(); //disconnection handling
                     while (!isNumeric(input) || Integer.parseInt(input) < Match.MIN_PLAYERS
                             || Integer.parseInt(input) > Match.MAX_PLAYERS) {
-                        outToClient.println("KO");
-                        input = inFromClient.readLine();
+                        outToClient.writeObject("KO");
+                        input = (String)inFromClient.readObject();
                     }
                     clientSocket.setSoTimeout(0); //removes the timeout to ensure match confirm
                     Match newMatch = sharedManager.createMatch(Integer.parseInt(input));
-                    sharedManager.joinMatch(newMatch.getMatchId(), new TCPClientManager(clientSocket, nickname, sharedManager));
-                    outToClient.println("OK");
+                    sharedManager.joinMatch(newMatch.getMatchId(), new TCPClientManager(clientSocket, nickname,
+                            sharedManager, inFromClient, outToClient));
+                    outToClient.writeObject("OK");
                     success = true;
                 } else if (input.equals("JOIN")) {
-                    outToClient.println(sharedManager.getAvailableMatchesString());
-                    input = inFromClient.readLine(); //client side: matches request
+                    outToClient.writeObject(sharedManager.getAvailableMatchesString());
+                    input = (String)inFromClient.readObject(); //client side: matches request
                     if (input == null) throw new NullPointerException(); //disconnection handling
-                    while (!isNumeric(input) || !sharedManager.joinMatch(Integer.parseInt(input), new TCPClientManager(clientSocket, nickname, sharedManager))) {
-                        outToClient.println(sharedManager.getAvailableMatchesString());
-                        input = inFromClient.readLine();
+                    while (!isNumeric(input) || !sharedManager.joinMatch(Integer.parseInt(input), new TCPClientManager(
+                            clientSocket, nickname, sharedManager, inFromClient, outToClient))) {
+                        outToClient.writeObject(sharedManager.getAvailableMatchesString());
+                        input = (String)inFromClient.readObject();
                     }
                     clientSocket.setSoTimeout(0); //removes the timeout to ensure match confirm
-                    outToClient.println("OK");
+                    outToClient.writeObject("OK");
                     success = true;
-                } else outToClient.println("KO");
+                } else outToClient.writeObject("KO");
             }
         } catch (SocketTimeoutException _) {
             if (outToClient != null) {
-                outToClient.println("TIMEOUT");
-                outToClient.close();
+                try {
+                    outToClient.writeObject("TIMEOUT");
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
                 String alias = nickname;
                 if (alias == null) alias = "not identified";
                 System.err.println("Client '" + alias + "' timeout.");
@@ -86,11 +87,10 @@ public class TCPClientDispatcher implements Runnable {
             } catch (IOException _) {
             }
             if (nickname != null) sharedManager.logout(nickname);
-        } catch (IOException | NullPointerException | IllegalArgumentException e) {
+        } catch (IOException | NullPointerException | IllegalArgumentException | ClassNotFoundException e) {
             //NullPointerException could be thrown if the client disconnects and readLine() returns null
             System.err.print("Error while accepting player: ");
             e.printStackTrace();
-            if (outToClient != null) outToClient.close();
             if (inFromClient != null) try {
                 inFromClient.close();
             } catch (IOException _) {
