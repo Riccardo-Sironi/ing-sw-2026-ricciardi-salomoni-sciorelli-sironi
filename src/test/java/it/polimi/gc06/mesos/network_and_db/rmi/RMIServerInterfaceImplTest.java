@@ -1,7 +1,7 @@
 package it.polimi.gc06.mesos.network_and_db.rmi;
 
 import it.polimi.gc06.mesos.controller.GameController;
-import it.polimi.gc06.mesos.network.client.RMIClientInterface;
+import it.polimi.gc06.mesos.network.client.ClientInterface;
 import it.polimi.gc06.mesos.network.client.RMIClientManager;
 import it.polimi.gc06.mesos.network.rmi.RMIServerInterfaceImpl;
 import it.polimi.gc06.mesos.network.server.MatchManager;
@@ -28,7 +28,7 @@ class RMIServerInterfaceImplTest {
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private MatchManager serverManagerMock;
 
-    private RMIClientInterface clientCallbackMock = mock(RMIClientInterface.class);
+    private ClientInterface clientCallbackMock = mock(ClientInterface.class);
 
     private RMIClientManager rmiClientManagerMock = mock(RMIClientManager.class);
 

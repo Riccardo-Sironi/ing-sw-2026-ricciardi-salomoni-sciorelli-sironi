@@ -1,10 +1,9 @@
 package it.polimi.gc06.mesos.network.client;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import it.polimi.gc06.mesos.dtos.ErrorDTO;
-import it.polimi.gc06.mesos.dtos.SmallModelEditor;
 import it.polimi.gc06.mesos.controller.GameController;
 import it.polimi.gc06.mesos.controller.ModelListener;
+import it.polimi.gc06.mesos.dtos.ErrorDTO;
+import it.polimi.gc06.mesos.dtos.SmallModelEditor;
 import it.polimi.gc06.mesos.network.server.MatchManager;
 import it.polimi.gc06.mesos.network.socket.commands.ControllerCommand;
 
@@ -14,14 +13,14 @@ import java.util.concurrent.TimeUnit;
 
 public class RMIClientManager implements VirtualClient, ModelListener {
     private final String nickname;
-    private final RMIClientInterface rmiClient;
+    private final ClientInterface rmiClient;
     private final MatchManager sharedManager;
     private GameController controller;
     private final BlockingQueue<SmallModelEditor> noticeQueue;
     private BlockingQueue<ControllerCommand> actionQueue;
     private boolean closed;
 
-    public RMIClientManager(String nickname, RMIClientInterface rmiClient, MatchManager sharedManager) {
+    public RMIClientManager(String nickname, ClientInterface rmiClient, MatchManager sharedManager) {
         this.nickname = nickname;
         this.rmiClient = rmiClient;
         this.sharedManager = sharedManager;
@@ -38,7 +37,7 @@ public class RMIClientManager implements VirtualClient, ModelListener {
     @Override
     public void setController(GameController controller) {
         this.controller = controller;
-        controller.addListener(this,nickname);
+        controller.addListener(this, nickname);
     }
 
     @Override
@@ -70,7 +69,6 @@ public class RMIClientManager implements VirtualClient, ModelListener {
 
     @Override
     public void run() {
-        ObjectMapper mapper = new ObjectMapper();
         while (!closed) {
             try {
                 // Wait for max 5 sec
@@ -96,7 +94,7 @@ public class RMIClientManager implements VirtualClient, ModelListener {
         if (closed) return;
         closed = true;
         if (nickname != null) sharedManager.logout(nickname);
-        if (controller != null) controller.removeListener(this,nickname);
+        if (controller != null) controller.removeListener(this, nickname);
     }
 
     public GameController getController() {
@@ -107,6 +105,7 @@ public class RMIClientManager implements VirtualClient, ModelListener {
     public void update(SmallModelEditor dto) {
         try {
             noticeQueue.put(dto);
-        } catch (InterruptedException e) {}
+        } catch (InterruptedException e) {
+        }
     }
 }

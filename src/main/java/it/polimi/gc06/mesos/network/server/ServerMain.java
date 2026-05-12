@@ -3,11 +3,8 @@ package it.polimi.gc06.mesos.network.server;
 import it.polimi.gc06.mesos.network.rmi.RMIServerInterfaceImpl;
 import it.polimi.gc06.mesos.network.socket.TCPServer;
 
-import java.io.IOException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-
-import static java.rmi.server.UnicastRemoteObject.unexportObject;
 
 /**
  * Entrypoint for the server application.
@@ -17,13 +14,17 @@ import static java.rmi.server.UnicastRemoteObject.unexportObject;
 public class ServerMain {
 
     private static MatchManager sharedManager = new MatchManager();
+
     /**
      * Main method to start the server.
      *
      * @param args the first argument is the TCP port number, the second argument is the RMI port number
      */
     public static void main(String[] args) {
-        int tcpPortNumber = 1234;
+        // Mesos expressed as number
+        // M = 13 = 1+3 = 4, E = 5, S = 19 = 1+9 = 1, O = 15 = 6, S = 1
+        int tcpPortNumber = 45161;
+        // Leave the RMI Port to the default value
         int RMIPortNumber = 1099;
 
         try {
@@ -77,7 +78,7 @@ public class ServerMain {
      *
      * @return the match manager.
      */
-    public static MatchManager getMatchManager(){
+    public static MatchManager getMatchManager() {
         return sharedManager;
     }
 }

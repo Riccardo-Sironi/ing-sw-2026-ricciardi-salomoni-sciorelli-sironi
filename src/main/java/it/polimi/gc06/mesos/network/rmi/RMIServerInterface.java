@@ -1,6 +1,6 @@
 package it.polimi.gc06.mesos.network.rmi;
 
-import it.polimi.gc06.mesos.network.client.RMIClientInterface;
+import it.polimi.gc06.mesos.network.client.ClientInterface;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -14,7 +14,7 @@ public interface RMIServerInterface extends Remote {
 
     int createMatch(int numOfPlayers) throws RemoteException;
 
-    boolean joinMatch(int matchId, String nickname, RMIClientInterface clientCallback) throws RemoteException;
+    boolean joinMatch(int matchId, String nickname, ClientInterface clientCallback) throws RemoteException;
 
     void handleTotemOfferTilePlacement(String nickname, int tileIndex) throws RemoteException;
 

@@ -9,7 +9,7 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.function.Consumer;
 
-public class RMIServerConnection extends UnicastRemoteObject implements RMIClientInterface {
+public class RMIServerConnection extends UnicastRemoteObject implements ClientInterface {
 
     private final RMIServerInterface serverStub;
     // TODO Fix this - da cambiare ASAP con DTO, per uniformare a TCP
@@ -24,17 +24,12 @@ public class RMIServerConnection extends UnicastRemoteObject implements RMIClien
     }
 
     /**
-     * Sends a message to the intended reader client-side, uses a thread to free the caller immediately
+     * Sends a DTO to the intended reader client-side, uses a thread to free the caller immediately
      * since RMI calls are blocking.
      *
-     * @param message the update from the server
-     * @throws RemoteException //TODO perché?
+     * @param dto the update from the server
+     *
      */
-    @Override
-    public void receiveMessage(String message) throws RemoteException {
-        //new Thread(() -> messageHandler.accept(message)).start();
-    }
-
     @Override
     public void receiveDTO(SmallModelEditor dto) {
         new Thread(() -> messageHandler.accept(dto)).start();
