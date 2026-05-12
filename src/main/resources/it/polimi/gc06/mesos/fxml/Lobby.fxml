@@ -7,6 +7,7 @@
 <?import javafx.scene.layout.*?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.image.ImageView?>
 <StackPane xmlns="http://javafx.com/javafx"
            xmlns:fx="http://javafx.com/fxml"
            fx:controller="it.polimi.gc06.mesos.view.gui.controllers.LobbyGuiController"
@@ -15,6 +16,8 @@
     <padding>
         <Insets top="20" right="20" bottom="20" left="20"/>
     </padding>
+
+    <ImageView fx:id="backgroundImage" preserveRatio="true"/>
 
     <HBox fx:id="lobbyContainer">
     </HBox>

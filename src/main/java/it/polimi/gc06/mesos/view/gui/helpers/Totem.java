@@ -56,4 +56,16 @@ public enum Totem {
             default -> null;
         };
     }
+
+    public String getTotemColorRGBbrighter() {
+        return switch (this) {
+            case ORANGE -> "255, 120, 90";
+            case TURQUOISE -> "70, 180, 200";
+            case WHITE -> "255, 255, 255";
+            case YELLOW -> "255, 220, 100";
+            case PURPLE -> "80, 50, 70";
+            case NONE -> "160, 160, 160";
+            default -> null;
+        };
+    }
 }

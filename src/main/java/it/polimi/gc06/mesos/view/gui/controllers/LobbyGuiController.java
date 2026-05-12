@@ -6,11 +6,9 @@ import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -25,6 +23,8 @@ public class LobbyGuiController {
     public StackPane lobbyRoot;
     @FXML
     public HBox lobbyContainer;
+    @FXML
+    public ImageView backgroundImage;
 
     public ArrayList<VBox> players;
 
@@ -62,6 +62,10 @@ public class LobbyGuiController {
         lobbyContainer.setSpacing(20);
         lobbyContainer.setFillHeight(false);
         HBox.setHgrow(lobbyContainer, Priority.NEVER);
+
+        backgroundImage.setImage(new Image("mesos.png"));
+        backgroundImage.fitHeightProperty().bind(lobbyRoot.heightProperty());
+        backgroundImage.setPreserveRatio(true);
     }
 
     private VBox initPlayerBox(String playerNameLabel, String status, Totem totem) {
@@ -70,7 +74,7 @@ public class LobbyGuiController {
         playerBox.prefHeightProperty().bind(lobbyRoot.heightProperty().multiply(0.6));
         playerBox.setAlignment(Pos.CENTER);
         playerBox.setSpacing(40);
-        playerBox.setStyle("-fx-background-color: rgb(" + totem.getTotemColorRGB() + ",0.6); -fx-border-color: rgb( " + totem.getTotemColorRGB() + "); -fx-border-width: 2px; -fx-border-radius: 10px; -fx-background-radius: 10px;");
+        playerBox.setStyle("-fx-background-color: rgb(" + totem.getTotemColorRGBbrighter() + "); -fx-border-color: rgb( " + totem.getTotemColorRGB() + "); -fx-border-width: 2px; -fx-border-radius: 10px; -fx-background-radius: 10px;");
 
         ImageView totemImage = new ImageView(totem.getTotemStanding());
         totemImage.setPreserveRatio(true);
@@ -86,14 +90,16 @@ public class LobbyGuiController {
         Text playerName = new Text(playerNameLabel);
         playerName.setTextAlignment(TextAlignment.CENTER);
         playerName.setFont(mesosFont);
+        playerName.setScaleX(1.2);
+        playerName.setScaleY(1.2);
         playerName.wrappingWidthProperty().bind(playerBox.widthProperty().subtract(20));
         playerName.setFill(totem.getTotemColor());
 
         Text playerStatus = new Text(status.toUpperCase());
         playerStatus.setTextAlignment(TextAlignment.CENTER);
         playerStatus.setFont(mesosFont);
-        playerStatus.setScaleX(1.5);
-        playerStatus.setScaleY(1.5);
+        playerStatus.setScaleX(1.7);
+        playerStatus.setScaleY(1.7);
         playerStatus.wrappingWidthProperty().bind(playerBox.widthProperty().subtract(20));
         playerStatus.setFill(totem.getTotemColor());
 
