@@ -5,7 +5,7 @@ import it.polimi.gc06.mesos.network.client.RMIClientInterface;
 import it.polimi.gc06.mesos.network.client.RMIClientManager;
 import it.polimi.gc06.mesos.network.rmi.RMIServerInterfaceImpl;
 import it.polimi.gc06.mesos.network.server.MatchManager;
-import it.polimi.gc06.mesos.network.socket.commands.Command;
+import it.polimi.gc06.mesos.network.socket.commands.ControllerCommand;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
@@ -168,7 +168,7 @@ class RMIServerInterfaceImplTest {
         serverImpl.handleBuildingPickTopRow(testUser, 5);
         serverImpl.handleSkip(testUser);
 
-        verify(rmiClientManagerMock, times(6)).enqueueCommand(any(Command.class));
+        verify(rmiClientManagerMock, times(6)).enqueueCommand(any(ControllerCommand.class));
     }
 
     @Test

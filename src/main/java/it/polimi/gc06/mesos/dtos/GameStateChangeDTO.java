@@ -1,8 +1,7 @@
-package it.polimi.gc06.mesos.DTOs;
+package it.polimi.gc06.mesos.dtos;
 
 import it.polimi.gc06.mesos.model.Era;
 import it.polimi.gc06.mesos.model.gameTurnManager.OfferResolutionPhase;
-import it.polimi.gc06.mesos.network.leaderboard.Leaderboard;
 import it.polimi.gc06.mesos.network.leaderboard.Score;
 import it.polimi.gc06.mesos.view.smallModel.SmallModel;
 

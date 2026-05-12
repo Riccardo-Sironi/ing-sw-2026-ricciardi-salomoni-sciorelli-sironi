@@ -1,22 +1,23 @@
 package it.polimi.gc06.mesos.network.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import it.polimi.gc06.mesos.dtos.ErrorDTO;
+import it.polimi.gc06.mesos.dtos.SmallModelEditor;
 import it.polimi.gc06.mesos.controller.GameController;
+import it.polimi.gc06.mesos.controller.ModelListener;
 import it.polimi.gc06.mesos.network.server.MatchManager;
 import it.polimi.gc06.mesos.network.socket.commands.ControllerCommand;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-public class RMIClientManager implements VirtualClient, PropertyChangeListener {
+public class RMIClientManager implements VirtualClient, ModelListener {
     private final String nickname;
     private final RMIClientInterface rmiClient;
     private final MatchManager sharedManager;
     private GameController controller;
-    private final BlockingQueue<PropertyChangeEvent> noticeQueue;
+    private final BlockingQueue<SmallModelEditor> noticeQueue;
     private BlockingQueue<ControllerCommand> actionQueue;
     private boolean closed;
 
@@ -61,7 +62,7 @@ public class RMIClientManager implements VirtualClient, PropertyChangeListener {
     public void sendErrorMessage(String message) {
         try {
             // Fake event to notify the Error
-            noticeQueue.put(new PropertyChangeEvent(this, "ACTION_ERROR", null, message));
+            noticeQueue.put(new ErrorDTO(message));
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
@@ -73,9 +74,9 @@ public class RMIClientManager implements VirtualClient, PropertyChangeListener {
         while (!closed) {
             try {
                 // Wait for max 5 sec
-                PropertyChangeEvent notice = noticeQueue.poll(5, TimeUnit.SECONDS);
+                SmallModelEditor notice = noticeQueue.poll(5, TimeUnit.SECONDS);
                 if (notice != null) {
-                    rmiClient.receiveMessage(mapper.writeValueAsString(notice));
+                    rmiClient.receiveDTO(notice);
                 } else {
                     // Ping to make sure the client is still alive
                     rmiClient.ping();
@@ -103,7 +104,9 @@ public class RMIClientManager implements VirtualClient, PropertyChangeListener {
     }
 
     @Override
-    public void propertyChange(PropertyChangeEvent evt) {
-        noticeQueue.add(evt);
+    public void update(SmallModelEditor dto) {
+        try {
+            noticeQueue.put(dto);
+        } catch (InterruptedException e) {}
     }
 }

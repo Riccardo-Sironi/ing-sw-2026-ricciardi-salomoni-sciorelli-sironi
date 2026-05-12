@@ -2,30 +2,28 @@ package it.polimi.gc06.mesos.network.client;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import it.polimi.gc06.mesos.dtos.ErrorDTO;
+import it.polimi.gc06.mesos.dtos.SmallModelEditor;
 import it.polimi.gc06.mesos.controller.GameController;
+import it.polimi.gc06.mesos.controller.ModelListener;
 import it.polimi.gc06.mesos.network.server.MatchManager;
-import it.polimi.gc06.mesos.network.socket.commands.Command;
+import it.polimi.gc06.mesos.network.socket.commands.ControllerCommand;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-public class TCPClientManager implements VirtualClient, PropertyChangeListener {
+public class TCPClientManager implements VirtualClient, ModelListener {
 
-    private BlockingQueue<Command> actionQueue;
+    private BlockingQueue<ControllerCommand> actionQueue;
     private final Socket socket;
     private final String nickname;
     private final MatchManager sharedManager;
     private GameController controller;
-    private final BlockingQueue<PropertyChangeEvent> noticeQueue;
+    private final BlockingQueue<SmallModelEditor> noticeQueue;
     private BufferedReader inFromClient;
-    private PrintWriter outToClient;
+    private ObjectOutputStream outToClient;
     private boolean closed;
 
     public TCPClientManager(Socket socket, String nickname, MatchManager sharedManager) {
@@ -54,7 +52,7 @@ public class TCPClientManager implements VirtualClient, PropertyChangeListener {
     }
 
     @Override
-    public void setActionQueue(BlockingQueue<Command> queue) {
+    public void setActionQueue(BlockingQueue<ControllerCommand> queue) {
         this.actionQueue = queue;
     }
 
@@ -78,7 +76,7 @@ public class TCPClientManager implements VirtualClient, PropertyChangeListener {
                 System.out.println("'" + nickname + "' client sent: " + input);
                 try {
 
-                    Command command = mapper.readValue(input, Command.class);
+                    ControllerCommand command = mapper.readValue(input, ControllerCommand.class);
 
                     if (actionQueue != null) {
                         actionQueue.put(command);
@@ -114,7 +112,7 @@ public class TCPClientManager implements VirtualClient, PropertyChangeListener {
     public void sendErrorMessage(String message) {
         try {
             // Fake event to notify the Error
-            noticeQueue.put(new PropertyChangeEvent(this, "ACTION_ERROR", null, message));
+            noticeQueue.put(new ErrorDTO(message));
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
@@ -126,7 +124,7 @@ public class TCPClientManager implements VirtualClient, PropertyChangeListener {
 
         //prepares the output object
         try {
-            outToClient = new PrintWriter(socket.getOutputStream(), true);
+            outToClient = new ObjectOutputStream(socket.getOutputStream());
         } catch (IOException e) {
             System.err.print("Error on '" + nickname + "' client notice thread: ");
             e.printStackTrace();
@@ -137,14 +135,14 @@ public class TCPClientManager implements VirtualClient, PropertyChangeListener {
         //notice loop
         while (!closed) {
             ObjectMapper mapper = new ObjectMapper();
-            PropertyChangeEvent notice = null;
+            SmallModelEditor notice = null;
             try {
                 notice = noticeQueue.take();
             } catch (InterruptedException _) {
                 return;
             }
             try {
-                outToClient.println(mapper.writeValueAsString(notice));
+                outToClient.writeObject(notice);
             } catch (IOException e) {
                 System.err.print("Error on '" + nickname + "' notice dispatch: ");
                 e.printStackTrace();
@@ -155,7 +153,9 @@ public class TCPClientManager implements VirtualClient, PropertyChangeListener {
     public void closeConnection() {
         if (closed) return;
         closed = true;
-        if (outToClient != null) outToClient.close();
+        if (outToClient != null) try {
+                outToClient.close();
+        } catch (IOException _) {}
         if (nickname != null) sharedManager.logout(nickname);
         controller.removeListener(this);
         try {
@@ -169,7 +169,9 @@ public class TCPClientManager implements VirtualClient, PropertyChangeListener {
     }
 
     @Override
-    public void propertyChange(PropertyChangeEvent evt) {
-        noticeQueue.add(evt);
+    public void update(SmallModelEditor dto) {
+        try {
+            noticeQueue.put(dto);
+        } catch (InterruptedException _) {}
     }
 }

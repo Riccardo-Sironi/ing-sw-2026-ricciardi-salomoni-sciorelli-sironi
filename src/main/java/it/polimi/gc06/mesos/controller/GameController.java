@@ -1,6 +1,6 @@
 package it.polimi.gc06.mesos.controller;
 
-import it.polimi.gc06.mesos.DTOs.*;
+import it.polimi.gc06.mesos.dtos.*;
 import it.polimi.gc06.mesos.gameExceptions.IllegalGameActionException;
 import it.polimi.gc06.mesos.gameExceptions.IllegalPhaseActionException;
 import it.polimi.gc06.mesos.model.GameModel;
@@ -10,16 +10,17 @@ import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
 import it.polimi.gc06.mesos.model.gameBoard.TileSlot;
 import it.polimi.gc06.mesos.model.gameTurnManager.TurnManager;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
 import java.util.List;
 
 public class GameController {
 
     private final GameModel model;
+    private final ArrayList<ModelListener> listeners;
 
     public GameController(GameModel model) {
         this.model = model;
+        this.listeners = new ArrayList<>();
     }
 
     public GameModel getModel() {
@@ -55,8 +56,9 @@ public class GameController {
         turnManager.getPhase().placeTotem(turnManager, activePlayer, tile, model.getBoard());
 
         TotemMovedDTO dto = new TotemMovedDTO(playerNickname,tileIndex);
-        support.firePropertyChange(PropertyChangeName.TOTEM_MOVED_OFFER.name(), null, info);
-        model.getChangeHandler().getChanges().forEach(support::firePropertyChange);
+        listeners.forEach(l -> l.update(dto));
+        model.getChangeHandler().getChanges().forEach(c ->
+                listeners.forEach(l -> l.update(c)));
     }
 
     /**
@@ -84,8 +86,9 @@ public class GameController {
         card.accept(cardPickerVisitor);
 
         //if the operation was not successful the notice won't be sent
-        support.firePropertyChange(PropertyChangeName.PICK_FROM_BOTTOM_ROW.name(), null, info);
-        model.getChangeHandler().getChanges().forEach(support::firePropertyChange);
+        listeners.forEach(l -> l.update(dto));
+        model.getChangeHandler().getChanges().forEach(c ->
+                listeners.forEach(l -> l.update(c)));
     }
 
     /**
@@ -114,8 +117,9 @@ public class GameController {
         card.accept(cardPickerVisitor);
 
         //if the operation was not successful the notice won't be sent
-        support.firePropertyChange(PropertyChangeName.PICK_FROM_TOP_ROW.name(), null, info);
-        model.getChangeHandler().getChanges().forEach(support::firePropertyChange);
+        listeners.forEach(l -> l.update(dto));
+        model.getChangeHandler().getChanges().forEach(c ->
+                listeners.forEach(l -> l.update(c)));
     }
 
     /**
@@ -144,8 +148,9 @@ public class GameController {
         turnManager.getPhase().pickCardFromBottom(turnManager, activePlayer, card, model.getBoard());
 
         //if the operation was not successful the notice won't be sent
-        support.firePropertyChange(PropertyChangeName.PICK_FROM_BOTTOM_BUILDINGS.name(), null, info);
-        model.getChangeHandler().getChanges().forEach(support::firePropertyChange);
+        listeners.forEach(l -> l.update(dto));
+        model.getChangeHandler().getChanges().forEach(c ->
+                listeners.forEach(l -> l.update(c)));
     }
 
     /**
@@ -172,8 +177,9 @@ public class GameController {
         turnManager.getPhase().pickCardFromTop(turnManager, activePlayer, card, model.getBoard());
 
         //if the operation was not successful the notice won't be sent
-        support.firePropertyChange(PropertyChangeName.PICK_FROM_TOP_BUILDINGS.name(), null, info);
-        model.getChangeHandler().getChanges().forEach(support::firePropertyChange);
+        listeners.forEach(l -> l.update(dto));
+        model.getChangeHandler().getChanges().forEach(c ->
+                listeners.forEach(l -> l.update(c)));
     }
 
     /**
@@ -194,7 +200,8 @@ public class GameController {
         model.getChangeHandler().registerState();
         turnManager.getPhase().skipPick(turnManager, activePlayer);
 
-        model.getChangeHandler().getChanges().forEach(support::firePropertyChange);
+        model.getChangeHandler().getChanges().forEach(c ->
+                listeners.forEach(l -> l.update(c)));
     }
 
     /**
@@ -203,21 +210,19 @@ public class GameController {
      */
     public void sendGameStartInfo() throws IllegalStateException{
         if(isGameFinished()) throw new IllegalStateException();
-        for(PropertyChangeEvent event : model.getChangeHandler().getStartingStateAsChanges()){
-            support.firePropertyChange(event);
-        }
+        listeners.forEach(l -> l.update(model.getChangeHandler().getStartingStateAsDTO()));
     }
 
     public boolean isGameFinished() {
         return model.getBoard().isEndGame();
     }
 
-    public void addListener(PropertyChangeListener listener) {
-        support.addPropertyChangeListener(listener);
+    public void addListener(ModelListener listener) {
+        listeners.add(listener);
     }
 
-    public void removeListener(PropertyChangeListener listener) {
-        support.removePropertyChangeListener(listener);
+    public void removeListener(ModelListener listener) {
+        listeners.remove(listener);
     }
 
 }

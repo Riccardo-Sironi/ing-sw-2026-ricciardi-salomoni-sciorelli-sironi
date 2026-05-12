@@ -1,6 +1,6 @@
 package it.polimi.gc06.mesos.controller;
 
-import it.polimi.gc06.mesos.DTOs.*;
+import it.polimi.gc06.mesos.dtos.*;
 import it.polimi.gc06.mesos.gameExceptions.IllegalPhaseActionException;
 import it.polimi.gc06.mesos.model.Color;
 import it.polimi.gc06.mesos.model.Era;

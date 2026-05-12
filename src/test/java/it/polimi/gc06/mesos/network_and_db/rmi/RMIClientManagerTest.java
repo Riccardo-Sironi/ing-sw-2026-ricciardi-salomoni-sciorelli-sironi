@@ -5,7 +5,7 @@ import it.polimi.gc06.mesos.controller.GameController;
 import it.polimi.gc06.mesos.network.client.RMIClientInterface;
 import it.polimi.gc06.mesos.network.client.RMIClientManager;
 import it.polimi.gc06.mesos.network.server.MatchManager;
-import it.polimi.gc06.mesos.network.socket.commands.Command;
+import it.polimi.gc06.mesos.network.socket.commands.ControllerCommand;
 import org.junit.jupiter.api.*;
 
 import java.beans.PropertyChangeEvent;
@@ -23,8 +23,8 @@ class RMIClientManagerTest {
     private RMIClientInterface rmiClientMock = mock(RMIClientInterface.class);
     private MatchManager sharedManagerMock = mock(MatchManager.class);
     private GameController controllerMock = mock(GameController.class);
-    private BlockingQueue<Command> actionQueueMock = mock(BlockingQueue.class);
-    private Command commandMock = mock(Command.class);
+    private BlockingQueue<ControllerCommand> actionQueueMock = mock(BlockingQueue.class);
+    private ControllerCommand commandMock = mock(ControllerCommand.class);
 
     private RMIClientManager clientManager;
     private final String testNickname = "testUser";
@@ -105,7 +105,7 @@ class RMIClientManagerTest {
     @DisplayName("Enqueue Command handles InterruptedException properly")
     void testEnqueueCommandWhenInterrupted() throws InterruptedException {
         clientManager.setActionQueue(actionQueueMock);
-        doThrow(new InterruptedException()).when(actionQueueMock).put(any(Command.class));
+        doThrow(new InterruptedException()).when(actionQueueMock).put(any(ControllerCommand.class));
         clientManager.enqueueCommand(commandMock);
 
         assertTrue(Thread.currentThread().isInterrupted());

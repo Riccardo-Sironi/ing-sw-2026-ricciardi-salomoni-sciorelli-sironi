@@ -1,21 +1,21 @@
-package it.polimi.gc06.mesos.DTOs;
+package it.polimi.gc06.mesos.dtos;
 
 import it.polimi.gc06.mesos.model.cards.Card;
 import it.polimi.gc06.mesos.view.smallModel.SmallModel;
 
-public class PickBottomBuildingsDTO implements SmallModelEditor{
+public class PickBottomRowDTO implements SmallModelEditor{
 
     private final String player;
     private final int cardIndex;
 
-    public PickBottomBuildingsDTO(String player, int cardIndex) {
+    public PickBottomRowDTO(String player, int cardIndex) {
         this.player = player;
         this.cardIndex = cardIndex;
     }
 
     @Override
     public void edit(SmallModel smallModel) {
-        Card card = smallModel.getBottomBuildings().get(cardIndex);
+        Card card = smallModel.getBottomRow().get(cardIndex);
         if(smallModel.getPlayer().getNickname().equals(player)) {
             smallModel.getPlayer().getCharacters().add(card);
         }

@@ -1,5 +1,6 @@
 package it.polimi.gc06.mesos.network.client;
 
+import it.polimi.gc06.mesos.dtos.SmallModelEditor;
 import it.polimi.gc06.mesos.network.rmi.RMIServerInterface;
 
 import java.rmi.RemoteException;
@@ -13,9 +14,9 @@ public class RMIServerConnection extends UnicastRemoteObject implements RMIClien
     private final RMIServerInterface serverStub;
     // TODO Fix this - da cambiare ASAP con DTO, per uniformare a TCP
     //oggetto che deve ricevere il messaggio lato client
-    private final Consumer<String> messageHandler;
+    private final Consumer<SmallModelEditor> messageHandler;
 
-    public RMIServerConnection(String host, int port, Consumer<String> messageHandler) throws Exception {
+    public RMIServerConnection(String host, int port, Consumer<SmallModelEditor> messageHandler) throws Exception {
         super();
         this.messageHandler = messageHandler;
         Registry registry = LocateRegistry.getRegistry(host, port);
@@ -31,8 +32,14 @@ public class RMIServerConnection extends UnicastRemoteObject implements RMIClien
      */
     @Override
     public void receiveMessage(String message) throws RemoteException {
-        new Thread(() -> messageHandler.accept(message)).start();
+        //new Thread(() -> messageHandler.accept(message)).start();
     }
+
+    @Override
+    public void receiveDTO(SmallModelEditor dto) {
+        new Thread(() -> messageHandler.accept(dto)).start();
+    }
+
 
     @Override
     public void ping() throws RemoteException {
