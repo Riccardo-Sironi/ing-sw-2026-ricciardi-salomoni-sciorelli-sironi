@@ -30,7 +30,7 @@ public class GUI extends Application implements View {
 
     @Override
     public void start(Stage stage) throws IOException {
-        mockSmallModel();
+        //mockSmallModel();
 
         FXMLLoader gameViewLoader = new FXMLLoader(
                 getClass().getResource("/it/polimi/gc06/mesos/fxml/mesos.fxml")

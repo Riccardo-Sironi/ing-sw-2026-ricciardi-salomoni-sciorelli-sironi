@@ -1,6 +1,5 @@
 package it.polimi.gc06.mesos.view.gui.controllers;
 
-import it.polimi.gc06.mesos.model.Color;
 import it.polimi.gc06.mesos.model.cards.Card;
 import it.polimi.gc06.mesos.view.gui.elements.CardView;
 import it.polimi.gc06.mesos.view.gui.elements.OffertTileView;
@@ -12,7 +11,11 @@ import it.polimi.gc06.mesos.view.gui.helpers.Totem;
 import it.polimi.gc06.mesos.view.gui.helpers.TurnOrderTileInfo;
 import it.polimi.gc06.mesos.view.gui.visitors.CardEffectVisitor;
 import it.polimi.gc06.mesos.view.smallModel.PlayerView;
+import it.polimi.gc06.mesos.view.smallModel.TileSlotView;
 import javafx.animation.Interpolator;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
@@ -35,15 +38,12 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Popup;
+import javafx.util.Duration;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.Timeline;
-import javafx.util.Duration;
 
 import static it.polimi.gc06.mesos.view.gui.GUI.imageFetcher;
 import static it.polimi.gc06.mesos.view.gui.GUI.smallModel;
@@ -428,21 +428,21 @@ public class BoardController {
     }
 
     private void configureInventoryStyle() {
-        String color = "";
+        String color;
 
         if (smallModel == null) {
             color = Totem.TURQUOISE.getTotemColorRGB();
-
         } else {
-            // TODO : color based on player's totem
+            color = Totem.getTotem(smallModel.getPlayer().getColor()).getTotemColorRGB();
         }
 
-        String backgroundInventoryStyle = "-fx-background-color: rgb(" + color + ", 0.6);";
-        String borderInventoryStyle = "-fx-border-color: rgb(" + color + ",1); -fx-border-width: 2px;";
+        String backgroundInventoryStyle = "-fx-background-color: rgba(" + color + ", 0.9);";
+        String borderInventoryStyle = "-fx-border-color: rgba(" + color + ", 1.0); -fx-border-width: 2px;";
 
-        inventoryBox.setStyle(backgroundInventoryStyle + borderInventoryStyle);
+        inventoryBox.setStyle(backgroundInventoryStyle + " " + borderInventoryStyle);
 
-        String playerCardsBackgroundStyle = "-fx-background-color: rgb(255,255,255);";
+        // Anche qui, se non serve opacità va bene rgb, altrimenti rgba
+        String playerCardsBackgroundStyle = "-fx-background-color: rgb(255, 255, 255);";
 
         playerCardsContainer.setStyle(playerCardsBackgroundStyle);
 
@@ -505,7 +505,7 @@ public class BoardController {
         }
 
         for (PlayerView opponent : smallModel.getOpponents()) {
-            String rgbColor = getRGBFromColor(opponent.getColor());
+            String rgbColor = Totem.getTotem(opponent.getColor()).getTotemColorRGB();
             opponentsSidebar.getChildren().add(createOpponentInventoryBox(opponent.getNickname(), rgbColor, opponent));
         }
     }
@@ -516,7 +516,7 @@ public class BoardController {
         container.setSpacing(0);
         container.setCursor(Cursor.HAND);
 
-        String style = String.format("-fx-background-color: rgba(%s, 0.4); -fx-border-color: rgb(%s); -fx-border-width: 2px; -fx-background-radius: 10; -fx-border-radius: 10;", rgbColor, rgbColor);
+        String style = String.format("-fx-background-color: rgba(%s, 0.8); -fx-border-color: rgb(%s); -fx-border-width: 2px; -fx-background-radius: 10; -fx-border-radius: 10;", rgbColor, rgbColor);
         container.setStyle(style);
         container.setPadding(new Insets(10));
 
@@ -595,12 +595,13 @@ public class BoardController {
 
         cardsScroll.layoutBoundsProperty().addListener((obs, oldBounds, newBounds) -> {
             Rectangle clip = new Rectangle(newBounds.getWidth(), newBounds.getHeight());
-            clip.setArcWidth(10); clip.setArcHeight(10);
+            clip.setArcWidth(10);
+            clip.setArcHeight(10);
             cardsScroll.setClip(clip);
         });
 
         if (opponent == null || opponent.getCharacters() == null) {
-            for(int i = 0; i < 3; i++) {
+            for (int i = 0; i < 3; i++) {
                 CardView cardView = new CardView(loadImage("shaman_1_card.png"));
                 cardView.fitHeightProperty().bind(inventoryBox.heightProperty().multiply(RESIZE_CARD_FACTOR));
                 cardsContainer.getChildren().add(cardView);
@@ -617,10 +618,14 @@ public class BoardController {
             }
         }
 
-        Region spacer1 = new Region(); VBox.setVgrow(spacer1, Priority.ALWAYS);
-        Region spacer2 = new Region(); VBox.setVgrow(spacer2, Priority.ALWAYS);
-        Region spacer3 = new Region(); VBox.setVgrow(spacer3, Priority.ALWAYS);
-        Region spacer4 = new Region(); VBox.setVgrow(spacer4, Priority.ALWAYS);
+        Region spacer1 = new Region();
+        VBox.setVgrow(spacer1, Priority.ALWAYS);
+        Region spacer2 = new Region();
+        VBox.setVgrow(spacer2, Priority.ALWAYS);
+        Region spacer3 = new Region();
+        VBox.setVgrow(spacer3, Priority.ALWAYS);
+        Region spacer4 = new Region();
+        VBox.setVgrow(spacer4, Priority.ALWAYS);
 
         detailsContainer.getChildren().addAll(spacer1, resourcesBox, spacer2, charactersBox, spacer3, cardsScroll, spacer4);
 
@@ -697,18 +702,6 @@ public class BoardController {
         return stat;
     }
 
-    private String getRGBFromColor(Color color) {
-        if (color == null) return "200, 200, 200"; //fallback
-        switch (color.name()) {
-            case "YELLOW": return Totem.YELLOW.getTotemColorRGB();
-            case "PURPLE": return Totem.PURPLE.getTotemColorRGB();
-            case "WHITE": return Totem.WHITE.getTotemColorRGB();
-            case "ORANGE": return Totem.ORANGE.getTotemColorRGB();
-            case "TURQUOISE": return Totem.TURQUOISE.getTotemColorRGB();
-            default: return "200, 200, 200";
-        }
-    }
-
     private void drawTurnOrderTile() {
         turnOrderContainer.getChildren().clear();
         if (smallModel == null) return;
@@ -737,11 +730,21 @@ public class BoardController {
                 Totem t = Totem.NONE;
                 if (playerView.getColor() != null) {
                     switch (playerView.getColor().name()) {
-                        case "YELLOW": t = Totem.YELLOW; break;
-                        case "PURPLE": t = Totem.PURPLE; break;
-                        case "WHITE": t = Totem.WHITE; break;
-                        case "ORANGE": t = Totem.ORANGE; break;
-                        case "TURQUOISE": t = Totem.TURQUOISE; break;
+                        case "YELLOW":
+                            t = Totem.YELLOW;
+                            break;
+                        case "PURPLE":
+                            t = Totem.PURPLE;
+                            break;
+                        case "WHITE":
+                            t = Totem.WHITE;
+                            break;
+                        case "ORANGE":
+                            t = Totem.ORANGE;
+                            break;
+                        case "TURQUOISE":
+                            t = Totem.TURQUOISE;
+                            break;
                     }
                 }
                 activeTotems.add(t);
@@ -760,7 +763,7 @@ public class BoardController {
         offerTrackContainer.getChildren().clear();
         if (smallModel == null) return;
 
-        for (var tile : smallModel.getOfferTrack()) {
+        for (TileSlotView tile : smallModel.getOfferTrack()) {
             Image img = new Image(imageFetcher.fetch(tile));
             // TODO: give the player a Totem or retrieve it
             String nickname = tile.getPlayer() != null ? tile.getPlayer().getNickname() : "Empty";
