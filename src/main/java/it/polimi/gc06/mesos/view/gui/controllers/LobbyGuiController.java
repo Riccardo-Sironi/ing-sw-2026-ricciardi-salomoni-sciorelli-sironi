@@ -1,5 +1,6 @@
 package it.polimi.gc06.mesos.view.gui.controllers;
 
+import it.polimi.gc06.mesos.view.gui.elements.LobbyPlayerView;
 import it.polimi.gc06.mesos.view.gui.helpers.Totem;
 import javafx.animation.*;
 import javafx.fxml.FXML;
@@ -31,13 +32,8 @@ public class LobbyGuiController {
     public HBox totemSelectionBox;
 
     // TODO : this should be based on the small model
-    public EnumMap<Totem, VBox> players;
+    public EnumMap<Totem, LobbyPlayerView> players;
 
-    private final Font mesosFont = Font.loadFont(
-            this.getClass().getResourceAsStream(
-                    "/it/polimi/gc06/mesos/fonts/KidKnowledge.otf"
-            ), 25
-    );
 
     @FXML
     public void initialize() {
@@ -46,21 +42,6 @@ public class LobbyGuiController {
         setupArchitecturalLayout();
 
         drawTotemSelectionBox();
-
-//        Timeline demoTimeline = new Timeline(
-//                new KeyFrame(Duration.seconds(1), e ->
-//                        addPlayer(initPlayerBox("Player 1", "Ready", Totem.TURQUOISE), Totem.TURQUOISE)),
-//                new KeyFrame(Duration.seconds(2), e ->
-//                        addPlayer(initPlayerBox("Player 2", "Ready", Totem.PURPLE), Totem.PURPLE)),
-//                new KeyFrame(Duration.seconds(3), e ->
-//                        addPlayer(initPlayerBox("Player 3", "Ready", Totem.WHITE), Totem.WHITE)),
-//                new KeyFrame(Duration.seconds(4), e ->
-//                        addPlayer(initPlayerBox("Player 4", "Ready", Totem.YELLOW), Totem.YELLOW)),
-//                new KeyFrame(Duration.seconds(5), e ->
-//                        addPlayer(initPlayerBox("Player 5", "Ready", Totem.ORANGE), Totem.ORANGE))
-//        );
-//
-//        demoTimeline.play();
     }
 
     private void setupArchitecturalLayout() {
@@ -73,7 +54,7 @@ public class LobbyGuiController {
 
         backgroundImage.setImage(new Image("mesos.png"));
         backgroundImage.fitHeightProperty().bind(lobbyRoot.heightProperty());
-        backgroundImage.setPreserveRatio(true);
+        backgroundImage.fitWidthProperty().bind(lobbyRoot.widthProperty());
 
         totemSelectionBox.prefWidthProperty().bind(lobbyRoot.widthProperty().multiply(0.6));
         totemSelectionBox.prefHeightProperty().bind(lobbyRoot.heightProperty().multiply(0.4));
@@ -86,52 +67,18 @@ public class LobbyGuiController {
         StackPane.setAlignment(totemSelectionBox, Pos.CENTER);
     }
 
-    private VBox initPlayerBox(String playerNameLabel, String status, Totem totem) {
-        VBox playerBox = new VBox();
+    private LobbyPlayerView initPlayerBox(String playerNameLabel, String status, Totem totem) {
+        LobbyPlayerView playerBox = new LobbyPlayerView(playerNameLabel, status, totem);
         playerBox.prefWidthProperty().bind(lobbyRoot.widthProperty().divide(5));
         playerBox.prefHeightProperty().bind(lobbyRoot.heightProperty().multiply(0.6));
-        playerBox.setAlignment(Pos.CENTER);
-        playerBox.setSpacing(40);
-        playerBox.setStyle("-fx-background-color: rgb(" + totem.getTotemColorRGBbrighter() + "); -fx-border-color: rgb( " + totem.getTotemColorRGB() + "); -fx-border-width: 2px; -fx-border-radius: 10px; -fx-background-radius: 10px;");
-
-        ImageView totemImage = new ImageView(totem.getTotemStanding());
-        totemImage.setPreserveRatio(true);
-        totemImage.fitHeightProperty().bind(playerBox.heightProperty().multiply(0.3));
-        DropShadow shadow = new DropShadow();
-        shadow.setRadius(2.0);
-        shadow.setOffsetX(-1.0);
-        shadow.setSpread(0.2);
-        shadow.setOffsetY(3);
-        shadow.setColor(Color.color(0, 0, 0, 0.5));
-        totemImage.setEffect(shadow);
-        totemImage.setCursor(Cursor.HAND);
-
-        Text playerName = new Text(playerNameLabel);
-        playerName.setTextAlignment(TextAlignment.CENTER);
-        playerName.setFont(mesosFont);
-        playerName.setScaleX(1.2);
-        playerName.setScaleY(1.2);
-        playerName.wrappingWidthProperty().bind(playerBox.widthProperty().subtract(20));
-        playerName.setFill(totem.getTotemColor());
-
-        Text playerStatus = new Text(status.toUpperCase());
-        playerStatus.setTextAlignment(TextAlignment.CENTER);
-        playerStatus.setFont(mesosFont);
-        playerStatus.setScaleX(1.7);
-        playerStatus.setScaleY(1.7);
-        playerStatus.wrappingWidthProperty().bind(playerBox.widthProperty().subtract(20));
-        playerStatus.setFill(totem.getTotemColor());
-
-        playerBox.getChildren().addAll(totemImage, playerName, playerStatus);
-
 
         return playerBox;
     }
 
     public void drawPlayers() {
-        for (Totem t : Totem.values()) {
-            if (players.get(t) != null && !lobbyContainer.getChildren().contains(players.get(t))) {
-                addPlayer(players.get(t), t);
+        for (LobbyPlayerView lobbyPlayerView : players.values()) {
+            if (!lobbyContainer.getChildren().contains(lobbyPlayerView)) {
+                addPlayer(lobbyPlayerView, lobbyPlayerView.getTotem());
             }
         }
     }
@@ -152,7 +99,7 @@ public class LobbyGuiController {
                 totemBox.setStyle("-fx-background-color: rgb(" + totem.getTotemColorRGBbrighter() + "); -fx-border-color: rgb( " + totem.getTotemColorRGB() + "); -fx-border-width: 2px; -fx-border-radius: 10px; -fx-background-radius: 10px;");
                 totemBox.setPadding(new Insets(60));
                 totemBox.setCursor(Cursor.HAND);
-                
+
                 ImageView totemImage = new ImageView(totem.getTotemStanding());
                 totemImage.fitHeightProperty().bind(totemSelectionBox.heightProperty().multiply(0.4));
                 totemImage.setPreserveRatio(true);
@@ -203,10 +150,9 @@ public class LobbyGuiController {
         }
     }
 
-    public void addPlayer(VBox playerBox, Totem totem) {
+    public void addPlayer(LobbyPlayerView playerBox, Totem totem) {
         players.put(totem, playerBox);
-
-        // effect when a new player joins: fade in + slide up + scale up
+        
         playerBox.setOpacity(0);
         playerBox.setTranslateY(10);
         playerBox.setScaleX(0.95);
