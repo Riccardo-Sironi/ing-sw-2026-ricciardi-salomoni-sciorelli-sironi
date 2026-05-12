@@ -2,7 +2,9 @@ package it.polimi.gc06.mesos;
 
 import it.polimi.gc06.mesos.view.gui.GUI;
 import it.polimi.gc06.mesos.view.tui.LobbyTui;
+import it.polimi.gc06.mesos.view.tui.TUI;
 import javafx.application.Application;
+
 import java.util.Scanner;
 
 /**
@@ -59,7 +61,7 @@ public class Launcher {
      * Initializes and starts the Text User Interface.
      */
     private static void startTUI() {
-        LobbyTui lobbyTui = new LobbyTui();
-        lobbyTui.askConnectionDetails();
+//        LobbyTui lobbyTui = new LobbyTui();
+//        lobbyTui.askConnectionDetails();
     }
 }
