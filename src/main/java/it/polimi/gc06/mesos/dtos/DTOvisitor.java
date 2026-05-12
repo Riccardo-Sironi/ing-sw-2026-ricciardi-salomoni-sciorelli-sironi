@@ -1,4 +1,4 @@
-package it.polimi.gc06.mesos.DTOs;
+package it.polimi.gc06.mesos.dtos;
 
 public abstract class DTOvisitor {
 

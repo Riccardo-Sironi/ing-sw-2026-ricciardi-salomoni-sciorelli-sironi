@@ -1,6 +1,6 @@
 package it.polimi.gc06.mesos.view.gui.visitors;
 
-import it.polimi.gc06.mesos.DTOs.*;
+import it.polimi.gc06.mesos.dtos.*;
 import it.polimi.gc06.mesos.view.gui.controllers.BoardController;
 
 public class GUIDTOvisitor extends DTOvisitor {
@@ -18,12 +18,14 @@ public class GUIDTOvisitor extends DTOvisitor {
 
     @Override
     public void visit(GameStateChangeDTO dto) {
-        super.visit(dto);
+        boardController.handleRoundChanged();
+        // handleEraChanged
+        // handlePhaseChanged
     }
 
     @Override
     public void visit(BuildingsRefillDTO dto) {
-        super.visit(dto);
+        boardController.handleTopBuildingsRefill();
     }
 
     @Override
@@ -33,22 +35,22 @@ public class GUIDTOvisitor extends DTOvisitor {
 
     @Override
     public void visit(PickBottomRowDTO dto) {
-        super.visit(dto);
+        boardController.handleBottomRowPick();
     }
 
     @Override
     public void visit(PickBottomBuildingsDTO dto) {
-        super.visit(dto);
+        boardController.handleBottomBuildingsPick();
     }
 
     @Override
     public void visit(PickTopRowDTO dto) {
-        super.visit(dto);
+        boardController.handleTopRowPick();
     }
 
     @Override
     public void visit(PickTopBuildingsDTO dto) {
-        super.visit(dto);
+        boardController.handleTopBuildingsPick();
     }
 
     @Override
@@ -58,16 +60,16 @@ public class GUIDTOvisitor extends DTOvisitor {
 
     @Override
     public void visit(PlayerStateChangeDTO dto) {
-        super.visit(dto);
+        boardController.handleActivePlayerChanged();
     }
 
     @Override
     public void visit(TopRowRefillDTO dto) {
-        super.visit(dto);
+        boardController.handleTopRowRefill();
     }
 
     @Override
     public void visit(TotemMovedDTO dto) {
-        super.visit(dto);
+        boardController.handleTotemMoved();
     }
 }
