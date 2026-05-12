@@ -6,8 +6,17 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="it.polimi.gc06.mesos.view.gui.controllers.LobbyGuiController">
+<?import javafx.geometry.Insets?>
+<StackPane xmlns="http://javafx.com/javafx"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="it.polimi.gc06.mesos.view.gui.controllers.LobbyGuiController"
+           fx:id="lobbyRoot">
 
-</BorderPane>
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <HBox fx:id="lobbyContainer">
+    </HBox>
+
+</StackPane>

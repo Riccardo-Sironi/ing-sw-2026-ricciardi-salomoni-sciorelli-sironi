@@ -2,7 +2,6 @@ package it.polimi.gc06.mesos.view.gui.controllers;
 
 import it.polimi.gc06.mesos.model.Color;
 import it.polimi.gc06.mesos.model.cards.Card;
-//import it.polimi.gc06.mesos.view.PropertyChangeName;
 import it.polimi.gc06.mesos.view.gui.elements.CardView;
 import it.polimi.gc06.mesos.view.gui.elements.OffertTileView;
 import it.polimi.gc06.mesos.view.gui.elements.TotemPieceView;
@@ -14,7 +13,6 @@ import it.polimi.gc06.mesos.view.gui.helpers.TurnOrderTileInfo;
 import it.polimi.gc06.mesos.view.gui.visitors.CardEffectVisitor;
 import it.polimi.gc06.mesos.view.smallModel.PlayerView;
 import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
 import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
@@ -36,8 +34,6 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Popup;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
@@ -45,7 +41,7 @@ import java.util.Objects;
 import static it.polimi.gc06.mesos.view.gui.GUI.imageFetcher;
 import static it.polimi.gc06.mesos.view.gui.GUI.smallModel;
 
-public class BoardController /*implements PropertyChangeListener*/ {
+public class BoardController {
 
     @FXML
     private HBox mainRoot;
@@ -819,7 +815,7 @@ public class BoardController /*implements PropertyChangeListener*/ {
 
     public void handleTopBuildingsRefill() {
         drawTopBuildingsCards();
-        drawBottomRowCards();
+        drawBottomBuildingCards();
     }
 
     public void handleTopRowPick() {

@@ -15,6 +15,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
 
+import static it.polimi.gc06.mesos.view.gui.GUI.smallModel;
+
 public class GameViewController {
     @FXML
     public StackPane root;
@@ -27,8 +29,7 @@ public class GameViewController {
 
     public ImageView overlay;
 
-    private SmallModel smallModel;
-
+    @FXML
     public void initialize() {
 
         if (overlaysBox != null) {
