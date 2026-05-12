@@ -2,15 +2,12 @@ package it.polimi.gc06.mesos.view.smallModel;
 
 import it.polimi.gc06.mesos.model.Color;
 import it.polimi.gc06.mesos.model.Era;
-import it.polimi.gc06.mesos.model.Player;
 import it.polimi.gc06.mesos.model.cards.Card;
 import it.polimi.gc06.mesos.network.leaderboard.Score;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 public class SmallModel {
 
@@ -118,14 +115,14 @@ public class SmallModel {
     }
 
     public void setPlayer(String nickname, Color color) {
-        this.player = new PlayerView(nickname,color);
+        this.player = new PlayerView(nickname, color);
     }
 
-    public PlayerView getPlayer(){
+    public PlayerView getPlayer() {
         return player;
     }
 
-    public void addOpponent(PlayerView pv){
+    public void addOpponent(PlayerView pv) {
         opponents.add(pv);
     }
 

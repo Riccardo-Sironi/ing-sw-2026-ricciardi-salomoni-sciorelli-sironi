@@ -41,7 +41,7 @@ public class TuiBoardRenderer {
             }
         }
 
-        String[] centeredText = TuiView.centerOnScreen(rowLines, terminal);
+        String[] centeredText = TUI.centerOnScreen(rowLines, terminal);
 
         for (String line : centeredText) {
             terminal.writer().println(line);
@@ -76,7 +76,7 @@ public class TuiBoardRenderer {
         }
 
 
-        String[] centeredText = TuiView.centerOnScreen(rowLines, terminal);
+        String[] centeredText = TUI.centerOnScreen(rowLines, terminal);
 
         for (String line : centeredText) {
             terminal.writer().println(line);
@@ -110,7 +110,7 @@ public class TuiBoardRenderer {
         }
 
 
-        String[] centeredText = TuiView.centerOnScreen(rowLines, terminal);
+        String[] centeredText = TUI.centerOnScreen(rowLines, terminal);
 
         for (String line : centeredText) {
             terminal.writer().println(line);

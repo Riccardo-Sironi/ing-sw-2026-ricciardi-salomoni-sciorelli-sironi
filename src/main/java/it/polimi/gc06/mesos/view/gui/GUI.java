@@ -1,17 +1,17 @@
 package it.polimi.gc06.mesos.view.gui;
 
+import it.polimi.gc06.mesos.view.View;
 import it.polimi.gc06.mesos.view.gui.controllers.BoardController;
 import it.polimi.gc06.mesos.view.gui.controllers.GameViewController;
 import it.polimi.gc06.mesos.view.smallModel.SmallModel;
-
-import java.io.IOException;
-
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-public class GUI extends Application {
+import java.io.IOException;
+
+public class GUI extends Application implements View {
 
     public static int WIDTH = 1920;
     public static int HEIGHT = 1080;

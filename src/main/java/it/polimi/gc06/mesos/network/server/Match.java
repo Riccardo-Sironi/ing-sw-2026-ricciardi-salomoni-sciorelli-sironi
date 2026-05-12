@@ -4,7 +4,6 @@ import it.polimi.gc06.mesos.controller.GameController;
 import it.polimi.gc06.mesos.gameExceptions.IllegalGameActionException;
 import it.polimi.gc06.mesos.model.GameModel;
 import it.polimi.gc06.mesos.model.InstancesManager.ModelInstancesManager;
-import it.polimi.gc06.mesos.network.client.VirtualClient;
 import it.polimi.gc06.mesos.network.leaderboard.LeaderboardDAO;
 import it.polimi.gc06.mesos.network.socket.commands.ControllerCommand;
 

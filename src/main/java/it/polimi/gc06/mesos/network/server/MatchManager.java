@@ -1,7 +1,5 @@
 package it.polimi.gc06.mesos.network.server;
 
-import it.polimi.gc06.mesos.network.client.VirtualClient;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
