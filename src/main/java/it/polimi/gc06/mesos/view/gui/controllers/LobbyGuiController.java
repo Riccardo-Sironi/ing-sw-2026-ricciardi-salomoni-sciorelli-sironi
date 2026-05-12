@@ -3,6 +3,7 @@ package it.polimi.gc06.mesos.view.gui.controllers;
 import it.polimi.gc06.mesos.view.gui.helpers.Totem;
 import javafx.animation.*;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.effect.DropShadow;
@@ -16,6 +17,7 @@ import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
 
 
 public class LobbyGuiController {
@@ -25,8 +27,11 @@ public class LobbyGuiController {
     public HBox lobbyContainer;
     @FXML
     public ImageView backgroundImage;
+    @FXML
+    public HBox totemSelectionBox;
 
-    public ArrayList<VBox> players;
+    // TODO : this should be based on the small model
+    public EnumMap<Totem, VBox> players;
 
     private final Font mesosFont = Font.loadFont(
             this.getClass().getResourceAsStream(
@@ -36,23 +41,26 @@ public class LobbyGuiController {
 
     @FXML
     public void initialize() {
-        players = new ArrayList<>();
+        players = new EnumMap<>(Totem.class);
+
         setupArchitecturalLayout();
 
-        Timeline demoTimeline = new Timeline(
-                new KeyFrame(Duration.seconds(1), e ->
-                        addPlayer(initPlayerBox("Player 1", "Ready", Totem.TURQUOISE))),
-                new KeyFrame(Duration.seconds(2), e ->
-                        addPlayer(initPlayerBox("Player 2", "Ready", Totem.PURPLE))),
-                new KeyFrame(Duration.seconds(3), e ->
-                        addPlayer(initPlayerBox("Player 3", "Ready", Totem.WHITE))),
-                new KeyFrame(Duration.seconds(4), e ->
-                        addPlayer(initPlayerBox("Player 4", "Ready", Totem.YELLOW))),
-                new KeyFrame(Duration.seconds(5), e ->
-                        addPlayer(initPlayerBox("Player 5", "Ready", Totem.ORANGE)))
-        );
+        drawTotemSelectionBox();
 
-        demoTimeline.play();
+//        Timeline demoTimeline = new Timeline(
+//                new KeyFrame(Duration.seconds(1), e ->
+//                        addPlayer(initPlayerBox("Player 1", "Ready", Totem.TURQUOISE), Totem.TURQUOISE)),
+//                new KeyFrame(Duration.seconds(2), e ->
+//                        addPlayer(initPlayerBox("Player 2", "Ready", Totem.PURPLE), Totem.PURPLE)),
+//                new KeyFrame(Duration.seconds(3), e ->
+//                        addPlayer(initPlayerBox("Player 3", "Ready", Totem.WHITE), Totem.WHITE)),
+//                new KeyFrame(Duration.seconds(4), e ->
+//                        addPlayer(initPlayerBox("Player 4", "Ready", Totem.YELLOW), Totem.YELLOW)),
+//                new KeyFrame(Duration.seconds(5), e ->
+//                        addPlayer(initPlayerBox("Player 5", "Ready", Totem.ORANGE), Totem.ORANGE))
+//        );
+//
+//        demoTimeline.play();
     }
 
     private void setupArchitecturalLayout() {
@@ -66,6 +74,16 @@ public class LobbyGuiController {
         backgroundImage.setImage(new Image("mesos.png"));
         backgroundImage.fitHeightProperty().bind(lobbyRoot.heightProperty());
         backgroundImage.setPreserveRatio(true);
+
+        totemSelectionBox.prefWidthProperty().bind(lobbyRoot.widthProperty().multiply(0.6));
+        totemSelectionBox.prefHeightProperty().bind(lobbyRoot.heightProperty().multiply(0.4));
+        totemSelectionBox.setMaxSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
+        totemSelectionBox.setSpacing(20);
+        totemSelectionBox.setAlignment(Pos.CENTER);
+        totemSelectionBox.setFillHeight(false);
+        HBox.setHgrow(totemSelectionBox, Priority.NEVER);
+
+        StackPane.setAlignment(totemSelectionBox, Pos.CENTER);
     }
 
     private VBox initPlayerBox(String playerNameLabel, String status, Totem totem) {
@@ -81,7 +99,8 @@ public class LobbyGuiController {
         totemImage.fitHeightProperty().bind(playerBox.heightProperty().multiply(0.3));
         DropShadow shadow = new DropShadow();
         shadow.setRadius(2.0);
-        shadow.setOffsetX(-3.0);
+        shadow.setOffsetX(-1.0);
+        shadow.setSpread(0.2);
         shadow.setOffsetY(3);
         shadow.setColor(Color.color(0, 0, 0, 0.5));
         totemImage.setEffect(shadow);
@@ -105,30 +124,87 @@ public class LobbyGuiController {
 
         playerBox.getChildren().addAll(totemImage, playerName, playerStatus);
 
-        // TODO : the effect below is what we'll use in the color selection process
-
-//        ScaleTransition scaleIn = new ScaleTransition(Duration.seconds(0.2), playerBox);
-//        ScaleTransition scaleOut = new ScaleTransition(Duration.seconds(0.2), playerBox);
-//
-//        playerBox.setOnMouseEntered(e -> {
-//            scaleOut.stop();
-//            scaleIn.setToX(1.1);
-//            scaleIn.setToY(1.1);
-//            scaleIn.playFromStart();
-//        });
-//
-//        playerBox.setOnMouseExited(e -> {
-//            scaleIn.stop();
-//            scaleOut.setToX(1.0);
-//            scaleOut.setToY(1.0);
-//            scaleOut.playFromStart();
-//        });
 
         return playerBox;
     }
 
-    public void addPlayer(VBox playerBox) {
-        players.add(playerBox);
+    public void drawPlayers() {
+        for (Totem t : Totem.values()) {
+            if (players.get(t) != null && !lobbyContainer.getChildren().contains(players.get(t))) {
+                addPlayer(players.get(t), t);
+            }
+        }
+    }
+
+    public void drawTotemSelectionBox() {
+        totemSelectionBox.getChildren().clear();
+
+        for (Totem totem : Totem.values()) {
+            if (!players.containsKey(totem) && totem != Totem.NONE) {
+                HBox totemBox = new HBox();
+                totemBox.setAlignment(Pos.CENTER);
+                totemBox.prefWidthProperty().bind(
+                        totemSelectionBox.widthProperty().divide(5 - players.size()).multiply(0.2)
+                );
+                totemBox.prefHeightProperty().bind(
+                        totemSelectionBox.heightProperty().multiply(0.2)
+                );
+                totemBox.setStyle("-fx-background-color: rgb(" + totem.getTotemColorRGBbrighter() + "); -fx-border-color: rgb( " + totem.getTotemColorRGB() + "); -fx-border-width: 2px; -fx-border-radius: 10px; -fx-background-radius: 10px;");
+                totemBox.setPadding(new Insets(60));
+                totemBox.setCursor(Cursor.HAND);
+                
+                ImageView totemImage = new ImageView(totem.getTotemStanding());
+                totemImage.fitHeightProperty().bind(totemSelectionBox.heightProperty().multiply(0.4));
+                totemImage.setPreserveRatio(true);
+
+                DropShadow shadow = new DropShadow();
+                shadow.setRadius(2.0);
+                shadow.setOffsetX(-1.0);
+                shadow.setSpread(0.2);
+                shadow.setOffsetY(3);
+                shadow.setColor(Color.color(0, 0, 0, 0.5));
+                totemImage.setEffect(shadow);
+
+                totemBox.getChildren().add(totemImage);
+                totemSelectionBox.getChildren().add(totemBox);
+
+                ScaleTransition scaleIn = new ScaleTransition(Duration.seconds(0.15), totemBox);
+                ScaleTransition scaleOut = new ScaleTransition(Duration.seconds(0.15), totemBox);
+                TranslateTransition translateIn = new TranslateTransition(Duration.seconds(0.15), totemBox);
+                TranslateTransition translateOut = new TranslateTransition(Duration.seconds(0.15), totemBox);
+
+                totemBox.setOnMouseEntered(e -> {
+                    scaleOut.stop();
+                    translateOut.stop();
+                    translateIn.setToY(-20);
+                    scaleIn.setToX(1.05);
+                    scaleIn.setToY(1.05);
+                    translateIn.playFromStart();
+                    scaleIn.playFromStart();
+                });
+
+                totemBox.setOnMouseExited(e -> {
+                    translateIn.stop();
+                    scaleIn.stop();
+                    translateOut.setToY(0);
+                    scaleOut.setToX(1.0);
+                    scaleOut.setToY(1.0);
+                    translateOut.playFromStart();
+                    scaleOut.playFromStart();
+                });
+
+                totemBox.setOnMouseClicked(e -> {
+                            players.put(totem, initPlayerBox("Player " + (players.size() + 1), "Ready", totem));
+                            drawPlayers();
+                            drawTotemSelectionBox();
+                        }
+                );
+            }
+        }
+    }
+
+    public void addPlayer(VBox playerBox, Totem totem) {
+        players.put(totem, playerBox);
 
         // effect when a new player joins: fade in + slide up + scale up
         playerBox.setOpacity(0);

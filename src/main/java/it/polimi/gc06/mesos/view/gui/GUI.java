@@ -29,13 +29,7 @@ public class GUI extends Application {
         );
         Scene scene = new Scene(gameViewLoader.load(), WIDTH, HEIGHT);
 
-        scene
-                .getStylesheets()
-                .add(
-                        getClass()
-                                .getResource("/it/polimi/gc06/mesos/css/board_style.css")
-                                .toExternalForm()
-                );
+        scene.getStylesheets().add(getClass().getResource("/it/polimi/gc06/mesos/css/board_style.css").toExternalForm());
 
         // smallModel.setListener(gameViewLoader.getController());
 

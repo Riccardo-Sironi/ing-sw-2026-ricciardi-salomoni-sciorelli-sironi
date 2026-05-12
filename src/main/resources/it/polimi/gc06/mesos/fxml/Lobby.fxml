@@ -17,9 +17,12 @@
         <Insets top="20" right="20" bottom="20" left="20"/>
     </padding>
 
-    <ImageView fx:id="backgroundImage" preserveRatio="true"/>
+    <ImageView fx:id="backgroundImage"/>
 
     <HBox fx:id="lobbyContainer">
+    </HBox>
+
+    <HBox fx:id="totemSelectionBox">
     </HBox>
 
 </StackPane>
