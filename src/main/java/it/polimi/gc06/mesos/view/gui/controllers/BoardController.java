@@ -1,7 +1,8 @@
 package it.polimi.gc06.mesos.view.gui.controllers;
 
+import it.polimi.gc06.mesos.model.Color;
 import it.polimi.gc06.mesos.model.cards.Card;
-import it.polimi.gc06.mesos.view.PropertyChangeName;
+//import it.polimi.gc06.mesos.view.PropertyChangeName;
 import it.polimi.gc06.mesos.view.gui.elements.CardView;
 import it.polimi.gc06.mesos.view.gui.elements.OffertTileView;
 import it.polimi.gc06.mesos.view.gui.elements.TotemPieceView;
@@ -11,11 +12,13 @@ import it.polimi.gc06.mesos.view.gui.helpers.OfferTileInfo;
 import it.polimi.gc06.mesos.view.gui.helpers.Totem;
 import it.polimi.gc06.mesos.view.gui.helpers.TurnOrderTileInfo;
 import it.polimi.gc06.mesos.view.gui.visitors.CardEffectVisitor;
+import it.polimi.gc06.mesos.view.smallModel.PlayerView;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
 import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
@@ -24,6 +27,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
@@ -41,7 +45,7 @@ import java.util.Objects;
 import static it.polimi.gc06.mesos.view.gui.GUI.imageFetcher;
 import static it.polimi.gc06.mesos.view.gui.GUI.smallModel;
 
-public class BoardController implements PropertyChangeListener {
+public class BoardController /*implements PropertyChangeListener*/ {
 
     @FXML
     private HBox mainRoot;
@@ -175,8 +179,9 @@ public class BoardController implements PropertyChangeListener {
             drawTurnOrderTile();
             drawOfferTrack();
             drawSkipButton();
+            drawOpponentsSidebar(null);
         } else {
-            int testNumPlayers = 4;
+            int testNumPlayers = 5;
             setupMockData(testNumPlayers);
         }
 
@@ -226,7 +231,6 @@ public class BoardController implements PropertyChangeListener {
         for (int i = 0; i < numPlayers && i < tuttiITotem.length; i++) {
             totemAttivi.add(tuttiITotem[i]);
         }
-
         TurnOrderTileView turnOrderTile = createTurnOrderTile(toImage, totemAttivi);
         turnOrderContainer.getChildren().add(turnOrderTile);
 
@@ -300,6 +304,8 @@ public class BoardController implements PropertyChangeListener {
 
             offerTrackContainer.getChildren().add(tile);
         }
+
+        drawOpponentsSidebar(totemAttivi);
     }
 
     private void setupArchitecturalLayout() {
@@ -474,8 +480,101 @@ public class BoardController implements PropertyChangeListener {
             if (!path.startsWith("/")) path = "/" + path;
             return new Image(Objects.requireNonNull(getClass().getResourceAsStream(path)));
         } catch (Exception e) {
-            System.err.println("Immagine non trovata: " + path);
+            System.err.println("image not found: " + path);
             return null;
+        }
+    }
+
+    public void drawOpponentsSidebar(ArrayList<Totem> activeTotems) {
+        opponentsSidebar.getChildren().clear();
+        opponentsSidebar.setSpacing(15);
+        opponentsSidebar.setPadding(new Insets(15, 5, 15, 5));
+
+        int numOpponents = (smallModel == null) ? (activeTotems.size() - 1) : smallModel.getOpponents().size();
+        if (numOpponents <= 0) return;
+
+        DoubleBinding boxHeight = opponentsSidebar.heightProperty()
+                .subtract((numOpponents - 1) * 15 + 30)
+                .divide(numOpponents);
+
+        if (smallModel == null) {
+
+            for (int i = 1; i < activeTotems.size(); i++) {
+                Totem t = activeTotems.get(i);
+                VBox oppBox = createOpponentInventoryBox("Player " + (i + 1), t.getTotemColorRGB(), 0, 0, boxHeight);
+                VBox.setVgrow(oppBox, Priority.ALWAYS);
+                opponentsSidebar.getChildren().add(oppBox);
+            }
+            return;
+        }
+
+        for (PlayerView opponent : smallModel.getOpponents()) {
+            String rgbColor = getRGBFromColor(opponent.getColor());
+            VBox oppBox = createOpponentInventoryBox(opponent.getNickname(), rgbColor, opponent.getNumPrestige(), opponent.getNumFood(), boxHeight);
+            VBox.setVgrow(oppBox, Priority.ALWAYS);
+            opponentsSidebar.getChildren().add(oppBox);
+        }
+    }
+
+    private VBox createOpponentInventoryBox(String nickname, String rgbColor, int prestige, int food, DoubleBinding heightBinding) {
+        VBox container = new VBox();
+        container.setAlignment(Pos.CENTER);
+        container.setSpacing(10);
+
+        String backgroundStyle = "-fx-background-color: rgba(" + rgbColor + ", 0.4);";
+        String borderStyle = "-fx-border-color: rgb(" + rgbColor + "); -fx-border-width: 2px; -fx-background-radius: 10; -fx-border-radius: 10;";
+        container.setStyle(backgroundStyle + borderStyle);
+        container.setPadding(new Insets(10));
+
+        container.prefWidthProperty().bind(opponentsSidebar.widthProperty().multiply(0.9));
+        container.setMaxWidth(Region.USE_PREF_SIZE);
+
+        container.prefHeightProperty().bind(heightBinding);
+        container.setMinHeight(100);
+
+        Text nameText = new Text(nickname);
+        nameText.setFont(mesosFont);
+        nameText.setTextAlignment(TextAlignment.CENTER);
+
+        HBox statsBox = new HBox();
+        statsBox.setAlignment(Pos.CENTER);
+        statsBox.setSpacing(20);
+
+        VBox prestigeBox = new VBox();
+        prestigeBox.setAlignment(Pos.CENTER);
+        prestigeBox.setSpacing(5);
+        ImageView pImage = new ImageView(loadImage("prestige_token.png"));
+        pImage.setPreserveRatio(true);
+        pImage.setFitHeight(40);
+        Text pText = new Text(String.valueOf(prestige));
+        pText.setFont(mesosFont);
+        prestigeBox.getChildren().addAll(pImage, pText);
+
+        VBox foodBox = new VBox();
+        foodBox.setAlignment(Pos.CENTER);
+        foodBox.setSpacing(5);
+        ImageView fImage = new ImageView(loadImage("food_token.png"));
+        fImage.setPreserveRatio(true);
+        fImage.setFitHeight(40);
+        Text fText = new Text(String.valueOf(food));
+        fText.setFont(mesosFont);
+        foodBox.getChildren().addAll(fImage, fText);
+
+        statsBox.getChildren().addAll(prestigeBox, foodBox);
+        container.getChildren().addAll(nameText, statsBox);
+
+        return container;
+    }
+
+    private String getRGBFromColor(Color color) {
+        if (color == null) return "200, 200, 200"; //fallback
+        switch (color.name()) {
+            case "YELLOW": return Totem.YELLOW.getTotemColorRGB();
+            case "PURPLE": return Totem.PURPLE.getTotemColorRGB();
+            case "WHITE": return Totem.WHITE.getTotemColorRGB();
+            case "ORANGE": return Totem.ORANGE.getTotemColorRGB();
+            case "TURQUOISE": return Totem.TURQUOISE.getTotemColorRGB();
+            default: return "200, 200, 200";
         }
     }
 
@@ -534,7 +633,7 @@ public class BoardController implements PropertyChangeListener {
     private void drawTopBuildingsCards() {
         buildingsContainer.getChildren().clear();
         if (smallModel == null) return;
-        for (Card building : smallModel.getTopBuilding()) {
+        for (Card building : smallModel.getTopBuildings()) {
             CardView cardView = new CardView(new Image(imageFetcher.fetch(building)));
             cardView.fitHeightProperty().bind(topRowBox.heightProperty().multiply(0.85));
             setCardEffect(cardView);
@@ -560,7 +659,7 @@ public class BoardController implements PropertyChangeListener {
         bottomBuildingsContainer.getChildren().clear();
         if (smallModel == null) return;
 
-        for (Card building : smallModel.getBottomBuilding()) {
+        for (Card building : smallModel.getBottomBuildings()) {
             CardView cardView = new CardView(new Image(imageFetcher.fetch(building)));
             cardView.fitHeightProperty().bind(bottomRowBox.heightProperty().multiply(0.85));
             setCardEffect(cardView);
@@ -656,103 +755,103 @@ public class BoardController implements PropertyChangeListener {
         skipButton.setCursor(canSkip ? Cursor.HAND : Cursor.DEFAULT);
     }
 
-    @Override
-    public void propertyChange(PropertyChangeEvent evt) {
-        PropertyChangeName eventName;
-        try {
-            eventName = PropertyChangeName.valueOf(evt.getPropertyName());
-        } catch (IllegalArgumentException ex) {
-            System.err.println("Illegal property: " + evt.getPropertyName());
-            return;
-        }
+//    @Override
+//    public void propertyChange(PropertyChangeEvent evt) {
+//        PropertyChangeName eventName;
+//        try {
+//            eventName = PropertyChangeName.valueOf(evt.getPropertyName());
+//        } catch (IllegalArgumentException ex) {
+//            System.err.println("Illegal property: " + evt.getPropertyName());
+//            return;
+//        }
+//
+//        Platform.runLater(() -> {
+//            switch (eventName) {
+//                case PICK_FROM_TOP_ROW:
+//                    handleTopRowPick();
+//                    break;
+//                case PICK_FROM_BOTTOM_ROW:
+//                    handleBottomRowPick();
+//                    break;
+//                case PICK_FROM_TOP_BUILDINGS:
+//                    handleTopBuildingsPick();
+//                    break;
+//                case PICK_FROM_BOTTOM_BUILDINGS:
+//                    handleBottomBuildingsPick();
+//                    break;
+//                case TOP_ROW_REFILL:
+//                    handleTopRowRefill();
+//                    break;
+//                case TOP_BUILDINGS_REFILL:
+//                    handleTopBuildingsRefill();
+//                    break;
+//
+//                case TOTEM_MOVED_OFFER:
+//                case TOTEM_PLACEMENT_TURN:
+//                    handleTotemMoved();
+//                    break;
+//
+//                case ROUND_CHANGED:
+//                    handleRoundChanged();
+//                    break;
+//                case ACTIVE_PLAYER_CHANGED:
+//                    handleActivePlayerChanged();
+//                    break;
+//
+//                // Da implementare
+//                case PLAYER_CAN_SKIP:
+//                case FOOD_CHANGED:
+//                case PRESTIGE_CHANGED:
+//                case TOP_NUM_DRAW_CHANGED:
+//                case BOTTOM_NUM_DRAW_CHANGED:
+//                case PHASE_CHANGED:
+//                case ERA_CHANGED:
+//                case IS_END_GAME:
+//                    break;
+//            }
+//        });
+//    }
 
-        Platform.runLater(() -> {
-            switch (eventName) {
-                case PICK_FROM_TOP_ROW:
-                    handleTopRowPick();
-                    break;
-                case PICK_FROM_BOTTOM_ROW:
-                    handleBottomRowPick();
-                    break;
-                case PICK_FROM_TOP_BUILDINGS:
-                    handleTopBuildingsPick();
-                    break;
-                case PICK_FROM_BOTTOM_BUILDINGS:
-                    handleBottomBuildingsPick();
-                    break;
-                case TOP_ROW_REFILL:
-                    handleTopRowRefill();
-                    break;
-                case TOP_BUILDINGS_REFILL:
-                    handleTopBuildingsRefill();
-                    break;
-
-                case TOTEM_MOVED_OFFER:
-                case TOTEM_PLACEMENT_TURN:
-                    handleTotemMoved();
-                    break;
-
-                case ROUND_CHANGED:
-                    handleRoundChanged();
-                    break;
-                case ACTIVE_PLAYER_CHANGED:
-                    handleActivePlayerChanged();
-                    break;
-
-                // Da implementare
-                case PLAYER_CAN_SKIP:
-                case FOOD_CHANGED:
-                case PRESTIGE_CHANGED:
-                case TOP_NUM_DRAW_CHANGED:
-                case BOTTOM_NUM_DRAW_CHANGED:
-                case PHASE_CHANGED:
-                case ERA_CHANGED:
-                case IS_END_GAME:
-                    break;
-            }
-        });
-    }
-
-    private void handleTopRowRefill() {
+    public void handleTopRowRefill() {
         drawTopRowCards();
         drawDeck();
     }
 
-    private void handleTopBuildingsRefill() {
+    public void handleTopBuildingsRefill() {
         drawTopBuildingsCards();
         drawBottomRowCards();
     }
 
-    private void handleTopRowPick() {
+    public void handleTopRowPick() {
         drawTopRowCards();
         applyEffectToContainerCardViews(buildingsContainer);
         drawSkipButton();
     }
 
-    private void handleBottomRowPick() {
+    public void handleBottomRowPick() {
         drawBottomRowCards();
         applyEffectToContainerCardViews(bottomBuildingsContainer);
         drawSkipButton();
     }
 
-    private void handleTopBuildingsPick() {
+    public void handleTopBuildingsPick() {
         drawTopBuildingsCards();
         applyEffectToContainerCardViews(topCharactersContainer);
         drawSkipButton();
     }
 
-    private void handleBottomBuildingsPick() {
+    public void handleBottomBuildingsPick() {
         drawBottomBuildingCards();
         applyEffectToContainerCardViews(bottomCharactersContainer);
         drawSkipButton();
     }
 
-    private void handleTotemMoved() {
+    public void handleTotemMoved() {
         drawTurnOrderTile();
         drawOfferTrack();
     }
 
-    private void handleRoundChanged() {
+    public void handleRoundChanged() {
         drawDeck();
         drawTopRowCards();
         drawTopBuildingsCards();
@@ -760,7 +859,7 @@ public class BoardController implements PropertyChangeListener {
         drawBottomBuildingCards();
     }
 
-    private void handleActivePlayerChanged() {
+    public void handleActivePlayerChanged() {
         applyEffectToContainerCardViews(topCharactersContainer);
         applyEffectToContainerCardViews(buildingsContainer);
         applyEffectToContainerCardViews(bottomCharactersContainer);
