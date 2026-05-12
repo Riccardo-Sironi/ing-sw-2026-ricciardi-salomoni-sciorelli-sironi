@@ -50,6 +50,14 @@ public class ShamanCard extends CharacterCard {
         visitor.visit(this);
     }
 
+
+    /**
+     * this method compares this ShamanCard to the specified object.
+     * Two ShamanCards are considered equal if they provide the same number of stars.
+     *
+     * @param o the reference object with which to compare.
+     * @return true if this object provides the same number of stars as the argument; false otherwise.
+     */
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
@@ -57,6 +65,12 @@ public class ShamanCard extends CharacterCard {
         return nStars == that.nStars;
     }
 
+
+    /**
+     * this method calculates the hash code of the ShamanCard based on its number of stars.
+     *
+     * @return the hash code of the ShamanCard.
+     */
     @Override
     public int hashCode() {
         return Objects.hashCode(nStars);

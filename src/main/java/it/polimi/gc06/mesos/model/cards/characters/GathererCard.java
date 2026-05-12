@@ -25,6 +25,14 @@ public class GathererCard extends CharacterCard {
     @Override
     public void accept(CardVisitor visitor) {visitor.visit(this);}
 
+
+    /**
+     * this method compares this GathererCard to the specified object.
+     * the result is true if the argument is not null and is a GathererCard object.
+     *
+     * @param o the reference object with which to compare.
+     * @return true if the given object is exactly of the same class.
+     */
     @Override
     public boolean equals(Object o){
         return getClass() == o.getClass();

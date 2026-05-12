@@ -49,6 +49,15 @@ public class HunterCard extends CharacterCard {
     @Override
     public void accept(CardVisitor visitor) {visitor.visit(this);}
 
+
+    /**
+     * this method compares this HunterCard to the specified object.
+     * since the only attribute of the HunterCard is the boolean hasFoodIcon,
+     * two HunterCards are considered equal if they have the same value for hasFoodIcon.
+     *
+     * @param o the reference object with which to compare.
+     * @return true if the given object is exactly of the same class, false otherwise.
+     */
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
@@ -56,6 +65,13 @@ public class HunterCard extends CharacterCard {
         return hasFoodIcon == that.hasFoodIcon;
     }
 
+
+    /**
+     * this method is used to calculate the hash code of the HunterCard object,
+     * based on the hasFoodIcon attribute.
+     *
+     * @return the hash code of the HunterCard object.
+     */
     @Override
     public int hashCode() {
         return Objects.hashCode(hasFoodIcon);

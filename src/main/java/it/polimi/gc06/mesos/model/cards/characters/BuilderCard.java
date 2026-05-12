@@ -72,6 +72,14 @@ public class BuilderCard extends CharacterCard {
         return foodDiscount;
     }
 
+
+    /**
+     * this method compares this BuilderCard to the specified object.
+     * two BuilderCards are considered equal if they provide the same prestige and food discount.
+     *
+     * @param o the reference object with which to compare.
+     * @return true if this object has the same prestige and food discount as the argument; false otherwise.
+     */
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
@@ -79,6 +87,12 @@ public class BuilderCard extends CharacterCard {
         return prestige == that.prestige && foodDiscount == that.foodDiscount;
     }
 
+
+    /**
+     * this method calculates the hash code of the BuilderCard based on its prestige and food discount.
+     *
+     * @return the hash code of the BuilderCard.
+     */
     @Override
     public int hashCode() {
         return Objects.hash(prestige, foodDiscount);

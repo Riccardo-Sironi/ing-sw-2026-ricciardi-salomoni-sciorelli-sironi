@@ -11,6 +11,11 @@ public class HunterFoodIconVisitor extends CardVisitor {
         this.player = player;
     }
 
+    /**
+     * this method visits a HunterCard to check for the food icon effect.
+     *
+     * @param card the HunterCard being evaluated.
+     */
     @Override
     public void visit(HunterCard card) {
         if (card.hasFoodIcon()) {

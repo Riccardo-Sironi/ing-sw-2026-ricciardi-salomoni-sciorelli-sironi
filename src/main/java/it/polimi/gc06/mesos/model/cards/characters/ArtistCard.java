@@ -30,6 +30,15 @@ public class ArtistCard extends CharacterCard {
         visitor.visit(this);
     }
 
+
+    /**
+     * this method compares this ArtistCard to the specified object.
+     * since all instances of this specific card behave identically,
+     * they are considered equal if they are of the exact same class.
+     *
+     * @param o the reference object with which to compare.
+     * @return true if the given object is exactly of the same class.
+     */
     @Override
     public boolean equals(Object o){
         return getClass() == o.getClass();
