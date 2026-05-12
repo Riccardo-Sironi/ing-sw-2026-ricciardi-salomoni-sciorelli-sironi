@@ -45,6 +45,13 @@ public class ModifierBuildingCard extends BuildingCard {
     @Override
     public void accept(CardVisitor visitor) {visitor.visit(this);}
 
+    /**
+     * this method is used to compare two ModifierBuildingCard objects.
+     * it returns true if the two objects are the same (i.e. they have the same cardKey), false otherwise.
+     *
+     * @param o the reference object with which to compare.
+     * @return true if this object is the same as the obj argument; false otherwise.
+     */
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
@@ -52,6 +59,12 @@ public class ModifierBuildingCard extends BuildingCard {
         return cardKey == that.cardKey;
     }
 
+    /**
+     * this method is used to calculate the hash code of the ModifierBuildingCard object,
+     * based on the cardKey.
+     *
+     * @return the code of the ModifierBuildingCard object.
+     */
     @Override
     public int hashCode() {
         return Objects.hashCode(cardKey);

@@ -24,8 +24,18 @@ public class ObserverSetBuildingCard extends BuildingCard implements DrawObserve
     @Override
     public void accept(CardVisitor visitor) {visitor.visit(this);}
 
+
+    /**
+     * this method compares this ObserverSetBuildingCard to the specified object.
+     * Since all instances of this specific card behave identically,
+     * they are considered equal if they are of the exact same class.
+     *
+     * @param o the reference object with which to compare.
+     * @return true if the given object is exactly of the same class, false otherwise.
+     */
     @Override
     public boolean equals(Object o){
+        if (o == null) return false;
         return getClass() == o.getClass();
     }
 }

@@ -60,6 +60,13 @@ public class EndGameBuildingCard extends BuildingCard {
     @Override
     public void accept(CardVisitor visitor) {visitor.visit(this);}
 
+    /**
+     * this method is used to compare two EndGameBuildingCard objects.
+     * it returns true if the two objects are equal, false otherwise.
+     *
+     * @param o the reference object with which to compare.
+     * @return true if this object is the same as the obj argument; false otherwise.
+     */
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
@@ -67,6 +74,11 @@ public class EndGameBuildingCard extends BuildingCard {
         return Objects.equals(prestigeEffect, that.prestigeEffect);
     }
 
+    /**
+     * this method is used to calculate the hash code of the EndGameBuildingCard object.
+     *
+     * @return the code of the EndGameBuildingCard object.
+     */
     @Override
     public int hashCode() {
         return Objects.hashCode(prestigeEffect);
