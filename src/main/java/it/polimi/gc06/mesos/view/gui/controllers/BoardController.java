@@ -12,7 +12,9 @@ import it.polimi.gc06.mesos.view.gui.helpers.Totem;
 import it.polimi.gc06.mesos.view.gui.helpers.TurnOrderTileInfo;
 import it.polimi.gc06.mesos.view.gui.visitors.CardEffectVisitor;
 import it.polimi.gc06.mesos.view.smallModel.PlayerView;
+import javafx.animation.Interpolator;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
 import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
@@ -36,7 +38,12 @@ import javafx.stage.Popup;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
+import javafx.util.Duration;
 
 import static it.polimi.gc06.mesos.view.gui.GUI.imageFetcher;
 import static it.polimi.gc06.mesos.view.gui.GUI.smallModel;
@@ -49,6 +56,8 @@ public class BoardController {
     private VBox leftZone;
     @FXML
     private VBox opponentsSidebar;
+    @FXML
+    private VBox expandedOpponentBox = null;
 
     @FXML
     private VBox boardRoot;
@@ -483,83 +492,209 @@ public class BoardController {
 
     public void drawOpponentsSidebar(ArrayList<Totem> activeTotems) {
         opponentsSidebar.getChildren().clear();
+        expandedOpponentBox = null;
         opponentsSidebar.setSpacing(15);
         opponentsSidebar.setPadding(new Insets(15, 5, 15, 5));
 
-        int numOpponents = (smallModel == null) ? (activeTotems.size() - 1) : smallModel.getOpponents().size();
-        if (numOpponents <= 0) return;
-
-        DoubleBinding boxHeight = opponentsSidebar.heightProperty()
-                .subtract((numOpponents - 1) * 15 + 30)
-                .divide(numOpponents);
-
         if (smallModel == null) {
-
             for (int i = 1; i < activeTotems.size(); i++) {
                 Totem t = activeTotems.get(i);
-                VBox oppBox = createOpponentInventoryBox("Player " + (i + 1), t.getTotemColorRGB(), 0, 0, boxHeight);
-                VBox.setVgrow(oppBox, Priority.ALWAYS);
-                opponentsSidebar.getChildren().add(oppBox);
+                opponentsSidebar.getChildren().add(createOpponentInventoryBox("Player " + (i + 1), t.getTotemColorRGB(), null));
             }
             return;
         }
 
         for (PlayerView opponent : smallModel.getOpponents()) {
             String rgbColor = getRGBFromColor(opponent.getColor());
-            VBox oppBox = createOpponentInventoryBox(opponent.getNickname(), rgbColor, opponent.getNumPrestige(), opponent.getNumFood(), boxHeight);
-            VBox.setVgrow(oppBox, Priority.ALWAYS);
-            opponentsSidebar.getChildren().add(oppBox);
+            opponentsSidebar.getChildren().add(createOpponentInventoryBox(opponent.getNickname(), rgbColor, opponent));
         }
     }
 
-    private VBox createOpponentInventoryBox(String nickname, String rgbColor, int prestige, int food, DoubleBinding heightBinding) {
+    private VBox createOpponentInventoryBox(String nickname, String rgbColor, PlayerView opponent) {
         VBox container = new VBox();
         container.setAlignment(Pos.CENTER);
-        container.setSpacing(10);
+        container.setSpacing(0);
+        container.setCursor(Cursor.HAND);
 
-        String backgroundStyle = "-fx-background-color: rgba(" + rgbColor + ", 0.4);";
-        String borderStyle = "-fx-border-color: rgb(" + rgbColor + "); -fx-border-width: 2px; -fx-background-radius: 10; -fx-border-radius: 10;";
-        container.setStyle(backgroundStyle + borderStyle);
+        String style = String.format("-fx-background-color: rgba(%s, 0.4); -fx-border-color: rgb(%s); -fx-border-width: 2px; -fx-background-radius: 10; -fx-border-radius: 10;", rgbColor, rgbColor);
+        container.setStyle(style);
         container.setPadding(new Insets(10));
 
-        container.prefWidthProperty().bind(opponentsSidebar.widthProperty().multiply(0.9));
-        container.setMaxWidth(Region.USE_PREF_SIZE);
-
-        container.prefHeightProperty().bind(heightBinding);
-        container.setMinHeight(100);
+        container.minWidthProperty().bind(opponentsSidebar.widthProperty().multiply(0.9));
+        container.maxWidthProperty().bind(opponentsSidebar.widthProperty().multiply(0.9));
+        container.setMinHeight(0);
+        container.setMaxHeight(Double.MAX_VALUE);
+        VBox.setVgrow(container, Priority.ALWAYS);
 
         Text nameText = new Text(nickname);
-        nameText.setFont(mesosFont);
         nameText.setTextAlignment(TextAlignment.CENTER);
+        nameText.fontProperty().bind(Bindings.createObjectBinding(() ->
+                        Font.font(mesosFont != null ? mesosFont.getFamily() : "Arial", opponentsSidebar.getWidth() / 10),
+                opponentsSidebar.widthProperty()
+        ));
 
-        HBox statsBox = new HBox();
-        statsBox.setAlignment(Pos.CENTER);
-        statsBox.setSpacing(20);
+        VBox detailsContainer = new VBox();
+        detailsContainer.setAlignment(Pos.CENTER);
+        detailsContainer.minWidthProperty().bind(container.widthProperty().subtract(20));
+        detailsContainer.maxWidthProperty().bind(container.widthProperty().subtract(20));
+        VBox.setVgrow(detailsContainer, Priority.ALWAYS);
 
-        VBox prestigeBox = new VBox();
-        prestigeBox.setAlignment(Pos.CENTER);
-        prestigeBox.setSpacing(5);
-        ImageView pImage = new ImageView(loadImage("prestige_token.png"));
-        pImage.setPreserveRatio(true);
-        pImage.setFitHeight(40);
-        Text pText = new Text(String.valueOf(prestige));
-        pText.setFont(mesosFont);
-        prestigeBox.getChildren().addAll(pImage, pText);
+        HBox resourcesBox = new HBox(20);
+        resourcesBox.setAlignment(Pos.CENTER);
+        resourcesBox.getChildren().addAll(
+                createResponsiveStat("prestige_token.png", opponent != null ? String.valueOf(opponent.getNumPrestige()) : "0", 4.5),
+                createResponsiveStat("food_token.png", opponent != null ? String.valueOf(opponent.getNumFood()) : "0", 4.5)
+        );
 
-        VBox foodBox = new VBox();
-        foodBox.setAlignment(Pos.CENTER);
-        foodBox.setSpacing(5);
-        ImageView fImage = new ImageView(loadImage("food_token.png"));
-        fImage.setPreserveRatio(true);
-        fImage.setFitHeight(40);
-        Text fText = new Text(String.valueOf(food));
-        fText.setFont(mesosFont);
-        foodBox.getChildren().addAll(fImage, fText);
+        int shamans = 0, gatherers = 0, hunters = 0, artists = 0, builders = 0;
+        if (opponent != null && opponent.getCharacters() != null) {
+            for (Object item : opponent.getCharacters()) {
+                if (item instanceof List) {
+                    for (Object cardObj : (List<?>) item) {
+                        String cardType = cardObj.getClass().getSimpleName().toUpperCase();
+                        if (cardType.contains("SHAMAN")) shamans++;
+                        else if (cardType.contains("GATHERER")) gatherers++;
+                        else if (cardType.contains("HUNTER")) hunters++;
+                        else if (cardType.contains("ARTIST")) artists++;
+                        else if (cardType.contains("BUILDER")) builders++;
+                    }
+                }
+            }
+        }
 
-        statsBox.getChildren().addAll(prestigeBox, foodBox);
-        container.getChildren().addAll(nameText, statsBox);
+        HBox charactersBox = new HBox(5);
+        charactersBox.setAlignment(Pos.CENTER);
+        charactersBox.getChildren().addAll(
+                createResponsiveStat("shaman_stars_token.png", String.valueOf(shamans), 6.5),
+                createResponsiveStat("gatherers_token.png", String.valueOf(gatherers), 6.5),
+                createResponsiveStat("hunters_token.png", String.valueOf(hunters), 6.5),
+                createResponsiveStat("artists_token.png", String.valueOf(artists), 6.5),
+                createResponsiveStat("blank_token.png", String.valueOf(builders), 6.5)
+        );
+
+        ScrollPane cardsScroll = new ScrollPane();
+        HBox cardsContainer = new HBox(5);
+        cardsContainer.setAlignment(Pos.CENTER_LEFT);
+
+        cardsScroll.setContent(cardsContainer);
+        cardsScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        cardsScroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        cardsScroll.setFitToHeight(true);
+        cardsScroll.setFitToWidth(true);
+        cardsScroll.setStyle("-fx-background-color: transparent; -fx-background: transparent;");
+
+        cardsScroll.minWidthProperty().bind(detailsContainer.widthProperty());
+        cardsScroll.maxWidthProperty().bind(detailsContainer.widthProperty());
+
+        cardsScroll.setOnScroll(event -> {
+            if (event.getDeltaY() != 0) {
+                cardsScroll.setHvalue(cardsScroll.getHvalue() - event.getDeltaY() * 0.003);
+                event.consume();
+            }
+        });
+
+        cardsScroll.layoutBoundsProperty().addListener((obs, oldBounds, newBounds) -> {
+            Rectangle clip = new Rectangle(newBounds.getWidth(), newBounds.getHeight());
+            clip.setArcWidth(10); clip.setArcHeight(10);
+            cardsScroll.setClip(clip);
+        });
+
+        if (opponent == null || opponent.getCharacters() == null) {
+            for(int i = 0; i < 3; i++) {
+                CardView cardView = new CardView(loadImage("shaman_1_card.png"));
+                cardView.fitHeightProperty().bind(inventoryBox.heightProperty().multiply(RESIZE_CARD_FACTOR));
+                cardsContainer.getChildren().add(cardView);
+            }
+        } else {
+            for (Object item : opponent.getCharacters()) {
+                if (item instanceof List) {
+                    for (Object cardObj : (List<?>) item) {
+                        CardView cardView = new CardView(new Image(imageFetcher.fetch((Card) cardObj)));
+                        cardView.fitHeightProperty().bind(inventoryBox.heightProperty().multiply(RESIZE_CARD_FACTOR));
+                        cardsContainer.getChildren().add(cardView);
+                    }
+                }
+            }
+        }
+
+        Region spacer1 = new Region(); VBox.setVgrow(spacer1, Priority.ALWAYS);
+        Region spacer2 = new Region(); VBox.setVgrow(spacer2, Priority.ALWAYS);
+        Region spacer3 = new Region(); VBox.setVgrow(spacer3, Priority.ALWAYS);
+        Region spacer4 = new Region(); VBox.setVgrow(spacer4, Priority.ALWAYS);
+
+        detailsContainer.getChildren().addAll(spacer1, resourcesBox, spacer2, charactersBox, spacer3, cardsScroll, spacer4);
+
+        detailsContainer.setManaged(false);
+        detailsContainer.setVisible(false);
+        detailsContainer.setOpacity(0);
+        detailsContainer.setMinHeight(0);
+        detailsContainer.setMaxHeight(0);
+
+        container.getChildren().addAll(nameText, detailsContainer);
+
+        container.setOnMouseClicked(event -> {
+            Timeline timeline = new Timeline();
+            boolean isOpening = (expandedOpponentBox != container);
+
+            for (Node node : opponentsSidebar.getChildren()) {
+                VBox box = (VBox) node;
+                VBox details = (VBox) box.getChildren().get(1);
+
+                if (isOpening && box == container) {
+                    details.setManaged(true);
+                    details.setVisible(true);
+
+                    double targetHeight = opponentsSidebar.getHeight() * 0.65;
+                    timeline.getKeyFrames().add(new KeyFrame(Duration.millis(350),
+                            new KeyValue(details.opacityProperty(), 1, Interpolator.EASE_BOTH),
+                            new KeyValue(details.prefHeightProperty(), targetHeight, Interpolator.EASE_BOTH),
+                            new KeyValue(details.minHeightProperty(), targetHeight, Interpolator.EASE_BOTH),
+                            new KeyValue(details.maxHeightProperty(), targetHeight, Interpolator.EASE_BOTH)
+                    ));
+                } else if (expandedOpponentBox == box || (!isOpening && box == container)) {
+                    timeline.getKeyFrames().add(new KeyFrame(Duration.millis(350),
+                            new KeyValue(details.opacityProperty(), 0, Interpolator.EASE_BOTH),
+                            new KeyValue(details.prefHeightProperty(), 0, Interpolator.EASE_BOTH),
+                            new KeyValue(details.minHeightProperty(), 0, Interpolator.EASE_BOTH),
+                            new KeyValue(details.maxHeightProperty(), 0, Interpolator.EASE_BOTH)
+                    ));
+                }
+            }
+
+            timeline.setOnFinished(e -> {
+                for (Node node : opponentsSidebar.getChildren()) {
+                    VBox box = (VBox) node;
+                    VBox details = (VBox) box.getChildren().get(1);
+                    if (box != expandedOpponentBox) {
+                        details.setManaged(false);
+                        details.setVisible(false);
+                    }
+                }
+            });
+
+            expandedOpponentBox = isOpening ? container : null;
+            timeline.play();
+        });
 
         return container;
+    }
+
+    private VBox createResponsiveStat(String imagePath, String value, double divideFactor) {
+        VBox stat = new VBox(2);
+        stat.setAlignment(Pos.CENTER);
+
+        ImageView icon = new ImageView(loadImage(imagePath));
+        icon.setPreserveRatio(true);
+        icon.fitHeightProperty().bind(opponentsSidebar.widthProperty().divide(divideFactor));
+
+        Text text = new Text(value);
+        text.fontProperty().bind(Bindings.createObjectBinding(() ->
+                        Font.font(mesosFont != null ? mesosFont.getFamily() : "Arial", opponentsSidebar.getWidth() / 15),
+                opponentsSidebar.widthProperty()
+        ));
+
+        stat.getChildren().addAll(icon, text);
+        return stat;
     }
 
     private String getRGBFromColor(Color color) {
@@ -578,10 +713,46 @@ public class BoardController {
         turnOrderContainer.getChildren().clear();
         if (smallModel == null) return;
 
-        Image img = new Image(imageFetcher.fetch((Card) smallModel.getTurnOrderTile()));
-        ArrayList<Totem> dummyTotems = new ArrayList<>(Arrays.asList(Totem.YELLOW, Totem.TURQUOISE, Totem.PURPLE, Totem.WHITE, Totem.ORANGE)); // TODO: logic
+        List<?> playersOnTile = (List<?>) smallModel.getTurnOrderTile();
+        int nPlayers = playersOnTile.size();
 
-        TurnOrderTileView turnOrderTile = createTurnOrderTile(img, dummyTotems);
+        if (nPlayers == 0) {
+            nPlayers = smallModel.getOpponents().size() + 1;
+        }
+
+        TurnOrderTileInfo tileInfo = TurnOrderTileInfo.getInfo(nPlayers);
+        if (tileInfo == null) {
+            tileInfo = TurnOrderTileInfo.TURN_ORDER_TILE_5_PLAYERS; // Fallback
+        }
+
+        Image img = loadImage(tileInfo.getImagePath());
+        if (img == null) {
+            img = loadImage(TurnOrderTileInfo.TURN_ORDER_TILE_5_PLAYERS.getImagePath());
+        }
+
+        ArrayList<Totem> activeTotems = new ArrayList<>();
+        for (Object obj : playersOnTile) {
+            if (obj instanceof PlayerView) {
+                PlayerView playerView = (PlayerView) obj;
+                Totem t = Totem.NONE;
+                if (playerView.getColor() != null) {
+                    switch (playerView.getColor().name()) {
+                        case "YELLOW": t = Totem.YELLOW; break;
+                        case "PURPLE": t = Totem.PURPLE; break;
+                        case "WHITE": t = Totem.WHITE; break;
+                        case "ORANGE": t = Totem.ORANGE; break;
+                        case "TURQUOISE": t = Totem.TURQUOISE; break;
+                    }
+                }
+                activeTotems.add(t);
+            }
+        }
+
+        if (activeTotems.isEmpty()) {
+            activeTotems = new ArrayList<>(Arrays.asList(Totem.YELLOW, Totem.TURQUOISE, Totem.PURPLE, Totem.WHITE, Totem.ORANGE));
+        }
+
+        TurnOrderTileView turnOrderTile = createTurnOrderTile(img, activeTotems);
         turnOrderContainer.getChildren().add(turnOrderTile);
     }
 
