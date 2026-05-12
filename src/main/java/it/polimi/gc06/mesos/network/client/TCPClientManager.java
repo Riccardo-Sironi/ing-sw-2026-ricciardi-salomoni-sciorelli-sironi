@@ -44,7 +44,7 @@ public class TCPClientManager implements VirtualClient, ModelListener {
      */
     public void setController(GameController controller) {
         this.controller = controller;
-        controller.addListener(this);
+        controller.addListener(this,nickname);
     }
 
     public String getNickname() {
@@ -157,7 +157,7 @@ public class TCPClientManager implements VirtualClient, ModelListener {
                 outToClient.close();
         } catch (IOException _) {}
         if (nickname != null) sharedManager.logout(nickname);
-        controller.removeListener(this);
+        controller.removeListener(this,nickname);
         try {
             if (!socket.isClosed()) socket.close();
         } catch (IOException _) {

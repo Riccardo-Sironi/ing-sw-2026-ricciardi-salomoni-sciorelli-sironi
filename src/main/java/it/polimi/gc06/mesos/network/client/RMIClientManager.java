@@ -38,7 +38,7 @@ public class RMIClientManager implements VirtualClient, ModelListener {
     @Override
     public void setController(GameController controller) {
         this.controller = controller;
-        controller.addListener(this);
+        controller.addListener(this,nickname);
     }
 
     @Override
@@ -96,7 +96,7 @@ public class RMIClientManager implements VirtualClient, ModelListener {
         if (closed) return;
         closed = true;
         if (nickname != null) sharedManager.logout(nickname);
-        if (controller != null) controller.removeListener(this);
+        if (controller != null) controller.removeListener(this,nickname);
     }
 
     public GameController getController() {

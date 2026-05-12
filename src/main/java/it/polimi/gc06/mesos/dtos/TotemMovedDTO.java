@@ -38,4 +38,9 @@ public class TotemMovedDTO implements SmallModelEditor{
         //puts on new pos
         smallModel.getOfferTrack().get(index).setPlayer(view);
     }
+
+    @Override
+    public void accept(DTOvisitor visitor) {
+        visitor.visit(this);
+    }
 }

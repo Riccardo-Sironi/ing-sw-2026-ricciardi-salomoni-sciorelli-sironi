@@ -2,6 +2,7 @@ package it.polimi.gc06.mesos.view.smallModel;
 
 import it.polimi.gc06.mesos.model.Color;
 import it.polimi.gc06.mesos.model.Era;
+import it.polimi.gc06.mesos.model.Player;
 import it.polimi.gc06.mesos.model.cards.Card;
 import it.polimi.gc06.mesos.network.leaderboard.Score;
 
@@ -32,11 +33,11 @@ public class SmallModel {
     private boolean canSkip;
 
     //context
-    private final PlayerView player;
+    private PlayerView player;
     private final List<PlayerView> opponents; //is immutable
     private final ArrayList<Score> leaderboard;
 
-    public SmallModel(String nickname, Color color, Map<Color, String> opponentsMap) {
+    public SmallModel(String nickname) {
         this.topRow = new ArrayList<>();
         this.bottomRow = new ArrayList<>();
         this.topBuildings = new ArrayList<>();
@@ -49,12 +50,10 @@ public class SmallModel {
         this.round = -1;
         this.topDrawNum = -1;
         this.bottomDrawNum = -1;
+        this.player = null;
+        this.opponents = new ArrayList<>();
         this.isActive = false;
         this.canSkip = false;
-        this.player = new PlayerView(nickname, color);
-        this.opponents = opponentsMap.entrySet().stream().map(
-                x -> new PlayerView(x.getValue(), x.getKey())
-        ).collect(Collectors.toList());
         this.leaderboard = new ArrayList<>();
     }
 
@@ -118,15 +117,18 @@ public class SmallModel {
         this.bottomDrawNum = bottomDrawNum;
     }
 
+    public void setPlayer(String nickname, Color color) {
+        this.player = new PlayerView(nickname,color);
+    }
+
     public PlayerView getPlayer(){
         return player;
     }
 
-    /**
-     * Opponents getter.
-     *
-     * @return an immutable list of the opponents.
-     */
+    public void addOpponent(PlayerView pv){
+        opponents.add(pv);
+    }
+
     public List<PlayerView> getOpponents() {
         return opponents;
     }
@@ -170,4 +172,5 @@ public class SmallModel {
     public void setPhase(String phase) {
         this.phase = phase;
     }
+
 }

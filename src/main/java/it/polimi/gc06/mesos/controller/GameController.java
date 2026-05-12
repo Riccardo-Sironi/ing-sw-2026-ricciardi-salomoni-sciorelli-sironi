@@ -11,16 +11,20 @@ import it.polimi.gc06.mesos.model.gameBoard.TileSlot;
 import it.polimi.gc06.mesos.model.gameTurnManager.TurnManager;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class GameController {
 
     private final GameModel model;
     private final ArrayList<ModelListener> listeners;
+    private final Map<String,ModelListener> listenerMap;
 
     public GameController(GameModel model) {
         this.model = model;
         this.listeners = new ArrayList<>();
+        this.listenerMap = new HashMap<>();
     }
 
     public GameModel getModel() {
@@ -205,24 +209,27 @@ public class GameController {
     }
 
     /**
-     * Sends to the clients the info for the initial game state as property change event.
+     * Sends to the clients the info for the initial game state as @link {SmallModelEditor}.
+     *
      * @throws IllegalStateException if the game has already ended.
      */
     public void sendGameStartInfo() throws IllegalStateException{
         if(isGameFinished()) throw new IllegalStateException();
-        listeners.forEach(l -> l.update(model.getChangeHandler().getStartingStateAsDTO()));
+        listenerMap.forEach((s,l) -> l.update(model.getChangeHandler().getStartingStateAsDTO(s)));
     }
 
     public boolean isGameFinished() {
         return model.getBoard().isEndGame();
     }
 
-    public void addListener(ModelListener listener) {
+    public void addListener(ModelListener listener, String nickname) {
         listeners.add(listener);
+        listenerMap.put(nickname,listener);
     }
 
-    public void removeListener(ModelListener listener) {
+    public void removeListener(ModelListener listener, String nickname) {
         listeners.remove(listener);
+        listenerMap.remove(nickname);
     }
 
 }

@@ -155,12 +155,13 @@ public class ChangesHandler {
     }
     
     /**
-     * Returns the current game state expressed in {@link PropertyChangeEvent}
+     * Returns the current game state expressed in {@link SmallModelEditor}
      * Should be used only when tha game is just started.
      *
+     * @param nickname the nickname of the player that will receive this DTO.
      * @return an {@link ArrayList} containing the changes from an empty model.
      */
-    public SmallModelEditor getStartingStateAsDTO(){
+    public SmallModelEditor getStartingStateAsDTO(String nickname){
 
         Map<String, Integer> foodMap = new HashMap<>();
         Map<String, Color> colorMap = new HashMap<>();
@@ -170,7 +171,7 @@ public class ChangesHandler {
             colorMap.put(p.getNickname(),p.getPlayerColor());
         }
 
-        return new GameStartedDTO(
+        return new GameStartedDTO(nickname,
                 new ArrayList<>(turnManager.getPlayersOrder().stream().map(Player::getNickname).toList()),
                 colorMap, foodMap, new ArrayList<>(board.getTopRow()), new ArrayList<>(board.getTopBuildings())
         );

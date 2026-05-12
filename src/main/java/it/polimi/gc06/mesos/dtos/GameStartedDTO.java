@@ -17,13 +17,17 @@ public class GameStartedDTO implements SmallModelEditor{
     private final Map<String, Integer> foodMap;
     private final ArrayList<Card> topRow;
     private final ArrayList<Card> topBuildings;
+    private final String nickname;
 
-    public GameStartedDTO(ArrayList<String> playersOrder, Map<String, Color> colorMap, Map<String, Integer> foodMap, ArrayList<Card> topRow, ArrayList<Card> topBuildings) {
+
+    public GameStartedDTO(String nickname, ArrayList<String> playersOrder, Map<String, Color> colorMap,
+                          Map<String, Integer> foodMap, ArrayList<Card> topRow, ArrayList<Card> topBuildings) {
         this.playersOrder = playersOrder;
         this.colorMap = colorMap;
         this.foodMap = foodMap;
         this.topRow = topRow;
         this.topBuildings = topBuildings;
+        this.nickname = nickname;
     }
 
     @Override
@@ -33,10 +37,17 @@ public class GameStartedDTO implements SmallModelEditor{
         smallModel.setRound(0);
         smallModel.getTopBuildings().addAll(topBuildings);
         smallModel.getTopRow().addAll(topRow);
+        smallModel.setPlayer(nickname,colorMap.get(nickname));
         for(String player : playersOrder){
             PlayerView pv = new PlayerView(player,colorMap.get(player));
             pv.setNumFood(foodMap.get(player));
             smallModel.getTurnOrderTile().add(pv);
+            if(!pv.getNickname().equals(nickname)) smallModel.addOpponent(pv);
         }
+    }
+
+    @Override
+    public void accept(DTOvisitor visitor) {
+        visitor.visit(this);
     }
 }

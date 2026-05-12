@@ -34,4 +34,9 @@ public class PlayerResourcesChangeDTO implements SmallModelEditor{
             if(prestigeDelta != 0) view.setNumPrestige(view.getNumPrestige() + prestigeDelta);
         }
     }
+
+    @Override
+    public void accept(DTOvisitor visitor) {
+        visitor.visit(this);
+    }
 }

@@ -28,4 +28,9 @@ public class PlayerStateChangeDTO implements SmallModelEditor{
         if(isActive == 1 || isActive == 0) smallModel.setActive(isActive == 1);
         if(canSkip == 1 || canSkip == 0) smallModel.setCanSkip(canSkip == 1);
     }
+
+    @Override
+    public void accept(DTOvisitor visitor) {
+        visitor.visit(this);
+    }
 }

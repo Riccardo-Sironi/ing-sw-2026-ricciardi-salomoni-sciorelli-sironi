@@ -24,4 +24,9 @@ public class PickBottomBuildingsDTO implements SmallModelEditor{
                     .orElseThrow(IllegalStateException::new).getCharacters().add(card);
         }
     }
+
+    @Override
+    public void accept(DTOvisitor visitor) {
+        visitor.visit(this);
+    }
 }

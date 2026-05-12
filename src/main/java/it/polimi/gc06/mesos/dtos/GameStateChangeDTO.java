@@ -69,4 +69,9 @@ public class GameStateChangeDTO implements SmallModelEditor{
         if(round >= 0) smallModel.setRound(round);
         if(leaderboard != null) smallModel.setLeaderboard(leaderboard);
     }
+
+    @Override
+    public void accept(DTOvisitor visitor) {
+        visitor.visit(this);
+    }
 }

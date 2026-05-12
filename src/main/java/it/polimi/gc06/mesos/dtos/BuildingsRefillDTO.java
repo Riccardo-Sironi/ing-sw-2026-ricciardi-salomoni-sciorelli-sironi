@@ -19,4 +19,10 @@ public class BuildingsRefillDTO implements SmallModelEditor, Serializable {
     public void edit(SmallModel smallModel) {
         smallModel.getTopBuildings().addAll(cards);
     }
+
+    @Override
+    public void accept(DTOvisitor visitor) {
+        visitor.visit(this);
+    }
+
 }

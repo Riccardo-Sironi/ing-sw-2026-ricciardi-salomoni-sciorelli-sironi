@@ -14,4 +14,9 @@ public class ErrorDTO implements SmallModelEditor{
     public void edit(SmallModel smallModel) throws Error {
         throw new Error(message);
     }
+
+    @Override
+    public void accept(DTOvisitor visitor) {
+        visitor.visit(this);
+    }
 }

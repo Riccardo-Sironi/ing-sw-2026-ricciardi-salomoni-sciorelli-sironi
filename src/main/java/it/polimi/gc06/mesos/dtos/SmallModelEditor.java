@@ -8,4 +8,5 @@ public interface SmallModelEditor extends Serializable {
 
     void edit(SmallModel smallModel) throws IllegalStateException, Error;
 
+    void accept(DTOvisitor visitor);
 }
