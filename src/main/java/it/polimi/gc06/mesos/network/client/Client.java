@@ -1,0 +1,35 @@
+package it.polimi.gc06.mesos.network.client;
+
+import it.polimi.gc06.mesos.controller.ModelListener;
+import it.polimi.gc06.mesos.dtos.SmallModelEditor;
+import it.polimi.gc06.mesos.view.smallModel.SmallModel;
+
+import java.util.function.Consumer;
+
+public class Client implements ModelListener {
+
+    private final SmallModel smallModel;
+    private ServerConnection serverConnection = null;
+
+    public Client(SmallModel smallModel) {
+        this.smallModel = smallModel;
+    }
+
+    public void connect(String tech, String host, int port, Consumer<SmallModelEditor> messageHandler) {
+        if (serverConnection != null) {
+            throw new IllegalStateException("Already connected to a server");
+        }
+
+        try {
+            serverConnection = tech.equals("RMI") ? new RMIServerConnection(host, port, messageHandler) : new TCPServerConnection();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to connect to server: " + e.getMessage(), e);
+        }
+
+    }
+
+    @Override
+    public void update(SmallModelEditor dto) {
+        dto.edit(smallModel);
+    }
+}

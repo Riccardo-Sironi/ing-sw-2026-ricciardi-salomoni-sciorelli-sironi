@@ -1,15 +1,17 @@
-package it.polimi.gc06.mesos.network.client;
+package it.polimi.gc06.mesos.network.server;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.polimi.gc06.mesos.dtos.ErrorDTO;
-import it.polimi.gc06.mesos.dtos.SmallModelEditor;
 import it.polimi.gc06.mesos.controller.GameController;
 import it.polimi.gc06.mesos.controller.ModelListener;
-import it.polimi.gc06.mesos.network.server.MatchManager;
+import it.polimi.gc06.mesos.dtos.ErrorDTO;
+import it.polimi.gc06.mesos.dtos.SmallModelEditor;
 import it.polimi.gc06.mesos.network.socket.commands.ControllerCommand;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -44,7 +46,7 @@ public class TCPClientManager implements VirtualClient, ModelListener {
      */
     public void setController(GameController controller) {
         this.controller = controller;
-        controller.addListener(this,nickname);
+        controller.addListener(this, nickname);
     }
 
     public String getNickname() {
@@ -154,10 +156,11 @@ public class TCPClientManager implements VirtualClient, ModelListener {
         if (closed) return;
         closed = true;
         if (outToClient != null) try {
-                outToClient.close();
-        } catch (IOException _) {}
+            outToClient.close();
+        } catch (IOException _) {
+        }
         if (nickname != null) sharedManager.logout(nickname);
-        controller.removeListener(this,nickname);
+        controller.removeListener(this, nickname);
         try {
             if (!socket.isClosed()) socket.close();
         } catch (IOException _) {
@@ -172,6 +175,7 @@ public class TCPClientManager implements VirtualClient, ModelListener {
     public void update(SmallModelEditor dto) {
         try {
             noticeQueue.put(dto);
-        } catch (InterruptedException _) {}
+        } catch (InterruptedException _) {
+        }
     }
 }

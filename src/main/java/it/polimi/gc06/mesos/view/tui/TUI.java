@@ -10,7 +10,10 @@ import it.polimi.gc06.mesos.model.cards.events.RitualEvent;
 import it.polimi.gc06.mesos.model.cards.events.SustenanceEvent;
 import it.polimi.gc06.mesos.model.gameBoard.ChooseCardTileEffect;
 import it.polimi.gc06.mesos.model.gameBoard.FoodTileEffect;
+import it.polimi.gc06.mesos.network.client.Client;
+import it.polimi.gc06.mesos.view.View;
 import it.polimi.gc06.mesos.view.smallModel.PlayerView;
+import it.polimi.gc06.mesos.view.smallModel.SmallModel;
 import it.polimi.gc06.mesos.view.smallModel.TileSlotView;
 import org.jline.reader.*;
 import org.jline.reader.impl.completer.AggregateCompleter;
@@ -25,15 +28,22 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TuiView {
+public class TUI implements View {
 
+    private SmallModel smallModel;
+    private Client client;
+
+    public TUI(SmallModel smallModel, Client client) {
+        this.smallModel = smallModel;
+        this.client = client;
+    }
 
     /**
      * Entrypoint of the TUI
      * <p>
      * It initializes the terminal and enters the loop to read user input.
      */
-    public static void start() {
+    public void start() {
         try {
             Terminal terminal = TerminalBuilder.builder()
                     .system(true)
@@ -63,12 +73,12 @@ public class TuiView {
                 if (words.size() >= 2 && "/pick_card".equals(words.get(0))) {
                     String row = words.get(1);
                     if ("top".equals(row)) {
-                        for (int i = 0; i < topCards.size(); i++) {
-                            candidates.add(new Candidate(String.valueOf(i), String.valueOf(i), null, topCards.get(i).getClass().getSimpleName(), null, null, true));
+                        for (int i = 0; i < smallModel.getTopRow().size(); i++) {
+                            candidates.add(new Candidate(String.valueOf(i), String.valueOf(i), null, smallModel.getTopRow().get(i).getClass().getSimpleName(), null, null, true));
                         }
                     } else if ("bottom".equals(row)) {
-                        for (int i = 0; i < bottomCards.size(); i++) {
-                            candidates.add(new Candidate(String.valueOf(i), String.valueOf(i), null, bottomCards.get(i).getClass().getSimpleName(), null, null, true));
+                        for (int i = 0; i < smallModel.getBottomRow().size(); i++) {
+                            candidates.add(new Candidate(String.valueOf(i), String.valueOf(i), null, smallModel.getBottomRow().get(i).getClass().getSimpleName(), null, null, true));
                         }
                     }
                 }
@@ -112,8 +122,10 @@ public class TuiView {
             String statusMessage = "";
 
 
-            players.add(playerview1);
-            players.add(playerview2);
+            players.add(smallModel.getPlayer());
+            players.addAll(smallModel.getOpponents());
+
+            // Player aggiuntivi per testare
             players.add(playerview3);
             players.add(playerview4);
             players.add(playerview5);

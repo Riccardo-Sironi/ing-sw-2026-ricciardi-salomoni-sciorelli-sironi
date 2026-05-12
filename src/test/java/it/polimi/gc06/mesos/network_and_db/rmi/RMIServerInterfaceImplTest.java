@@ -1,10 +1,10 @@
 package it.polimi.gc06.mesos.network_and_db.rmi;
 
 import it.polimi.gc06.mesos.controller.GameController;
-import it.polimi.gc06.mesos.network.client.ClientInterface;
-import it.polimi.gc06.mesos.network.client.RMIClientManager;
+import it.polimi.gc06.mesos.network.client.ServerConnection;
 import it.polimi.gc06.mesos.network.rmi.RMIServerInterfaceImpl;
 import it.polimi.gc06.mesos.network.server.MatchManager;
+import it.polimi.gc06.mesos.network.server.RMIClientManager;
 import it.polimi.gc06.mesos.network.socket.commands.ControllerCommand;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,7 +28,7 @@ class RMIServerInterfaceImplTest {
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private MatchManager serverManagerMock;
 
-    private ClientInterface clientCallbackMock = mock(ClientInterface.class);
+    private ServerConnection clientCallbackMock = mock(ServerConnection.class);
 
     private RMIClientManager rmiClientManagerMock = mock(RMIClientManager.class);
 

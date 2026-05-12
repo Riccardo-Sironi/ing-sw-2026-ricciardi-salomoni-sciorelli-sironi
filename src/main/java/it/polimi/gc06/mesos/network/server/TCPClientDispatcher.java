@@ -1,7 +1,4 @@
-package it.polimi.gc06.mesos.network.client;
-
-import it.polimi.gc06.mesos.network.server.Match;
-import it.polimi.gc06.mesos.network.server.MatchManager;
+package it.polimi.gc06.mesos.network.server;
 
 import java.io.BufferedReader;
 import java.io.IOException;

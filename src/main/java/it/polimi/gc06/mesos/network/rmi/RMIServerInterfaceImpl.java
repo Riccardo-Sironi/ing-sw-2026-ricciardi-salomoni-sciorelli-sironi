@@ -1,9 +1,9 @@
 package it.polimi.gc06.mesos.network.rmi;
 
 import it.polimi.gc06.mesos.controller.GameController;
-import it.polimi.gc06.mesos.network.client.ClientInterface;
-import it.polimi.gc06.mesos.network.client.RMIClientManager;
+import it.polimi.gc06.mesos.network.client.ServerConnection;
 import it.polimi.gc06.mesos.network.server.MatchManager;
+import it.polimi.gc06.mesos.network.server.RMIClientManager;
 import it.polimi.gc06.mesos.network.socket.commands.ControllerCommand;
 import it.polimi.gc06.mesos.network.socket.commands.Request;
 
@@ -47,7 +47,7 @@ public class RMIServerInterfaceImpl extends UnicastRemoteObject implements RMISe
     }
 
     @Override
-    public boolean joinMatch(int matchId, String nickname, ClientInterface clientCallback) throws RemoteException {
+    public boolean joinMatch(int matchId, String nickname, ServerConnection clientCallback) throws RemoteException {
         RMIClientManager rmiClientManager = new RMIClientManager(nickname, clientCallback, serverManager);
         boolean success = serverManager.joinMatch(matchId, rmiClientManager);
         if (success) {

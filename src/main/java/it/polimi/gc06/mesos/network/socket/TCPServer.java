@@ -1,7 +1,7 @@
 package it.polimi.gc06.mesos.network.socket;
 
-import it.polimi.gc06.mesos.network.client.TCPClientDispatcher;
 import it.polimi.gc06.mesos.network.server.MatchManager;
+import it.polimi.gc06.mesos.network.server.TCPClientDispatcher;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -22,7 +22,7 @@ public class TCPServer implements Runnable {
 
     @Override
     public void run() {
-        try{
+        try {
             serverSocket = new ServerSocket(port);
             System.out.println("Listening on port " + port + ".");
             while (running) {
@@ -31,8 +31,8 @@ public class TCPServer implements Runnable {
             }
         } catch (IOException e) {
             System.err.println("Error while establishing TCP Connection: " + e.getMessage());
-        }finally {
-            if(serverSocket != null && !serverSocket.isClosed()) {
+        } finally {
+            if (serverSocket != null && !serverSocket.isClosed()) {
                 try {
                     serverSocket.close();
                 } catch (IOException e) {

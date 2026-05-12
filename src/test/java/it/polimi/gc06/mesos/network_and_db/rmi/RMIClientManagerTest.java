@@ -2,9 +2,9 @@ package it.polimi.gc06.mesos.network_and_db.rmi;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.polimi.gc06.mesos.controller.GameController;
-import it.polimi.gc06.mesos.network.client.ClientInterface;
-import it.polimi.gc06.mesos.network.client.RMIClientManager;
+import it.polimi.gc06.mesos.network.client.ServerConnection;
 import it.polimi.gc06.mesos.network.server.MatchManager;
+import it.polimi.gc06.mesos.network.server.RMIClientManager;
 import it.polimi.gc06.mesos.network.socket.commands.ControllerCommand;
 import org.junit.jupiter.api.*;
 
@@ -20,7 +20,7 @@ import static org.mockito.Mockito.*;
 
 class RMIClientManagerTest {
 
-    private ClientInterface rmiClientMock = mock(ClientInterface.class);
+    private ServerConnection rmiClientMock = mock(ServerConnection.class);
     private MatchManager sharedManagerMock = mock(MatchManager.class);
     private GameController controllerMock = mock(GameController.class);
     private BlockingQueue<ControllerCommand> actionQueueMock = mock(BlockingQueue.class);
