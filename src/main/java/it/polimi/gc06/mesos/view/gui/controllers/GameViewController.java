@@ -1,8 +1,8 @@
 package it.polimi.gc06.mesos.view.gui.controllers;
 
-import it.polimi.gc06.mesos.view.gui.ImageFetcher;
+import it.polimi.gc06.mesos.controller.ModelListener;
+import it.polimi.gc06.mesos.dtos.SmallModelEditor;
 import it.polimi.gc06.mesos.view.gui.helpers.PhaseOverlays;
-import it.polimi.gc06.mesos.view.smallModel.SmallModel;
 import javafx.animation.FadeTransition;
 import javafx.animation.PauseTransition;
 import javafx.animation.ScaleTransition;
@@ -15,9 +15,10 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
 
+import static it.polimi.gc06.mesos.view.gui.GUI.guidtovisitor;
 import static it.polimi.gc06.mesos.view.gui.GUI.smallModel;
 
-public class GameViewController {
+public class GameViewController implements ModelListener {
     @FXML
     public StackPane root;
 
@@ -104,5 +105,10 @@ public class GameViewController {
 
         SequentialTransition sequence = new SequentialTransition(initialStay, fadeIn, scaleIn, scaleOut, fadeOut);
         sequence.play();
+    }
+
+    @Override
+    public void update(SmallModelEditor dto) {
+        dto.accept(guidtovisitor);
     }
 }

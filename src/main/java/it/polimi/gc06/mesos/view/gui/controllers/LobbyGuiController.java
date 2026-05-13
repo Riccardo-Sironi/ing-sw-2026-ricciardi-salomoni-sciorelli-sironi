@@ -1,8 +1,13 @@
 package it.polimi.gc06.mesos.view.gui.controllers;
 
+import it.polimi.gc06.mesos.controller.ModelListener;
+import it.polimi.gc06.mesos.dtos.SmallModelEditor;
 import it.polimi.gc06.mesos.view.gui.elements.LobbyPlayerView;
 import it.polimi.gc06.mesos.view.gui.helpers.Totem;
-import javafx.animation.*;
+import javafx.animation.FadeTransition;
+import javafx.animation.ParallelTransition;
+import javafx.animation.ScaleTransition;
+import javafx.animation.TranslateTransition;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -10,18 +15,19 @@ import javafx.scene.Cursor;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.*;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
 
-import java.util.ArrayList;
 import java.util.EnumMap;
 
+import static it.polimi.gc06.mesos.view.gui.GUI.guidtovisitor;
 
-public class LobbyGuiController {
+
+public class LobbyGuiController implements ModelListener {
     @FXML
     public StackPane lobbyRoot;
     @FXML
@@ -152,7 +158,7 @@ public class LobbyGuiController {
 
     public void addPlayer(LobbyPlayerView playerBox, Totem totem) {
         players.put(totem, playerBox);
-        
+
         playerBox.setOpacity(0);
         playerBox.setTranslateY(10);
         playerBox.setScaleX(0.95);
@@ -176,5 +182,10 @@ public class LobbyGuiController {
 
         ParallelTransition enterAnimation = new ParallelTransition(fade, slide, scale);
         enterAnimation.play();
+    }
+
+    @Override
+    public void update(SmallModelEditor dto) {
+        dto.accept(guidtovisitor);
     }
 }
