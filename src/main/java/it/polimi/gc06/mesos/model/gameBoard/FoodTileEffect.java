@@ -69,13 +69,14 @@ public class FoodTileEffect implements TileEffect {
 
     @Override
     public boolean equals(Object o) {
+        if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         FoodTileEffect that = (FoodTileEffect) o;
-        return numFood == that.numFood && Objects.equals(foodBonusCard, that.foodBonusCard);
+        return numFood == that.numFood;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(numFood, foodBonusCard);
+        return Objects.hash(numFood);
     }
 }

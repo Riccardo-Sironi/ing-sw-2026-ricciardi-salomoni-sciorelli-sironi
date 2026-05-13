@@ -45,7 +45,7 @@ public class ImageFetcher {
         input = getClass().getResourceAsStream(TILES_URL);
         Map<Integer, TileImagesInfo> map = mapper.readValue(input, new TypeReference<Map<Integer, TileImagesInfo>>() {
         });
-        for (int i = 2; i < numOfPlayers; i++) {
+        for (int i = 2; i <= numOfPlayers; i++) {
             tileInfos.addAll(map.get(i).offerTiles);
         }
         turnOrderTileUrl = map.get(numOfPlayers).turnOrderTileUrl;
@@ -93,7 +93,7 @@ public class ImageFetcher {
         return turnOrderTileUrl;
     }
 
-    class CardImagesInfo{
+    public static class CardImagesInfo {
         Card cardInfo;
         int numOfPlayers;
         ArrayList<String> validImagesUrls;
@@ -111,7 +111,7 @@ public class ImageFetcher {
         }
     }
 
-    class OfferTileInfo{
+    public static class OfferTileInfo {
         TileEffect tileEffect;
         String offerTileUrl;
 
@@ -124,7 +124,7 @@ public class ImageFetcher {
         }
     }
 
-    class TileImagesInfo{
+    public static class TileImagesInfo {
         ArrayList<OfferTileInfo> offerTiles;
         String turnOrderTileUrl;
 
