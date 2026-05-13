@@ -16,11 +16,10 @@ import java.util.List;
 
 public class TurnOrderTileView extends TileView {
     private ArrayList<TotemPieceView> totemPieces;
-    private final int numPlayers;
 
-    public TurnOrderTileView(Image image, int numPlayers) {
+    public TurnOrderTileView(Image image) {
         super(image);
-        this.numPlayers = numPlayers;
+
         this.totemPieces = new ArrayList<>();
     }
 
@@ -63,7 +62,9 @@ public class TurnOrderTileView extends TileView {
 
         this.getChildren().add(layer);
 
-        TurnOrderTileInfo slots = TurnOrderTileInfo.getInfo(numPlayers);
+        // TODO : we use the size of the array provided beacuse it should be the smallmodel list,
+        //  so the smallmodel should always provide the correct number of pieces
+        TurnOrderTileInfo slots = TurnOrderTileInfo.getInfo(totemPieces.size());
         if (totemPieces != null && !totemPieces.isEmpty() && slots != null) {
             List<Point2D> points = slots.getPoints();
 
