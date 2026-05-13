@@ -46,9 +46,9 @@ public class ImageFetcher {
         Map<Integer, TileImagesInfo> map = mapper.readValue(input, new TypeReference<Map<Integer, TileImagesInfo>>() {
         });
         for (int i = 2; i < numOfPlayers; i++) {
-            tileInfos.addAll(map.get(i).offerTiles());
+            tileInfos.addAll(map.get(i).offerTiles);
         }
-        turnOrderTileUrl = map.get(numOfPlayers).turnOrderTileUrl();
+        turnOrderTileUrl = map.get(numOfPlayers).turnOrderTileUrl;
     }
 
     /**
@@ -63,8 +63,8 @@ public class ImageFetcher {
         if (cardMap.containsKey(card)) return cardMap.get(card);
 
         //fetching logic
-        CardImagesInfo info = cardInfos.stream().filter(i -> i.numOfPlayers() == numOfPlayers)
-                .filter(i -> i.cardInfo().equals(card)).findFirst().orElseThrow(NoSuchElementException::new);
+        CardImagesInfo info = cardInfos.stream().filter(i -> i.numOfPlayers == numOfPlayers)
+                .filter(i -> i.cardInfo.equals(card)).findFirst().orElseThrow(NoSuchElementException::new);
         cardMap.put(card, info.validImagesUrls.get(randomizer.nextInt(0, info.validImagesUrls.size())));
 
         return cardMap.get(card);
@@ -82,7 +82,7 @@ public class ImageFetcher {
         if (offerTileMap.containsKey(effect)) return offerTileMap.get(effect);
 
         //fetching logic
-        OfferTileInfo info = tileInfos.stream().filter(i -> i.tileEffect().equals(effect)).findFirst()
+        OfferTileInfo info = tileInfos.stream().filter(i -> i.tileEffect.equals(effect)).findFirst()
                 .orElseThrow(NoSuchElementException::new);
         offerTileMap.put(effect, info.offerTileUrl);
 
@@ -93,12 +93,47 @@ public class ImageFetcher {
         return turnOrderTileUrl;
     }
 
-    record CardImagesInfo(Card cardInfo, int numOfPlayers, ArrayList<String> validImagesUrls) {
+    class CardImagesInfo{
+        Card cardInfo;
+        int numOfPlayers;
+        ArrayList<String> validImagesUrls;
+
+        public void setCardInfo(Card cardInfo) {
+            this.cardInfo = cardInfo;
+        }
+
+        public void setNumOfPlayers(int numOfPlayers) {
+            this.numOfPlayers = numOfPlayers;
+        }
+
+        public void setValidImagesUrls(ArrayList<String> validImagesUrls) {
+            this.validImagesUrls = validImagesUrls;
+        }
     }
 
-    record OfferTileInfo(TileEffect tileEffect, String offerTileUrl) {
+    class OfferTileInfo{
+        TileEffect tileEffect;
+        String offerTileUrl;
+
+        public void setTileEffect(TileEffect tileEffect) {
+            this.tileEffect = tileEffect;
+        }
+
+        public void setOfferTileUrl(String offerTileUrl) {
+            this.offerTileUrl = offerTileUrl;
+        }
     }
 
-    record TileImagesInfo(ArrayList<OfferTileInfo> offerTiles, String turnOrderTileUrl) {
+    class TileImagesInfo{
+        ArrayList<OfferTileInfo> offerTiles;
+        String turnOrderTileUrl;
+
+        public void setOfferTiles(ArrayList<OfferTileInfo> offerTiles) {
+            this.offerTiles = offerTiles;
+        }
+
+        public void setTurnOrderTileUrl(String turnOrderTileUrl) {
+            this.turnOrderTileUrl = turnOrderTileUrl;
+        }
     }
 }
