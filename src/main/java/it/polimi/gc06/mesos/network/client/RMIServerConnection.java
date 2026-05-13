@@ -1,5 +1,6 @@
 package it.polimi.gc06.mesos.network.client;
 
+import it.polimi.gc06.mesos.controller.ModelListener;
 import it.polimi.gc06.mesos.dtos.SmallModelEditor;
 import it.polimi.gc06.mesos.network.rmi.RMIServerInterface;
 
@@ -90,6 +91,21 @@ public class RMIServerConnection extends UnicastRemoteObject implements ServerCo
     @Override
     public void pickBuildingFromTop(String nickname, int cardIndex) throws Exception {
         serverStub.handleBuildingPickTopRow(nickname, cardIndex);
+    }
+
+    @Override
+    public void subscribe(ModelListener listener) {
+
+    }
+
+    @Override
+    public void unsubscribe(ModelListener listener) {
+
+    }
+
+    @Override
+    public void prioritizedSubscribe(Client listener) {
+
     }
 }
 

@@ -1,11 +1,12 @@
 package it.polimi.gc06.mesos.network.client;
 
 import it.polimi.gc06.mesos.dtos.SmallModelEditor;
+import it.polimi.gc06.mesos.view.smallModel.SmallModelNotifier;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
-public interface ServerConnection extends Remote {
+public interface ServerConnection extends Remote, SmallModelNotifier {
     void receiveDTO(SmallModelEditor dto);
 
     void ping() throws RemoteException;

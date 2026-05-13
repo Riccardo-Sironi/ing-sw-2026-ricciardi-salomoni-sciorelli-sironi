@@ -21,13 +21,23 @@ public class Client implements ModelListener {
         }
 
         try {
-            serverConnection = tech.equals("RMI") ? new RMIServerConnection(host, port, messageHandler) : new TCPServerConnection();
+            serverConnection = tech.equals("RMI") ? new RMIServerConnection(host, port, messageHandler) :
+                    new TCPServerConnection(host, port);
         } catch (Exception e) {
             throw new RuntimeException("Failed to connect to server: " + e.getMessage(), e);
         }
 
     }
 
+    public void subscribe(ModelListener listener){
+
+    }
+
+    /**
+     * Should be called BEFORE other listeners to ensure that the small model is updated.
+     *
+     * @param dto the dto that the notification stemmed from.
+     */
     @Override
     public void update(SmallModelEditor dto) {
         dto.edit(smallModel);

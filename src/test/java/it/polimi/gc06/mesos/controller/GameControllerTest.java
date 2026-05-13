@@ -122,7 +122,7 @@ class GameControllerTest {
         when(tileSlotMock.getPlayer()).thenReturn(null);
 
         PropertyChangeListener listenerMock = mock(PropertyChangeListener.class);
-        controller.addListener(listenerMock);
+        //controller.addListener(listenerMock);
 
         controller.handleTotemOfferTilePlacement(activeNickname, 0);
 
@@ -143,7 +143,7 @@ class GameControllerTest {
         when(boardMock.getBottomCardFromIndex(0)).thenReturn(characterCardMock);
 
         PropertyChangeListener listenerMock = mock(PropertyChangeListener.class);
-        controller.addListener(listenerMock);
+        //controller.addListener(listenerMock);
 
         controller.handleCardPickBottomRow(activeNickname, 0);
 
@@ -164,7 +164,7 @@ class GameControllerTest {
         when(boardMock.getTopCardFromIndex(0)).thenReturn(characterCardMock);
 
         PropertyChangeListener listenerMock = mock(PropertyChangeListener.class);
-        controller.addListener(listenerMock);
+        //controller.addListener(listenerMock);
 
         controller.handleCardPickTopRow(activeNickname, 0);
 
@@ -185,7 +185,7 @@ class GameControllerTest {
         when(boardMock.getBottomBuildingFromIndex(0)).thenReturn(buildingCardMock);
 
         PropertyChangeListener listenerMock = mock(PropertyChangeListener.class);
-        controller.addListener(listenerMock);
+        //controller.addListener(listenerMock);
 
         controller.handleBuildingPickBottomRow(activeNickname, 0);
 
@@ -206,13 +206,13 @@ class GameControllerTest {
         when(boardMock.getTopBuildingFromIndex(0)).thenReturn(buildingCardMock);
 
         PropertyChangeListener listenerMock = mock(PropertyChangeListener.class);
-        controller.addListener(listenerMock);
+        //controller.addListener(listenerMock);
 
         controller.handleBuildingPickTopRow(activeNickname, 0);
 
         verify(phaseMock).pickCardFromTop(turnManagerMock, activePlayerMock, buildingCardMock, boardMock);
         verify(listenerMock, times(1)).propertyChange(any(PropertyChangeEvent.class));
 
-        controller.removeListener(listenerMock);
+        //controller.removeListener(listenerMock);
     }
 }
