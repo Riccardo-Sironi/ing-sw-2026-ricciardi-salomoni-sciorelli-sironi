@@ -1,5 +1,7 @@
 package it.polimi.gc06.mesos.view.tui;
 
+import it.polimi.gc06.mesos.controller.ModelListener;
+import it.polimi.gc06.mesos.dtos.SmallModelEditor;
 import it.polimi.gc06.mesos.model.Color;
 import it.polimi.gc06.mesos.model.Era;
 import it.polimi.gc06.mesos.model.cards.Card;
@@ -28,10 +30,16 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TUI implements View {
+public class TUI implements View, ModelListener {
 
     private SmallModel smallModel;
     private Client client;
+    boolean needsRedraw = true;
+    String statusMessage = "";
+
+    private LineReader lineReader;
+    private Terminal terminal;
+    private TuiBoardRenderer tuiBoardRenderer;
 
     public TUI(SmallModel smallModel, Client client) {
         this.smallModel = smallModel;
@@ -45,28 +53,13 @@ public class TUI implements View {
      */
     public void start() {
         try {
-            Terminal terminal = TerminalBuilder.builder()
+            this.terminal = TerminalBuilder.builder()
                     .system(true)
                     .ffm(true)
                     .build();
 
             terminal.puts(InfoCmp.Capability.clear_screen);
 
-            List<Card> topCards = new ArrayList<>();
-            topCards.add(new HunterCard(Era.ERA_I, true));
-            topCards.add(new ShamanCard(Era.ERA_II, 3));
-            topCards.add(new BuilderCard(Era.ERA_III, 2, 3));
-            topCards.add(new InventorCard(Era.ERA_III, InventionIcon.BREAD));
-            topCards.add(new RitualEvent(Era.ERA_II, 2, 1));
-            topCards.add(new PaintingsEvent(Era.ERA_I, 3, 4, 2));
-
-            List<Card> bottomCards = new ArrayList<>();
-            bottomCards.add(new BuilderCard(Era.ERA_III, 2, 3));
-            bottomCards.add(new InventorCard(Era.ERA_III, InventionIcon.BREAD));
-            bottomCards.add(new GathererCard(Era.ERA_II));
-            bottomCards.add(new ArtistCard(Era.ERA_I));
-            bottomCards.add(new HuntEvent(Era.ERA_II, 2));
-            bottomCards.add(new SustenanceEvent(Era.ERA_I, 3));
 
             Completer cardCompleter = (reader, line, candidates) -> {
                 List<String> words = line.words();
@@ -90,45 +83,12 @@ public class TUI implements View {
                     new ArgumentCompleter(new StringsCompleter("/pick_card"), new StringsCompleter("top", "bottom"), cardCompleter, NullCompleter.INSTANCE)
             );
 
-            LineReader lineReader = LineReaderBuilder.builder()
+            this.lineReader = LineReaderBuilder.builder()
                     .terminal(terminal)
                     .completer(completer)
                     .build();
 
-            TuiBoardRenderer tuiBoardRenderer = new TuiBoardRenderer(terminal);
-
-            List<PlayerView> players = new ArrayList<>();
-
-            PlayerView playerview1 = new PlayerView("pippo", Color.BLUE);
-            PlayerView playerview2 = new PlayerView("player2", Color.RED);
-            PlayerView playerview3 = new PlayerView("player3", Color.WHITE);
-            PlayerView playerview4 = new PlayerView("player4", Color.YELLOW);
-            PlayerView playerview5 = new PlayerView("player5", Color.PURPLE);
-
-
-            List<TileSlotView> offerTrack = new ArrayList<>();
-            TileSlotView firstSlot = new TileSlotView();
-            firstSlot.setTileEffect(new FoodTileEffect(3));
-            firstSlot.setPlayer(playerview1);
-
-            TileSlotView secondSlot = new TileSlotView();
-            secondSlot.setTileEffect(new ChooseCardTileEffect(2, 1));
-            secondSlot.setPlayer(playerview2);
-
-            offerTrack.add(firstSlot);
-            offerTrack.add(secondSlot);
-
-
-            String statusMessage = "";
-
-
-            players.add(smallModel.getPlayer());
-            players.addAll(smallModel.getOpponents());
-
-            // Player aggiuntivi per testare
-            players.add(playerview3);
-            players.add(playerview4);
-            players.add(playerview5);
+            this.tuiBoardRenderer = new TuiBoardRenderer(terminal);
 
 
             String[] titleAscii = {
@@ -186,26 +146,10 @@ public class TUI implements View {
 
             terminal.puts(InfoCmp.Capability.clear_screen);
             terminal.puts(InfoCmp.Capability.cursor_home);
-            boolean needsRedraw = true;
 
             while (true) {
                 if (needsRedraw) {
-                    terminal.puts(InfoCmp.Capability.clear_screen);
-                    terminal.puts(InfoCmp.Capability.cursor_home);
-                    terminal.writer().flush();
-
-                    tuiBoardRenderer.printCardRow(topCards);
-                    tuiBoardRenderer.printOfferTrack(offerTrack);
-                    tuiBoardRenderer.printCardRow(bottomCards);
-                    tuiBoardRenderer.printPlayerInfo(players);
-
-                    if (!statusMessage.isEmpty()) {
-                        terminal.writer().println("\nSystem> " + statusMessage);
-                    } else {
-                        terminal.writer().println();
-                    }
-                    terminal.writer().flush();
-
+                    render();
                     needsRedraw = false; // Reset the flag after rendering
                 }
 
@@ -394,5 +338,89 @@ public class TUI implements View {
             centeredText[i] = padString + text[i].toString();
         }
         return centeredText;
+    }
+
+    @Override
+    public void update(SmallModelEditor dto) {
+
+        // We've received an update. Let's redraw the board
+        render();
+
+        lineReader.callWidget(LineReader.REDRAW_LINE);
+        lineReader.callWidget(LineReader.REDISPLAY);
+
+        terminal.writer().flush();
+    }
+
+    private synchronized void render() {
+        // The TUI MUST be started before trying to render
+        if (this.terminal == null || this.lineReader == null) return;
+
+        terminal.puts(InfoCmp.Capability.clear_screen);
+        terminal.puts(InfoCmp.Capability.cursor_home);
+        terminal.writer().flush();
+
+        List<Card> topCards = new ArrayList<>();
+        topCards.add(new HunterCard(Era.ERA_I, true));
+        topCards.add(new ShamanCard(Era.ERA_II, 3));
+        topCards.add(new BuilderCard(Era.ERA_III, 2, 3));
+        topCards.add(new InventorCard(Era.ERA_III, InventionIcon.BREAD));
+        topCards.add(new RitualEvent(Era.ERA_II, 2, 1));
+        topCards.add(new PaintingsEvent(Era.ERA_I, 3, 4, 2));
+
+        List<Card> bottomCards = new ArrayList<>();
+        bottomCards.add(new BuilderCard(Era.ERA_III, 2, 3));
+        bottomCards.add(new InventorCard(Era.ERA_III, InventionIcon.BREAD));
+        bottomCards.add(new GathererCard(Era.ERA_II));
+        bottomCards.add(new ArtistCard(Era.ERA_I));
+        bottomCards.add(new HuntEvent(Era.ERA_II, 2));
+        bottomCards.add(new SustenanceEvent(Era.ERA_I, 3));
+
+
+        List<PlayerView> players = new ArrayList<>();
+
+        PlayerView playerview1 = new PlayerView("pippo", Color.BLUE);
+        PlayerView playerview2 = new PlayerView("player2", Color.RED);
+        PlayerView playerview3 = new PlayerView("player3", Color.WHITE);
+        PlayerView playerview4 = new PlayerView("player4", Color.YELLOW);
+        PlayerView playerview5 = new PlayerView("player5", Color.PURPLE);
+
+
+        List<TileSlotView> offerTrack = new ArrayList<>();
+        TileSlotView firstSlot = new TileSlotView();
+        firstSlot.setTileEffect(new FoodTileEffect(3));
+        firstSlot.setPlayer(playerview1);
+
+        TileSlotView secondSlot = new TileSlotView();
+        secondSlot.setTileEffect(new ChooseCardTileEffect(2, 1));
+        secondSlot.setPlayer(playerview2);
+
+        offerTrack.add(firstSlot);
+        offerTrack.add(secondSlot);
+
+
+        this.statusMessage = "";
+
+        players.add(smallModel.getPlayer());
+        players.addAll(smallModel.getOpponents());
+
+        // Player aggiuntivi per testare
+        players.add(playerview3);
+        players.add(playerview4);
+        players.add(playerview5);
+
+
+        tuiBoardRenderer.printCardRow(topCards);
+        tuiBoardRenderer.printOfferTrack(offerTrack);
+        tuiBoardRenderer.printCardRow(bottomCards);
+        tuiBoardRenderer.printPlayerInfo(players);
+
+        if (!statusMessage.isEmpty()) {
+            terminal.writer().println("\nSystem> " + statusMessage);
+        } else {
+            terminal.writer().println();
+        }
+        terminal.writer().flush();
+
     }
 }
