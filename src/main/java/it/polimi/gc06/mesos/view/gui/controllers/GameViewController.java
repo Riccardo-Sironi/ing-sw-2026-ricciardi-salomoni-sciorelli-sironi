@@ -30,12 +30,15 @@ public class GameViewController implements ModelListener {
 
     public ImageView overlay;
 
+    private SequentialTransition overlaySequence;
+
     @FXML
     public void initialize() {
 
         if (overlaysBox != null) {
             initOverlays();
-            // showPhaseOverlay();
+            //showPhaseOverlay();
+            //showEraOverlay();
         }
 
         if (board != null) {
@@ -57,8 +60,7 @@ public class GameViewController implements ModelListener {
                 overlay = new ImageView(phase.getOverlayPath());
             }
 
-            // TODO : this is just for now to test the animation
-            overlay = new ImageView(new Image("end_of_round_phase_overlay.png"));
+            overlay = new ImageView();
 
             overlay.setPreserveRatio(true);
             overlay.fitHeightProperty().bind(root.heightProperty().multiply(0.8));
@@ -70,41 +72,52 @@ public class GameViewController implements ModelListener {
             overlaysBox.getChildren().add(overlay);
             overlaysBox.toFront();
             overlaysBox.setMouseTransparent(true);
+
+            PauseTransition initialStay = new PauseTransition(Duration.seconds(0.5));
+
+            overlay.setOpacity(0);
+            overlay.setVisible(true);
+
+            FadeTransition fadeIn = new FadeTransition(Duration.millis(200), overlay);
+            fadeIn.setFromValue(0.0);
+            fadeIn.setToValue(1.0);
+
+            ScaleTransition scaleIn = new ScaleTransition(Duration.seconds(1.2), overlay);
+            scaleIn.setFromX(1.0);
+            scaleIn.setFromY(1.0);
+            scaleIn.setToX(1.1);
+            scaleIn.setToY(1.1);
+
+            ScaleTransition scaleOut = new ScaleTransition(Duration.seconds(0.8), overlay);
+            scaleOut.setFromX(1.1);
+            scaleOut.setFromY(1.1);
+            scaleOut.setToX(1.08);
+            scaleOut.setToY(1.08);
+
+            FadeTransition fadeOut = new FadeTransition(Duration.millis(200), overlay);
+            fadeOut.setFromValue(1.0);
+            fadeOut.setToValue(0.0);
+
+            fadeOut.setOnFinished(e -> overlay.setVisible(false));
+
+            overlaySequence = new SequentialTransition(initialStay, fadeIn, scaleIn, scaleOut, fadeOut);
         }
     }
 
     public void showPhaseOverlay() {
         if (overlay == null) return;
 
-        PauseTransition initialStay = new PauseTransition(Duration.seconds(0.5));
+        overlay.setImage(new Image(PhaseOverlays.getPhase(smallModel.getPhase()).getOverlayPath()));
 
-        overlay.setOpacity(0);
-        overlay.setVisible(true);
+        overlaySequence.play();
+    }
 
-        FadeTransition fadeIn = new FadeTransition(Duration.millis(200), overlay);
-        fadeIn.setFromValue(0.0);
-        fadeIn.setToValue(1.0);
+    public void showEraOverlay() {
+        if (overlay == null) return;
 
-        ScaleTransition scaleIn = new ScaleTransition(Duration.seconds(1.2), overlay);
-        scaleIn.setFromX(1.0);
-        scaleIn.setFromY(1.0);
-        scaleIn.setToX(1.1);
-        scaleIn.setToY(1.1);
+        overlay.setImage(new Image(smallModel.getEra().toString().toLowerCase() + "_overlay.png"));
 
-        ScaleTransition scaleOut = new ScaleTransition(Duration.seconds(0.8), overlay);
-        scaleOut.setFromX(1.1);
-        scaleOut.setFromY(1.1);
-        scaleOut.setToX(1.08);
-        scaleOut.setToY(1.08);
-
-        FadeTransition fadeOut = new FadeTransition(Duration.millis(200), overlay);
-        fadeOut.setFromValue(1.0);
-        fadeOut.setToValue(0.0);
-
-        fadeOut.setOnFinished(e -> overlay.setVisible(false));
-
-        SequentialTransition sequence = new SequentialTransition(initialStay, fadeIn, scaleIn, scaleOut, fadeOut);
-        sequence.play();
+        overlaySequence.play();
     }
 
     @Override
