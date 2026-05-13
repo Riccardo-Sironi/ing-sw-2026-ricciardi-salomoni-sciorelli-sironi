@@ -1,14 +1,22 @@
 package it.polimi.gc06.mesos.view.gui.visitors;
 
+import it.polimi.gc06.mesos.controller.GameController;
 import it.polimi.gc06.mesos.dtos.*;
 import it.polimi.gc06.mesos.view.gui.controllers.BoardController;
+import it.polimi.gc06.mesos.view.gui.controllers.GameViewController;
+import it.polimi.gc06.mesos.view.gui.controllers.LobbyGuiController;
+import javafx.application.Platform;
 
 public class GUIDTOvisitor extends DTOvisitor {
 
     BoardController boardController;
+    GameViewController gameViewController;
+    LobbyGuiController lobbyGuiController;
 
-    public GUIDTOvisitor(BoardController boardController) {
+    public GUIDTOvisitor(BoardController boardController, GameViewController gameViewController, LobbyGuiController lobbyGuiController) {
         this.boardController = boardController;
+        this.gameViewController = gameViewController;
+        this.lobbyGuiController = lobbyGuiController;
     }
 
     @Override
@@ -18,14 +26,18 @@ public class GUIDTOvisitor extends DTOvisitor {
 
     @Override
     public void visit(GameStateChangeDTO dto) {
-        boardController.handleRoundChanged();
-        // handleEraChanged
-        // handlePhaseChanged
+        Platform.runLater(() -> {
+            boardController.handleRoundChanged();
+            // handleEraChanged
+            // handlePhaseChanged
+        });
     }
 
     @Override
     public void visit(BuildingsRefillDTO dto) {
-        boardController.handleTopBuildingsRefill();
+        Platform.runLater(() -> {
+            boardController.handleTopBuildingsRefill();
+        });
     }
 
     @Override
@@ -35,22 +47,30 @@ public class GUIDTOvisitor extends DTOvisitor {
 
     @Override
     public void visit(PickBottomRowDTO dto) {
-        boardController.handleBottomRowPick();
+        Platform.runLater(() -> {
+            boardController.handleBottomRowPick();
+        });
     }
 
     @Override
     public void visit(PickBottomBuildingsDTO dto) {
-        boardController.handleBottomBuildingsPick();
+        Platform.runLater(() -> {
+            boardController.handleBottomBuildingsPick();
+        });
     }
 
     @Override
     public void visit(PickTopRowDTO dto) {
-        boardController.handleTopRowPick();
+        Platform.runLater(() -> {
+            boardController.handleTopRowPick();
+        });
     }
 
     @Override
     public void visit(PickTopBuildingsDTO dto) {
-        boardController.handleTopBuildingsPick();
+        Platform.runLater(() -> {
+            boardController.handleTopBuildingsPick();
+        });
     }
 
     @Override
@@ -60,16 +80,22 @@ public class GUIDTOvisitor extends DTOvisitor {
 
     @Override
     public void visit(PlayerStateChangeDTO dto) {
-        boardController.handleActivePlayerChanged();
+        Platform.runLater(() -> {
+            boardController.handleActivePlayerChanged();
+        });
     }
 
     @Override
     public void visit(TopRowRefillDTO dto) {
-        boardController.handleTopRowRefill();
+        Platform.runLater(() -> {
+            boardController.handleTopRowRefill();
+        });
     }
 
     @Override
     public void visit(TotemMovedDTO dto) {
-        boardController.handleTotemMoved();
+        Platform.runLater(() -> {
+            boardController.handleTotemMoved();
+        });
     }
 }
