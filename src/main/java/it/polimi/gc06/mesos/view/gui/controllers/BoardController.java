@@ -40,7 +40,11 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Popup;
 import javafx.util.Duration;
 
+import it.polimi.gc06.mesos.controller.ModelListener;
+import it.polimi.gc06.mesos.dtos.SmallModelEditor;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -173,30 +177,25 @@ public class BoardController implements ModelListener {
     @FXML
     public void initialize() {
         setupArchitecturalLayout();
-
         updateBottomRowLayout(false);
+        setupDeckPopup();
 
         if (smallModel != null) {
-            drawDeck();
-            drawTopRowCards();
-            drawTopBuildingsCards();
-            drawBottomRowCards();
-            drawBottomBuildingCards();
-            drawOfferTrack();
-            drawTurnOrderTile();
-            drawOfferTrack();
-            drawSkipButton();
-            drawPlayerInventory();
-            updateBottomRowLayout(!smallModel.getBottomBuildings().isEmpty());
-            drawOpponentsSidebar(null);
-        } else {
-            int testNumPlayers = 5;
-            //setupMockData(testNumPlayers);
+            refreshAll();
         }
+    }
 
-        Platform.runLater(() -> {
-            mainRoot.requestLayout();
-        });
+    private void refreshAll() {
+        drawDeck();
+        drawTopRowCards();
+        drawTopBuildingsCards();
+        drawBottomRowCards();
+        drawBottomBuildingCards();
+        drawTurnOrderTile();
+        drawOfferTrack();
+        drawSkipButton();
+        drawPlayerInventory();
+        drawOpponentsSidebar(new ArrayList<>(Arrays.asList(Totem.YELLOW, Totem.TURQUOISE, Totem.PURPLE, Totem.WHITE, Totem.ORANGE)));
     }
 
 //
@@ -447,9 +446,14 @@ public class BoardController implements ModelListener {
 
         inventoryBox.setStyle(backgroundInventoryStyle + " " + borderInventoryStyle);
 
-        String playerCardsBackgroundStyle = "-fx-background-color: rgb(255, 255, 255);";
+        String whiteBoxStyle = "-fx-background-color: rgba(255, 255, 255); -fx-background-radius: 8px;";
 
-        playerCardsContainer.setStyle(playerCardsBackgroundStyle);
+        playerCardsContainer.setStyle(whiteBoxStyle);
+        playerStatsBox.setStyle(whiteBoxStyle);
+        tokensBox.setStyle(whiteBoxStyle);
+
+        playerStatsBox.setPadding(new Insets(5));
+        tokensBox.setPadding(new Insets(5));
 
         double radius = 10;
         cardsScroll.layoutBoundsProperty().addListener((obs, oldBounds, newBounds) -> {
@@ -458,8 +462,6 @@ public class BoardController implements ModelListener {
             clip.setArcHeight(radius * 2);
             cardsScroll.setClip(clip);
         });
-
-        // TODO : same white box for the stats
     }
 
     public void updateBottomRowLayout(boolean showBuildings) {
@@ -704,16 +706,34 @@ public class BoardController implements ModelListener {
     }
 
     private void drawPlayerInventory() {
-        // TODO : this is temporary, we should update only the changed values instead of redrawing everything
-        configureTokensContainer(prestigeTokensBox, prestigeTokensImage, loadImage("shaman_stars_token.png"), prestigeTokensText, String.valueOf(smallModel.getPlayer().getNumPrestige()));
-        configureTokensContainer(foodTokensBox, foodTokensImage, loadImage("food_token.png"), foodTokensText, String.valueOf(smallModel.getPlayer().getNumFood()));
-        configureStatContainer(shamanStarsBox, shamanStarsImage, loadImage("shaman_stars_token.png"), shamanStarsText, String.valueOf(smallModel.getPlayer().getNumShamanStar()));
-        configureStatContainer(gathererQuantityBox, gathererQuantityImage, loadImage("gatherers_token.png"), gathererQuantityText, String.valueOf(smallModel.getPlayer().getNumGatherer()));
-        configureStatContainer(hunterQuantityBox, hunterQuantityImage, loadImage("hunters_token.png"), hunterQuantityText, String.valueOf(smallModel.getPlayer().getNumHunter()));
-        configureStatContainer(artistQuantityBox, artistQuantityImage, loadImage("artists_token.png"), artistQuantityText, String.valueOf(smallModel.getPlayer().getNumArtist()));
-        configureStatContainer(buildersDiscountBox, buildersDiscountImage, loadImage("blank_token.png"), buildersDiscountText, String.valueOf(smallModel.getPlayer().getBuildersDiscount()));
+        if (smallModel == null || smallModel.getPlayer() == null) return;
 
-        // TODO : cards redraw logic ...
+        PlayerView p = smallModel.getPlayer();
+
+        prestigeTokensText.setText(String.valueOf(p.getNumPrestige()));
+        foodTokensText.setText(String.valueOf(p.getNumFood()));
+        shamanStarsText.setText(String.valueOf(p.getNumShamanStar()));
+        gathererQuantityText.setText(String.valueOf(p.getNumGatherer()));
+        hunterQuantityText.setText(String.valueOf(p.getNumHunter()));
+        artistQuantityText.setText(String.valueOf(p.getNumArtist()));
+        buildersDiscountText.setText(String.valueOf(p.getBuildersDiscount()));
+
+        playerCardsContainer.getChildren().clear();
+
+        if (p.getCharacters() != null) {
+            for (Object item : p.getCharacters()) {
+                if (item instanceof List) {
+                    for (Object cardObj : (List<?>) item) {
+                        Card card = (Card) cardObj;
+                        CardView cardView = new CardView(new Image(imageFetcher.fetch(card)));
+
+                        cardView.fitHeightProperty().bind(inventoryBox.heightProperty().multiply(RESIZE_CARD_FACTOR));
+
+                        playerCardsContainer.getChildren().add(cardView);
+                    }
+                }
+            }
+        }
     }
 
     private void drawDeck() {
@@ -902,7 +922,9 @@ public class BoardController implements ModelListener {
 
     @Override
     public void update(SmallModelEditor dto) {
-        dto.accept(guidtovisitor);
+        Platform.runLater(() -> {
+            refreshAll();
+        });
     }
 
     public void handleTopRowRefill() {

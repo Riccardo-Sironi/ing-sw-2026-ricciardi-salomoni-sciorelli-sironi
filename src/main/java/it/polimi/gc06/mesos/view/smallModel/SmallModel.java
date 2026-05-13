@@ -1,5 +1,7 @@
 package it.polimi.gc06.mesos.view.smallModel;
 
+import it.polimi.gc06.mesos.controller.ModelListener;
+import it.polimi.gc06.mesos.dtos.SmallModelEditor;
 import it.polimi.gc06.mesos.model.Color;
 import it.polimi.gc06.mesos.model.Era;
 import it.polimi.gc06.mesos.model.cards.Card;
@@ -34,6 +36,8 @@ public class SmallModel {
     private final List<PlayerView> opponents; //is immutable
     private final ArrayList<Score> leaderboard;
 
+    private ModelListener listener;
+
     public SmallModel(String nickname) {
         this.topRow = new ArrayList<>();
         this.bottomRow = new ArrayList<>();
@@ -52,6 +56,7 @@ public class SmallModel {
         this.isActive = false;
         this.canSkip = false;
         this.leaderboard = new ArrayList<>();
+        this.listener = null;
     }
 
     public boolean isActive() {
@@ -170,4 +175,13 @@ public class SmallModel {
         this.phase = phase;
     }
 
+    public void setListener(ModelListener listener) {
+        this.listener = listener;
+    }
+
+    public void notifyListener(SmallModelEditor dto) {
+        if (this.listener != null) {
+            this.listener.update(dto);
+        }
+    }
 }

@@ -1,7 +1,9 @@
 package it.polimi.gc06.mesos.view.gui;
 
+import it.polimi.gc06.mesos.controller.ModelListener;
 import it.polimi.gc06.mesos.model.Color;
 import it.polimi.gc06.mesos.model.Era;
+import it.polimi.gc06.mesos.model.cards.characters.ShamanCard;
 import it.polimi.gc06.mesos.model.gameBoard.ChooseCardTileEffect;
 import it.polimi.gc06.mesos.model.gameBoard.FoodTileEffect;
 import it.polimi.gc06.mesos.model.gameTurnManager.PlacingTotemPhase;
@@ -37,33 +39,19 @@ public class GUI extends Application implements View {
 
     @Override
     public void start(Stage stage) throws IOException {
-        gameViewController = new FXMLLoader(
-                getClass().getResource("/it/polimi/gc06/mesos/fxml/mesos.fxml")
-        ).getController();
-        boardController = new FXMLLoader(
-                getClass().getResource("/it/polimi/gc06/mesos/fxml/board.fxml")
-        ).getController();
-        lobbyGuiController = new FXMLLoader(
-                getClass().getResource("/it/polimi/gc06/mesos/fxml/lobby.fxml")
-        ).getController();
-
-        guidtovisitor = new GUIDTOvisitor(boardController, gameViewController, lobbyGuiController);
-
         mockSmallModel();
 
         FXMLLoader gameViewLoader = new FXMLLoader(
                 getClass().getResource("/it/polimi/gc06/mesos/fxml/mesos.fxml")
         );
         Scene scene = new Scene(gameViewLoader.load(), WIDTH, HEIGHT);
-
         scene.getStylesheets().add(getClass().getResource("/it/polimi/gc06/mesos/css/board_style.css").toExternalForm());
 
-
-        // smallModel.setListener(gameViewLoader.getController());
+        ModelListener controller = gameViewLoader.getController();
+        smallModel.setListener(controller);
 
         stage.setTitle("Mesos");
         stage.setScene(scene);
-
         stage.show();
         javafx.application.Platform.runLater(() -> stage.setMaximized(true));
     }
@@ -93,9 +81,9 @@ public class GUI extends Application implements View {
         PlayerView clientPlayer = smallModel.getPlayer();
         clientPlayer.setNumFood(5);
         clientPlayer.setNumPrestige(10);
-//        for (int i = 0; i < 5; i++) {
-//            clientPlayer.getCharacters().add(new ShamanCard(Era.ERA_I, 1));
-//        }
+        for (int i = 0; i < 5; i++) {
+            clientPlayer.getCharacters().add(new ShamanCard(Era.ERA_I, 1));
+        }
 
         PlayerView p2 = new PlayerView("Player 2", Color.BLUE);
         p2.setNumFood(5);
@@ -111,10 +99,10 @@ public class GUI extends Application implements View {
         smallModel.getOpponents().add(p4);
         smallModel.getOpponents().add(p5);
 
-//        for (int i = 0; i < 12; i++) {
-//            smallModel.getTopRow().add(new ShamanCard(Era.ERA_I, 1));
-//            smallModel.getBottomRow().add(new ShamanCard(Era.ERA_I, 2));
-//        }
+        for (int i = 0; i < 12; i++) {
+            smallModel.getTopRow().add(new ShamanCard(Era.ERA_I, 1));
+            smallModel.getBottomRow().add(new ShamanCard(Era.ERA_I, 2));
+        }
 
         ArrayList<PlayerView> playerViews = new ArrayList<>();
         playerViews.add(smallModel.getOpponents().get(0));
