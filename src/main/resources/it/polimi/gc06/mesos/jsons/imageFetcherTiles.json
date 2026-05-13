@@ -4,59 +4,6 @@
       {
         "tileEffect": {
           "class": "FoodTileEffect",
-          "numFood": 1
-        },
-        "offerTileUrl": "/images/tiles/food_1.png"
-      },
-      {
-        "tileEffect": {
-          "class": "ChooseCardTileEffect",
-          "numOfTopCards": 1,
-          "numOfBottomCards": 0
-        },
-        "offerTileUrl": "/images/tiles/choose_top_1.png"
-      }
-    ],
-    "turnOrderTileUrl": "turn_order_tile_2_players.png"
-  },
-  "3": {
-    "offerTiles": [
-      {
-        "tileEffect": {
-          "class": "FoodTileEffect",
-          "numFood": 2
-        },
-        "offerTileUrl": "/images/tiles/food_2.png"
-      },
-      {
-        "tileEffect": {
-          "class": "ChooseCardTileEffect",
-          "numOfTopCards": 0,
-          "numOfBottomCards": 1
-        },
-        "offerTileUrl": "/images/tiles/choose_bottom_1.png"
-      }
-    ],
-    "turnOrderTileUrl": "turn_order_tile_3_players.png"
-  },
-  "4": {
-    "offerTiles": [
-      {
-        "tileEffect": {
-          "class": "ChooseCardTileEffect",
-          "numOfTopCards": 1,
-          "numOfBottomCards": 1
-        },
-        "offerTileUrl": "/images/tiles/choose_both_1.png"
-      }
-    ],
-    "turnOrderTileUrl": "turn_order_tile_4_players.png"
-  },
-  "5": {
-    "offerTiles": [
-      {
-        "tileEffect": {
-          "class": "FoodTileEffect",
           "numFood": 3
         },
         "offerTileUrl": "offer_tile_A.png"
@@ -68,7 +15,12 @@
           "numOfBottomCards": 1
         },
         "offerTileUrl": "offer_tile_B.png"
-      },
+      }
+    ],
+    "turnOrderTileUrl": "turn_order_tile_2_players.png"
+  },
+  "3": {
+    "offerTiles": [
       {
         "tileEffect": {
           "class": "ChooseCardTileEffect",
@@ -84,7 +36,12 @@
           "numOfBottomCards": 2
         },
         "offerTileUrl": "offer_tile_D.png"
-      },
+      }
+    ],
+    "turnOrderTileUrl": "turn_order_tile_3_players.png"
+  },
+  "4": {
+    "offerTiles": [
       {
         "tileEffect": {
           "class": "ChooseCardTileEffect",
@@ -92,7 +49,12 @@
           "numOfBottomCards": 1
         },
         "offerTileUrl": "offer_tile_E.png"
-      },
+      }
+    ],
+    "turnOrderTileUrl": "turn_order_tile_4_players.png"
+  },
+  "5": {
+    "offerTiles": [
       {
         "tileEffect": {
           "class": "ChooseCardTileEffect",
