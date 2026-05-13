@@ -36,7 +36,7 @@ public class LobbyTui implements LobbyView {
             System.out.print("Insert your nickname: ");
             nickname = scanner.nextLine().trim();
         }
-
+        
         return new ConnectionDetails(tech, ip, port, nickname);
 
     }

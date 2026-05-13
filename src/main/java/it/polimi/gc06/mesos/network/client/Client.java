@@ -23,13 +23,18 @@ public class Client implements ModelListener {
         try {
             serverConnection = tech.equals("RMI") ? new RMIServerConnection(host, port, messageHandler) :
                     new TCPServerConnection(host, port);
+            serverConnection.prioritizedSubscribe(this);
         } catch (Exception e) {
+            e.printStackTrace();
             throw new RuntimeException("Failed to connect to server: " + e.getMessage(), e);
         }
-
     }
 
-    public void subscribe(ModelListener listener){
+    public ServerConnection getServerConnection() {
+        return serverConnection;
+    }
+
+    public void subscribe(ModelListener listener) {
 
     }
 

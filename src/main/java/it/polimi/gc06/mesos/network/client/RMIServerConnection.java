@@ -8,18 +8,17 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
 public class RMIServerConnection extends UnicastRemoteObject implements ServerConnection {
-
+    private final List<ModelListener> listeners = new ArrayList<>();
+    private Client prioritizedListener = null;
     private final RMIServerInterface serverStub;
-    // TODO Fix this - da cambiare ASAP con DTO, per uniformare a TCP
-    //oggetto che deve ricevere il messaggio lato client
-    private final Consumer<SmallModelEditor> messageHandler;
 
     public RMIServerConnection(String host, int port, Consumer<SmallModelEditor> messageHandler) throws Exception {
         super();
-        this.messageHandler = messageHandler;
         Registry registry = LocateRegistry.getRegistry(host, port);
         this.serverStub = (RMIServerInterface) registry.lookup("MesosRMIServer");
     }
@@ -33,7 +32,10 @@ public class RMIServerConnection extends UnicastRemoteObject implements ServerCo
      */
     @Override
     public void receiveDTO(SmallModelEditor dto) {
-        new Thread(() -> messageHandler.accept(dto)).start();
+        new Thread(() -> {
+            if (prioritizedListener != null) prioritizedListener.update(dto);
+            listeners.forEach(l -> l.update(dto));
+        }).start();
     }
 
 
@@ -95,17 +97,19 @@ public class RMIServerConnection extends UnicastRemoteObject implements ServerCo
 
     @Override
     public void subscribe(ModelListener listener) {
-
+        listeners.add(listener);
     }
 
     @Override
     public void unsubscribe(ModelListener listener) {
-
+        listeners.remove(listener);
+        if (listener.equals(prioritizedListener)) prioritizedListener = null;
     }
 
     @Override
     public void prioritizedSubscribe(Client listener) {
-
+        prioritizedListener = null;
     }
+
 }
 
