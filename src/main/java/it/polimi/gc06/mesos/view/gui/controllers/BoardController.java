@@ -1,14 +1,14 @@
 package it.polimi.gc06.mesos.view.gui.controllers;
 
+import it.polimi.gc06.mesos.controller.ModelListener;
+import it.polimi.gc06.mesos.dtos.SmallModelEditor;
 import it.polimi.gc06.mesos.model.cards.Card;
 import it.polimi.gc06.mesos.view.gui.elements.CardView;
-import it.polimi.gc06.mesos.view.gui.elements.OffertTileView;
+import it.polimi.gc06.mesos.view.gui.elements.OfferTileView;
 import it.polimi.gc06.mesos.view.gui.elements.TotemPieceView;
 import it.polimi.gc06.mesos.view.gui.elements.TurnOrderTileView;
 import it.polimi.gc06.mesos.view.gui.helpers.EffectsManager;
-import it.polimi.gc06.mesos.view.gui.helpers.OfferTileInfo;
 import it.polimi.gc06.mesos.view.gui.helpers.Totem;
-import it.polimi.gc06.mesos.view.gui.helpers.TurnOrderTileInfo;
 import it.polimi.gc06.mesos.view.gui.visitors.CardEffectVisitor;
 import it.polimi.gc06.mesos.view.smallModel.PlayerView;
 import it.polimi.gc06.mesos.view.smallModel.TileSlotView;
@@ -41,14 +41,12 @@ import javafx.stage.Popup;
 import javafx.util.Duration;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import static it.polimi.gc06.mesos.view.gui.GUI.imageFetcher;
-import static it.polimi.gc06.mesos.view.gui.GUI.smallModel;
+import static it.polimi.gc06.mesos.view.gui.GUI.*;
 
-public class BoardController {
+public class BoardController implements ModelListener {
 
     @FXML
     private HBox mainRoot;
@@ -158,6 +156,10 @@ public class BoardController {
     @FXML
     private HBox bottomBuildingsContainer;
 
+    private TurnOrderTileView turnOrderTile;
+
+    private ArrayList<OfferTileView> offerTrackTiles;
+
     private static final PseudoClass DISABLED_STYLE = PseudoClass.getPseudoClass("skip-disabled");
 
     private final Font mesosFont = Font.loadFont(
@@ -171,9 +173,8 @@ public class BoardController {
     @FXML
     public void initialize() {
         setupArchitecturalLayout();
-        updateBottomRowLayout(false);
 
-        setupDeckPopup();
+        updateBottomRowLayout(false);
 
         if (smallModel != null) {
             drawDeck();
@@ -181,13 +182,16 @@ public class BoardController {
             drawTopBuildingsCards();
             drawBottomRowCards();
             drawBottomBuildingCards();
+            drawOfferTrack();
             drawTurnOrderTile();
             drawOfferTrack();
             drawSkipButton();
+            drawPlayerInventory();
+            updateBottomRowLayout(!smallModel.getBottomBuildings().isEmpty());
             drawOpponentsSidebar(null);
         } else {
             int testNumPlayers = 5;
-            setupMockData(testNumPlayers);
+            //setupMockData(testNumPlayers);
         }
 
         Platform.runLater(() -> {
@@ -195,124 +199,124 @@ public class BoardController {
         });
     }
 
+//
+//    private void setupMockData(int numPlayers) {
+//
+//        deckImage.setImage(loadImage("tribe_card_era_I_back.png"));
+//
+//        topCharactersContainer.getChildren().clear();
+//        bottomCharactersContainer.getChildren().clear();
+//
+//        for (int i = 0; i < 10; i++) {
+//            CardView card = new CardView(loadImage("shaman_1_card.png"));
+//            card.fitHeightProperty().bind(topRowBox.heightProperty().multiply(RESIZE_CARD_FACTOR));
+//            EffectsManager.activeCard(card);
+//            topCharactersContainer.getChildren().add(card);
+//
+//            CardView bCard = new CardView(loadImage("shaman_1_card.png"));
+//            bCard.fitHeightProperty().bind(bottomRowBox.heightProperty().multiply(RESIZE_CARD_FACTOR));
+//            EffectsManager.disableCard(bCard);
+//            bottomCharactersContainer.getChildren().add(bCard);
+//
+//            CardView pCard = new CardView(loadImage("shaman_1_card.png"));
+//            pCard.fitHeightProperty().bind(inventoryBox.heightProperty().multiply(RESIZE_CARD_FACTOR));
+//            playerCardsContainer.getChildren().add(pCard);
+//        }
+//
+//        turnOrderContainer.getChildren().clear();
+//
+//        TurnOrderTileInfo tileInfo = TurnOrderTileInfo.getInfo(numPlayers);
+//        if (tileInfo == null) {
+//            tileInfo = TurnOrderTileInfo.TURN_ORDER_TILE_5_PLAYERS;
+//        }
+//
+//        Image toImage = loadImage(tileInfo.getImagePath());
+//        if (toImage == null) {
+//            toImage = loadImage(TurnOrderTileInfo.TURN_ORDER_TILE_5_PLAYERS.getImagePath());
+//        }
+//
+//        Totem[] tuttiITotem = {Totem.YELLOW, Totem.TURQUOISE, Totem.PURPLE, Totem.WHITE, Totem.ORANGE};
+//        ArrayList<Totem> totemAttivi = new ArrayList<>();
+//        for (int i = 0; i < numPlayers && i < tuttiITotem.length; i++) {
+//            totemAttivi.add(tuttiITotem[i]);
+//        }
+//        // TurnOrderTileView turnOrderTile = createTurnOrderTile(toImage, totemAttivi);
+//        // turnOrderContainer.getChildren().add(turnOrderTile);
+//
+//        offerTrackContainer.getChildren().clear();
+//
+//        String[] offerImages = switch (numPlayers) {
+//            case 5 ->
+//                // 5 Players: A, B, C, D, E, F, G
+//                    new String[]{
+//                            "offer_tile_A.png",
+//                            "offer_tile_B.png",
+//                            "offer_tile_C.png",
+//                            "offer_tile_D.png",
+//                            "offer_tile_E.png",
+//                            "offer_tile_F.png",
+//                            "offer_tile_G.png"
+//                    };
+//            case 4 ->
+//                // 4 Players: B, C, D, E, F, G
+//                    new String[]{
+//                            "offer_tile_B.png",
+//                            "offer_tile_C.png",
+//                            "offer_tile_D.png",
+//                            "offer_tile_E.png",
+//                            "offer_tile_F.png",
+//                            "offer_tile_G.png"
+//                    };
+//            case 3 ->
+//                // 3 Players: B, C, D, E, F
+//                    new String[]{
+//                            "offer_tile_B.png",
+//                            "offer_tile_C.png",
+//                            "offer_tile_D.png",
+//                            "offer_tile_E.png",
+//                            "offer_tile_F.png"
+//                    };
+//            case 2 ->
+//                // 2 Players: B, C, E, F
+//                    new String[]{
+//                            "offer_tile_B.png",
+//                            "offer_tile_C.png",
+//                            "offer_tile_E.png",
+//                            "offer_tile_F.png"
+//                    };
+//            default -> new String[]{
+//                    "offer_tile_B.png",
+//                    "offer_tile_C.png",
+//                    "offer_tile_E.png",
+//                    "offer_tile_F.png"
+//            };
+//        };
+//
 
-    private void setupMockData(int numPlayers) {
-
-        deckImage.setImage(loadImage("tribe_card_era_I_back.png"));
-
-        topCharactersContainer.getChildren().clear();
-        bottomCharactersContainer.getChildren().clear();
-
-        for (int i = 0; i < 10; i++) {
-            CardView card = new CardView(loadImage("shaman_1_card.png"));
-            card.fitHeightProperty().bind(topRowBox.heightProperty().multiply(RESIZE_CARD_FACTOR));
-            EffectsManager.activeCard(card);
-            topCharactersContainer.getChildren().add(card);
-
-            CardView bCard = new CardView(loadImage("shaman_1_card.png"));
-            bCard.fitHeightProperty().bind(bottomRowBox.heightProperty().multiply(RESIZE_CARD_FACTOR));
-            EffectsManager.disableCard(bCard);
-            bottomCharactersContainer.getChildren().add(bCard);
-
-            CardView pCard = new CardView(loadImage("shaman_1_card.png"));
-            pCard.fitHeightProperty().bind(inventoryBox.heightProperty().multiply(RESIZE_CARD_FACTOR));
-            playerCardsContainer.getChildren().add(pCard);
-        }
-
-        turnOrderContainer.getChildren().clear();
-
-        TurnOrderTileInfo tileInfo = TurnOrderTileInfo.getInfo(numPlayers);
-        if (tileInfo == null) {
-            tileInfo = TurnOrderTileInfo.TURN_ORDER_TILE_5_PLAYERS;
-        }
-
-        Image toImage = loadImage(tileInfo.getImagePath());
-        if (toImage == null) {
-            toImage = loadImage(TurnOrderTileInfo.TURN_ORDER_TILE_5_PLAYERS.getImagePath());
-        }
-
-        Totem[] tuttiITotem = {Totem.YELLOW, Totem.TURQUOISE, Totem.PURPLE, Totem.WHITE, Totem.ORANGE};
-        ArrayList<Totem> totemAttivi = new ArrayList<>();
-        for (int i = 0; i < numPlayers && i < tuttiITotem.length; i++) {
-            totemAttivi.add(tuttiITotem[i]);
-        }
-        TurnOrderTileView turnOrderTile = createTurnOrderTile(toImage, totemAttivi);
-        turnOrderContainer.getChildren().add(turnOrderTile);
-
-        offerTrackContainer.getChildren().clear();
-
-        String[] offerImages = switch (numPlayers) {
-            case 5 ->
-                // 5 Players: A, B, C, D, E, F, G
-                    new String[]{
-                            "offer_tile_A.png",
-                            "offer_tile_B.png",
-                            "offer_tile_C.png",
-                            "offer_tile_D.png",
-                            "offer_tile_E.png",
-                            "offer_tile_F.png",
-                            "offer_tile_G.png"
-                    };
-            case 4 ->
-                // 4 Players: B, C, D, E, F, G
-                    new String[]{
-                            "offer_tile_B.png",
-                            "offer_tile_C.png",
-                            "offer_tile_D.png",
-                            "offer_tile_E.png",
-                            "offer_tile_F.png",
-                            "offer_tile_G.png"
-                    };
-            case 3 ->
-                // 3 Players: B, C, D, E, F
-                    new String[]{
-                            "offer_tile_B.png",
-                            "offer_tile_C.png",
-                            "offer_tile_D.png",
-                            "offer_tile_E.png",
-                            "offer_tile_F.png"
-                    };
-            case 2 ->
-                // 2 Players: B, C, E, F
-                    new String[]{
-                            "offer_tile_B.png",
-                            "offer_tile_C.png",
-                            "offer_tile_E.png",
-                            "offer_tile_F.png"
-                    };
-            default -> new String[]{
-                    "offer_tile_B.png",
-                    "offer_tile_C.png",
-                    "offer_tile_E.png",
-                    "offer_tile_F.png"
-            };
-        };
-
-        for (int i = 0; i < offerImages.length; i++) {
-            Totem t = null;
-            String playerName = null;
-
-            if (i < totemAttivi.size()) {
-                t = totemAttivi.get(i);
-                playerName = "Player " + (i + 1);
-            }
-
-            OffertTileView tile = createOfferTile(
-                    loadImage(offerImages[i]),
-                    t,
-                    playerName,
-                    OfferTileInfo.valueOf(
-                            "OFFER_TILE_" + offerImages[i].split("_")[2].split("\\.")[0]).getXPercent(),
-                    OfferTileInfo.valueOf(
-                            "OFFER_TILE_" + offerImages[i].split("_")[2].split("\\.")[0]).getYPercent()
-            );
-
-            offerTrackContainer.getChildren().add(tile);
-        }
-
-        drawOpponentsSidebar(totemAttivi);
-    }
-
+    /// /        for (int i = 0; i < offerImages.length; i++) {
+    /// /            Totem t = null;
+    /// /            String playerName = null;
+    /// /
+    /// /            if (i < totemAttivi.size()) {
+    /// /                t = totemAttivi.get(i);
+    /// /                playerName = "Player " + (i + 1);
+    /// /            }
+    /// /
+    /// /            OfferTileView tile = createOfferTile(
+    /// /                    loadImage(offerImages[i]),
+    /// /                    t,
+    /// /                    playerName,
+    /// /                    OfferTileInfo.valueOf(
+    /// /                            "OFFER_TILE_" + offerImages[i].split("_")[2].split("\\.")[0]).getXPercent(),
+    /// /                    OfferTileInfo.valueOf(
+    /// /                            "OFFER_TILE_" + offerImages[i].split("_")[2].split("\\.")[0]).getYPercent()
+    /// /            );
+    /// /
+    /// /            offerTrackContainer.getChildren().add(tile);
+    /// /        }
+//
+//        drawOpponentsSidebar(totemAttivi);
+//    }
     private void setupArchitecturalLayout() {
         final double WIDTH_LEFT_ZONE = 0.85;
         final double WIDTH_OPPONENTS = 0.15;
@@ -370,9 +374,11 @@ public class BoardController {
         deckImage.fitHeightProperty().bind(centerRowBox.heightProperty().multiply(0.85));
 
         turnOrderContainer.setAlignment(Pos.CENTER_RIGHT);
+        initTurnOrderTile();
 
         offerTrackContainer.setAlignment(Pos.CENTER);
         offerTrackContainer.setSpacing(-2);
+        initOfferTrack();
 
         skipButtonContainer.prefWidthProperty().bind(leftZone.widthProperty().multiply(0.15));
         skipButtonContainer.setAlignment(Pos.CENTER);
@@ -437,11 +443,10 @@ public class BoardController {
         }
 
         String backgroundInventoryStyle = "-fx-background-color: rgba(" + color + ", 0.9);";
-        String borderInventoryStyle = "-fx-border-color: rgba(" + color + ", 1.0); -fx-border-width: 2px;";
+        String borderInventoryStyle = "-fx-border-color: rgba(" + color + ", 1.0); -fx-border-width: 4px; -fx-border-radius: 10px";
 
         inventoryBox.setStyle(backgroundInventoryStyle + " " + borderInventoryStyle);
 
-        // Anche qui, se non serve opacità va bene rgb, altrimenti rgba
         String playerCardsBackgroundStyle = "-fx-background-color: rgb(255, 255, 255);";
 
         playerCardsContainer.setStyle(playerCardsBackgroundStyle);
@@ -547,18 +552,14 @@ public class BoardController {
         );
 
         int shamans = 0, gatherers = 0, hunters = 0, artists = 0, builders = 0;
-        if (opponent != null && opponent.getCharacters() != null) {
-            for (Object item : opponent.getCharacters()) {
-                if (item instanceof List) {
-                    for (Object cardObj : (List<?>) item) {
-                        String cardType = cardObj.getClass().getSimpleName().toUpperCase();
-                        if (cardType.contains("SHAMAN")) shamans++;
-                        else if (cardType.contains("GATHERER")) gatherers++;
-                        else if (cardType.contains("HUNTER")) hunters++;
-                        else if (cardType.contains("ARTIST")) artists++;
-                        else if (cardType.contains("BUILDER")) builders++;
-                    }
-                }
+
+        if (smallModel != null) {
+            if (opponent != null && opponent.getCharacters() != null) {
+                shamans = opponent.getNumShamanStar();
+                gatherers = opponent.getNumGatherer();
+                hunters = opponent.getNumHunter();
+                artists = opponent.getNumArtist();
+                builders = opponent.getBuildersDiscount();
             }
         }
 
@@ -649,7 +650,7 @@ public class BoardController {
                     details.setManaged(true);
                     details.setVisible(true);
 
-                    double targetHeight = opponentsSidebar.getHeight() * 0.65;
+                    double targetHeight = opponentsSidebar.getHeight() * 0.5;
                     timeline.getKeyFrames().add(new KeyFrame(Duration.millis(350),
                             new KeyValue(details.opacityProperty(), 1, Interpolator.EASE_BOTH),
                             new KeyValue(details.prefHeightProperty(), targetHeight, Interpolator.EASE_BOTH),
@@ -702,79 +703,29 @@ public class BoardController {
         return stat;
     }
 
-    private void drawTurnOrderTile() {
-        turnOrderContainer.getChildren().clear();
-        if (smallModel == null) return;
+    private void drawPlayerInventory() {
+        // TODO : this is temporary, we should update only the changed values instead of redrawing everything
+        configureTokensContainer(prestigeTokensBox, prestigeTokensImage, loadImage("shaman_stars_token.png"), prestigeTokensText, String.valueOf(smallModel.getPlayer().getNumPrestige()));
+        configureTokensContainer(foodTokensBox, foodTokensImage, loadImage("food_token.png"), foodTokensText, String.valueOf(smallModel.getPlayer().getNumFood()));
+        configureStatContainer(shamanStarsBox, shamanStarsImage, loadImage("shaman_stars_token.png"), shamanStarsText, String.valueOf(smallModel.getPlayer().getNumShamanStar()));
+        configureStatContainer(gathererQuantityBox, gathererQuantityImage, loadImage("gatherers_token.png"), gathererQuantityText, String.valueOf(smallModel.getPlayer().getNumGatherer()));
+        configureStatContainer(hunterQuantityBox, hunterQuantityImage, loadImage("hunters_token.png"), hunterQuantityText, String.valueOf(smallModel.getPlayer().getNumHunter()));
+        configureStatContainer(artistQuantityBox, artistQuantityImage, loadImage("artists_token.png"), artistQuantityText, String.valueOf(smallModel.getPlayer().getNumArtist()));
+        configureStatContainer(buildersDiscountBox, buildersDiscountImage, loadImage("blank_token.png"), buildersDiscountText, String.valueOf(smallModel.getPlayer().getBuildersDiscount()));
 
-        List<?> playersOnTile = (List<?>) smallModel.getTurnOrderTile();
-        int nPlayers = playersOnTile.size();
-
-        if (nPlayers == 0) {
-            nPlayers = smallModel.getOpponents().size() + 1;
-        }
-
-        TurnOrderTileInfo tileInfo = TurnOrderTileInfo.getInfo(nPlayers);
-        if (tileInfo == null) {
-            tileInfo = TurnOrderTileInfo.TURN_ORDER_TILE_5_PLAYERS; // Fallback
-        }
-
-        Image img = loadImage(tileInfo.getImagePath());
-        if (img == null) {
-            img = loadImage(TurnOrderTileInfo.TURN_ORDER_TILE_5_PLAYERS.getImagePath());
-        }
-
-        ArrayList<Totem> activeTotems = new ArrayList<>();
-        for (Object obj : playersOnTile) {
-            if (obj instanceof PlayerView) {
-                PlayerView playerView = (PlayerView) obj;
-                Totem t = Totem.NONE;
-                if (playerView.getColor() != null) {
-                    switch (playerView.getColor().name()) {
-                        case "YELLOW":
-                            t = Totem.YELLOW;
-                            break;
-                        case "PURPLE":
-                            t = Totem.PURPLE;
-                            break;
-                        case "WHITE":
-                            t = Totem.WHITE;
-                            break;
-                        case "ORANGE":
-                            t = Totem.ORANGE;
-                            break;
-                        case "TURQUOISE":
-                            t = Totem.TURQUOISE;
-                            break;
-                    }
-                }
-                activeTotems.add(t);
-            }
-        }
-
-        if (activeTotems.isEmpty()) {
-            activeTotems = new ArrayList<>(Arrays.asList(Totem.YELLOW, Totem.TURQUOISE, Totem.PURPLE, Totem.WHITE, Totem.ORANGE));
-        }
-
-        TurnOrderTileView turnOrderTile = createTurnOrderTile(img, activeTotems);
-        turnOrderContainer.getChildren().add(turnOrderTile);
-    }
-
-    private void drawOfferTrack() {
-        offerTrackContainer.getChildren().clear();
-        if (smallModel == null) return;
-
-        for (TileSlotView tile : smallModel.getOfferTrack()) {
-            Image img = new Image(imageFetcher.fetch(tile));
-            // TODO: give the player a Totem or retrieve it
-            String nickname = tile.getPlayer() != null ? tile.getPlayer().getNickname() : "Empty";
-            Totem t = Totem.NONE;
-
-            offerTrackContainer.getChildren().add(createOfferTile(img, t, nickname, 0.50, 0.20));
-        }
+        // TODO : cards redraw logic ...
     }
 
     private void drawDeck() {
         if (smallModel == null) return;
+
+        setupDeckPopup();
+
+        if (smallModel.isEndgame()) {
+            deckImage.setImage(loadImage("tribe_card_era_III_final_back.png"));
+            return;
+        }
+
         switch (smallModel.getEra()) {
             case ERA_I:
                 deckImage.setImage(loadImage("tribe_card_era_I_back.png"));
@@ -793,7 +744,7 @@ public class BoardController {
         if (smallModel == null) return;
         for (Card card : smallModel.getTopRow()) {
             CardView cardView = new CardView(new Image(imageFetcher.fetch(card)));
-            cardView.fitHeightProperty().bind(topRowBox.heightProperty().multiply(0.85));
+            cardView.fitHeightProperty().bind(topRowBox.heightProperty().multiply(RESIZE_CARD_FACTOR));
             setCardEffect(cardView);
             cardView.setCard(card);
             topCharactersContainer.getChildren().add(cardView);
@@ -805,7 +756,7 @@ public class BoardController {
         if (smallModel == null) return;
         for (Card building : smallModel.getTopBuildings()) {
             CardView cardView = new CardView(new Image(imageFetcher.fetch(building)));
-            cardView.fitHeightProperty().bind(topRowBox.heightProperty().multiply(0.85));
+            cardView.fitHeightProperty().bind(topRowBox.heightProperty().multiply(RESIZE_CARD_FACTOR));
             setCardEffect(cardView);
             cardView.setCard(building);
             buildingsContainer.getChildren().add(cardView);
@@ -817,7 +768,7 @@ public class BoardController {
         if (smallModel == null) return;
         for (Card card : smallModel.getBottomRow()) {
             CardView cardView = new CardView(new Image(imageFetcher.fetch(card)));
-            cardView.fitHeightProperty().bind(bottomRowBox.heightProperty().multiply(0.85));
+            cardView.fitHeightProperty().bind(bottomRowBox.heightProperty().multiply(RESIZE_CARD_FACTOR));
             setCardEffect(cardView);
             cardView.setCard(card);
             bottomCharactersContainer.getChildren().add(cardView);
@@ -831,7 +782,7 @@ public class BoardController {
 
         for (Card building : smallModel.getBottomBuildings()) {
             CardView cardView = new CardView(new Image(imageFetcher.fetch(building)));
-            cardView.fitHeightProperty().bind(bottomRowBox.heightProperty().multiply(0.85));
+            cardView.fitHeightProperty().bind(bottomRowBox.heightProperty().multiply(RESIZE_CARD_FACTOR));
             setCardEffect(cardView);
             cardView.setCard(building);
             bottomBuildingsContainer.getChildren().add(cardView);
@@ -878,44 +829,67 @@ public class BoardController {
         }
     }
 
-    private TurnOrderTileView createTurnOrderTile(Image image, ArrayList<Totem> totems) {
-        int nPlayers = (smallModel == null) ? totems.size() : smallModel.getOpponents().size() + 1;
-        TurnOrderTileView turnOrderTile = new TurnOrderTileView(image, nPlayers);
-
+    private void initTurnOrderTile() {
+        Image turnOrderImage = loadImage(imageFetcher.getTurnOrderTileUrl());
+        turnOrderTile = new TurnOrderTileView(turnOrderImage);
         turnOrderTile.prefHeightProperty().bind(centerRowBox.heightProperty().multiply(0.85));
         turnOrderTile.maxHeightProperty().bind(centerRowBox.heightProperty().multiply(0.85));
         turnOrderTile.getImageView().fitHeightProperty().bind(centerRowBox.heightProperty().multiply(0.85));
 
-        double ratio = image.getWidth() / image.getHeight();
+        double ratio = turnOrderImage.getWidth() / turnOrderImage.getHeight();
         turnOrderTile.minWidthProperty().bind(turnOrderTile.prefHeightProperty().multiply(ratio));
         turnOrderTile.prefWidthProperty().bind(turnOrderTile.prefHeightProperty().multiply(ratio));
 
+        turnOrderContainer.getChildren().add(turnOrderTile);
+    }
+
+    public void drawTurnOrderTile() {
         ArrayList<TotemPieceView> totemPieces = new ArrayList<>();
-        int count = 1;
-        for (Totem totem : totems) {
-            totemPieces.add(new TotemPieceView(totem, "Player " + count));
-            count++;
+        for (PlayerView player : smallModel.getTurnOrderTile()) {
+            if (player != null) {
+                totemPieces.add(new TotemPieceView(Totem.getTotem(player.getColor()), player.getNickname()));
+            } else {
+                totemPieces.add(new TotemPieceView());
+            }
         }
 
         turnOrderTile.setTotemPieces(totemPieces);
-        return turnOrderTile;
     }
 
-    private OffertTileView createOfferTile(Image image, Totem totem, String playerName, double xPercent, double yPercent) {
-        OffertTileView tile = new OffertTileView(image);
+    private void initOfferTrack() {
+        offerTrackTiles = new ArrayList<>();
+
+        for (TileSlotView tile : smallModel.getOfferTrack()) {
+            OfferTileView offerTile = createOfferTile(tile);
+            offerTrackTiles.add(offerTile);
+
+            offerTrackContainer.getChildren().add(offerTile);
+        }
+    }
+
+    private void drawOfferTrack() {
+        for (int i = 0; i < smallModel.getOfferTrack().size(); i++) {
+            if (smallModel.getOfferTrack().get(i).getPlayer() != null) {
+                offerTrackTiles.get(i).setTotem(new TotemPieceView(Totem.getTotem(smallModel.getOfferTrack().get(i).getPlayer().getColor()), smallModel.getOfferTrack().get(i).getPlayer().getNickname()));
+            } else {
+                offerTrackTiles.get(i).setTotem(new TotemPieceView());
+            }
+        }
+    }
+
+    private OfferTileView createOfferTile(TileSlotView tileSlotView) {
+        Image img = loadImage(imageFetcher.fetch(tileSlotView));
+        OfferTileView tile = new OfferTileView(img);
 
         tile.prefHeightProperty().bind(centerRowBox.heightProperty().multiply(0.85));
         tile.maxHeightProperty().bind(centerRowBox.heightProperty().multiply(0.85));
         tile.getImageView().fitHeightProperty().bind(centerRowBox.heightProperty().multiply(0.85));
 
-        double ratio = image.getWidth() / image.getHeight();
+        double ratio = img.getWidth() / img.getHeight();
         tile.minWidthProperty().bind(tile.prefHeightProperty().multiply(ratio));
         tile.prefWidthProperty().bind(tile.prefHeightProperty().multiply(ratio));
 
-        if (totem != null) {
-            tile.setTotem(new TotemPieceView(totem, playerName));
-        }
-        tile.setCenterPercentage(xPercent, yPercent);
+        tile.setCenterPercentage(0.5, 0.2);
         return tile;
     }
 
@@ -923,64 +897,13 @@ public class BoardController {
         skipButton.pseudoClassStateChanged(DISABLED_STYLE, !canSkip);
         skipButton.applyCss();
         skipButton.setCursor(canSkip ? Cursor.HAND : Cursor.DEFAULT);
+        skipButton.setCursor(canSkip ? Cursor.HAND : Cursor.DEFAULT);
     }
 
-//    @Override
-//    public void propertyChange(PropertyChangeEvent evt) {
-//        PropertyChangeName eventName;
-//        try {
-//            eventName = PropertyChangeName.valueOf(evt.getPropertyName());
-//        } catch (IllegalArgumentException ex) {
-//            System.err.println("Illegal property: " + evt.getPropertyName());
-//            return;
-//        }
-//
-//        Platform.runLater(() -> {
-//            switch (eventName) {
-//                case PICK_FROM_TOP_ROW:
-//                    handleTopRowPick();
-//                    break;
-//                case PICK_FROM_BOTTOM_ROW:
-//                    handleBottomRowPick();
-//                    break;
-//                case PICK_FROM_TOP_BUILDINGS:
-//                    handleTopBuildingsPick();
-//                    break;
-//                case PICK_FROM_BOTTOM_BUILDINGS:
-//                    handleBottomBuildingsPick();
-//                    break;
-//                case TOP_ROW_REFILL:
-//                    handleTopRowRefill();
-//                    break;
-//                case TOP_BUILDINGS_REFILL:
-//                    handleTopBuildingsRefill();
-//                    break;
-//
-//                case TOTEM_MOVED_OFFER:
-//                case TOTEM_PLACEMENT_TURN:
-//                    handleTotemMoved();
-//                    break;
-//
-//                case ROUND_CHANGED:
-//                    handleRoundChanged();
-//                    break;
-//                case ACTIVE_PLAYER_CHANGED:
-//                    handleActivePlayerChanged();
-//                    break;
-//
-//                // Da implementare
-//                case PLAYER_CAN_SKIP:
-//                case FOOD_CHANGED:
-//                case PRESTIGE_CHANGED:
-//                case TOP_NUM_DRAW_CHANGED:
-//                case BOTTOM_NUM_DRAW_CHANGED:
-//                case PHASE_CHANGED:
-//                case ERA_CHANGED:
-//                case IS_END_GAME:
-//                    break;
-//            }
-//        });
-//    }
+    @Override
+    public void update(SmallModelEditor dto) {
+        dto.accept(guidtovisitor);
+    }
 
     public void handleTopRowRefill() {
         drawTopRowCards();
