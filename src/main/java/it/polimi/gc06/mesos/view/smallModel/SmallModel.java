@@ -51,7 +51,7 @@ public class SmallModel {
         this.round = -1;
         this.topDrawNum = -1;
         this.bottomDrawNum = -1;
-        this.player = null;
+        this.player = new PlayerView(nickname, null);
         this.opponents = new ArrayList<>();
         this.isActive = false;
         this.canSkip = false;
