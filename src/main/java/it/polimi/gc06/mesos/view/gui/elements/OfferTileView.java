@@ -8,13 +8,13 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 import javafx.stage.Popup;
 
-public class OffertTileView extends TileView {
+public class OfferTileView extends TileView {
 
     private Point2D centerSlot = new Point2D(0.50, 0.50);
     private TotemPieceView currentTotemView;
     private Popup playerNamePopup;
 
-    public OffertTileView(Image image) {
+    public OfferTileView(Image image) {
         super(image);
     }
 

@@ -1,6 +1,7 @@
 package it.polimi.gc06.mesos.view.gui.elements;
 
 import it.polimi.gc06.mesos.view.gui.helpers.EffectsManager;
+import it.polimi.gc06.mesos.view.gui.helpers.Totem;
 import it.polimi.gc06.mesos.view.gui.helpers.TurnOrderTileInfo;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
@@ -70,7 +71,10 @@ public class TurnOrderTileView extends TileView {
                 if (i >= points.size()) break;
 
                 TotemPieceView t = totemPieces.get(i);
-                setupPlayerNamePopup(t);
+                if (t.getPlayerName() != null) {
+                    setupPlayerNamePopup(t);
+                }
+
                 Point2D p = points.get(i);
 
                 t.fitHeightProperty().bind(trueH.multiply(0.25));
@@ -88,7 +92,7 @@ public class TurnOrderTileView extends TileView {
     }
 
     private void setupPlayerNamePopup(TotemPieceView totemPiece) {
-        if (totemPiece == null) return;
+        if (totemPiece.getTotemType() == Totem.NONE) return;
         Popup popup = EffectsManager.createTotemPopup(totemPiece.getTotemType(), totemPiece.getPlayerName());
 
         totemPiece.setOnMouseEntered((event) -> {
