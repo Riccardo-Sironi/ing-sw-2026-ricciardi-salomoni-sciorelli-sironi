@@ -40,11 +40,7 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Popup;
 import javafx.util.Duration;
 
-import it.polimi.gc06.mesos.controller.ModelListener;
-import it.polimi.gc06.mesos.dtos.SmallModelEditor;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -183,6 +179,10 @@ public class BoardController implements ModelListener {
         if (smallModel != null) {
             refreshAll();
         }
+
+        Platform.runLater(() -> {
+            mainRoot.requestLayout();
+        });
     }
 
     private void refreshAll() {
@@ -195,127 +195,9 @@ public class BoardController implements ModelListener {
         drawOfferTrack();
         drawSkipButton();
         drawPlayerInventory();
-        drawOpponentsSidebar(new ArrayList<>(Arrays.asList(Totem.YELLOW, Totem.TURQUOISE, Totem.PURPLE, Totem.WHITE, Totem.ORANGE)));
+        drawOpponentsSidebar();
     }
 
-//
-//    private void setupMockData(int numPlayers) {
-//
-//        deckImage.setImage(loadImage("tribe_card_era_I_back.png"));
-//
-//        topCharactersContainer.getChildren().clear();
-//        bottomCharactersContainer.getChildren().clear();
-//
-//        for (int i = 0; i < 10; i++) {
-//            CardView card = new CardView(loadImage("shaman_1_card.png"));
-//            card.fitHeightProperty().bind(topRowBox.heightProperty().multiply(RESIZE_CARD_FACTOR));
-//            EffectsManager.activeCard(card);
-//            topCharactersContainer.getChildren().add(card);
-//
-//            CardView bCard = new CardView(loadImage("shaman_1_card.png"));
-//            bCard.fitHeightProperty().bind(bottomRowBox.heightProperty().multiply(RESIZE_CARD_FACTOR));
-//            EffectsManager.disableCard(bCard);
-//            bottomCharactersContainer.getChildren().add(bCard);
-//
-//            CardView pCard = new CardView(loadImage("shaman_1_card.png"));
-//            pCard.fitHeightProperty().bind(inventoryBox.heightProperty().multiply(RESIZE_CARD_FACTOR));
-//            playerCardsContainer.getChildren().add(pCard);
-//        }
-//
-//        turnOrderContainer.getChildren().clear();
-//
-//        TurnOrderTileInfo tileInfo = TurnOrderTileInfo.getInfo(numPlayers);
-//        if (tileInfo == null) {
-//            tileInfo = TurnOrderTileInfo.TURN_ORDER_TILE_5_PLAYERS;
-//        }
-//
-//        Image toImage = loadImage(tileInfo.getImagePath());
-//        if (toImage == null) {
-//            toImage = loadImage(TurnOrderTileInfo.TURN_ORDER_TILE_5_PLAYERS.getImagePath());
-//        }
-//
-//        Totem[] tuttiITotem = {Totem.YELLOW, Totem.TURQUOISE, Totem.PURPLE, Totem.WHITE, Totem.ORANGE};
-//        ArrayList<Totem> totemAttivi = new ArrayList<>();
-//        for (int i = 0; i < numPlayers && i < tuttiITotem.length; i++) {
-//            totemAttivi.add(tuttiITotem[i]);
-//        }
-//        // TurnOrderTileView turnOrderTile = createTurnOrderTile(toImage, totemAttivi);
-//        // turnOrderContainer.getChildren().add(turnOrderTile);
-//
-//        offerTrackContainer.getChildren().clear();
-//
-//        String[] offerImages = switch (numPlayers) {
-//            case 5 ->
-//                // 5 Players: A, B, C, D, E, F, G
-//                    new String[]{
-//                            "offer_tile_A.png",
-//                            "offer_tile_B.png",
-//                            "offer_tile_C.png",
-//                            "offer_tile_D.png",
-//                            "offer_tile_E.png",
-//                            "offer_tile_F.png",
-//                            "offer_tile_G.png"
-//                    };
-//            case 4 ->
-//                // 4 Players: B, C, D, E, F, G
-//                    new String[]{
-//                            "offer_tile_B.png",
-//                            "offer_tile_C.png",
-//                            "offer_tile_D.png",
-//                            "offer_tile_E.png",
-//                            "offer_tile_F.png",
-//                            "offer_tile_G.png"
-//                    };
-//            case 3 ->
-//                // 3 Players: B, C, D, E, F
-//                    new String[]{
-//                            "offer_tile_B.png",
-//                            "offer_tile_C.png",
-//                            "offer_tile_D.png",
-//                            "offer_tile_E.png",
-//                            "offer_tile_F.png"
-//                    };
-//            case 2 ->
-//                // 2 Players: B, C, E, F
-//                    new String[]{
-//                            "offer_tile_B.png",
-//                            "offer_tile_C.png",
-//                            "offer_tile_E.png",
-//                            "offer_tile_F.png"
-//                    };
-//            default -> new String[]{
-//                    "offer_tile_B.png",
-//                    "offer_tile_C.png",
-//                    "offer_tile_E.png",
-//                    "offer_tile_F.png"
-//            };
-//        };
-//
-
-    /// /        for (int i = 0; i < offerImages.length; i++) {
-    /// /            Totem t = null;
-    /// /            String playerName = null;
-    /// /
-    /// /            if (i < totemAttivi.size()) {
-    /// /                t = totemAttivi.get(i);
-    /// /                playerName = "Player " + (i + 1);
-    /// /            }
-    /// /
-    /// /            OfferTileView tile = createOfferTile(
-    /// /                    loadImage(offerImages[i]),
-    /// /                    t,
-    /// /                    playerName,
-    /// /                    OfferTileInfo.valueOf(
-    /// /                            "OFFER_TILE_" + offerImages[i].split("_")[2].split("\\.")[0]).getXPercent(),
-    /// /                    OfferTileInfo.valueOf(
-    /// /                            "OFFER_TILE_" + offerImages[i].split("_")[2].split("\\.")[0]).getYPercent()
-    /// /            );
-    /// /
-    /// /            offerTrackContainer.getChildren().add(tile);
-    /// /        }
-//
-//        drawOpponentsSidebar(totemAttivi);
-//    }
     private void setupArchitecturalLayout() {
         final double WIDTH_LEFT_ZONE = 0.85;
         final double WIDTH_OPPONENTS = 0.15;
@@ -343,17 +225,17 @@ public class BoardController implements ModelListener {
         tokensBox.setAlignment(Pos.CENTER);
         tokensBox.setSpacing(5);
 
-        configureTokensContainer(prestigeTokensBox, prestigeTokensImage, loadImage("prestige_token.png"), prestigeTokensText, "0");
-        configureTokensContainer(foodTokensBox, foodTokensImage, loadImage("food_token.png"), foodTokensText, "0");
+        configureTokensContainer(prestigeTokensBox, prestigeTokensImage, loadImage("prestige_token.png"), prestigeTokensText);
+        configureTokensContainer(foodTokensBox, foodTokensImage, loadImage("food_token.png"), foodTokensText);
 
         playerStatsBox.setAlignment(Pos.CENTER);
         playerStatsBox.setSpacing(5);
 
-        configureStatContainer(shamanStarsBox, shamanStarsImage, loadImage("shaman_stars_token.png"), shamanStarsText, "0");
-        configureStatContainer(gathererQuantityBox, gathererQuantityImage, loadImage("gatherers_token.png"), gathererQuantityText, "0");
-        configureStatContainer(hunterQuantityBox, hunterQuantityImage, loadImage("hunters_token.png"), hunterQuantityText, "0");
-        configureStatContainer(artistQuantityBox, artistQuantityImage, loadImage("artists_token.png"), artistQuantityText, "0");
-        configureStatContainer(buildersDiscountBox, buildersDiscountImage, loadImage("blank_token.png"), buildersDiscountText, "0");
+        configureStatContainer(shamanStarsBox, shamanStarsImage, loadImage("shaman_stars_token.png"), shamanStarsText);
+        configureStatContainer(gathererQuantityBox, gathererQuantityImage, loadImage("gatherers_token.png"), gathererQuantityText);
+        configureStatContainer(hunterQuantityBox, hunterQuantityImage, loadImage("hunters_token.png"), hunterQuantityText);
+        configureStatContainer(artistQuantityBox, artistQuantityImage, loadImage("artists_token.png"), artistQuantityText);
+        configureStatContainer(buildersDiscountBox, buildersDiscountImage, loadImage("blank_token.png"), buildersDiscountText);
 
         topBar.prefHeightProperty().bind(boardRoot.heightProperty().multiply(0.1));
         topRowBox.prefHeightProperty().bind(boardRoot.heightProperty().multiply(0.30));
@@ -384,7 +266,7 @@ public class BoardController implements ModelListener {
     }
 
     private void configureTokensContainer(VBox container, ImageView containerImageView, Image containerImage,
-                                          Text containerText, String containerTextLabel) {
+                                          Text containerText) {
         container.prefWidthProperty().bind(tokensBox.widthProperty().divide(2));
         container.prefHeightProperty().bind(tokensBox.heightProperty());
         container.maxHeightProperty().bind(tokensBox.heightProperty());
@@ -395,14 +277,14 @@ public class BoardController implements ModelListener {
         containerImageView.setSmooth(true);
         containerImageView.fitHeightProperty().bind(inventoryBox.heightProperty().multiply(0.3));
 
-        containerText.setText(containerTextLabel);
+        containerText.setText("0");
         containerText.setFont(mesosFont);
         containerText.setTextAlignment(TextAlignment.CENTER);
         containerText.wrappingWidthProperty().bind(container.widthProperty());
     }
 
     private void configureStatContainer(VBox container, ImageView containerImageView,
-                                        Image containerImage, Text containerText, String containerTextLabel) {
+                                        Image containerImage, Text containerText) {
         container.prefWidthProperty().bind(playerStatsBox.widthProperty().divide(5));
         container.maxHeightProperty().bind(playerStatsBox.heightProperty());
         container.prefHeightProperty().bind(playerStatsBox.heightProperty());
@@ -413,7 +295,7 @@ public class BoardController implements ModelListener {
         containerImageView.setSmooth(true);
         containerImageView.fitHeightProperty().bind(container.heightProperty().multiply(0.3));
 
-        containerText.setText(containerTextLabel);
+        containerText.setText("0");
         containerText.setFont(mesosFont);
         containerText.setTextAlignment(TextAlignment.CENTER);
         containerText.wrappingWidthProperty().bind(container.widthProperty());
@@ -433,13 +315,7 @@ public class BoardController implements ModelListener {
     }
 
     private void configureInventoryStyle() {
-        String color;
-
-        if (smallModel == null) {
-            color = Totem.TURQUOISE.getTotemColorRGB();
-        } else {
-            color = Totem.getTotem(smallModel.getPlayer().getColor()).getTotemColorRGB();
-        }
+        String color = Totem.getTotem(smallModel.getPlayer().getColor()).getTotemColorRGB();
 
         String backgroundInventoryStyle = "-fx-background-color: rgba(" + color + ", 0.9);";
         String borderInventoryStyle = "-fx-border-color: rgba(" + color + ", 1.0); -fx-border-width: 4px; -fx-border-radius: 10px";
@@ -497,19 +373,11 @@ public class BoardController implements ModelListener {
         }
     }
 
-    public void drawOpponentsSidebar(ArrayList<Totem> activeTotems) {
+    public void drawOpponentsSidebar() {
         opponentsSidebar.getChildren().clear();
         expandedOpponentBox = null;
         opponentsSidebar.setSpacing(15);
         opponentsSidebar.setPadding(new Insets(15, 5, 15, 5));
-
-        if (smallModel == null) {
-            for (int i = 1; i < activeTotems.size(); i++) {
-                Totem t = activeTotems.get(i);
-                opponentsSidebar.getChildren().add(createOpponentInventoryBox("Player " + (i + 1), t.getTotemColorRGB(), null));
-            }
-            return;
-        }
 
         for (PlayerView opponent : smallModel.getOpponents()) {
             String rgbColor = Totem.getTotem(opponent.getColor()).getTotemColorRGB();
@@ -554,16 +422,6 @@ public class BoardController implements ModelListener {
         );
 
         int shamans = 0, gatherers = 0, hunters = 0, artists = 0, builders = 0;
-
-        if (smallModel != null) {
-            if (opponent != null && opponent.getCharacters() != null) {
-                shamans = opponent.getNumShamanStar();
-                gatherers = opponent.getNumGatherer();
-                hunters = opponent.getNumHunter();
-                artists = opponent.getNumArtist();
-                builders = opponent.getBuildersDiscount();
-            }
-        }
 
         HBox charactersBox = new HBox(5);
         charactersBox.setAlignment(Pos.CENTER);
@@ -923,7 +781,7 @@ public class BoardController implements ModelListener {
     @Override
     public void update(SmallModelEditor dto) {
         Platform.runLater(() -> {
-            refreshAll();
+            dto.accept(guidtovisitor);
         });
     }
 
