@@ -84,33 +84,56 @@ public class EffectsManager {
      */
     public static void activeCard(CardView card) {
         DropShadow dropShadow = new DropShadow();
-        dropShadow.setOffsetX(1);
-        dropShadow.setOffsetY(1);
-        dropShadow.setSpread(0.5);
-        dropShadow.setBlurType(BlurType.GAUSSIAN);
-        dropShadow.setColor(Color.web("#348ceb", 0.4));
+        dropShadow.setColor(Color.web("#348ceb", 0.6));
+        dropShadow.setRadius(5);
+        dropShadow.setSpread(0.2);
         card.setEffect(dropShadow);
         card.setStyle("-fx-cursor: hand");
 
+        Timeline in = new Timeline(
+                new KeyFrame(Duration.millis(200),
+                        new KeyValue(dropShadow.radiusProperty(), 12, Interpolator.EASE_OUT),
+                        new KeyValue(dropShadow.spreadProperty(), 0.3, Interpolator.EASE_OUT)
+                )
+        );
+
+        Timeline out = new Timeline(
+                new KeyFrame(Duration.millis(200),
+                        new KeyValue(dropShadow.radiusProperty(), 5, Interpolator.EASE_OUT),
+                        new KeyValue(dropShadow.spreadProperty(), 0.2, Interpolator.EASE_OUT)
+                )
+        );
+
         ScaleTransition scaleIn = new ScaleTransition(Duration.millis(100), card);
+        scaleIn.setToX(1.1);
+        scaleIn.setToY(1.1);
+        scaleIn.setInterpolator(Interpolator.EASE_OUT);
 
         ScaleTransition scaleOut = new ScaleTransition(Duration.millis(100), card);
+        scaleOut.setToX(1.0);
+        scaleOut.setToY(1.0);
+        scaleOut.setInterpolator(Interpolator.EASE_OUT);
 
         card.setOnMouseEntered(e -> {
+            out.stop();
+            in.play();
             scaleOut.stop();
-            scaleIn.setToX(1.1);
-            scaleIn.setToY(1.1);
-            scaleIn.setInterpolator(Interpolator.EASE_OUT);
             scaleIn.play();
         });
-
         card.setOnMouseExited(e -> {
+            in.stop();
+            out.play();
             scaleIn.stop();
-            scaleOut.setToX(1);
-            scaleOut.setToY(1);
-            scaleOut.setInterpolator(Interpolator.EASE_OUT);
             scaleOut.play();
         });
+    }
+
+    public static TranslateTransition createCardMoveTransition(CardView card, double toX, double toY, double duration) {
+        TranslateTransition transition = new TranslateTransition(Duration.millis(duration), card);
+        transition.setToX(toX);
+        transition.setToY(toY);
+        transition.setInterpolator(Interpolator.EASE_BOTH);
+        return transition;
     }
 
     public static void activeTile(OfferTileView tile) {
