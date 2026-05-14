@@ -2,14 +2,12 @@ package it.polimi.gc06.mesos.view.gui.helpers;
 
 import it.polimi.gc06.mesos.view.gui.controllers.GameViewController;
 import it.polimi.gc06.mesos.view.gui.elements.CardView;
-import javafx.animation.FadeTransition;
-import javafx.animation.Interpolator;
-import javafx.animation.ParallelTransition;
-import javafx.animation.TranslateTransition;
+import it.polimi.gc06.mesos.view.gui.elements.OfferTileView;
+import it.polimi.gc06.mesos.view.gui.elements.TileView;
+import javafx.animation.*;
 import javafx.geometry.Pos;
-import javafx.scene.effect.BlurType;
-import javafx.scene.effect.ColorAdjust;
-import javafx.scene.effect.DropShadow;
+import javafx.scene.Cursor;
+import javafx.scene.effect.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -93,6 +91,104 @@ public class EffectsManager {
         dropShadow.setColor(Color.web("#348ceb", 0.4));
         card.setEffect(dropShadow);
         card.setStyle("-fx-cursor: hand");
+
+        ScaleTransition scaleIn = new ScaleTransition(Duration.millis(100), card);
+
+        ScaleTransition scaleOut = new ScaleTransition(Duration.millis(100), card);
+
+        card.setOnMouseEntered(e -> {
+            scaleOut.stop();
+            scaleIn.setToX(1.1);
+            scaleIn.setToY(1.1);
+            scaleIn.setInterpolator(Interpolator.EASE_OUT);
+            scaleIn.play();
+        });
+
+        card.setOnMouseExited(e -> {
+            scaleIn.stop();
+            scaleOut.setToX(1);
+            scaleOut.setToY(1);
+            scaleOut.setInterpolator(Interpolator.EASE_OUT);
+            scaleOut.play();
+        });
+    }
+
+    public static void activeTile(OfferTileView tile) {
+        // TODO : give the active image (the one with bluish slot box) ...
+
+        // occupied tile slot effect
+        InnerShadow innerShadow = new InnerShadow();
+        innerShadow.setColor(Color.rgb(200, 0, 0, 1));
+        innerShadow.setRadius(20);
+        innerShadow.setChoke(0.1);
+        innerShadow.setBlurType(BlurType.GAUSSIAN);
+
+        Timeline blockIn = new Timeline(
+                new KeyFrame(Duration.millis(200),
+                        new KeyValue(innerShadow.colorProperty(), Color.rgb(200, 0, 0, 1))
+                )
+        );
+
+        Timeline blockOut = new Timeline(
+                new KeyFrame(Duration.millis(200),
+                        new KeyValue(innerShadow.colorProperty(), Color.rgb(0, 0, 0, 0))
+                )
+        );
+
+        // free tile slot effect
+        ColorAdjust colorAdjust = new ColorAdjust();
+        colorAdjust.setBrightness(0);
+
+        Timeline hoverIn = new Timeline(
+                new KeyFrame(Duration.millis(200),
+                        new KeyValue(colorAdjust.brightnessProperty(), 0.4)
+                )
+        );
+
+        Timeline hoverOut = new Timeline(
+                new KeyFrame(Duration.millis(200),
+                        new KeyValue(colorAdjust.brightnessProperty(), 0.0)
+                )
+        );
+
+        ScaleTransition scaleIn = new ScaleTransition(Duration.millis(200), tile);
+        scaleIn.setToX(1.02);
+        scaleIn.setToY(1.02);
+
+        ScaleTransition scaleOut = new ScaleTransition(Duration.millis(200), tile);
+        scaleOut.setToX(1);
+        scaleOut.setToY(1);
+
+        tile.setOnMouseEntered(e -> {
+            if ((tile.getTotem().getTotemType() == Totem.NONE)) {
+                tile.setEffect(colorAdjust);
+                hoverIn.play();
+                scaleOut.stop();
+                scaleIn.play();
+                tile.setCursor(Cursor.HAND);
+            } else {
+                tile.setEffect(innerShadow);
+                blockOut.stop();
+                blockIn.play();
+            }
+        });
+
+        tile.setOnMouseExited(e -> {
+            if ((tile.getTotem().getTotemType() == Totem.NONE)) {
+                hoverOut.play();
+                scaleIn.stop();
+                scaleOut.play();
+            } else {
+                blockOut.play();
+                blockIn.stop();
+            }
+            tile.setEffect(null);
+        });
+    }
+
+    public static void disableTile(TileView tile) {
+        // TODO : give the disabled image (the "normal" one) ...
+        tile.setEffect(null);
     }
 
     public static Popup createTotemPopup(Totem totemType, String playerName) {
