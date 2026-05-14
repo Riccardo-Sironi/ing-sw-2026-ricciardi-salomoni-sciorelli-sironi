@@ -1,6 +1,14 @@
-#boardRoot {
+#root {
     -fx-background-color: #ffffff;
     -fx-padding: 0px;
+    -fx-background-image: url('/mesos.png');
+    -fx-background-size: cover;
+    -fx-background-position: center;
+    -fx-background-repeat: no-repeat;
+}
+
+#boardRoot {
+
 }
 
 .scroll-pane {
@@ -13,48 +21,12 @@
     -fx-background-color: transparent;
 }
 
-/*#topBar {*/
-/*    -fx-background-color: rgba(255, 0, 0, 0.3);*/
-/*}*/
-
-/*!* 1.0/10 - Rosso *!*/
-/*#topRowBox {*/
-/*    -fx-background-color: rgba(255, 165, 0, 0.3);*/
-/*}*/
-
-/*!* 2.5/10 - Arancione *!*/
-/*#centerRowBox {*/
-/*    -fx-background-color: rgba(0, 255, 0, 0.3);*/
-/*}*/
-
-/*!* 2.5/10 - Verde *!*/
-/*#bottomRowBox {*/
-/*    -fx-background-color: rgba(0, 0, 255, 0.3);*/
-/*}*/
-
-/*!* 1.5/10 - Viola *!*/
-
-/*#topCharactersScroll {*/
-/*    -fx-border-color: rgba(255, 165, 0, 0.8);*/
-/*    -fx-border-width: 2px;*/
-/*}*/
-
-/*#buildingsScroll {*/
-/*    -fx-border-color: rgba(200, 100, 0, 0.8);*/
-/*    -fx-border-width: 2px;*/
-/*}*/
-
-/*#bottomCharactersScroll {*/
-/*    -fx-border-color: rgba(0, 0, 255, 0.8);*/
-/*    -fx-border-width: 2px;*/
-/*}*/
-
 #skipButton {
     -fx-background-color: white;
     -fx-border-color: #D3523B;
     -fx-border-width: 2px;
     -fx-text-fill: #D3523B;
-    -fx-padding: 10px 20px;
+    -fx-padding: 15px 25px;
     -fx-border-radius: 12px;
     -fx-background-radius: 12px;
     -fx-font-weight: bold;
@@ -80,4 +52,17 @@
     -fx-border-width: 2px;
     -fx-border-radius: 10px;
     -fx-background-radius: 10px;
+}
+
+/* ========================================================= */
+
+
+#topCharactersContainer,
+#buildingsContainer,
+#bottomCharactersContainer,
+#bottomBuildingsContainer,
+#turnOrderContainer, #offerTrackContainer, #deckContainer {
+    -fx-background-color: rgba(0, 0, 0, 0.4); /* Black with 40% opacity */
+    -fx-background-radius: 10px; /* Rounded corners */
+    -fx-padding: 10px; /* Breathing room around the cards */
 }

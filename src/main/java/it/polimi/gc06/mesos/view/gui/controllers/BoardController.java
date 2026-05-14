@@ -175,7 +175,7 @@ public class BoardController implements ModelListener {
     @FXML
     public void initialize() {
         setupArchitecturalLayout();
-        updateBottomRowLayout(false);
+        updateBottomRowLayout(true);
         setupDeckPopup();
 
         if (smallModel != null) {
@@ -208,11 +208,15 @@ public class BoardController implements ModelListener {
         opponentsSidebar.prefWidthProperty().bind(mainRoot.widthProperty().multiply(WIDTH_OPPONENTS));
         opponentsSidebar.prefHeightProperty().bind(mainRoot.heightProperty());
 
+        leftZone.setSpacing(10);
+
         final double HEIGHT_BOARD = 0.75;
         final double HEIGHT_INVENTORY = 0.25;
 
         boardRoot.prefHeightProperty().bind(leftZone.heightProperty().multiply(HEIGHT_BOARD));
         inventoryBox.prefHeightProperty().bind(leftZone.heightProperty().multiply(HEIGHT_INVENTORY));
+
+        boardRoot.setSpacing(10);
 
         inventoryBox.setAlignment(Pos.CENTER);
 
@@ -245,13 +249,20 @@ public class BoardController implements ModelListener {
         bottomRowBox.prefHeightProperty().bind(boardRoot.heightProperty().multiply(0.30));
 
         topBar.setAlignment(Pos.CENTER);
-        topBar.setSpacing(300);
+
+        roundText.wrappingWidthProperty().bind(leftZone.widthProperty().divide(3).subtract(100));
+        phaseText.wrappingWidthProperty().bind(leftZone.widthProperty().divide(3).subtract(100));
+        eraText.wrappingWidthProperty().bind(leftZone.widthProperty().divide(3).subtract(100));
+
         roundText.setText("Round " + (smallModel != null ? smallModel.getRound() : "?"));
         roundText.setFont(mesosFont);
+        roundText.setTextAlignment(TextAlignment.CENTER);
         phaseText.setText(smallModel != null ? smallModel.getPhase() : "?");
         phaseText.setFont(mesosFont);
+        phaseText.setTextAlignment(TextAlignment.CENTER);
         eraText.setText(smallModel != null ? smallModel.getEra().toString() : "?");
         eraText.setFont(mesosFont);
+        eraText.setTextAlignment(TextAlignment.CENTER);
 
         topRowBox.setAlignment(Pos.CENTER);
         topRowBox.setSpacing(20);
@@ -263,7 +274,8 @@ public class BoardController implements ModelListener {
         centerRowBox.setSpacing(30);
         deckContainer.prefWidthProperty().bind(leftZone.widthProperty().multiply(0.15));
         deckContainer.setAlignment(Pos.CENTER);
-        deckImage.fitHeightProperty().bind(centerRowBox.heightProperty().multiply(0.85));
+        HBox.setHgrow(deckContainer, Priority.NEVER);
+        deckImage.fitHeightProperty().bind(deckContainer.heightProperty().multiply(0.85));
 
         turnOrderContainer.setAlignment(Pos.CENTER_RIGHT);
         initTurnOrderTile();
@@ -328,16 +340,16 @@ public class BoardController implements ModelListener {
     private void configureInventoryStyle() {
         String color = Totem.getTotem(smallModel.getPlayer().getColor()).getTotemColorRGB();
 
-        String backgroundInventoryStyle = "-fx-background-color: rgba(" + color + ", 0.9);";
+        String backgroundInventoryStyle = "-fx-background-color: rgba(" + color + ", 0.8);";
         String borderInventoryStyle = "-fx-border-color: rgba(" + color + ", 1.0); -fx-border-width: 4px; -fx-border-radius: 10px";
 
         inventoryBox.setStyle(backgroundInventoryStyle + " " + borderInventoryStyle);
 
-        String whiteBoxStyle = "-fx-background-color: rgba(255, 255, 255); -fx-background-radius: 8px;";
-
-        playerCardsContainer.setStyle(whiteBoxStyle);
-        playerStatsBox.setStyle(whiteBoxStyle);
-        tokensBox.setStyle(whiteBoxStyle);
+//        String whiteBoxStyle = "-fx-background-color: rgba(255, 255, 255); -fx-background-radius: 8px;";
+//
+//        playerCardsContainer.setStyle(whiteBoxStyle);
+//        playerStatsBox.setStyle(whiteBoxStyle);
+//        tokensBox.setStyle(whiteBoxStyle);
 
         playerStatsBox.setPadding(new Insets(5));
         tokensBox.setPadding(new Insets(5));
