@@ -10,7 +10,11 @@
     <VBox fx:id="leftZone" alignment="TOP_CENTER">
 
         <VBox fx:id="boardRoot" alignment="TOP_CENTER">
-            <HBox fx:id="topBar" alignment="CENTER"/>
+            <HBox fx:id="topBar" alignment="CENTER">
+                <Text fx:id="roundText"/>
+                <Text fx:id="phaseText"/>
+                <Text fx:id="eraText"/>
+            </HBox>
 
             <HBox fx:id="topRowBox" alignment="CENTER">
                 <ScrollPane fx:id="topCharactersScroll" fitToHeight="true">

@@ -81,9 +81,9 @@ public class GUI extends Application implements View {
         PlayerView clientPlayer = smallModel.getPlayer();
         clientPlayer.setNumFood(5);
         clientPlayer.setNumPrestige(10);
-//        for (int i = 0; i < 5; i++) {
-//            clientPlayer.getCharacters().add(new ShamanCard(Era.ERA_I, 1));
-//        }
+        for (int i = 0; i < 5; i++) {
+            clientPlayer.getCharacters().add(new ShamanCard(Era.ERA_I, 1));
+        }
 
         PlayerView p2 = new PlayerView("Player 2", Color.BLUE);
         p2.setNumFood(5);
@@ -99,10 +99,10 @@ public class GUI extends Application implements View {
         smallModel.getOpponents().add(p4);
         smallModel.getOpponents().add(p5);
 
-//        for (int i = 0; i < 12; i++) {
-//            smallModel.getTopRow().add(new ShamanCard(Era.ERA_I, 1));
-//            smallModel.getBottomRow().add(new ShamanCard(Era.ERA_I, 2));
-//        }
+        for (int i = 0; i < 12; i++) {
+            smallModel.getTopRow().add(new ShamanCard(Era.ERA_I, 1));
+            smallModel.getBottomRow().add(new ShamanCard(Era.ERA_I, 1));
+        }
 
         ArrayList<PlayerView> playerViews = new ArrayList<>();
         playerViews.add(smallModel.getOpponents().get(0));
@@ -142,12 +142,6 @@ public class GUI extends Application implements View {
         TileSlotView tG = new TileSlotView();
         tG.setTileEffect(new ChooseCardTileEffect(2, 1));
         smallModel.getOfferTrack().add(tG);
-
-//        for (int i = 0; i < 6; i++) {
-//            TileSlotView t = new TileSlotView();
-//            t.setTileEffect(new ChooseCardTileEffect());
-//            smallModel.getOfferTrack().add(t);
-//        }
 
         imageFetcher = new ImageFetcher(playerViews.size());
     }

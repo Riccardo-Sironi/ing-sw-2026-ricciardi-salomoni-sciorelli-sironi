@@ -12,15 +12,13 @@ import it.polimi.gc06.mesos.view.gui.helpers.Totem;
 import it.polimi.gc06.mesos.view.gui.visitors.CardEffectVisitor;
 import it.polimi.gc06.mesos.view.smallModel.PlayerView;
 import it.polimi.gc06.mesos.view.smallModel.TileSlotView;
-import javafx.animation.Interpolator;
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.Timeline;
+import javafx.animation.*;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
 import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
+import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
@@ -29,10 +27,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -116,6 +111,12 @@ public class BoardController implements ModelListener {
 
     @FXML
     private HBox topBar;
+    @FXML
+    public Text roundText;
+    @FXML
+    public Text phaseText;
+    @FXML
+    public Text eraText;
 
     @FXML
     private HBox topRowBox;
@@ -241,6 +242,15 @@ public class BoardController implements ModelListener {
         topRowBox.prefHeightProperty().bind(boardRoot.heightProperty().multiply(0.30));
         centerRowBox.prefHeightProperty().bind(boardRoot.heightProperty().multiply(0.30));
         bottomRowBox.prefHeightProperty().bind(boardRoot.heightProperty().multiply(0.30));
+
+        topBar.setAlignment(Pos.CENTER);
+        topBar.setSpacing(300);
+        roundText.setText("Round " + (smallModel != null ? smallModel.getRound() : "?"));
+        roundText.setFont(mesosFont);
+        phaseText.setText(smallModel != null ? smallModel.getPhase().toString() : "?");
+        phaseText.setFont(mesosFont);
+        eraText.setText(smallModel != null ? smallModel.getEra().toString() : "?");
+        eraText.setFont(mesosFont);
 
         topRowBox.setAlignment(Pos.CENTER);
         topRowBox.setSpacing(20);
@@ -578,19 +588,10 @@ public class BoardController implements ModelListener {
 
         playerCardsContainer.getChildren().clear();
 
-        if (p.getCharacters() != null) {
-            for (Object item : p.getCharacters()) {
-                if (item instanceof List) {
-                    for (Object cardObj : (List<?>) item) {
-                        Card card = (Card) cardObj;
-                        CardView cardView = new CardView(new Image(imageFetcher.fetch(card)));
-
-                        cardView.fitHeightProperty().bind(inventoryBox.heightProperty().multiply(RESIZE_CARD_FACTOR));
-
-                        playerCardsContainer.getChildren().add(cardView);
-                    }
-                }
-            }
+        for (Card card : p.getCharacters()) {
+            CardView cardView = new CardView(new Image(imageFetcher.fetch(card)));
+            cardView.fitHeightProperty().bind(inventoryBox.heightProperty().multiply(RESIZE_CARD_FACTOR));
+            playerCardsContainer.getChildren().add(cardView);
         }
     }
 
@@ -623,8 +624,8 @@ public class BoardController implements ModelListener {
         for (Card card : smallModel.getTopRow()) {
             CardView cardView = new CardView(new Image(imageFetcher.fetch(card)));
             cardView.fitHeightProperty().bind(topRowBox.heightProperty().multiply(RESIZE_CARD_FACTOR));
-            setCardEffect(cardView);
             cardView.setCard(card);
+            setCardEffect(cardView);
             topCharactersContainer.getChildren().add(cardView);
         }
     }
@@ -635,8 +636,8 @@ public class BoardController implements ModelListener {
         for (Card building : smallModel.getTopBuildings()) {
             CardView cardView = new CardView(new Image(imageFetcher.fetch(building)));
             cardView.fitHeightProperty().bind(topRowBox.heightProperty().multiply(RESIZE_CARD_FACTOR));
-            setCardEffect(cardView);
             cardView.setCard(building);
+            setCardEffect(cardView);
             buildingsContainer.getChildren().add(cardView);
         }
     }
@@ -647,8 +648,8 @@ public class BoardController implements ModelListener {
         for (Card card : smallModel.getBottomRow()) {
             CardView cardView = new CardView(new Image(imageFetcher.fetch(card)));
             cardView.fitHeightProperty().bind(bottomRowBox.heightProperty().multiply(RESIZE_CARD_FACTOR));
-            setCardEffect(cardView);
             cardView.setCard(card);
+            setCardEffect(cardView);
             bottomCharactersContainer.getChildren().add(cardView);
         }
     }
@@ -661,8 +662,8 @@ public class BoardController implements ModelListener {
         for (Card building : smallModel.getBottomBuildings()) {
             CardView cardView = new CardView(new Image(imageFetcher.fetch(building)));
             cardView.fitHeightProperty().bind(bottomRowBox.heightProperty().multiply(RESIZE_CARD_FACTOR));
-            setCardEffect(cardView);
             cardView.setCard(building);
+            setCardEffect(cardView);
             bottomBuildingsContainer.getChildren().add(cardView);
         }
     }
@@ -696,6 +697,74 @@ public class BoardController implements ModelListener {
     private void setCardEffect(CardView cardView) {
         CardEffectVisitor visitor = new CardEffectVisitor(cardView);
         cardView.getCard().accept(visitor);
+    }
+
+    /**
+     * This method applies a smooth animation to a card when it's picked from the top/bottom rows or the buildings rows and moved to the player's inventory.
+     * The card will visually move from its original position to the player's inventory area, creating a more engaging user experience.
+     * It is called before redrawing the personal decks of the target player, based on the small model data.
+     *
+     * @param card the card picked
+     */
+    public static void applyPickCardAnimation(CardView card, HBox targetContainer, HBox mainRoot) {
+        card.setOnMouseClicked(event -> {
+            Bounds cardScreen = card.localToScreen(card.getBoundsInLocal());
+            Bounds targetScreen = targetContainer.localToScreen(targetContainer.getBoundsInLocal());
+            if (cardScreen == null || targetScreen == null) return;
+
+            // we need this overlay pane to make the card appear above all other elements during the animation
+            Pane overlayPane = new Pane();
+            Pane root = (Pane) mainRoot.getScene().getRoot();
+            Bounds rootScreen = root.localToScreen(root.getBoundsInLocal());
+
+            overlayPane.prefWidthProperty().bind(root.widthProperty());
+            overlayPane.prefHeightProperty().bind(root.heightProperty());
+            overlayPane.setMouseTransparent(true);
+            root.getChildren().add(overlayPane);
+
+            double cardX = cardScreen.getMinX() - rootScreen.getMinX();
+            double cardY = cardScreen.getMinY() - rootScreen.getMinY();
+            double targetX = targetScreen.getMinX() - rootScreen.getMinX();
+            double targetY = targetScreen.getMinY() - rootScreen.getMinY();
+
+            Pane originalParent = (Pane) card.getParent();
+            originalParent.getChildren().remove(card); // TODO : we could do this and then redraw the original container
+
+            card.relocate(cardX, cardY);
+            card.setTranslateX(0);
+            card.setTranslateY(0);
+            overlayPane.getChildren().add(card);
+
+            // adjust the speed of the animation based on the distance to travel, with a minimum and maximum duration
+            double deltaX = targetX - cardX;
+            double deltaY = targetY - cardY;
+            double distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+
+            double speed = 0.9;
+            long durationMs = (long) (distance / speed);
+
+            durationMs = Math.clamp(durationMs, 300, 600);
+
+            TranslateTransition transition = EffectsManager.createCardMoveTransition(card, targetX - cardX, targetY - cardY, durationMs);
+            transition.setInterpolator(Interpolator.EASE_OUT);
+
+            transition.setOnFinished(e -> {
+                overlayPane.getChildren().remove(card);
+                root.getChildren().remove(overlayPane);
+                card.setTranslateX(0);
+                card.setTranslateY(0);
+                // the bind below ensure that the card is the same size of the others visually, it matters just during the
+                // animation, then we re draw the inventory, and it will be draw like the others
+                card.fitHeightProperty().bind(targetContainer.heightProperty().multiply(1));
+                targetContainer.getChildren().add(card); // TODO : we could do this and then redraw the original container
+            });
+
+            transition.play();
+
+            // TODO : the card should be redrawn in the inventory so no need to remove the effects but we keep it for now
+            card.setOnMouseClicked(event2 -> {
+            });
+        });
     }
 
     private void applyEffectToContainerCardViews(HBox container) {
@@ -752,6 +821,8 @@ public class BoardController implements ModelListener {
             } else {
                 offerTrackTiles.get(i).setTotem(new TotemPieceView());
             }
+
+            EffectsManager.activeTile(offerTrackTiles.get(i));
         }
     }
 
