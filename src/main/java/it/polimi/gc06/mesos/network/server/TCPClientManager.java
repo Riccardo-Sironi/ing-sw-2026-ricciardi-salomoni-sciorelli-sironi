@@ -120,8 +120,6 @@ public class TCPClientManager implements VirtualClient, ModelListener {
                 return;
             }
             try {
-                //lazy initialization: to avoid conflict with the ClientDispatcher stream the ObjectOutputStream
-                //is created at the last possible moment (since when it's created it sends setup data on the stream)
                 outToClient.writeObject(notice);
             } catch (IOException e) {
                 System.err.print("Error on '" + nickname + "' notice dispatch: ");

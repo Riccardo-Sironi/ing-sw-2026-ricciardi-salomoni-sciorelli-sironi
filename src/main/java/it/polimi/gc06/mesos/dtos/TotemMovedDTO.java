@@ -29,12 +29,6 @@ public class TotemMovedDTO implements SmallModelEditor{
                 smallModel.getTurnOrderTile().set(i,null);
             }
         }
-        //finds old pos and removes
-        for(int i = 0; i < smallModel.getTurnOrderTile().size(); i++ ){
-            if(smallModel.getTurnOrderTile().get(i).getNickname().equals(player)) {
-                smallModel.getTurnOrderTile().set(i,null);
-            }
-        }
         //puts on new pos
         smallModel.getOfferTrack().get(index).setPlayer(view);
     }

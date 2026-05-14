@@ -1,6 +1,8 @@
 package it.polimi.gc06.mesos.network.client;
 
 import it.polimi.gc06.mesos.controller.ModelListener;
+import it.polimi.gc06.mesos.dtos.DTOvisitor;
+import it.polimi.gc06.mesos.dtos.GameStateChangeDTO;
 import it.polimi.gc06.mesos.dtos.SmallModelEditor;
 import it.polimi.gc06.mesos.network.socket.commands.ControllerCommand;
 import it.polimi.gc06.mesos.network.socket.commands.Request;
@@ -10,15 +12,11 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-//WARNING: Class is not thread safe! Only one thread running this class should be active and only
-//one other thread or main thread should use other methods.
 public class TCPServerConnection implements ServerConnection, Runnable{
 
     //socket data
@@ -33,13 +31,15 @@ public class TCPServerConnection implements ServerConnection, Runnable{
     private final List<ModelListener> listeners;
     private Client prioritizedListener;
 
+    //state
+    private boolean nicknameSent;
+    private boolean isInsideMatch;
+
     //futures and result
     //if isDone it means that the value was accepted, otherwise it is emptied
-    private CompletableFuture<String> futureNickname;
-    private CompletableFuture<String> futureCreateRequest;
-    private CompletableFuture<String> futureJoinRequest;
-    private CompletableFuture<Boolean> futureSuccess; //represents whether the last request was successful
-    private CompletableFuture<String> availableMatches;
+    private CompletableFuture<String> request;
+    private CompletableFuture<Boolean> success; //represents whether the last request was successful
+    private CompletableFuture<String> matches;
     private BlockingQueue<ControllerCommand> commands;
 
     public TCPServerConnection(String host, int port){
@@ -49,15 +49,16 @@ public class TCPServerConnection implements ServerConnection, Runnable{
         listeners = new ArrayList<>();
         prioritizedListener = null;
 
-        futureNickname = new CompletableFuture<>();
-        futureSuccess = new CompletableFuture<>();
-        futureCreateRequest = new CompletableFuture<>();
-        futureJoinRequest = new CompletableFuture<>();
+        request = new CompletableFuture<>();
+        success = new CompletableFuture<>();
         commands = new LinkedBlockingQueue<>();
-        availableMatches = new CompletableFuture<>();
+        matches = new CompletableFuture<>();
 
         out = null;
         in = null;
+
+        nicknameSent = false;
+        isInsideMatch = false;
     }
 
     @Override
@@ -67,69 +68,90 @@ public class TCPServerConnection implements ServerConnection, Runnable{
     }
 
     @Override
-    public void ping() throws RemoteException {
-        //TODO: what to put here?
+    public void ping() {
+        if(!request.complete("PING")) throw new IllegalStateException("An action is already getting performed");
     }
 
     @Override
     public boolean login(String nickname) throws Exception {
         //if the action was already performed before with success, exit
-        if(!futureNickname.complete(nickname)) throw new IllegalStateException();
-        boolean success = futureSuccess.join();
-        futureSuccess = new CompletableFuture<>(); //reset success
+        if(nicknameSent || isInsideMatch) throw new IllegalStateException("This action shouldn't be performed now");
+        if(!request.complete(nickname)) throw new IllegalStateException("An action is already getting performed");
+        boolean success = this.success.join();
+        this.success = new CompletableFuture<>(); //reset success
+        nicknameSent = success;
         return success;
     }
 
     @Override
     public void logout(String nickname) throws Exception {
-        //TODO: what to put here
+        if(!nicknameSent || isInsideMatch) throw new IllegalStateException("Login not yet performed or match already started");
+        if(!request.complete("LOGOUT")) throw new IllegalStateException("An action is already getting performed");
+        nicknameSent = false;
     }
 
     @Override
     public String getAvailableMatches() throws Exception {
-        return null; //TODO
+        if(isInsideMatch) throw new IllegalStateException("Match already started");
+        if(!request.complete("AVAILABLE")) throw new IllegalStateException("An action is already getting performed");
+        String matches = this.matches.join();
+        this.matches = new CompletableFuture<>();
+        return matches;
     }
 
     @Override
     public void createMatch(int numOfPlayers, String nickname) throws Exception {
+        if(!nicknameSent || !login(nickname)) throw new IllegalStateException("Login already performed or nickname not valid.");
         //if the action (or match join) was already performed before with success, exit
-        if(futureJoinRequest.isDone() || !futureCreateRequest.complete("CREATE "+numOfPlayers)) throw new IllegalStateException();
-        boolean success = futureSuccess.join();
-        futureSuccess = new CompletableFuture<>(); //reset success
+        if(isInsideMatch) throw new IllegalStateException("Match action already performed");
+        if(!request.complete("CREATE"+numOfPlayers)) throw new IllegalStateException("An action is already getting performed");
+
+        boolean success = this.success.join();
+        this.success = new CompletableFuture<>(); //reset success
+        isInsideMatch = success;
         if(!success) throw new IllegalArgumentException("Match num of player not valid.");
     }
 
     @Override
     public boolean joinMatch(int matchId, String nickname) throws Exception {
-        //if the action (or match creation) was already performed before with success, exit
-        if(futureCreateRequest.isDone() || !futureJoinRequest.complete("JOIN "+matchId)) throw new IllegalStateException();
-        boolean success = futureSuccess.join();
-        futureSuccess = new CompletableFuture<>(); //reset success
+        if(!nicknameSent || !login(nickname)) throw new IllegalStateException("Login already performed or nickname not valid.");
+        //if the action (or match join) was already performed before with success, exit
+        if(isInsideMatch) throw new IllegalStateException("Match action already performed");
+        if(!request.complete("JOIN"+matchId)) throw new IllegalStateException("An action is already getting performed");
+
+        boolean success = this.success.join();
+        this.success = new CompletableFuture<>(); //reset success
+        isInsideMatch = success;
         return success;
     }
 
     @Override
     public void placeTotem(String nickname, int tileIndex) throws Exception {
+        if(!isInsideMatch) throw new IllegalStateException("Match action not performed");
         commands.put(new ControllerCommand(nickname,tileIndex, Request.OFFER_TRACK_REQUEST));
     }
 
     @Override
     public void pickCardFromBottom(String nickname, int cardIndex) throws Exception {
+        if(!isInsideMatch) throw new IllegalStateException("Match action not performed");
         commands.put(new ControllerCommand(nickname,cardIndex, Request.BOTTOM_CARD_REQUEST));
     }
 
     @Override
     public void pickCardFromTop(String nickname, int cardIndex) throws Exception {
+        if(!isInsideMatch) throw new IllegalStateException("Match action not performed");
         commands.put(new ControllerCommand(nickname,cardIndex, Request.TOP_CARD_REQUEST));
     }
 
     @Override
     public void pickBuildingFromBottom(String nickname, int cardIndex) throws Exception {
+        if(!isInsideMatch) throw new IllegalStateException("Match action not performed");
         commands.put(new ControllerCommand(nickname,cardIndex, Request.BOTTOM_BUILDING_REQUEST));
     }
 
     @Override
     public void pickBuildingFromTop(String nickname, int cardIndex) throws Exception{
+        if(!isInsideMatch) throw new IllegalStateException("Match action not performed");
         commands.put(new ControllerCommand(nickname,cardIndex, Request.TOP_BUILDING_REQUEST));
     }
 
@@ -140,36 +162,40 @@ public class TCPServerConnection implements ServerConnection, Runnable{
             out = new ObjectOutputStream(socket.getOutputStream());
             in = new ObjectInputStream(socket.getInputStream());
 
-            out.writeObject(futureNickname.join());
-            while (!((String) in.readObject()).equals("OK")){
-                futureSuccess.complete(false);
-                futureNickname = new CompletableFuture<>(); //refused
-                out.writeObject(futureNickname.join());
-            }
-            futureSuccess.complete(true);
+            String req;
+            while(true) {
+                while (!isInsideMatch) {
 
-            //TODO: fix create and join logic client side
-            String req = (String) CompletableFuture.anyOf(futureCreateRequest, futureJoinRequest).join();
-            out.writeObject(req);
-            while(!((String) in.readObject()).equals("OK")){
-                futureSuccess.complete(false);
-                if(req.startsWith("CREATE")) futureCreateRequest = new CompletableFuture<>();
-                else futureJoinRequest = new CompletableFuture<>();
-                req = (String) CompletableFuture.anyOf(futureCreateRequest, futureJoinRequest).join();
-                out.writeObject(req);
-            }
-            futureSuccess.complete(true);
+                    req = request.join(); //takes request
 
-            new Thread(this::DTOReceiverLoop).start(); //starts the receiver
-            while (true){
-                out.writeObject(commands.take());
+                    //request dispatch
+                    if (req.equals("AVAILABLE")) {
+                        //request that needs a matches result
+                        out.writeObject(req);
+                        matches.complete((String) in.readObject());
+                    } else if (req.equals("PING") || req.equals("LOGOUT")) {
+                        //request that do not need a result
+                        out.writeObject(req);
+                    } else {
+                        //request that needs a confirmation
+                        out.writeObject(req);
+                        success.complete(((String) in.readObject()).equals("OK"));
+                    }
+
+                    request = new CompletableFuture<>(); //permits other actions
+                }
+
+                new Thread(this::DTOReceiverLoop).start(); //starts the receiver
+                while (isInsideMatch) {
+                    out.writeObject(commands.take());
+                }
             }
 
         }catch (ClassNotFoundException | EOFException e){
             System.err.println("Server connection ended.");
             e.printStackTrace();
         }catch (IOException e){
-            System.err.println("Invalid data for connection to server.");
+            System.err.println("Invalid data for server communication.");
             e.printStackTrace();
         } catch (InterruptedException _) {}
     }
@@ -177,7 +203,22 @@ public class TCPServerConnection implements ServerConnection, Runnable{
     private void DTOReceiverLoop(){
         try {
             while(true){
-                receiveDTO((SmallModelEditor) in.readObject());
+                SmallModelEditor dto = (SmallModelEditor) in.readObject();
+                AtomicBoolean isEndgame = new AtomicBoolean();
+                DTOvisitor visitor = new DTOvisitor(){
+                    @Override
+                    public void visit(GameStateChangeDTO dto){
+                        isEndgame.set(dto.isEndgame());
+                    }
+                };
+                visitor.visit(dto);
+                if(isEndgame.get()){
+                    isInsideMatch = false;
+                    receiveDTO(dto);
+                    return;
+                }
+                receiveDTO(dto);
+
             }
         } catch (ClassNotFoundException | IOException e) {
             System.err.println("Server connection ended or fatal error occurred.");

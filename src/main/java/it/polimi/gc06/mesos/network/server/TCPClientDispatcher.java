@@ -3,99 +3,128 @@ package it.polimi.gc06.mesos.network.server;
 import java.io.*;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 
 // ClientDispatcher is needed for deciding to what Match the client should participate
 public class TCPClientDispatcher implements Runnable {
 
     private final Socket clientSocket;
     private final MatchManager sharedManager;
-    private final static int TIMEOUT = 20 * 60 * 1000; //20 minutes
+    private ObjectInputStream in;
+    private ObjectOutputStream out;
+    private CompletableFuture<String> mainLoopRequest;
+    private CompletableFuture<Boolean> mainLoopConfirm;
+    private String nickname;
 
     public TCPClientDispatcher(Socket clientSocket, MatchManager sharedManager) {
         this.clientSocket = clientSocket;
         this.sharedManager = sharedManager;
+        this.mainLoopRequest = new CompletableFuture<>();
+        this.mainLoopConfirm = new CompletableFuture<>();
     }
 
     @Override
     public void run() {
 
-        ObjectOutputStream outToClient = null;
-        ObjectInputStream inFromClient = null;
-        String nickname = null;
+        try {
+            out = new ObjectOutputStream(clientSocket.getOutputStream());
+            in = new ObjectInputStream(clientSocket.getInputStream());
+        } catch(IOException e){
+            System.err.println("Error while accepting client: ");
+            e.printStackTrace();
+            return;
+        }
+
+        nickname = null;
+        mainLoopConfirm.complete(true); //necessary to avoid deadlock
+        new Thread(this::receiverLoop).start();
 
         try {
-            clientSocket.setSoTimeout(TIMEOUT);
-
-            outToClient = new ObjectOutputStream(clientSocket.getOutputStream());
-            inFromClient = new ObjectInputStream(clientSocket.getInputStream());
             String input;
 
             //nickname handling
-            nickname = (String)inFromClient.readObject(); //client side: nickname request
+            nickname = mainLoopRequest.join(); //client side: nickname request
+            mainLoopRequest = new CompletableFuture<>();
             while (!sharedManager.login(nickname)) {
-                outToClient.writeObject("KO");
-                nickname = (String)inFromClient.readObject();
+                out.writeObject("KO");
+                mainLoopConfirm.complete(true);
+                nickname = mainLoopRequest.join();
+                mainLoopRequest = new CompletableFuture<>();
             }
-            outToClient.writeObject("OK");
+            out.writeObject("OK");
+            mainLoopConfirm.complete(true);
 
             //match handling
             boolean success = false; //whether ot not the match request was dispatched
             while (!success) {
-                input = (String)inFromClient.readObject(); //client side: create match or join match decision
-                if (input.equals("CREATE")) {
-                    outToClient.writeObject("OK");
-                    input = (String)inFromClient.readObject(); //client side: num of player request
-                    if (input == null) throw new NullPointerException(); //disconnection handling
-                    while (!isNumeric(input) || Integer.parseInt(input) < Match.MIN_PLAYERS
+                input = mainLoopRequest.join(); //client side: create match or join match decision
+                mainLoopRequest = new CompletableFuture<>();
+                if (input.startsWith("CREATE")) {
+                    input = input.substring(6);
+                    if (!isNumeric(input) || Integer.parseInt(input) < Match.MIN_PLAYERS
                             || Integer.parseInt(input) > Match.MAX_PLAYERS) {
-                        outToClient.writeObject("KO");
-                        input = (String)inFromClient.readObject();
+                        out.writeObject("KO");
+                        mainLoopConfirm.complete(true);
                     }
-                    clientSocket.setSoTimeout(0); //removes the timeout to ensure match confirm
-                    Match newMatch = sharedManager.createMatch(Integer.parseInt(input));
-                    sharedManager.joinMatch(newMatch.getMatchId(), new TCPClientManager(clientSocket, nickname,
-                            sharedManager, inFromClient, outToClient));
-                    outToClient.writeObject("OK");
-                    success = true;
-                } else if (input.equals("JOIN")) {
-                    outToClient.writeObject(sharedManager.getAvailableMatchesString());
-                    input = (String)inFromClient.readObject(); //client side: matches request
-                    if (input == null) throw new NullPointerException(); //disconnection handling
-                    while (!isNumeric(input) || !sharedManager.joinMatch(Integer.parseInt(input), new TCPClientManager(
-                            clientSocket, nickname, sharedManager, inFromClient, outToClient))) {
-                        outToClient.writeObject(sharedManager.getAvailableMatchesString());
-                        input = (String)inFromClient.readObject();
+                    else{
+                        Match newMatch = sharedManager.createMatch(Integer.parseInt(input));
+                        mainLoopConfirm.completeExceptionally(new Exception());
+                        sharedManager.joinMatch(newMatch.getMatchId(), new TCPClientManager(clientSocket, nickname,
+                                sharedManager, in, out));
+                        out.writeObject("OK");
+                        success = true;
                     }
-                    clientSocket.setSoTimeout(0); //removes the timeout to ensure match confirm
-                    outToClient.writeObject("OK");
-                    success = true;
-                } else outToClient.writeObject("KO");
-            }
-        } catch (SocketTimeoutException _) {
-            if (outToClient != null) {
-                try {
-                    outToClient.writeObject("TIMEOUT");
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+                } else if (input.startsWith("JOIN")) {
+                    input = input.substring(4);
+                    if (!isNumeric(input) || !sharedManager.joinMatch(Integer.parseInt(input), new TCPClientManager(
+                            clientSocket, nickname, sharedManager, in, out))) {
+                        out.writeObject("KO");
+                        mainLoopConfirm.complete(true);
+                    }
+                    else{
+                        mainLoopConfirm.completeExceptionally(new Exception());
+                        out.writeObject("OK");
+                        success = true;
+                    }
+                } else{
+                    out.writeObject("KO");
+                    mainLoopConfirm.complete(true);
                 }
-                String alias = nickname;
-                if (alias == null) alias = "not identified";
-                System.err.println("Client '" + alias + "' timeout.");
             }
-            if (inFromClient != null) try {
-                inFromClient.close();
-            } catch (IOException _) {
-            }
-            if (nickname != null) sharedManager.logout(nickname);
-        } catch (IOException | NullPointerException | IllegalArgumentException | ClassNotFoundException e) {
-            //NullPointerException could be thrown if the client disconnects and readLine() returns null
+        } catch (IOException | IllegalArgumentException | CompletionException e) {
             System.err.print("Error while accepting player: ");
             e.printStackTrace();
-            if (inFromClient != null) try {
-                inFromClient.close();
-            } catch (IOException _) {
-            }
             if (nickname != null) sharedManager.logout(nickname);
+            mainLoopConfirm.completeExceptionally(e);
+        }
+    }
+
+    //handles request different for classing client dispatching (such as available match request, logout, ping)
+    //if it cannot handle the request it is sent to the main loop
+    private void receiverLoop(){
+        try{ while(true) {
+
+            mainLoopConfirm.join();
+            mainLoopConfirm = new CompletableFuture<>();
+
+            String input = (String) in.readObject();
+            switch (input){
+                case "AVAILABLE":
+                    out.writeObject(sharedManager.getAvailableMatchesString());
+                    break;
+                case "LOGOUT":
+                    if(nickname!=null) sharedManager.logout(nickname);
+                    break;
+                //TODO: da capire ping
+                case "PING":
+                    break;
+                default:
+                    mainLoopRequest.complete(input);
+            }
+        }}catch (IOException| ClassNotFoundException | CompletionException e){
+            mainLoopRequest.completeExceptionally(e);
         }
     }
 

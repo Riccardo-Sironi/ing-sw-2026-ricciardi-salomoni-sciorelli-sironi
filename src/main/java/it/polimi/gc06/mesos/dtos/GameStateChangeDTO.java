@@ -74,4 +74,8 @@ public class GameStateChangeDTO implements SmallModelEditor{
     public void accept(DTOvisitor visitor) {
         visitor.visit(this);
     }
+
+    public boolean isEndgame(){
+        return leaderboard != null;
+    }
 }
