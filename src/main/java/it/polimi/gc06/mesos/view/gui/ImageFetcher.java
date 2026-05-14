@@ -63,7 +63,7 @@ public class ImageFetcher {
         if (cardMap.containsKey(card)) return cardMap.get(card);
 
         //fetching logic
-        CardImagesInfo info = cardInfos.stream().filter(i -> i.numOfPlayers == numOfPlayers)
+        CardImagesInfo info = cardInfos.stream().filter(i -> i.numOfPlayers <= numOfPlayers)
                 .filter(i -> i.cardInfo.equals(card)).findFirst().orElseThrow(NoSuchElementException::new);
         cardMap.put(card, info.validImagesUrls.get(randomizer.nextInt(0, info.validImagesUrls.size())));
 

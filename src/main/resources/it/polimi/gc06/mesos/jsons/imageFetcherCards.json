@@ -1,13 +1,24 @@
 [
   {
-    "cardInfo" : {
-      "class" : "BuilderCard",
-      "prestige" : 0,
-      "foodDiscount" : 0
+    "cardInfo": {
+      "class": "BuilderCard",
+      "prestige": 0,
+      "foodDiscount": 0
     },
-    "numOfPlayers" : 0,
-    "validImagesUrls" : [
-      "url1","url2"
+    "numOfPlayers": 0,
+    "validImagesUrls": [
+      "url1",
+      "url2"
+    ]
+  },
+  {
+    "cardInfo": {
+      "class": "ShamanCard",
+      "nStars": 1
+    },
+    "numOfPlayers": 0,
+    "validImagesUrls": [
+      "shaman_1_card_r.png"
     ]
   }
 ]
