@@ -3,6 +3,7 @@ package it.polimi.gc06.mesos.view.gui.controllers;
 import it.polimi.gc06.mesos.controller.ModelListener;
 import it.polimi.gc06.mesos.dtos.SmallModelEditor;
 import it.polimi.gc06.mesos.model.cards.Card;
+import it.polimi.gc06.mesos.view.gui.ImageFetcher;
 import it.polimi.gc06.mesos.view.gui.elements.CardView;
 import it.polimi.gc06.mesos.view.gui.elements.OfferTileView;
 import it.polimi.gc06.mesos.view.gui.elements.TotemPieceView;
@@ -247,7 +248,7 @@ public class BoardController implements ModelListener {
         topBar.setSpacing(300);
         roundText.setText("Round " + (smallModel != null ? smallModel.getRound() : "?"));
         roundText.setFont(mesosFont);
-        phaseText.setText(smallModel != null ? smallModel.getPhase().toString() : "?");
+        phaseText.setText(smallModel != null ? smallModel.getPhase() : "?");
         phaseText.setFont(mesosFont);
         eraText.setText(smallModel != null ? smallModel.getEra().toString() : "?");
         eraText.setFont(mesosFont);
@@ -471,22 +472,10 @@ public class BoardController implements ModelListener {
             cardsScroll.setClip(clip);
         });
 
-        if (opponent == null || opponent.getCharacters() == null) {
-            for (int i = 0; i < 3; i++) {
-                CardView cardView = new CardView(loadImage("shaman_1_card.png"));
-                cardView.fitHeightProperty().bind(inventoryBox.heightProperty().multiply(RESIZE_CARD_FACTOR));
-                cardsContainer.getChildren().add(cardView);
-            }
-        } else {
-            for (Object item : opponent.getCharacters()) {
-                if (item instanceof List) {
-                    for (Object cardObj : (List<?>) item) {
-                        CardView cardView = new CardView(new Image(imageFetcher.fetch((Card) cardObj)));
-                        cardView.fitHeightProperty().bind(inventoryBox.heightProperty().multiply(RESIZE_CARD_FACTOR));
-                        cardsContainer.getChildren().add(cardView);
-                    }
-                }
-            }
+        for (Card card : opponent.getCharacters()) {
+            CardView cardView = new CardView(loadImage(imageFetcher.fetch(card)));
+            cardView.fitHeightProperty().bind(inventoryBox.heightProperty().multiply(RESIZE_CARD_FACTOR));
+            cardsContainer.getChildren().add(cardView);
         }
 
         Region spacer1 = new Region();
@@ -554,6 +543,8 @@ public class BoardController implements ModelListener {
 
         return container;
     }
+
+    // TODO : create a method to draw the cards of the opponents
 
     private VBox createResponsiveStat(String imagePath, String value, double divideFactor) {
         VBox stat = new VBox(2);

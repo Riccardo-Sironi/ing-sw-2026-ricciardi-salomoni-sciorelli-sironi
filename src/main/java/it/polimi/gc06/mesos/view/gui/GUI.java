@@ -87,10 +87,15 @@ public class GUI extends Application implements View {
 
         PlayerView p2 = new PlayerView("Player 2", Color.BLUE);
         p2.setNumFood(5);
+        p2.getCharacters().add(new ShamanCard(Era.ERA_I, 1));
+        p2.getCharacters().add(new ShamanCard(Era.ERA_I, 1));
+        p2.getCharacters().add(new ShamanCard(Era.ERA_I, 1));
         PlayerView p3 = new PlayerView("Player 3", Color.WHITE);
         p3.setNumPrestige(10);
         PlayerView p4 = new PlayerView("Player 4", Color.PURPLE);
         p4.setNumFood(100);
+        p4.getCharacters().add(new ShamanCard(Era.ERA_I, 1));
+        p4.getCharacters().add(new ShamanCard(Era.ERA_I, 1));
         p4.setNumPrestige(100);
         PlayerView p5 = new PlayerView("Player 5", Color.YELLOW);
 
