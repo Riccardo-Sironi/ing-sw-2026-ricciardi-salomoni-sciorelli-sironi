@@ -3,10 +3,8 @@ package it.polimi.gc06.mesos.view.gui.controllers;
 import it.polimi.gc06.mesos.controller.ModelListener;
 import it.polimi.gc06.mesos.dtos.SmallModelEditor;
 import it.polimi.gc06.mesos.view.gui.helpers.PhaseOverlays;
-import javafx.animation.FadeTransition;
-import javafx.animation.PauseTransition;
-import javafx.animation.ScaleTransition;
-import javafx.animation.SequentialTransition;
+import javafx.animation.*;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.image.Image;
@@ -37,8 +35,6 @@ public class GameViewController implements ModelListener {
 
         if (overlaysBox != null) {
             initOverlays();
-            //showPhaseOverlay();
-            //showEraOverlay();
         }
 
         if (board != null) {
@@ -51,6 +47,8 @@ public class GameViewController implements ModelListener {
         if (overlaysBox != null) {
             overlaysBox.prefWidthProperty().bind(root.widthProperty());
             overlaysBox.prefHeightProperty().bind(root.heightProperty());
+            overlaysBox.setStyle("-fx-background-color: rgba(0, 0, 0, 0.6);");
+            overlaysBox.setMouseTransparent(false);
 
             overlaysBox.setAlignment(Pos.CENTER);
 
@@ -71,7 +69,6 @@ public class GameViewController implements ModelListener {
 
             overlaysBox.getChildren().add(overlay);
             overlaysBox.toFront();
-            overlaysBox.setMouseTransparent(true);
 
             PauseTransition initialStay = new PauseTransition(Duration.seconds(0.5));
 
@@ -98,7 +95,10 @@ public class GameViewController implements ModelListener {
             fadeOut.setFromValue(1.0);
             fadeOut.setToValue(0.0);
 
-            fadeOut.setOnFinished(e -> overlay.setVisible(false));
+            fadeOut.setOnFinished(e -> {
+                overlay.setVisible(false);
+                overlaysBox.setVisible(false);
+            });
 
             overlaySequence = new SequentialTransition(initialStay, fadeIn, scaleIn, scaleOut, fadeOut);
         }
