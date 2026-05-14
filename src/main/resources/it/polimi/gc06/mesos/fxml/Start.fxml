@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.effect.DropShadow?>
+
+<StackPane fx:id="rootPane"
+           focusTraversable="true"
+           onMouseClicked="#handleStart"
+           onKeyPressed="#handleStart"
+           style="-fx-background-color: black;"
+           xmlns="http://javafx.com/javafx/21"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="it.polimi.gc06.mesos.view.gui.controllers.StartController">
+
+    <ImageView fx:id="backgroundImageView">
+    </ImageView>
+
+    <ImageView fx:id="particlesImageView"
+               mouseTransparent="true"
+               blendMode="SCREEN"
+               preserveRatio="true"
+               StackPane.alignment="CENTER">
+    </ImageView>
+
+    <Region fx:id="bottomGlow"
+            mouseTransparent="true"
+            maxHeight="600.0"
+            blendMode="ADD"
+            StackPane.alignment="BOTTOM_CENTER"
+            style="-fx-background-color: radial-gradient(center 50% 100%, radius 40%, rgba(255, 120, 0, 0.7), transparent);">
+    </Region>
+
+    <Region fx:id="topVignette" mouseTransparent="true" prefHeight="300.0" StackPane.alignment="TOP_CENTER" style="-fx-background-color: linear-gradient(to bottom, rgba(0,0,0,0.87), rgba(0,0,0,0.0));" />
+    <Region fx:id="leftVignette" mouseTransparent="true" prefWidth="300.0" StackPane.alignment="CENTER_LEFT" style="-fx-background-color: linear-gradient(to right, rgba(0,0,0,0.75), rgba(0,0,0,0.0)) linear-gradient(to bottom, rgba(0,0,0,1), rgba(0,0,0,0.7));" />
+    <Region fx:id="rightVignette" mouseTransparent="true" prefWidth="300.0" StackPane.alignment="CENTER_RIGHT" style="-fx-background-color: linear-gradient(to left, rgba(0,0,0,0.8), rgba(0,0,0,0.0)) linear-gradient(to bottom, rgba(0,0,0,1), rgba(0,0,0,0.7));" />
+
+    <Label fx:id="titleLabel" text="MESOS" StackPane.alignment="CENTER" style="-fx-text-fill: rgb(101,48,35);">
+        <effect>
+            <DropShadow color="BLACK" radius="80.0" spread="0.4" offsetY="-20"/>
+        </effect>
+    </Label>
+
+    <ImageView fx:id="flamesImageView"
+               blendMode="SCREEN"
+               preserveRatio="true"
+               StackPane.alignment="CENTER">
+    </ImageView>
+
+    <Label fx:id="pressKeyLabel"
+           text="Click or Press Any Key to Play"
+           textFill="ghostwhite"
+           StackPane.alignment="CENTER">
+    </Label>
+
+</StackPane>
