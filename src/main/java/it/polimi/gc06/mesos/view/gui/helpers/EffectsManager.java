@@ -129,10 +129,6 @@ public class EffectsManager {
             scaleIn.stop();
             scaleOut.play();
         });
-
-        card.setOnMouseClicked(e -> {
-            // TODO :
-        });
     }
 
     public static void normalCard(CardView card) {
@@ -186,7 +182,7 @@ public class EffectsManager {
         freeEffect.setChoke(0.5);
         freeEffect.setBlurType(BlurType.GAUSSIAN);
 
-        if (tile.getTotem().getTotemType() == Totem.NONE) {
+        if (tile.getTotem().getPlayer() == null) {
             tile.setEffect(freeEffect);
         }
 
@@ -206,40 +202,46 @@ public class EffectsManager {
         );
 
         ScaleTransition scaleIn = new ScaleTransition(Duration.millis(200), tile);
-        scaleIn.setToX(1.02);
-        scaleIn.setToY(1.02);
+        scaleIn.setToX(1.03);
+        scaleIn.setToY(1.03);
 
         ScaleTransition scaleOut = new ScaleTransition(Duration.millis(200), tile);
         scaleOut.setToX(1);
         scaleOut.setToY(1);
 
-        tile.setOnMouseEntered(e -> {
-            if ((tile.getTotem().getTotemType() == Totem.NONE)) {
+        if ((tile.getTotem().getPlayer() == null)) {
+            tile.setOnMouseEntered(e -> {
                 colorAdjust.setInput(freeEffect);
                 tile.setEffect(colorAdjust);
                 hoverIn.play();
                 scaleOut.stop();
                 scaleIn.play();
                 tile.setCursor(Cursor.HAND);
-            } else {
-                tile.setEffect(occupiedEffect);
-                blockOut.stop();
-                blockIn.play();
-            }
-        });
+            });
 
-        tile.setOnMouseExited(e -> {
-            if ((tile.getTotem().getTotemType() == Totem.NONE)) {
+            tile.setOnMouseExited(e -> {
                 hoverOut.play();
                 scaleIn.stop();
                 scaleOut.play();
                 tile.setEffect(freeEffect);
-            } else {
+            });
+        } else {
+            tile.setScaleX(1);
+            tile.setScaleY(1);
+            tile.setCursor(Cursor.DEFAULT);
+
+            tile.setOnMouseEntered(e -> {
+                tile.setEffect(occupiedEffect);
+                blockOut.stop();
+                blockIn.play();
+            });
+
+            tile.setOnMouseExited(e -> {
                 blockOut.play();
                 blockIn.stop();
                 tile.setEffect(null);
-            }
-        });
+            });
+        }
     }
 
     public static Popup createTotemPopup(Totem totemType, String playerName) {
