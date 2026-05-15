@@ -4,8 +4,6 @@ import it.polimi.gc06.mesos.controller.ModelListener;
 import it.polimi.gc06.mesos.dtos.SmallModelEditor;
 import it.polimi.gc06.mesos.view.smallModel.SmallModel;
 
-import java.util.function.Consumer;
-
 public class Client implements ModelListener {
 
     private final SmallModel smallModel;
@@ -15,13 +13,13 @@ public class Client implements ModelListener {
         this.smallModel = smallModel;
     }
 
-    public void connect(String tech, String host, int port, Consumer<SmallModelEditor> messageHandler) {
+    public void connect(String tech, String host, int port) {
         if (serverConnection != null) {
             throw new IllegalStateException("Already connected to a server");
         }
 
         try {
-            serverConnection = tech.equals("RMI") ? new RMIServerConnection(host, port, messageHandler) :
+            serverConnection = tech.equals("RMI") ? new RMIServerConnection(host, port) :
                     new TCPServerConnection(host, port);
             serverConnection.prioritizedSubscribe(this);
         } catch (Exception e) {
