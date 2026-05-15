@@ -9,6 +9,7 @@ import it.polimi.gc06.mesos.model.gameTurnManager.OfferResolutionPhase;
 import it.polimi.gc06.mesos.model.gameTurnManager.PlacingTotemPhase;
 import it.polimi.gc06.mesos.view.gui.elements.*;
 import it.polimi.gc06.mesos.view.gui.helpers.EffectsManager;
+import it.polimi.gc06.mesos.view.gui.helpers.LayoutConfiguration;
 import it.polimi.gc06.mesos.view.gui.helpers.Totem;
 import it.polimi.gc06.mesos.view.gui.visitors.CardEffectVisitor;
 import it.polimi.gc06.mesos.view.smallModel.PlayerView;
@@ -180,6 +181,8 @@ public class BoardController implements ModelListener {
 
     private static final double RESIZE_CARD_FACTOR = 0.85;
 
+    private LayoutConfiguration currentLayout = LayoutConfiguration.CAVE_COLORS;
+
     @FXML
     public void initialize() {
         setupArchitecturalLayout();
@@ -216,6 +219,16 @@ public class BoardController implements ModelListener {
                     smallModel.setActive(true);
                     drawEverything();
                 }
+                if (e.getCode() == KeyCode.DIGIT8) {
+                    currentLayout = LayoutConfiguration.CAVE_COLORS;
+                    drawPlayerInventory();
+                    drawOpponentsSidebar();
+                }
+                if (e.getCode() == KeyCode.DIGIT9) {
+                    currentLayout = LayoutConfiguration.CAVE;
+                    drawPlayerInventory();
+                    drawOpponentsSidebar();
+                }
             });
         });
     }
@@ -248,8 +261,8 @@ public class BoardController implements ModelListener {
 
         leftZone.setSpacing(10);
 
-        final double HEIGHT_BOARD = 0.75;
-        final double HEIGHT_INVENTORY = 0.25;
+        final double HEIGHT_BOARD = 0.80;
+        final double HEIGHT_INVENTORY = 0.20;
 
         boardRoot.prefHeightProperty().bind(leftZone.heightProperty().multiply(HEIGHT_BOARD));
         inventoryBox.prefHeightProperty().bind(leftZone.heightProperty().multiply(HEIGHT_INVENTORY));
@@ -296,12 +309,15 @@ public class BoardController implements ModelListener {
         roundText.setText("Round ?");
         roundText.setFont(Font.font(mesosFont.getFamily(), 30));
         roundText.setTextAlignment(TextAlignment.CENTER);
+        roundText.setFill(Color.WHITE);
         phaseText.setText("Phase ?");
         phaseText.setFont(Font.font(mesosFont.getFamily(), 35));
         phaseText.setTextAlignment(TextAlignment.CENTER);
+        phaseText.setFill(Color.WHITE);
         eraText.setText("Era ?");
         eraText.setFont(Font.font(mesosFont.getFamily(), 30));
         eraText.setTextAlignment(TextAlignment.CENTER);
+        eraText.setFill(Color.WHITE);
 
         topRowBox.setAlignment(Pos.CENTER);
         topRowBox.setSpacing(20);
@@ -342,6 +358,7 @@ public class BoardController implements ModelListener {
 
         containerText.setText("0");
         containerText.setFont(mesosFont);
+        containerText.setFill(Color.WHITE);
         containerText.setTextAlignment(TextAlignment.CENTER);
         containerText.wrappingWidthProperty().bind(container.widthProperty());
     }
@@ -360,6 +377,7 @@ public class BoardController implements ModelListener {
 
         containerText.setText("0");
         containerText.setFont(mesosFont);
+        containerText.setFill(Color.WHITE);
         containerText.setTextAlignment(TextAlignment.CENTER);
         containerText.wrappingWidthProperty().bind(container.widthProperty());
     }
@@ -378,10 +396,11 @@ public class BoardController implements ModelListener {
     }
 
     private void configureInventoryStyle() {
-        String color = Totem.getTotem(smallModel.getPlayer().getColor()).getTotemColorRGB();
+        String mainColor = "0,0,0";
+        String color = "0,0,0";
 
-        String backgroundInventoryStyle = "-fx-background-color: rgba(" + color + ", 0.8);";
-        String borderInventoryStyle = "-fx-border-color: rgba(" + color + ", 1.0); -fx-border-width: 4px; -fx-border-radius: 10px";
+        String backgroundInventoryStyle = "-fx-background-color: rgba(" + color + ", 0.4);";
+        String borderInventoryStyle = "-fx-border-color: rgba(" + mainColor + ", 1.0); -fx-border-width: 2px; -fx-border-radius: 10px";
 
         inventoryBox.setStyle(backgroundInventoryStyle + " " + borderInventoryStyle);
 
@@ -460,6 +479,35 @@ public class BoardController implements ModelListener {
             opp.getHuntersText().setText(String.valueOf(opponent.getNumHunter()));
             opp.getArtistsText().setText(String.valueOf(opponent.getNumArtist()));
             opp.getBuildersDiscountText().setText(String.valueOf(opponent.getBuildersDiscount()));
+
+            String backgroundColor;
+            String borderColor;
+
+            switch (currentLayout) {
+                case CAVE -> {
+                    opp.getShamanStarsText().setFill(Color.WHITE);
+                    opp.getGatherersText().setFill(Color.WHITE);
+                    opp.getHuntersText().setFill(Color.WHITE);
+                    opp.getArtistsText().setFill(Color.WHITE);
+                    opp.getBuildersDiscountText().setFill(Color.WHITE);
+
+                    backgroundColor = "0,0,0";
+                    borderColor = Totem.getTotem(opponent.getColor()).getTotemColorRGB();
+                }
+                case CAVE_COLORS -> {
+                    borderColor = Totem.getTotem(opponent.getColor()).getTotemColorRGB();
+                    backgroundColor = borderColor;
+                }
+                default -> {
+                    backgroundColor = borderColor = "0,0,0";
+                }
+            }
+
+            String backgroundInventoryStyle = "-fx-background-color: rgba(" + backgroundColor + ", 0.4);";
+            String borderInventoryStyle = "-fx-border-color: rgba(" + borderColor + ", 1.0); -fx-border-width: 2px; -fx-border-radius: 10px";
+
+            opp.setStyle(backgroundInventoryStyle + borderInventoryStyle);
+
         }
     }
 
@@ -479,6 +527,12 @@ public class BoardController implements ModelListener {
         VBox huntersStat = createResponsiveStat("hunters_token.png", 6.5, container::setHuntersText);
         VBox artistsStat = createResponsiveStat("artists_token.png", 6.5, container::setArtistsText);
         VBox builderDiscount = createResponsiveStat("builder_discount_token.png", 6.5, container::setBuildersDiscountText);
+
+        container.getShamanStarsText().setFill(Color.WHITE);
+        container.getGatherersText().setFill(Color.WHITE);
+        container.getHuntersText().setFill(Color.WHITE);
+        container.getArtistsText().setFill(Color.WHITE);
+        container.getBuildersDiscountText().setFill(Color.WHITE);
 
         container.getStatsBox().getChildren().addAll(shamanStarsStat, gatherersStat, huntersStat, artistsStat, builderDiscount);
 
@@ -575,6 +629,27 @@ public class BoardController implements ModelListener {
             cardView.fitHeightProperty().bind(inventoryBox.heightProperty().multiply(RESIZE_CARD_FACTOR));
             playerCardsContainer.getChildren().add(cardView);
         }
+
+        String backgroundColor;
+        String borderColor;
+
+        switch (currentLayout) {
+            case CAVE -> {
+                backgroundColor = "0,0,0";
+                borderColor = Totem.getTotem(p.getColor()).getTotemColorRGB();
+            }
+            case CAVE_COLORS -> {
+                backgroundColor = borderColor = Totem.getTotem(p.getColor()).getTotemColorRGB();
+            }
+            default -> {
+                backgroundColor = borderColor = "0,0,0";
+            }
+        }
+
+        String backgroundInventoryStyle = "-fx-background-color: rgba(" + backgroundColor + ", 0.4);";
+        String borderInventoryStyle = "-fx-border-color: rgba(" + borderColor + ", 1.0); -fx-border-width: 2px; -fx-border-radius: 10px";
+
+        inventoryBox.setStyle(backgroundInventoryStyle + borderInventoryStyle);
     }
 
     private void drawDeck() {

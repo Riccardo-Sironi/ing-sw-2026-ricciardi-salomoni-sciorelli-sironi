@@ -59,13 +59,13 @@ public class GUI extends Application implements View {
         mockSmallModel();
 
         FXMLLoader gameViewLoader = new FXMLLoader(
-                getClass().getResource("/it/polimi/gc06/mesos/fxml/mesos.fxml")
+                getClass().getResource("/it/polimi/gc06/mesos/fxml/Mesos.fxml")
         );
         Scene scene = new Scene(gameViewLoader.load(), WIDTH, HEIGHT);
         scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/it/polimi/gc06/mesos/css/board_style.css")).toExternalForm());
 
-        ModelListener controller = gameViewLoader.getController();
-        smallModel.setListener(controller);
+        // ModelListener controller = gameViewLoader.getController();
+        // smallModel.setListener(controller);
 
         stage.setTitle("Mesos");
         stage.setScene(scene);

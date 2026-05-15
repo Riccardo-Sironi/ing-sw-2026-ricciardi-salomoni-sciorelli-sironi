@@ -9,6 +9,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
@@ -32,7 +33,7 @@ public class OpponentBox extends VBox {
         this.setAlignment(Pos.CENTER);
         this.setSpacing(0);
         this.setCursor(Cursor.HAND);
-        String style = String.format("-fx-background-color: rgba(%s, 0.8); -fx-border-color: rgb(%s); -fx-border-width: 2px; -fx-background-radius: 10; -fx-border-radius: 10;", rgbColor, rgbColor);
+        String style = String.format("-fx-background-color: rgba(%s, 0.6); -fx-border-color: rgb(%s); -fx-border-width: 2px; -fx-background-radius: 10; -fx-border-radius: 10;", "0,0,0", rgbColor);
         this.setStyle(style);
         this.setPadding(new Insets(10));
         this.setMinHeight(0);
@@ -41,6 +42,7 @@ public class OpponentBox extends VBox {
 
         this.nicknameText = new Text(nickname);
         this.nicknameText.setTextAlignment(TextAlignment.CENTER);
+        this.nicknameText.setFill(Color.WHITE);
 
         this.detailsContainer = new VBox();
         this.detailsContainer.setAlignment(Pos.CENTER);
