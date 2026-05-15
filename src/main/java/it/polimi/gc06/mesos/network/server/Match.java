@@ -78,6 +78,16 @@ public class Match {
     }
 
     /**
+     * Checks if a player with the given nickname is currently part of this match.
+     *
+     * @param nickname The player's nickname
+     * @return true if the player is found inside the match, false otherwise
+     */
+    public boolean hasPlayer(String nickname) {
+        return players.stream().anyMatch(client -> client.getNickname().equals(nickname));
+    }
+
+    /**
      * The main execution loop of the match.
      * Constantly polls the {@link #actionQueue action queue} for incoming player commands, executes them against the game controller,
      * and handles any exceptions.

@@ -1,9 +1,9 @@
 package it.polimi.gc06.mesos.network.server;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.net.SocketTimeoutException;
-import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 
@@ -31,7 +31,7 @@ public class TCPClientDispatcher implements Runnable {
         try {
             out = new ObjectOutputStream(clientSocket.getOutputStream());
             in = new ObjectInputStream(clientSocket.getInputStream());
-        } catch(IOException e){
+        } catch (IOException e) {
             System.err.println("Error while accepting client: ");
             e.printStackTrace();
             return;
@@ -67,8 +67,7 @@ public class TCPClientDispatcher implements Runnable {
                             || Integer.parseInt(input) > Match.MAX_PLAYERS) {
                         out.writeObject("KO");
                         mainLoopConfirm.complete(true);
-                    }
-                    else{
+                    } else {
                         Match newMatch = sharedManager.createMatch(Integer.parseInt(input));
                         mainLoopConfirm.completeExceptionally(new Exception());
                         sharedManager.joinMatch(newMatch.getMatchId(), new TCPClientManager(clientSocket, nickname,
@@ -82,13 +81,12 @@ public class TCPClientDispatcher implements Runnable {
                             clientSocket, nickname, sharedManager, in, out))) {
                         out.writeObject("KO");
                         mainLoopConfirm.complete(true);
-                    }
-                    else{
+                    } else {
                         mainLoopConfirm.completeExceptionally(new Exception());
                         out.writeObject("OK");
                         success = true;
                     }
-                } else{
+                } else {
                     out.writeObject("KO");
                     mainLoopConfirm.complete(true);
                 }
@@ -103,27 +101,40 @@ public class TCPClientDispatcher implements Runnable {
 
     //handles request different for classing client dispatching (such as available match request, logout, ping)
     //if it cannot handle the request it is sent to the main loop
-    private void receiverLoop(){
-        try{ while(true) {
+    private void receiverLoop() {
+        try {
+            while (true) {
 
-            mainLoopConfirm.join();
-            mainLoopConfirm = new CompletableFuture<>();
+                mainLoopConfirm.join();
+                mainLoopConfirm = new CompletableFuture<>();
 
-            String input = (String) in.readObject();
-            switch (input){
-                case "AVAILABLE":
-                    out.writeObject(sharedManager.getAvailableMatchesString());
-                    break;
-                case "LOGOUT":
-                    if(nickname!=null) sharedManager.logout(nickname);
-                    break;
-                //TODO: da capire ping
-                case "PING":
-                    break;
-                default:
-                    mainLoopRequest.complete(input);
+                String input = (String) in.readObject();
+
+                if (input.startsWith("MATCH_STATUS_")) {
+                    // Start parsing from the 13th character (right after the _ )
+                    int queryId = Integer.parseInt(input.substring(13));
+                    out.writeObject(sharedManager.getMatchInfo(queryId));
+                    continue;
+                }
+
+                switch (input) {
+                    case "AVAILABLE":
+                        out.writeObject(sharedManager.getAvailableMatchesString());
+                        break;
+                    case "LOGOUT":
+                        if (nickname != null) sharedManager.logout(nickname);
+                        break;
+                    //TODO: da capire ping
+                    case "PING":
+                        break;
+                    case "MATCH_ID":
+                        out.writeObject(sharedManager.getPlayersMatchId(nickname));
+                        break;
+                    default:
+                        mainLoopRequest.complete(input);
+                }
             }
-        }}catch (IOException| ClassNotFoundException | CompletionException e){
+        } catch (IOException | ClassNotFoundException | CompletionException e) {
             mainLoopRequest.completeExceptionally(e);
         }
     }

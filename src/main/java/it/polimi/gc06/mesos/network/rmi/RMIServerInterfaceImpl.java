@@ -37,6 +37,16 @@ public class RMIServerInterfaceImpl extends UnicastRemoteObject implements RMISe
     }
 
     @Override
+    public int getPlayersMatchId(String nickname) throws RemoteException {
+        return serverManager.getPlayersMatchId(nickname);
+    }
+
+    @Override
+    public String getMatchInfo(int matchId) throws RemoteException {
+        return serverManager.getMatchInfo(matchId);
+    }
+
+    @Override
     public String getAvailableMatches() throws RemoteException {
         return serverManager.getAvailableMatchesString();
     }

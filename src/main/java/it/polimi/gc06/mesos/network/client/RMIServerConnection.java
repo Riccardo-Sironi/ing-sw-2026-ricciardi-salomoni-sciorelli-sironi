@@ -10,14 +10,13 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
 public class RMIServerConnection extends UnicastRemoteObject implements ServerConnection {
     private final List<ModelListener> listeners = new ArrayList<>();
     private Client prioritizedListener = null;
     private final RMIServerInterface serverStub;
 
-    public RMIServerConnection(String host, int port, Consumer<SmallModelEditor> messageHandler) throws Exception {
+    public RMIServerConnection(String host, int port) throws Exception {
         super();
         Registry registry = LocateRegistry.getRegistry(host, port);
         this.serverStub = (RMIServerInterface) registry.lookup("MesosRMIServer");
@@ -55,14 +54,25 @@ public class RMIServerConnection extends UnicastRemoteObject implements ServerCo
     }
 
     @Override
+    public int getPlayersMatchId(String nickname) throws Exception {
+        return serverStub.getPlayersMatchId(nickname);
+    }
+
+    @Override
     public String getAvailableMatches() throws Exception {
         return serverStub.getAvailableMatches();
     }
 
     @Override
-    public void createMatch(int numOfPlayers, String nickname) throws Exception {
+    public int createMatch(int numOfPlayers, String nickname) throws Exception {
         int matchId = serverStub.createMatch(numOfPlayers);
         serverStub.joinMatch(matchId, nickname, this);
+        return matchId;
+    }
+
+    @Override
+    public String getMatchInfo(int matchId) throws Exception {
+        return serverStub.getMatchInfo(matchId);
     }
 
     @Override
@@ -108,7 +118,7 @@ public class RMIServerConnection extends UnicastRemoteObject implements ServerCo
 
     @Override
     public void prioritizedSubscribe(Client listener) {
-        prioritizedListener = null;
+        prioritizedListener = listener;
     }
 
 }

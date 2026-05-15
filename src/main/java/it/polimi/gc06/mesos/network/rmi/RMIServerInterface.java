@@ -16,6 +16,10 @@ public interface RMIServerInterface extends Remote {
 
     boolean joinMatch(int matchId, String nickname, ServerConnection clientCallback) throws RemoteException;
 
+    public int getPlayersMatchId(String nickname) throws RemoteException;
+    
+    public String getMatchInfo(int matchId) throws RemoteException;
+
     void handleTotemOfferTilePlacement(String nickname, int tileIndex) throws RemoteException;
 
     void handleCardPickBottomRow(String nickname, int cardIndex) throws RemoteException;

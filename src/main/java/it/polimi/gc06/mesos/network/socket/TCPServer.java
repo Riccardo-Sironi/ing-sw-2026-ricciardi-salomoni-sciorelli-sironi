@@ -24,7 +24,7 @@ public class TCPServer implements Runnable {
     public void run() {
         try {
             serverSocket = new ServerSocket(port);
-            System.out.println("Listening on port " + port + ".");
+            System.out.println("TCP listening on port " + port + ".");
             while (running) {
                 Socket clientSocket = serverSocket.accept();
                 new Thread(new TCPClientDispatcher(clientSocket, sharedManager)).start();

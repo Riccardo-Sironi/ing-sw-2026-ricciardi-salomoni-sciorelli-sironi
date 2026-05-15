@@ -14,10 +14,12 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class TCPServerConnection implements ServerConnection, Runnable{
+public class TCPServerConnection implements ServerConnection, Runnable {
 
     //socket data
     private final String host;
@@ -40,9 +42,11 @@ public class TCPServerConnection implements ServerConnection, Runnable{
     private CompletableFuture<String> request;
     private CompletableFuture<Boolean> success; //represents whether the last request was successful
     private CompletableFuture<String> matches;
+    private CompletableFuture<Integer> matchID;
+    private CompletableFuture<String> matchStatus;
     private BlockingQueue<ControllerCommand> commands;
 
-    public TCPServerConnection(String host, int port){
+    public TCPServerConnection(String host, int port) {
         this.host = host;
         this.port = port;
 
@@ -51,8 +55,10 @@ public class TCPServerConnection implements ServerConnection, Runnable{
 
         request = new CompletableFuture<>();
         success = new CompletableFuture<>();
-        commands = new LinkedBlockingQueue<>();
         matches = new CompletableFuture<>();
+        matchID = new CompletableFuture<>();
+        matchStatus = new CompletableFuture<>();
+        commands = new LinkedBlockingQueue<>();
 
         out = null;
         in = null;
@@ -69,14 +75,14 @@ public class TCPServerConnection implements ServerConnection, Runnable{
 
     @Override
     public void ping() {
-        if(!request.complete("PING")) throw new IllegalStateException("An action is already getting performed");
+        if (!request.complete("PING")) throw new IllegalStateException("An action is already getting performed");
     }
 
     @Override
     public boolean login(String nickname) throws Exception {
         //if the action was already performed before with success, exit
-        if(nicknameSent || isInsideMatch) throw new IllegalStateException("This action shouldn't be performed now");
-        if(!request.complete(nickname)) throw new IllegalStateException("An action is already getting performed");
+        if (nicknameSent || isInsideMatch) throw new IllegalStateException("This action shouldn't be performed now");
+        if (!request.complete(nickname)) throw new IllegalStateException("An action is already getting performed");
         boolean success = this.success.join();
         this.success = new CompletableFuture<>(); //reset success
         nicknameSent = success;
@@ -85,39 +91,64 @@ public class TCPServerConnection implements ServerConnection, Runnable{
 
     @Override
     public void logout(String nickname) throws Exception {
-        if(!nicknameSent || isInsideMatch) throw new IllegalStateException("Login not yet performed or match already started");
-        if(!request.complete("LOGOUT")) throw new IllegalStateException("An action is already getting performed");
+        if (!nicknameSent || isInsideMatch)
+            throw new IllegalStateException("Login not yet performed or match already started");
+        if (!request.complete("LOGOUT")) throw new IllegalStateException("An action is already getting performed");
         nicknameSent = false;
     }
 
     @Override
+    public int getPlayersMatchId(String nickname) throws Exception {
+        if (!request.complete("MATCH_ID")) throw new IllegalStateException("An action is already getting performed");
+
+        int matchId = this.matchID.join();
+        this.matchID = new CompletableFuture<>(); // reset
+        return matchId;
+    }
+
+    @Override
+    public String getMatchInfo(int matchId) throws Exception {
+        if (!request.complete("MATCH_STATUS_" + matchId))
+            throw new IllegalStateException("An action is already getting performed");
+
+        String info = this.matchStatus.join();
+        this.matchStatus = new CompletableFuture<>(); // reset
+        return info;
+    }
+
+    @Override
     public String getAvailableMatches() throws Exception {
-        if(isInsideMatch) throw new IllegalStateException("Match already started");
-        if(!request.complete("AVAILABLE")) throw new IllegalStateException("An action is already getting performed");
+        if (isInsideMatch) throw new IllegalStateException("Match already started");
+        if (!request.complete("AVAILABLE")) throw new IllegalStateException("An action is already getting performed");
         String matches = this.matches.join();
         this.matches = new CompletableFuture<>();
         return matches;
     }
 
     @Override
-    public void createMatch(int numOfPlayers, String nickname) throws Exception {
-        if(!nicknameSent || !login(nickname)) throw new IllegalStateException("Login already performed or nickname not valid.");
+    public int createMatch(int numOfPlayers, String nickname) throws Exception {
+        if (!nicknameSent || !login(nickname))
+            throw new IllegalStateException("Login already performed or nickname not valid.");
         //if the action (or match join) was already performed before with success, exit
-        if(isInsideMatch) throw new IllegalStateException("Match action already performed");
-        if(!request.complete("CREATE"+numOfPlayers)) throw new IllegalStateException("An action is already getting performed");
+        if (isInsideMatch) throw new IllegalStateException("Match action already performed");
+        if (!request.complete("CREATE" + numOfPlayers))
+            throw new IllegalStateException("An action is already getting performed");
 
         boolean success = this.success.join();
         this.success = new CompletableFuture<>(); //reset success
         isInsideMatch = success;
-        if(!success) throw new IllegalArgumentException("Match num of player not valid.");
+        if (!success) throw new IllegalArgumentException("Match num of player not valid.");
+        return 0;
     }
 
     @Override
     public boolean joinMatch(int matchId, String nickname) throws Exception {
-        if(!nicknameSent || !login(nickname)) throw new IllegalStateException("Login already performed or nickname not valid.");
+        if (!nicknameSent || !login(nickname))
+            throw new IllegalStateException("Login already performed or nickname not valid.");
         //if the action (or match join) was already performed before with success, exit
-        if(isInsideMatch) throw new IllegalStateException("Match action already performed");
-        if(!request.complete("JOIN"+matchId)) throw new IllegalStateException("An action is already getting performed");
+        if (isInsideMatch) throw new IllegalStateException("Match action already performed");
+        if (!request.complete("JOIN" + matchId))
+            throw new IllegalStateException("An action is already getting performed");
 
         boolean success = this.success.join();
         this.success = new CompletableFuture<>(); //reset success
@@ -127,32 +158,32 @@ public class TCPServerConnection implements ServerConnection, Runnable{
 
     @Override
     public void placeTotem(String nickname, int tileIndex) throws Exception {
-        if(!isInsideMatch) throw new IllegalStateException("Match action not performed");
-        commands.put(new ControllerCommand(nickname,tileIndex, Request.OFFER_TRACK_REQUEST));
+        if (!isInsideMatch) throw new IllegalStateException("Match action not performed");
+        commands.put(new ControllerCommand(nickname, tileIndex, Request.OFFER_TRACK_REQUEST));
     }
 
     @Override
     public void pickCardFromBottom(String nickname, int cardIndex) throws Exception {
-        if(!isInsideMatch) throw new IllegalStateException("Match action not performed");
-        commands.put(new ControllerCommand(nickname,cardIndex, Request.BOTTOM_CARD_REQUEST));
+        if (!isInsideMatch) throw new IllegalStateException("Match action not performed");
+        commands.put(new ControllerCommand(nickname, cardIndex, Request.BOTTOM_CARD_REQUEST));
     }
 
     @Override
     public void pickCardFromTop(String nickname, int cardIndex) throws Exception {
-        if(!isInsideMatch) throw new IllegalStateException("Match action not performed");
-        commands.put(new ControllerCommand(nickname,cardIndex, Request.TOP_CARD_REQUEST));
+        if (!isInsideMatch) throw new IllegalStateException("Match action not performed");
+        commands.put(new ControllerCommand(nickname, cardIndex, Request.TOP_CARD_REQUEST));
     }
 
     @Override
     public void pickBuildingFromBottom(String nickname, int cardIndex) throws Exception {
-        if(!isInsideMatch) throw new IllegalStateException("Match action not performed");
-        commands.put(new ControllerCommand(nickname,cardIndex, Request.BOTTOM_BUILDING_REQUEST));
+        if (!isInsideMatch) throw new IllegalStateException("Match action not performed");
+        commands.put(new ControllerCommand(nickname, cardIndex, Request.BOTTOM_BUILDING_REQUEST));
     }
 
     @Override
-    public void pickBuildingFromTop(String nickname, int cardIndex) throws Exception{
-        if(!isInsideMatch) throw new IllegalStateException("Match action not performed");
-        commands.put(new ControllerCommand(nickname,cardIndex, Request.TOP_BUILDING_REQUEST));
+    public void pickBuildingFromTop(String nickname, int cardIndex) throws Exception {
+        if (!isInsideMatch) throw new IllegalStateException("Match action not performed");
+        commands.put(new ControllerCommand(nickname, cardIndex, Request.TOP_BUILDING_REQUEST));
     }
 
     @Override
@@ -163,19 +194,23 @@ public class TCPServerConnection implements ServerConnection, Runnable{
             in = new ObjectInputStream(socket.getInputStream());
 
             String req;
-            while(true) {
+            while (true) {
                 while (!isInsideMatch) {
 
                     req = request.join(); //takes request
 
                     //request dispatch
-                    if (req.equals("AVAILABLE")) {
+                    if (req.equals("AVAILABLE") || req.startsWith("MATCH_STATUS_")) {
                         //request that needs a matches result
                         out.writeObject(req);
                         matches.complete((String) in.readObject());
                     } else if (req.equals("PING") || req.equals("LOGOUT")) {
                         //request that do not need a result
                         out.writeObject(req);
+                    } else if (req.equals("MATCH_ID")) {
+                        // request that needs a match ID
+                        out.writeObject(req);
+                        matchID.complete((Integer) in.readObject());
                     } else {
                         //request that needs a confirmation
                         out.writeObject(req);
@@ -191,28 +226,29 @@ public class TCPServerConnection implements ServerConnection, Runnable{
                 }
             }
 
-        }catch (ClassNotFoundException | EOFException e){
+        } catch (ClassNotFoundException | EOFException e) {
             System.err.println("Server connection ended.");
             e.printStackTrace();
-        }catch (IOException e){
+        } catch (IOException e) {
             System.err.println("Invalid data for server communication.");
             e.printStackTrace();
-        } catch (InterruptedException _) {}
+        } catch (InterruptedException _) {
+        }
     }
 
-    private void DTOReceiverLoop(){
+    private void DTOReceiverLoop() {
         try {
-            while(true){
+            while (true) {
                 SmallModelEditor dto = (SmallModelEditor) in.readObject();
                 AtomicBoolean isEndgame = new AtomicBoolean();
-                DTOvisitor visitor = new DTOvisitor(){
+                DTOvisitor visitor = new DTOvisitor() {
                     @Override
-                    public void visit(GameStateChangeDTO dto){
+                    public void visit(GameStateChangeDTO dto) {
                         isEndgame.set(dto.isEndgame());
                     }
                 };
                 visitor.visit(dto);
-                if(isEndgame.get()){
+                if (isEndgame.get()) {
                     isInsideMatch = false;
                     receiveDTO(dto);
                     return;
@@ -234,11 +270,11 @@ public class TCPServerConnection implements ServerConnection, Runnable{
     @Override
     public void unsubscribe(ModelListener listener) {
         listeners.remove(listener);
-        if(listener.equals(prioritizedListener)) prioritizedListener = null;
+        if (listener.equals(prioritizedListener)) prioritizedListener = null;
     }
 
     @Override
     public void prioritizedSubscribe(Client listener) {
-        prioritizedListener = null;
+        prioritizedListener = listener;
     }
 }

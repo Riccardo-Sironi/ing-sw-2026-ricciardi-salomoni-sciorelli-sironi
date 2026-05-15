@@ -27,7 +27,11 @@ public class MatchManager {
      * @return true if the nickname was successfully registered, false if it is already taken
      */
     public boolean login(String nick) {
-        return loggedUsers.add(nick);
+        if (loggedUsers.add(nick)) {
+            System.out.println("Logged in user: " + nick);
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -67,10 +71,37 @@ public class MatchManager {
     public String getAvailableMatchesString() {
         return activeMatches.values().stream()
                 .filter(m -> !m.isFull() || !m.hasStarted())
-                .map(m -> m.getMatchId() + ":"
+                .map(m -> "Match " + m.getMatchId() + ": "
                         + m.getMatchNumOfPlayers() + "/"
-                        + m.getMatchMaxPlayers())
+                        + m.getMatchMaxPlayers() + " players")
                 .collect(Collectors.joining(","));
+    }
+
+    /**
+     * Retrieves the match ID of the match a player is currently in, if any.
+     *
+     * @param nickname The player's nickname
+     * @return the match ID, if the player is in any. Otherwise, returns -1.
+     */
+    public int getPlayersMatchId(String nickname) {
+        for (Match match : activeMatches.values()) {
+            if (match.hasPlayer(nickname)) {
+                return match.getMatchId();
+            }
+        }
+        return -1; // Not found
+    }
+
+    /**
+     * Retrieves the ratio of current players to max players for a specific match.
+     *
+     * @param matchId
+     * @return a formatted string "current/max"
+     */
+    public String getMatchInfo(int matchId) {
+        Match match = activeMatches.values().stream().filter(m -> m.getMatchId() == matchId).findFirst().orElse(null);
+        if (match == null) return "Match not found";
+        return match.getMatchNumOfPlayers() + "/" + match.getMatchMaxPlayers();
     }
 
     /**

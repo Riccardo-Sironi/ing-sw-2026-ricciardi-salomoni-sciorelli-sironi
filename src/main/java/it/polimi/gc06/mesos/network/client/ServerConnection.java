@@ -7,17 +7,21 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 public interface ServerConnection extends Remote, SmallModelNotifier {
-    void receiveDTO(SmallModelEditor dto);
+    void receiveDTO(SmallModelEditor dto) throws RemoteException;
 
     void ping() throws RemoteException;
+
+    String getMatchInfo(int matchId) throws Exception;
 
     public boolean login(String nickname) throws Exception;
 
     public void logout(String nickname) throws Exception;
 
+    public int getPlayersMatchId(String nickname) throws Exception;
+
     public String getAvailableMatches() throws Exception;
 
-    public void createMatch(int numOfPlayers, String nickname) throws Exception;
+    public int createMatch(int numOfPlayers, String nickname) throws Exception;
 
     public boolean joinMatch(int matchId, String nickname) throws Exception;
 
