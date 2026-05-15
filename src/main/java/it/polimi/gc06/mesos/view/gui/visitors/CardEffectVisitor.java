@@ -11,10 +11,15 @@ import it.polimi.gc06.mesos.view.gui.helpers.EffectsManager;
 
 public class CardEffectVisitor extends CardVisitor {
 
-    private final CardView cardView;
+    private static final String PHASE_OFFER_RESOLUTION = "offer_resolution";
+    private static final String PHASE_PLACING_TOTEM = "placing_totem";
 
-    public CardEffectVisitor(CardView cardView) {
+    private final CardView cardView;
+    private final int nPick;
+
+    public CardEffectVisitor(CardView cardView, int nPick) {
         this.cardView = cardView;
+        this.nPick = nPick;
     }
 
     @Override
@@ -29,11 +34,23 @@ public class CardEffectVisitor extends CardVisitor {
 
     @Override
     public void visit(EventCard card) {
-        EffectsManager.disableCard(cardView);
+        if (smallModel.isActive() && PHASE_OFFER_RESOLUTION.equals(smallModel.getPhase())) {
+            EffectsManager.disableCard(cardView);
+        } else {
+            EffectsManager.normalCard(cardView);
+        }
     }
 
     private void applyActiveEffect() {
-        if (smallModel.isActive()) {
+        boolean isActive = smallModel.isActive();
+        String currentPhase = smallModel.getPhase();
+
+        if (!PHASE_OFFER_RESOLUTION.equals(currentPhase)) {
+            EffectsManager.normalCard(cardView);
+            return;
+        }
+
+        if (isActive && nPick > 0) {
             EffectsManager.activeCard(cardView);
         } else {
             EffectsManager.disableCard(cardView);

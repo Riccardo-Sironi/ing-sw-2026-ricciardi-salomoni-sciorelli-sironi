@@ -1,6 +1,7 @@
 package it.polimi.gc06.mesos.view.gui.elements;
 
 import it.polimi.gc06.mesos.model.cards.Card;
+import it.polimi.gc06.mesos.view.gui.helpers.EffectsManager;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
@@ -17,12 +18,7 @@ public class CardView extends ImageView {
         this.setPreserveRatio(true);
         this.setSmooth(true);
 
-        DropShadow dropShadow = new DropShadow();
-        dropShadow.setRadius(10);
-        dropShadow.setOffsetX(4);
-        dropShadow.setOffsetY(4);
-        dropShadow.setColor(Color.color(0, 0, 0, 0.5));
-        this.setEffect(dropShadow);
+        EffectsManager.normalCard(this);
     }
 
     public void setCard(Card card) {

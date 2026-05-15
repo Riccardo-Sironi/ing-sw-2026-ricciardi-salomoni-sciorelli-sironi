@@ -579,7 +579,8 @@ public class BoardController implements ModelListener {
             CardView cardView = new CardView(loadImage(imageFetcher.fetch(card)));
             cardView.fitHeightProperty().bind(topRowBox.heightProperty().multiply(RESIZE_CARD_FACTOR));
             cardView.setCard(card);
-            setCardEffect(cardView);
+            CardEffectVisitor visitor = new CardEffectVisitor(cardView, smallModel.getTopDrawNum());
+            cardView.getCard().accept(visitor);
             topCharactersContainer.getChildren().add(cardView);
         }
     }
@@ -591,7 +592,8 @@ public class BoardController implements ModelListener {
             CardView cardView = new CardView(loadImage(imageFetcher.fetch(building)));
             cardView.fitHeightProperty().bind(topRowBox.heightProperty().multiply(RESIZE_CARD_FACTOR));
             cardView.setCard(building);
-            setCardEffect(cardView);
+            CardEffectVisitor visitor = new CardEffectVisitor(cardView, smallModel.getTopDrawNum());
+            cardView.getCard().accept(visitor);
             buildingsContainer.getChildren().add(cardView);
         }
     }
@@ -603,7 +605,8 @@ public class BoardController implements ModelListener {
             CardView cardView = new CardView(loadImage(imageFetcher.fetch(card)));
             cardView.fitHeightProperty().bind(bottomRowBox.heightProperty().multiply(RESIZE_CARD_FACTOR));
             cardView.setCard(card);
-            setCardEffect(cardView);
+            CardEffectVisitor visitor = new CardEffectVisitor(cardView, smallModel.getBottomDrawNum());
+            cardView.getCard().accept(visitor);
             bottomCharactersContainer.getChildren().add(cardView);
         }
     }
@@ -617,7 +620,8 @@ public class BoardController implements ModelListener {
             CardView cardView = new CardView(loadImage(imageFetcher.fetch(building)));
             cardView.fitHeightProperty().bind(bottomRowBox.heightProperty().multiply(RESIZE_CARD_FACTOR));
             cardView.setCard(building);
-            setCardEffect(cardView);
+            CardEffectVisitor visitor = new CardEffectVisitor(cardView, smallModel.getBottomDrawNum());
+            cardView.getCard().accept(visitor);
             bottomBuildingsContainer.getChildren().add(cardView);
         }
     }
@@ -670,11 +674,6 @@ public class BoardController implements ModelListener {
         popup.getContent().add(popupContent);
 
         return popup;
-    }
-
-    private void setCardEffect(CardView cardView) {
-        CardEffectVisitor visitor = new CardEffectVisitor(cardView);
-        cardView.getCard().accept(visitor);
     }
 
     /**
@@ -748,8 +747,9 @@ public class BoardController implements ModelListener {
     private void applyEffectToContainerCardViews(HBox container) {
         if (container == null) return;
         for (Node node : container.getChildren()) {
-            if (node instanceof CardView) {
-                setCardEffect((CardView) node);
+            if (node instanceof CardView cardView) {
+                CardEffectVisitor visitor = new CardEffectVisitor(cardView, smallModel.getTopDrawNum());
+                cardView.getCard().accept(visitor);
             }
         }
     }
@@ -800,7 +800,7 @@ public class BoardController implements ModelListener {
                 offerTrackTiles.get(i).setTotem(new TotemPieceView());
             }
 
-            EffectsManager.activeTile(offerTrackTiles.get(i));
+            EffectsManager.setTileEffect(offerTrackTiles.get(i));
         }
     }
 
