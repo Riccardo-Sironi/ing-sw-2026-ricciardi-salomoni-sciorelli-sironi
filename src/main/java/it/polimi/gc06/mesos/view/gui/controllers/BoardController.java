@@ -229,6 +229,25 @@ public class BoardController implements ModelListener {
                     drawPlayerInventory();
                     drawOpponentsSidebar();
                 }
+                if (e.getCode() == KeyCode.O) {
+                    if (!mainRoot.getChildren().contains(opponentsSidebar)) {
+                        mainRoot.getChildren().add(opponentsSidebar);
+                        leftZone.prefWidthProperty().bind(mainRoot.widthProperty().multiply(0.85));
+                    } else {
+                        mainRoot.getChildren().remove(opponentsSidebar);
+                        leftZone.prefWidthProperty().bind(mainRoot.widthProperty());
+                    }
+                }
+                if (e.getCode() == KeyCode.I) {
+                    // A BIT BUGGY SO SHOULD NOT RELEASE UNTIL FIX
+                    if (!leftZone.getChildren().contains(inventoryBox)) {
+                        leftZone.getChildren().add(inventoryBox);
+                        boardRoot.prefHeightProperty().bind(leftZone.heightProperty().multiply(0.80));
+                    } else {
+                        leftZone.getChildren().remove(inventoryBox);
+                        boardRoot.prefHeightProperty().bind(leftZone.heightProperty());
+                    }
+                }
             });
         });
     }
