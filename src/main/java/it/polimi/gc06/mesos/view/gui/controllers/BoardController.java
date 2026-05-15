@@ -592,7 +592,7 @@ public class BoardController implements ModelListener {
         playerCardsContainer.getChildren().clear();
 
         for (Card card : p.getCharacters()) {
-            CardView cardView = new CardView(new Image(imageFetcher.fetch(card)));
+            CardView cardView = new CardView(loadImage(imageFetcher.fetch(card)));
             cardView.fitHeightProperty().bind(inventoryBox.heightProperty().multiply(RESIZE_CARD_FACTOR));
             playerCardsContainer.getChildren().add(cardView);
         }
@@ -604,19 +604,19 @@ public class BoardController implements ModelListener {
         setupDeckPopup();
 
         if (smallModel.isEndgame()) {
-            deckImage.setImage(loadImage("tribe_card_era_III_final_back.png"));
+            deckImage.setImage(loadImage("/cards/backs/tribe_card_era_III_final_back.png"));
             return;
         }
 
         switch (smallModel.getEra()) {
             case ERA_I:
-                deckImage.setImage(loadImage("tribe_card_era_I_back.png"));
+                deckImage.setImage(loadImage("/cards/backs/tribe_card_era_I_back.png"));
                 break;
             case ERA_II:
-                deckImage.setImage(loadImage("tribe_card_era_II_back.png"));
+                deckImage.setImage(loadImage("/cards/backs/tribe_card_era_II_back.png"));
                 break;
             case ERA_III:
-                deckImage.setImage(loadImage("tribe_card_era_III_back.png"));
+                deckImage.setImage(loadImage("/cards/backs/tribe_card_era_III_back.png"));
                 break;
         }
     }
@@ -625,7 +625,7 @@ public class BoardController implements ModelListener {
         topCharactersContainer.getChildren().clear();
         if (smallModel == null) return;
         for (Card card : smallModel.getTopRow()) {
-            CardView cardView = new CardView(new Image(imageFetcher.fetch(card)));
+            CardView cardView = new CardView(loadImage(imageFetcher.fetch(card)));
             cardView.fitHeightProperty().bind(topRowBox.heightProperty().multiply(RESIZE_CARD_FACTOR));
             cardView.setCard(card);
             setCardEffect(cardView);
@@ -637,7 +637,7 @@ public class BoardController implements ModelListener {
         buildingsContainer.getChildren().clear();
         if (smallModel == null) return;
         for (Card building : smallModel.getTopBuildings()) {
-            CardView cardView = new CardView(new Image(imageFetcher.fetch(building)));
+            CardView cardView = new CardView(loadImage(imageFetcher.fetch(building)));
             cardView.fitHeightProperty().bind(topRowBox.heightProperty().multiply(RESIZE_CARD_FACTOR));
             cardView.setCard(building);
             setCardEffect(cardView);
@@ -649,7 +649,7 @@ public class BoardController implements ModelListener {
         bottomCharactersContainer.getChildren().clear();
         if (smallModel == null) return;
         for (Card card : smallModel.getBottomRow()) {
-            CardView cardView = new CardView(new Image(imageFetcher.fetch(card)));
+            CardView cardView = new CardView(loadImage(imageFetcher.fetch(card)));
             cardView.fitHeightProperty().bind(bottomRowBox.heightProperty().multiply(RESIZE_CARD_FACTOR));
             cardView.setCard(card);
             setCardEffect(cardView);
@@ -663,7 +663,7 @@ public class BoardController implements ModelListener {
         if (smallModel == null) return;
 
         for (Card building : smallModel.getBottomBuildings()) {
-            CardView cardView = new CardView(new Image(imageFetcher.fetch(building)));
+            CardView cardView = new CardView(loadImage(imageFetcher.fetch(building)));
             cardView.fitHeightProperty().bind(bottomRowBox.heightProperty().multiply(RESIZE_CARD_FACTOR));
             cardView.setCard(building);
             setCardEffect(cardView);
