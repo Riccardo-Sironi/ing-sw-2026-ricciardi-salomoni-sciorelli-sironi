@@ -27,9 +27,10 @@ public class GUIDTOvisitor extends DTOvisitor {
     @Override
     public void visit(GameStateChangeDTO dto) {
         Platform.runLater(() -> {
+            // TODO : we have to differentiate this changes somehow
             boardController.handleRoundChanged();
-            // handleEraChanged
-            // handlePhaseChanged
+            gameViewController.handlePhaseChanged();
+            gameViewController.showEraOverlay();
         });
     }
 
@@ -42,7 +43,12 @@ public class GUIDTOvisitor extends DTOvisitor {
 
     @Override
     public void visit(GameStartedDTO dto) {
-        super.visit(dto);
+        Platform.runLater(() -> {
+            boardController.handleGameStarted();
+            // TODO : after drawing the board, show the era and phase overlays with a timer or something like that
+            gameViewController.showEraOverlay();
+            gameViewController.showPhaseOverlay();
+        });
     }
 
     @Override
@@ -75,7 +81,9 @@ public class GUIDTOvisitor extends DTOvisitor {
 
     @Override
     public void visit(PlayerResourcesChangeDTO dto) {
-        super.visit(dto);
+        Platform.runLater(() -> {
+            boardController.handlePlayerResourcesChange();
+        });
     }
 
     @Override

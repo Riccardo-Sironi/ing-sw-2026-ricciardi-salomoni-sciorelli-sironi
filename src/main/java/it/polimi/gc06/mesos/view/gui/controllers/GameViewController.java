@@ -128,4 +128,12 @@ public class GameViewController implements ModelListener {
     public void update(SmallModelEditor dto) {
         dto.accept(guidtovisitor);
     }
+
+    public void handleRoundChanged() {
+        showPhaseOverlay();
+    }
+
+    public void handlePhaseChanged() {
+        showPhaseOverlay();
+    }
 }

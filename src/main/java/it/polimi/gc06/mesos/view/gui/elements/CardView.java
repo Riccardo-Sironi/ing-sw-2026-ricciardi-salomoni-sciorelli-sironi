@@ -5,18 +5,16 @@ import it.polimi.gc06.mesos.view.gui.helpers.EffectsManager;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-import javafx.scene.shape.Rectangle;
-import javafx.scene.effect.DropShadow;
-import javafx.scene.paint.Color;
-
 public class CardView extends ImageView {
 
-    Card card;
+    private Card card;
+    private boolean canBePicked;
 
     public CardView(Image image) {
         super(image);
         this.setPreserveRatio(true);
         this.setSmooth(true);
+        this.canBePicked = false;
 
         EffectsManager.normalCard(this);
     }
@@ -27,5 +25,13 @@ public class CardView extends ImageView {
 
     public Card getCard() {
         return card;
+    }
+
+    public boolean canBePicked() {
+        return canBePicked;
+    }
+
+    public void setCanBePicked(boolean canBePicked) {
+        this.canBePicked = canBePicked;
     }
 }

@@ -44,6 +44,18 @@ public class GUI extends Application implements View {
 
     @Override
     public void start(Stage stage) throws IOException {
+        gameViewController = new FXMLLoader(
+                getClass().getResource("/it/polimi/gc06/mesos/fxml/mesos.fxml")
+        ).getController();
+        boardController = new FXMLLoader(
+                getClass().getResource("/it/polimi/gc06/mesos/fxml/board.fxml")
+        ).getController();
+        lobbyGuiController = new FXMLLoader(
+                getClass().getResource("/it/polimi/gc06/mesos/fxml/lobby.fxml")
+        ).getController();
+
+        guidtovisitor = new GUIDTOvisitor(boardController, gameViewController, lobbyGuiController);
+
         mockSmallModel();
 
         FXMLLoader gameViewLoader = new FXMLLoader(
@@ -57,8 +69,8 @@ public class GUI extends Application implements View {
 
         stage.setTitle("Mesos");
         stage.setScene(scene);
-        stage.show();
         javafx.application.Platform.runLater(() -> stage.setMaximized(true));
+        stage.show();
     }
 
     private void mockSmallModel() throws IOException {

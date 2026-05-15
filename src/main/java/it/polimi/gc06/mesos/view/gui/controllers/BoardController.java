@@ -183,7 +183,7 @@ public class BoardController implements ModelListener {
 
 
         if (smallModel != null) {
-            refreshAll();
+            drawEverything();
         }
 
         Platform.runLater(() -> {
@@ -196,7 +196,7 @@ public class BoardController implements ModelListener {
         });
     }
 
-    private void refreshAll() {
+    public void drawEverything() {
         drawDeck();
         drawTopRowCards();
         drawTopBuildingsCards();
@@ -578,9 +578,16 @@ public class BoardController implements ModelListener {
         for (Card card : smallModel.getTopRow()) {
             CardView cardView = new CardView(loadImage(imageFetcher.fetch(card)));
             cardView.fitHeightProperty().bind(topRowBox.heightProperty().multiply(RESIZE_CARD_FACTOR));
+
             cardView.setCard(card);
+
             CardEffectVisitor visitor = new CardEffectVisitor(cardView, smallModel.getTopDrawNum());
             cardView.getCard().accept(visitor);
+
+            if (cardView.canBePicked()) {
+                applyPickCardAnimation(cardView, playerCardsContainer, mainRoot);
+            }
+
             topCharactersContainer.getChildren().add(cardView);
         }
     }
@@ -591,9 +598,16 @@ public class BoardController implements ModelListener {
         for (Card building : smallModel.getTopBuildings()) {
             CardView cardView = new CardView(loadImage(imageFetcher.fetch(building)));
             cardView.fitHeightProperty().bind(topRowBox.heightProperty().multiply(RESIZE_CARD_FACTOR));
+
             cardView.setCard(building);
+
             CardEffectVisitor visitor = new CardEffectVisitor(cardView, smallModel.getTopDrawNum());
             cardView.getCard().accept(visitor);
+
+            if (cardView.canBePicked()) {
+                applyPickCardAnimation(cardView, playerCardsContainer, mainRoot);
+            }
+
             buildingsContainer.getChildren().add(cardView);
         }
     }
@@ -604,9 +618,16 @@ public class BoardController implements ModelListener {
         for (Card card : smallModel.getBottomRow()) {
             CardView cardView = new CardView(loadImage(imageFetcher.fetch(card)));
             cardView.fitHeightProperty().bind(bottomRowBox.heightProperty().multiply(RESIZE_CARD_FACTOR));
+
             cardView.setCard(card);
+
             CardEffectVisitor visitor = new CardEffectVisitor(cardView, smallModel.getBottomDrawNum());
             cardView.getCard().accept(visitor);
+
+            if (cardView.canBePicked()) {
+                applyPickCardAnimation(cardView, playerCardsContainer, mainRoot);
+            }
+
             bottomCharactersContainer.getChildren().add(cardView);
         }
     }
@@ -619,9 +640,16 @@ public class BoardController implements ModelListener {
         for (Card building : smallModel.getBottomBuildings()) {
             CardView cardView = new CardView(loadImage(imageFetcher.fetch(building)));
             cardView.fitHeightProperty().bind(bottomRowBox.heightProperty().multiply(RESIZE_CARD_FACTOR));
+
             cardView.setCard(building);
+
             CardEffectVisitor visitor = new CardEffectVisitor(cardView, smallModel.getBottomDrawNum());
             cardView.getCard().accept(visitor);
+
+            if (cardView.canBePicked()) {
+                applyPickCardAnimation(cardView, playerCardsContainer, mainRoot);
+            }
+
             bottomBuildingsContainer.getChildren().add(cardView);
         }
     }
@@ -733,6 +761,9 @@ public class BoardController implements ModelListener {
                 // the bind below ensure that the card is the same size of the others visually, it matters just during the
                 // animation, then we re draw the inventory, and it will be draw like the others
                 card.fitHeightProperty().bind(targetContainer.heightProperty().multiply(1));
+                EffectsManager.normalCard(card);
+                card.setOnMouseEntered(ev -> {
+                });
                 targetContainer.getChildren().add(card); // TODO : we could do this and then redraw the original container
             });
 
@@ -921,5 +952,15 @@ public class BoardController implements ModelListener {
         applyEffectToContainerCardViews(bottomCharactersContainer);
         applyEffectToContainerCardViews(bottomBuildingsContainer);
         drawSkipButton();
+    }
+
+    public void handleGameStarted() {
+        // TODO : da fare bene
+        drawEverything();
+    }
+
+    public void handlePlayerResourcesChange() {
+        drawPlayerInventory();
+        drawOpponentsSidebar();
     }
 }
