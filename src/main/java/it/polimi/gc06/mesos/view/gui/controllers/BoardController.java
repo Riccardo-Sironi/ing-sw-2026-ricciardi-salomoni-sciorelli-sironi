@@ -3,10 +3,7 @@ package it.polimi.gc06.mesos.view.gui.controllers;
 import it.polimi.gc06.mesos.controller.ModelListener;
 import it.polimi.gc06.mesos.dtos.SmallModelEditor;
 import it.polimi.gc06.mesos.model.cards.Card;
-import it.polimi.gc06.mesos.view.gui.elements.CardView;
-import it.polimi.gc06.mesos.view.gui.elements.OfferTileView;
-import it.polimi.gc06.mesos.view.gui.elements.TotemPieceView;
-import it.polimi.gc06.mesos.view.gui.elements.TurnOrderTileView;
+import it.polimi.gc06.mesos.view.gui.elements.*;
 import it.polimi.gc06.mesos.view.gui.helpers.EffectsManager;
 import it.polimi.gc06.mesos.view.gui.helpers.Totem;
 import it.polimi.gc06.mesos.view.gui.visitors.CardEffectVisitor;
@@ -37,7 +34,9 @@ import javafx.stage.Popup;
 import javafx.util.Duration;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 import static it.polimi.gc06.mesos.view.gui.GUI.*;
 
@@ -161,6 +160,8 @@ public class BoardController implements ModelListener {
 
     private ArrayList<OfferTileView> offerTrackTiles;
 
+    private HashMap<String, OpponentBox> opponentsBoxes;
+
     private HBox helpOverlay = null;
 
     private static final PseudoClass DISABLED_STYLE = PseudoClass.getPseudoClass("skip-disabled");
@@ -213,6 +214,8 @@ public class BoardController implements ModelListener {
         leftZone.prefWidthProperty().bind(mainRoot.widthProperty().multiply(WIDTH_LEFT_ZONE));
         opponentsSidebar.prefWidthProperty().bind(mainRoot.widthProperty().multiply(WIDTH_OPPONENTS));
         opponentsSidebar.prefHeightProperty().bind(mainRoot.heightProperty());
+
+        initOpponentsSideBar();
 
         leftZone.setSpacing(10);
 
@@ -351,12 +354,6 @@ public class BoardController implements ModelListener {
 
         inventoryBox.setStyle(backgroundInventoryStyle + " " + borderInventoryStyle);
 
-//        String whiteBoxStyle = "-fx-background-color: rgba(255, 255, 255); -fx-background-radius: 8px;";
-//
-//        playerCardsContainer.setStyle(whiteBoxStyle);
-//        playerStatsBox.setStyle(whiteBoxStyle);
-//        tokensBox.setStyle(whiteBoxStyle);
-
         playerStatsBox.setPadding(new Insets(5));
         tokensBox.setPadding(new Insets(5));
 
@@ -402,119 +399,59 @@ public class BoardController implements ModelListener {
         }
     }
 
-    public void drawOpponentsSidebar() {
+    public void initOpponentsSideBar() {
         opponentsSidebar.getChildren().clear();
-        expandedOpponentBox = null;
         opponentsSidebar.setSpacing(15);
         opponentsSidebar.setPadding(new Insets(15, 5, 15, 5));
-
+        opponentsBoxes = new HashMap<>();
         for (PlayerView opponent : smallModel.getOpponents()) {
             String rgbColor = Totem.getTotem(opponent.getColor()).getTotemColorRGB();
-            opponentsSidebar.getChildren().add(createOpponentInventoryBox(opponent.getNickname(), rgbColor, opponent));
+            OpponentBox opponentBox = createOpponentInventoryBox(opponent.getNickname(), rgbColor, opponent);
+            opponentsBoxes.put(opponent.getNickname(), opponentBox);
+            opponentsSidebar.getChildren().add(opponentBox);
         }
     }
 
-    private VBox createOpponentInventoryBox(String nickname, String rgbColor, PlayerView opponent) {
-        VBox container = new VBox();
-        container.setAlignment(Pos.CENTER);
-        container.setSpacing(0);
-        container.setCursor(Cursor.HAND);
+    public void drawOpponentsSidebar() {
+        for (PlayerView opponent : smallModel.getOpponents()) {
+            OpponentBox opp = opponentsBoxes.get(opponent.getNickname());
 
-        String style = String.format("-fx-background-color: rgba(%s, 0.8); -fx-border-color: rgb(%s); -fx-border-width: 2px; -fx-background-radius: 10; -fx-border-radius: 10;", rgbColor, rgbColor);
-        container.setStyle(style);
-        container.setPadding(new Insets(10));
+            for (Card c : opponent.getCharacters()) {
+                CardView cardView = new CardView(loadImage(imageFetcher.fetch(c)));
+                cardView.fitHeightProperty().bind(opp.getCardsContainer().heightProperty().multiply(RESIZE_CARD_FACTOR));
+                opp.getCardsContainer().getChildren().add(cardView);
+            }
+
+            opp.getShamanStarsText().setText(String.valueOf(opponent.getNumShamanStar()));
+            opp.getGatherersText().setText(String.valueOf(opponent.getNumGatherer()));
+            opp.getHuntersText().setText(String.valueOf(opponent.getNumHunter()));
+            opp.getArtistsText().setText(String.valueOf(opponent.getNumArtist()));
+            opp.getBuildersDiscountText().setText(String.valueOf(opponent.getBuildersDiscount()));
+        }
+    }
+
+    private OpponentBox createOpponentInventoryBox(String nickname, String rgbColor, PlayerView opponent) {
+        OpponentBox container = new OpponentBox(nickname, rgbColor, opponent);
 
         container.minWidthProperty().bind(opponentsSidebar.widthProperty().multiply(0.9));
         container.maxWidthProperty().bind(opponentsSidebar.widthProperty().multiply(0.9));
-        container.setMinHeight(0);
-        container.setMaxHeight(Double.MAX_VALUE);
-        VBox.setVgrow(container, Priority.ALWAYS);
 
-        Text nameText = new Text(nickname);
-        nameText.setTextAlignment(TextAlignment.CENTER);
-        nameText.fontProperty().bind(Bindings.createObjectBinding(() ->
+        container.getNicknameText().fontProperty().bind(Bindings.createObjectBinding(() ->
                         Font.font(mesosFont != null ? mesosFont.getFamily() : "Arial", opponentsSidebar.getWidth() / 10),
                 opponentsSidebar.widthProperty()
         ));
 
-        VBox detailsContainer = new VBox();
-        detailsContainer.setAlignment(Pos.CENTER);
-        detailsContainer.minWidthProperty().bind(container.widthProperty().subtract(20));
-        detailsContainer.maxWidthProperty().bind(container.widthProperty().subtract(20));
-        VBox.setVgrow(detailsContainer, Priority.ALWAYS);
+        VBox shamanStarsStat = createResponsiveStat("shaman_stars_token.png", 6.5, container::setShamanStarsText);
+        VBox gatherersStat = createResponsiveStat("gatherers_token.png", 6.5, container::setGatherersText);
+        VBox huntersStat = createResponsiveStat("hunters_token.png", 6.5, container::setHuntersText);
+        VBox artistsStat = createResponsiveStat("artists_token.png", 6.5, container::setArtistsText);
+        VBox builderDiscount = createResponsiveStat("blank_token.png", 6.5, container::setBuildersDiscountText);
 
-        HBox resourcesBox = new HBox(20);
-        resourcesBox.setAlignment(Pos.CENTER);
-        resourcesBox.getChildren().addAll(
-                createResponsiveStat("prestige_token.png", opponent != null ? String.valueOf(opponent.getNumPrestige()) : "0", 4.5),
-                createResponsiveStat("food_token.png", opponent != null ? String.valueOf(opponent.getNumFood()) : "0", 4.5)
-        );
+        container.getStatsBox().getChildren().addAll(shamanStarsStat, gatherersStat, huntersStat, artistsStat, builderDiscount);
 
-        int shamans = 0, gatherers = 0, hunters = 0, artists = 0, builders = 0;
+        configureScrollPane(container.getCardsScroll(), container.getCardsContainer(), container.widthProperty().multiply(0.8));
 
-        HBox charactersBox = new HBox(5);
-        charactersBox.setAlignment(Pos.CENTER);
-        charactersBox.getChildren().addAll(
-                createResponsiveStat("shaman_stars_token.png", String.valueOf(shamans), 6.5),
-                createResponsiveStat("gatherers_token.png", String.valueOf(gatherers), 6.5),
-                createResponsiveStat("hunters_token.png", String.valueOf(hunters), 6.5),
-                createResponsiveStat("artists_token.png", String.valueOf(artists), 6.5),
-                createResponsiveStat("blank_token.png", String.valueOf(builders), 6.5)
-        );
-
-        ScrollPane cardsScroll = new ScrollPane();
-        HBox cardsContainer = new HBox(5);
-        cardsContainer.setAlignment(Pos.CENTER_LEFT);
-
-        cardsScroll.setContent(cardsContainer);
-        cardsScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        cardsScroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        cardsScroll.setFitToHeight(true);
-        cardsScroll.setFitToWidth(true);
-        cardsScroll.setStyle("-fx-background-color: transparent; -fx-background: transparent;");
-
-        cardsScroll.minWidthProperty().bind(detailsContainer.widthProperty());
-        cardsScroll.maxWidthProperty().bind(detailsContainer.widthProperty());
-
-        cardsScroll.setOnScroll(event -> {
-            if (event.getDeltaY() != 0) {
-                cardsScroll.setHvalue(cardsScroll.getHvalue() - event.getDeltaY() * 0.003);
-                event.consume();
-            }
-        });
-
-        cardsScroll.layoutBoundsProperty().addListener((obs, oldBounds, newBounds) -> {
-            Rectangle clip = new Rectangle(newBounds.getWidth(), newBounds.getHeight());
-            clip.setArcWidth(10);
-            clip.setArcHeight(10);
-            cardsScroll.setClip(clip);
-        });
-
-        for (Card card : opponent.getCharacters()) {
-            CardView cardView = new CardView(loadImage(imageFetcher.fetch(card)));
-            cardView.fitHeightProperty().bind(inventoryBox.heightProperty().multiply(RESIZE_CARD_FACTOR));
-            cardsContainer.getChildren().add(cardView);
-        }
-
-        Region spacer1 = new Region();
-        VBox.setVgrow(spacer1, Priority.ALWAYS);
-        Region spacer2 = new Region();
-        VBox.setVgrow(spacer2, Priority.ALWAYS);
-        Region spacer3 = new Region();
-        VBox.setVgrow(spacer3, Priority.ALWAYS);
-        Region spacer4 = new Region();
-        VBox.setVgrow(spacer4, Priority.ALWAYS);
-
-        detailsContainer.getChildren().addAll(spacer1, resourcesBox, spacer2, charactersBox, spacer3, cardsScroll, spacer4);
-
-        detailsContainer.setManaged(false);
-        detailsContainer.setVisible(false);
-        detailsContainer.setOpacity(0);
-        detailsContainer.setMinHeight(0);
-        detailsContainer.setMaxHeight(0);
-
-        container.getChildren().addAll(nameText, detailsContainer);
-
+        // setup toggle animation for opponent info
         container.setOnMouseClicked(event -> {
             Timeline timeline = new Timeline();
             boolean isOpening = (expandedOpponentBox != container);
@@ -562,23 +499,26 @@ public class BoardController implements ModelListener {
         return container;
     }
 
-    // TODO : create a method to draw the cards of the opponents
-
-    private VBox createResponsiveStat(String imagePath, String value, double divideFactor) {
-        VBox stat = new VBox(2);
+    private VBox createResponsiveStat(String imagePath, double divideFactor, Consumer<Text> textSetter) {
+        VBox stat = new VBox(5);
         stat.setAlignment(Pos.CENTER);
 
         ImageView icon = new ImageView(loadImage(imagePath));
         icon.setPreserveRatio(true);
         icon.fitHeightProperty().bind(opponentsSidebar.widthProperty().divide(divideFactor));
 
-        Text text = new Text(value);
+        Text text = new Text("0");
         text.fontProperty().bind(Bindings.createObjectBinding(() ->
                         Font.font(mesosFont != null ? mesosFont.getFamily() : "Arial", opponentsSidebar.getWidth() / 15),
                 opponentsSidebar.widthProperty()
         ));
 
         stat.getChildren().addAll(icon, text);
+
+        if (textSetter != null) {
+            textSetter.accept(text);
+        }
+
         return stat;
     }
 
