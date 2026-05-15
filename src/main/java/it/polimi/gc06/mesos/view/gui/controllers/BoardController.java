@@ -3,7 +3,6 @@ package it.polimi.gc06.mesos.view.gui.controllers;
 import it.polimi.gc06.mesos.controller.ModelListener;
 import it.polimi.gc06.mesos.dtos.SmallModelEditor;
 import it.polimi.gc06.mesos.model.cards.Card;
-import it.polimi.gc06.mesos.view.gui.ImageFetcher;
 import it.polimi.gc06.mesos.view.gui.elements.CardView;
 import it.polimi.gc06.mesos.view.gui.elements.OfferTileView;
 import it.polimi.gc06.mesos.view.gui.elements.TotemPieceView;
@@ -28,6 +27,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
@@ -37,7 +37,6 @@ import javafx.stage.Popup;
 import javafx.util.Duration;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 import static it.polimi.gc06.mesos.view.gui.GUI.*;
@@ -162,6 +161,8 @@ public class BoardController implements ModelListener {
 
     private ArrayList<OfferTileView> offerTrackTiles;
 
+    private HBox helpOverlay = null;
+
     private static final PseudoClass DISABLED_STYLE = PseudoClass.getPseudoClass("skip-disabled");
 
     private final Font mesosFont = Font.loadFont(
@@ -184,6 +185,11 @@ public class BoardController implements ModelListener {
 
         Platform.runLater(() -> {
             mainRoot.requestLayout();
+            mainRoot.getScene().setOnKeyPressed(e -> {
+                if (e.getCode() == KeyCode.H) {
+                    toggleHelpOverlay();
+                }
+            });
         });
     }
 
@@ -850,6 +856,40 @@ public class BoardController implements ModelListener {
         skipButton.applyCss();
         skipButton.setCursor(canSkip ? Cursor.HAND : Cursor.DEFAULT);
         skipButton.setCursor(canSkip ? Cursor.HAND : Cursor.DEFAULT);
+    }
+
+    private void toggleHelpOverlay() {
+        // TODO : we could add even more help information in the future ...
+
+        Pane root = (Pane) mainRoot.getParent();
+        if (helpOverlay == null) {
+            helpOverlay = new HBox();
+            helpOverlay.setStyle("-fx-background-color: rgba(0, 0, 0, 0.7);");
+            helpOverlay.prefWidthProperty().bind(root.widthProperty());
+            helpOverlay.prefHeightProperty().bind(root.heightProperty());
+            helpOverlay.setAlignment(Pos.CENTER);
+            helpOverlay.setSpacing(50);
+
+            ImageView helpImage1 = new ImageView(loadImage("/cards/info_card_front.png"));
+            helpImage1.fitHeightProperty().bind(root.heightProperty().multiply(0.5));
+            helpImage1.setPreserveRatio(true);
+
+            ImageView helpImage2 = new ImageView(loadImage("/cards/info_card_back.png"));
+            helpImage2.fitHeightProperty().bind(root.heightProperty().multiply(0.5));
+            helpImage2.setPreserveRatio(true);
+
+            helpOverlay.getChildren().addAll(helpImage1, helpImage2);
+
+            helpOverlay.setOnMouseClicked(event -> {
+                root.getChildren().remove(helpOverlay);
+            });
+        }
+
+        if (root.getChildren().contains(helpOverlay)) {
+            root.getChildren().remove(helpOverlay);
+        } else {
+            root.getChildren().add(helpOverlay);
+        }
     }
 
     @Override
