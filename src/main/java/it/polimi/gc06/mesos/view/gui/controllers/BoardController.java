@@ -3,6 +3,9 @@ package it.polimi.gc06.mesos.view.gui.controllers;
 import it.polimi.gc06.mesos.controller.ModelListener;
 import it.polimi.gc06.mesos.dtos.SmallModelEditor;
 import it.polimi.gc06.mesos.model.cards.Card;
+import it.polimi.gc06.mesos.model.gameTurnManager.EndOfRoundPhase;
+import it.polimi.gc06.mesos.model.gameTurnManager.EventResolutionPhase;
+import it.polimi.gc06.mesos.model.gameTurnManager.OfferResolutionPhase;
 import it.polimi.gc06.mesos.model.gameTurnManager.PlacingTotemPhase;
 import it.polimi.gc06.mesos.view.gui.elements.*;
 import it.polimi.gc06.mesos.view.gui.helpers.EffectsManager;
@@ -193,11 +196,34 @@ public class BoardController implements ModelListener {
                 if (e.getCode() == KeyCode.H) {
                     toggleHelpOverlay();
                 }
+                if (e.getCode() == KeyCode.DIGIT1) {
+                    smallModel.setPhase(new PlacingTotemPhase().toString());
+                    smallModel.setActive(true);
+                    drawEverything();
+                }
+                if (e.getCode() == KeyCode.DIGIT2) {
+                    smallModel.setPhase(new OfferResolutionPhase().toString());
+                    smallModel.setActive(true);
+                    drawEverything();
+                }
+                if (e.getCode() == KeyCode.DIGIT3) {
+                    smallModel.setPhase(new EventResolutionPhase().toString());
+                    smallModel.setActive(true);
+                    drawEverything();
+                }
+                if (e.getCode() == KeyCode.DIGIT4) {
+                    smallModel.setPhase(new EndOfRoundPhase().toString());
+                    smallModel.setActive(true);
+                    drawEverything();
+                }
             });
         });
     }
 
     public void drawEverything() {
+        drawEraText();
+        drawRoundText();
+        drawPhaseTest();
         drawDeck();
         drawTopRowCards();
         drawTopBuildingsCards();
@@ -783,27 +809,15 @@ public class BoardController implements ModelListener {
 
         if (totemPiece != null) {
             tile.setOnMouseClicked(e -> {
-                TotemPieceView totemPieceView = new TotemPieceView(totemPiece.getPlayer());
-                tile.setTotem(totemPieceView);
+                TotemPieceView newTotemForOffer = new TotemPieceView(totemPiece.getPlayer());
+                tile.setTotem(newTotemForOffer);
 
-                // TODO : THIS IS JUST TO TEST IF THIS WILL WORK, THE SMALL MODEL WILL BE UPDATED ANYWAY
+                int index = turnOrderTile.getTotemPieces().indexOf(totemPiece);
+                if (index != -1) {
+                    turnOrderTile.getTotemPieces().set(index, new TotemPieceView());
 
-                ArrayList<PlayerView> newTurnOrderTile = new ArrayList<>();
-                for (PlayerView playerView : smallModel.getTurnOrderTile()) {
-                    if (playerView == null || playerView.getNickname().equals(smallModel.getPlayer().getNickname())) {
-                        newTurnOrderTile.add(null);
-                    } else {
-                        newTurnOrderTile.add(playerView);
-                    }
+                    turnOrderTile.setTotemPieces(turnOrderTile.getTotemPieces());
                 }
-                smallModel.getTurnOrderTile().clear();
-                smallModel.getTurnOrderTile().addAll(newTurnOrderTile);
-
-                // TODO : TESTING PURPOSE, THIS WILL BE CALLED FROM THE HANDLE FUNCTION
-                drawTurnOrderTile();
-
-                tile.setOnMouseClicked(null);
-                EffectsManager.setTileEffect(tile);
             });
         }
     }
@@ -929,6 +943,26 @@ public class BoardController implements ModelListener {
         } else {
             root.getChildren().add(helpOverlay);
         }
+    }
+
+    private void drawEraText() {
+        eraText.setText(smallModel.getEra().toString());
+    }
+
+    private void drawPhaseTest() {
+        phaseText.setText(
+                switch (smallModel.getPhase()) {
+                    case "placing_totem" -> "Placing Totem Phase";
+                    case "offer_resolution" -> "Offer Resolution Phase";
+                    case "event_resolution" -> "Event Resolution Phase";
+                    case "end_of_round" -> "End Of Round Phase";
+                    default -> "?";
+                }
+        );
+    }
+
+    private void drawRoundText() {
+        roundText.setText("Round " + smallModel.getRound());
     }
 
     @Override
