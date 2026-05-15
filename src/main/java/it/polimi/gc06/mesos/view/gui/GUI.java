@@ -9,6 +9,7 @@ import it.polimi.gc06.mesos.model.cards.characters.HunterCard;
 import it.polimi.gc06.mesos.model.cards.characters.ShamanCard;
 import it.polimi.gc06.mesos.model.gameBoard.ChooseCardTileEffect;
 import it.polimi.gc06.mesos.model.gameBoard.FoodTileEffect;
+import it.polimi.gc06.mesos.model.gameTurnManager.OfferResolutionPhase;
 import it.polimi.gc06.mesos.model.gameTurnManager.PlacingTotemPhase;
 import it.polimi.gc06.mesos.view.View;
 import it.polimi.gc06.mesos.view.gui.controllers.BoardController;
@@ -25,6 +26,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class GUI extends Application implements View {
 
@@ -48,7 +50,7 @@ public class GUI extends Application implements View {
                 getClass().getResource("/it/polimi/gc06/mesos/fxml/mesos.fxml")
         );
         Scene scene = new Scene(gameViewLoader.load(), WIDTH, HEIGHT);
-        scene.getStylesheets().add(getClass().getResource("/it/polimi/gc06/mesos/css/board_style.css").toExternalForm());
+        scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/it/polimi/gc06/mesos/css/board_style.css")).toExternalForm());
 
         ModelListener controller = gameViewLoader.getController();
         smallModel.setListener(controller);
@@ -63,12 +65,15 @@ public class GUI extends Application implements View {
         smallModel = new SmallModel("");
 
         smallModel.setEra(Era.ERA_I);
-        smallModel.setPhase(new PlacingTotemPhase().toString());
+        smallModel.setPhase(new OfferResolutionPhase().toString());
         smallModel.setRound(0);
         smallModel.setActive(true);
         smallModel.setCanSkip(false);
         smallModel.setLeaderboard(new ArrayList<>());
         smallModel.setTribeDeckSize(80);
+
+        smallModel.setTopDrawNum(1);
+        smallModel.setBottomDrawNum(0);
 
         smallModel.setPlayer("Player 1", Color.RED);
         PlayerView clientPlayer = smallModel.getPlayer();
@@ -123,14 +128,14 @@ public class GUI extends Application implements View {
         smallModel.getBottomRow().add(new ArtistCard(Era.ERA_I));
         smallModel.getBottomRow().add(new HunterCard(Era.ERA_I, true));
 
-        ArrayList<PlayerView> playerViews = new ArrayList<>();
-        playerViews.add(smallModel.getOpponents().get(0));
-        playerViews.add(smallModel.getOpponents().get(1));
-        playerViews.add(null);
-        playerViews.add(null);
-        playerViews.add(clientPlayer);
+        ArrayList<PlayerView> turnOrderTile = new ArrayList<>();
+        turnOrderTile.add(smallModel.getOpponents().get(0));
+        turnOrderTile.add(smallModel.getOpponents().get(1));
+        turnOrderTile.add(null);
+        turnOrderTile.add(null);
+        turnOrderTile.add(clientPlayer);
 
-        smallModel.getTurnOrderTile().addAll(playerViews);
+        smallModel.getTurnOrderTile().addAll(turnOrderTile);
 
         TileSlotView tA = new TileSlotView();
         tA.setTileEffect(new FoodTileEffect(3));
@@ -162,6 +167,6 @@ public class GUI extends Application implements View {
         tG.setTileEffect(new ChooseCardTileEffect(2, 1));
         smallModel.getOfferTrack().add(tG);
 
-        imageFetcher = new ImageFetcher(playerViews.size());
+        imageFetcher = new ImageFetcher(turnOrderTile.size());
     }
 }
