@@ -280,7 +280,7 @@ public class BoardController implements ModelListener {
         configureStatContainer(gathererQuantityBox, gathererQuantityImage, loadImage("gatherers_token.png"), gathererQuantityText);
         configureStatContainer(hunterQuantityBox, hunterQuantityImage, loadImage("hunters_token.png"), hunterQuantityText);
         configureStatContainer(artistQuantityBox, artistQuantityImage, loadImage("artists_token.png"), artistQuantityText);
-        configureStatContainer(buildersDiscountBox, buildersDiscountImage, loadImage("blank_token.png"), buildersDiscountText);
+        configureStatContainer(buildersDiscountBox, buildersDiscountImage, loadImage("builder_discount_token.png"), buildersDiscountText);
 
         topBar.prefHeightProperty().bind(boardRoot.heightProperty().multiply(0.1));
         topRowBox.prefHeightProperty().bind(boardRoot.heightProperty().multiply(0.30));
@@ -478,7 +478,7 @@ public class BoardController implements ModelListener {
         VBox gatherersStat = createResponsiveStat("gatherers_token.png", 6.5, container::setGatherersText);
         VBox huntersStat = createResponsiveStat("hunters_token.png", 6.5, container::setHuntersText);
         VBox artistsStat = createResponsiveStat("artists_token.png", 6.5, container::setArtistsText);
-        VBox builderDiscount = createResponsiveStat("blank_token.png", 6.5, container::setBuildersDiscountText);
+        VBox builderDiscount = createResponsiveStat("builder_discount_token.png", 6.5, container::setBuildersDiscountText);
 
         container.getStatsBox().getChildren().addAll(shamanStarsStat, gatherersStat, huntersStat, artistsStat, builderDiscount);
 
