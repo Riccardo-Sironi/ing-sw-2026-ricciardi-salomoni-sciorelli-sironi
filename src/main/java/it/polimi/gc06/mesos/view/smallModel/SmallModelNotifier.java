@@ -5,8 +5,9 @@ import it.polimi.gc06.mesos.network.client.Client;
 
 public interface SmallModelNotifier {
 
-    void subscribe(ModelListener listener);
-    void unsubscribe(ModelListener listener);
-    void prioritizedSubscribe(Client listener);
+    void subscribe(ModelListener listener) throws java.rmi.RemoteException;
 
+    void unsubscribe(ModelListener listener) throws java.rmi.RemoteException;
+
+    void prioritizedSubscribe(Client listener) throws java.rmi.RemoteException;
 }
