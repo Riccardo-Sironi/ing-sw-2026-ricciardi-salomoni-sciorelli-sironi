@@ -15,6 +15,8 @@ import javafx.scene.text.Text;
 import javafx.stage.Popup;
 import javafx.util.Duration;
 
+import java.util.function.Consumer;
+
 import static it.polimi.gc06.mesos.view.gui.GUI.smallModel;
 
 public class EffectsManager {
@@ -241,30 +243,6 @@ public class EffectsManager {
         popupContent.getChildren().add(playerNameText);
         popup.getContent().add(popupContent);
 
-        return popup;
-    }
-
-    public static Popup createDeckPopup() {
-        Popup popup = new Popup();
-        HBox popupContent = new HBox();
-        popupContent.setStyle(
-                "-fx-background-color:rgba(255,255,255,0.7);" +
-                        "-fx-background-radius: 8px;" +
-                        "-fx-border-color: rgba(0,0,0);" +
-                        "-fx-border-width: 1px;" +
-                        "-fx-border-radius: 8px;" +
-                        "-fx-padding: 8px 15px;"
-        );
-        popupContent.setAlignment(Pos.CENTER);
-        popupContent.setMouseTransparent(true);
-
-        Text nCardsText = new Text();
-        nCardsText.setFont(mesosFont);
-        nCardsText.setFill(Color.BLACK);
-        nCardsText.setText(smallModel == null ? "N/A" : "" + smallModel.getTribeDeckSize());
-
-        popupContent.getChildren().add(nCardsText);
-        popup.getContent().add(popupContent);
         return popup;
     }
 }

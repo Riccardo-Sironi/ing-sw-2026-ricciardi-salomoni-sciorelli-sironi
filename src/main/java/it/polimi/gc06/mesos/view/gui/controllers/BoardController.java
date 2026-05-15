@@ -26,6 +26,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -133,6 +134,8 @@ public class BoardController implements ModelListener {
     @FXML
     private HBox deckContainer;
     @FXML
+    private Text deckText;
+    @FXML
     public ImageView deckImage;
     @FXML
     public HBox tracksWrapper;
@@ -157,7 +160,6 @@ public class BoardController implements ModelListener {
     private HBox bottomBuildingsContainer;
 
     private TurnOrderTileView turnOrderTile;
-
     private ArrayList<OfferTileView> offerTrackTiles;
 
     private HashMap<String, OpponentBox> opponentsBoxes;
@@ -178,7 +180,7 @@ public class BoardController implements ModelListener {
     public void initialize() {
         setupArchitecturalLayout();
         updateBottomRowLayout(true);
-        setupDeckPopup();
+
 
         if (smallModel != null) {
             refreshAll();
@@ -285,6 +287,7 @@ public class BoardController implements ModelListener {
         deckContainer.setAlignment(Pos.CENTER);
         HBox.setHgrow(deckContainer, Priority.NEVER);
         deckImage.fitHeightProperty().bind(deckContainer.heightProperty().multiply(0.85));
+        setupDeckPopup();
 
         turnOrderContainer.setAlignment(Pos.CENTER_RIGHT);
         initTurnOrderTile();
@@ -415,6 +418,8 @@ public class BoardController implements ModelListener {
     public void drawOpponentsSidebar() {
         for (PlayerView opponent : smallModel.getOpponents()) {
             OpponentBox opp = opponentsBoxes.get(opponent.getNickname());
+
+            opp.getCardsContainer().getChildren().clear();
 
             for (Card c : opponent.getCharacters()) {
                 CardView cardView = new CardView(loadImage(imageFetcher.fetch(c)));
@@ -547,7 +552,7 @@ public class BoardController implements ModelListener {
     private void drawDeck() {
         if (smallModel == null) return;
 
-        setupDeckPopup();
+        deckText.setText(String.valueOf(smallModel.getTribeDeckSize()));
 
         if (smallModel.isEndgame()) {
             deckImage.setImage(loadImage("/cards/backs/tribe_card_era_III_final_back.png"));
@@ -629,18 +634,42 @@ public class BoardController implements ModelListener {
     }
 
     private void setupDeckPopup() {
-        Popup nCards = EffectsManager.createDeckPopup();
+        Popup nCards = createDeckPopup();
         deckImage.setOnMouseEntered((event -> {
             nCards.show(deckImage, event.getScreenX(), event.getScreenY());
             EffectsManager.playPopupIn(nCards);
         }));
         deckImage.setOnMouseMoved((event -> {
-            nCards.setX(event.getScreenX() - 35);
-            nCards.setY(event.getScreenY() - 60);
+            nCards.setX(event.getScreenX() - 25);
+            nCards.setY(event.getScreenY() - 50);
         }));
         deckImage.setOnMouseExited((event -> {
             nCards.hide();
         }));
+    }
+
+    public Popup createDeckPopup() {
+        Popup popup = new Popup();
+        HBox popupContent = new HBox();
+        popupContent.setStyle(
+                "-fx-background-color: rgba(255,255,255,0.8);" +
+                        "-fx-background-radius: 8px;" +
+                        "-fx-border-color: rgba(0,0,0);" +
+                        "-fx-border-width: 1px;" +
+                        "-fx-border-radius: 8px;" +
+                        "-fx-padding: 8px 15px;"
+        );
+        popupContent.setAlignment(Pos.CENTER);
+        popupContent.setMouseTransparent(true);
+
+        deckText = new Text();
+        deckText.setFont(mesosFont);
+        deckText.setFill(Color.BLACK);
+
+        popupContent.getChildren().add(deckText);
+        popup.getContent().add(popupContent);
+
+        return popup;
     }
 
     private void setCardEffect(CardView cardView) {
@@ -795,7 +824,7 @@ public class BoardController implements ModelListener {
         skipButton.pseudoClassStateChanged(DISABLED_STYLE, !canSkip);
         skipButton.applyCss();
         skipButton.setCursor(canSkip ? Cursor.HAND : Cursor.DEFAULT);
-        skipButton.setCursor(canSkip ? Cursor.HAND : Cursor.DEFAULT);
+
     }
 
     private void toggleHelpOverlay() {
