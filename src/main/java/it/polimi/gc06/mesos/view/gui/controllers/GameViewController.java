@@ -2,7 +2,6 @@ package it.polimi.gc06.mesos.view.gui.controllers;
 
 import it.polimi.gc06.mesos.controller.ModelListener;
 import it.polimi.gc06.mesos.dtos.SmallModelEditor;
-import it.polimi.gc06.mesos.view.gui.helpers.PhaseOverlays;
 import javafx.animation.FadeTransition;
 import javafx.animation.PauseTransition;
 import javafx.animation.ScaleTransition;
@@ -113,10 +112,8 @@ public class GameViewController implements ModelListener {
     }
 
     public void showPhaseOverlay() {
-        PhaseOverlays phase = PhaseOverlays.getPhase(smallModel.getPhase());
-        if (phase == null) return;
-
-        playOverlay(new Image(phase.getOverlayPath()));
+        String path = smallModel.getPhase().toLowerCase() + "_overlay.png";
+        playOverlay(new Image(path));
     }
 
     public void showEraOverlay() {
