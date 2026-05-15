@@ -61,7 +61,10 @@
 #buildingsContainer,
 #bottomCharactersContainer,
 #bottomBuildingsContainer,
-#turnOrderContainer, #offerTrackContainer, #deckContainer {
+#turnOrderContainer,
+#offerTrackContainer,
+#deckContainer,
+#topBar {
     -fx-background-color: rgba(0, 0, 0, 0.4); /* Black with 40% opacity */
     -fx-background-radius: 10px; /* Rounded corners */
     -fx-padding: 10px; /* Breathing room around the cards */

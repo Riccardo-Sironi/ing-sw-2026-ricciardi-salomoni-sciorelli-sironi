@@ -255,6 +255,7 @@ public class BoardController implements ModelListener {
         inventoryBox.prefHeightProperty().bind(leftZone.heightProperty().multiply(HEIGHT_INVENTORY));
 
         boardRoot.setSpacing(10);
+        boardRoot.setPadding(new Insets(5));
 
         inventoryBox.setAlignment(Pos.CENTER);
 
@@ -292,14 +293,14 @@ public class BoardController implements ModelListener {
         phaseText.wrappingWidthProperty().bind(leftZone.widthProperty().divide(3).subtract(100));
         eraText.wrappingWidthProperty().bind(leftZone.widthProperty().divide(3).subtract(100));
 
-        roundText.setText("Round " + (smallModel != null ? smallModel.getRound() : "?"));
-        roundText.setFont(mesosFont);
+        roundText.setText("Round ?");
+        roundText.setFont(Font.font(mesosFont.getFamily(), 30));
         roundText.setTextAlignment(TextAlignment.CENTER);
-        phaseText.setText(smallModel != null ? smallModel.getPhase() : "?");
-        phaseText.setFont(mesosFont);
+        phaseText.setText("Phase ?");
+        phaseText.setFont(Font.font(mesosFont.getFamily(), 35));
         phaseText.setTextAlignment(TextAlignment.CENTER);
-        eraText.setText(smallModel != null ? smallModel.getEra().toString() : "?");
-        eraText.setFont(mesosFont);
+        eraText.setText("Era ?");
+        eraText.setFont(Font.font(mesosFont.getFamily(), 30));
         eraText.setTextAlignment(TextAlignment.CENTER);
 
         topRowBox.setAlignment(Pos.CENTER);
