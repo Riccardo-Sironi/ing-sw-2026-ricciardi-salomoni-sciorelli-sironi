@@ -18,7 +18,69 @@
     },
     "numOfPlayers": 0,
     "validImagesUrls": [
-      "shaman_1_card.png"
+      "/cards/fronts/characters/shaman/shaman_1_card.png"
+    ]
+  },
+  {
+    "cardInfo": {
+      "class": "ShamanCard",
+      "nStars": 2
+    },
+    "numOfPlayers": 0,
+    "validImagesUrls": [
+      "/cards/fronts/characters/shaman/shaman_2_card.png"
+    ]
+  },
+  {
+    "cardInfo": {
+      "class": "ShamanCard",
+      "nStars": 3
+    },
+    "numOfPlayers": 0,
+    "validImagesUrls": [
+      "/cards/fronts/characters/shaman/shaman_3_card.png"
+    ]
+  },
+  {
+    "cardInfo": {
+      "class": "GathererCard"
+    },
+    "numOfPlayers": 0,
+    "validImagesUrls": [
+      "cards/fronts/characters/gatherer/male_gatherer_card.png",
+      "cards/fronts/characters/gatherer/female_gatherer_card.png"
+    ]
+  },
+  {
+    "cardInfo": {
+      "class": "ArtistCard"
+    },
+    "numOfPlayers": 0,
+    "validImagesUrls": [
+      "cards/fronts/characters/artist/male_artist_card.png",
+      "cards/fronts/characters/artist/female_artist_card.png"
+    ]
+  },
+  {
+    "cardInfo": {
+      "class": "HunterCard",
+      "hasFoodIcon": false
+    },
+    "numOfPlayers": 0,
+    "validImagesUrls": [
+      "cards/fronts/characters/hunter/male_hunter_card.png",
+      "cards/fronts/characters/hunter/female_hunter_card.png"
+    ]
+  },
+  {
+    "cardInfo": {
+      "class": "HunterCard",
+      "hasFoodIcon": true
+    },
+    "numOfPlayers": 0,
+    "validImagesUrls": [
+      "cards/fronts/characters/hunter/male_hunter_supply_card.png",
+      "cards/fronts/characters/hunter/female_hunter_supply_card.png"
     ]
   }
 ]

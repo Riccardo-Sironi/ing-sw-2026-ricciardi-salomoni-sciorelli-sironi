@@ -3,6 +3,9 @@ package it.polimi.gc06.mesos.view.gui;
 import it.polimi.gc06.mesos.controller.ModelListener;
 import it.polimi.gc06.mesos.model.Color;
 import it.polimi.gc06.mesos.model.Era;
+import it.polimi.gc06.mesos.model.cards.characters.ArtistCard;
+import it.polimi.gc06.mesos.model.cards.characters.GathererCard;
+import it.polimi.gc06.mesos.model.cards.characters.HunterCard;
 import it.polimi.gc06.mesos.model.cards.characters.ShamanCard;
 import it.polimi.gc06.mesos.model.gameBoard.ChooseCardTileEffect;
 import it.polimi.gc06.mesos.model.gameBoard.FoodTileEffect;
@@ -57,16 +60,6 @@ public class GUI extends Application implements View {
     }
 
     private void mockSmallModel() throws IOException {
-//        ModelInstancesManager modelInstancesManager = new ModelInstancesManager();
-//        ArrayList<String> playerNames = new ArrayList<>();
-//        playerNames.add("Player 1");
-//        playerNames.add("Player 2");
-//        playerNames.add("Player 3");
-//        playerNames.add("Player 4");
-//        playerNames.add("Player 5");
-//
-//        GameModel model = modelInstancesManager.createGame(playerNames);
-
         smallModel = new SmallModel("");
 
         smallModel.setEra(Era.ERA_I);
@@ -81,15 +74,23 @@ public class GUI extends Application implements View {
         PlayerView clientPlayer = smallModel.getPlayer();
         clientPlayer.setNumFood(5);
         clientPlayer.setNumPrestige(10);
-        for (int i = 0; i < 5; i++) {
-            clientPlayer.getCharacters().add(new ShamanCard(Era.ERA_I, 1));
-        }
+
+        clientPlayer.getCharacters().add(new ShamanCard(Era.ERA_I, 1));
+        clientPlayer.getCharacters().add(new ArtistCard(Era.ERA_I));
+        clientPlayer.getCharacters().add(new ShamanCard(Era.ERA_I, 3));
+        clientPlayer.getCharacters().add(new GathererCard(Era.ERA_I));
+        clientPlayer.getCharacters().add(new HunterCard(Era.ERA_I, false));
+        clientPlayer.getCharacters().add(new ShamanCard(Era.ERA_I, 2));
+        clientPlayer.getCharacters().add(new ArtistCard(Era.ERA_I));
+        clientPlayer.getCharacters().add(new HunterCard(Era.ERA_I, true));
+
 
         PlayerView p2 = new PlayerView("Player 2", Color.BLUE);
         p2.setNumFood(5);
-        p2.getCharacters().add(new ShamanCard(Era.ERA_I, 1));
-        p2.getCharacters().add(new ShamanCard(Era.ERA_I, 1));
-        p2.getCharacters().add(new ShamanCard(Era.ERA_I, 1));
+        p2.getCharacters().add(new ShamanCard(Era.ERA_I, 3));
+        p2.getCharacters().add(new ShamanCard(Era.ERA_I, 3));
+        p2.getCharacters().add(new ShamanCard(Era.ERA_I, 3));
+        p2.getCharacters().add(new ShamanCard(Era.ERA_I, 3));
         PlayerView p3 = new PlayerView("Player 3", Color.WHITE);
         p3.setNumPrestige(10);
         PlayerView p4 = new PlayerView("Player 4", Color.PURPLE);
@@ -104,10 +105,23 @@ public class GUI extends Application implements View {
         smallModel.getOpponents().add(p4);
         smallModel.getOpponents().add(p5);
 
-        for (int i = 0; i < 12; i++) {
-            smallModel.getTopRow().add(new ShamanCard(Era.ERA_I, 1));
-            smallModel.getBottomRow().add(new ShamanCard(Era.ERA_I, 1));
-        }
+        smallModel.getTopRow().add(new ShamanCard(Era.ERA_I, 1));
+        smallModel.getTopRow().add(new ArtistCard(Era.ERA_I));
+        smallModel.getTopRow().add(new ShamanCard(Era.ERA_I, 3));
+        smallModel.getTopRow().add(new GathererCard(Era.ERA_I));
+        smallModel.getTopRow().add(new HunterCard(Era.ERA_I, false));
+        smallModel.getTopRow().add(new ShamanCard(Era.ERA_I, 2));
+        smallModel.getTopRow().add(new ArtistCard(Era.ERA_I));
+        smallModel.getTopRow().add(new HunterCard(Era.ERA_I, true));
+
+        smallModel.getBottomRow().add(new ShamanCard(Era.ERA_I, 1));
+        smallModel.getBottomRow().add(new ArtistCard(Era.ERA_I));
+        smallModel.getBottomRow().add(new ShamanCard(Era.ERA_I, 3));
+        smallModel.getBottomRow().add(new GathererCard(Era.ERA_I));
+        smallModel.getBottomRow().add(new HunterCard(Era.ERA_I, false));
+        smallModel.getBottomRow().add(new ShamanCard(Era.ERA_I, 2));
+        smallModel.getBottomRow().add(new ArtistCard(Era.ERA_I));
+        smallModel.getBottomRow().add(new HunterCard(Era.ERA_I, true));
 
         ArrayList<PlayerView> playerViews = new ArrayList<>();
         playerViews.add(smallModel.getOpponents().get(0));
