@@ -1,6 +1,7 @@
 package it.polimi.gc06.mesos.view.gui.elements;
 
 import it.polimi.gc06.mesos.view.gui.helpers.EffectsManager;
+import it.polimi.gc06.mesos.view.gui.helpers.Totem;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
 import javafx.geometry.Point2D;
@@ -49,6 +50,7 @@ public class OfferTileView extends TileView {
         Pane layer = new Pane();
         this.currentTotemView = totemPieceView;
 
+        this.currentTotemView.fitHeightProperty().unbind();
         this.currentTotemView.fitHeightProperty().bind(getTrueHeight().multiply(0.25));
         this.currentTotemView.setPreserveRatio(true);
 
@@ -57,7 +59,7 @@ public class OfferTileView extends TileView {
         layer.getChildren().add(this.currentTotemView);
         this.getChildren().add(layer);
 
-        if (this.currentTotemView.getPlayerName() != null) {
+        if (this.currentTotemView.getPlayer() != null) {
             setupPlayerNamePopup();
         }
     }
@@ -72,6 +74,9 @@ public class OfferTileView extends TileView {
             DoubleBinding halfWidth = this.currentTotemView.fitHeightProperty().multiply(0.35);
             DoubleBinding halfHeight = this.currentTotemView.fitHeightProperty().multiply(0.5);
 
+            this.currentTotemView.translateXProperty().unbind();
+            this.currentTotemView.translateYProperty().unbind();
+
             this.currentTotemView.translateXProperty().bind(
                     offsetX.add(trueW.multiply(centerSlot.getX())).subtract(halfWidth)
             );
@@ -83,7 +88,7 @@ public class OfferTileView extends TileView {
 
     private void setupPlayerNamePopup() {
         if (this.currentTotemView == null) return;
-        this.playerNamePopup = EffectsManager.createTotemPopup(currentTotemView.getTotemType(), currentTotemView.getPlayerName());
+        this.playerNamePopup = EffectsManager.createTotemPopup(Totem.getTotem(currentTotemView.getPlayer().getColor()), currentTotemView.getPlayer().getNickname());
 
         this.currentTotemView.setOnMouseEntered((event) -> {
             playerNamePopup.show(this.currentTotemView, event.getScreenX(), event.getScreenY());

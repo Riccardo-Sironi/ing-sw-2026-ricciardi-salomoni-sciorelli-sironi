@@ -1,28 +1,27 @@
 package it.polimi.gc06.mesos.view.gui.elements;
 
+import it.polimi.gc06.mesos.model.Color;
 import it.polimi.gc06.mesos.view.gui.helpers.Totem;
+import it.polimi.gc06.mesos.view.smallModel.PlayerView;
 import javafx.scene.effect.DropShadow;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.paint.Color;
 
 public class TotemPieceView extends ImageView {
-    private Totem totemType;
-    private String playerName;
+    private PlayerView player;
 
     public TotemPieceView() {
         super(Totem.NONE.getTotemStanding());
-        this.totemType = Totem.NONE;
+        this.player = null;
         this.setPreserveRatio(true);
         this.setSmooth(true);
     }
 
-    public TotemPieceView(Totem totem, String playerName) {
-        super(totem.getTotemStanding());
-        this.totemType = totem;
-        this.playerName = playerName;
+    public TotemPieceView(PlayerView player) {
+        super(Totem.getTotem(player.getColor()).getTotemStanding());
+        this.player = player;
         this.setPreserveRatio(true);
         this.setSmooth(true);
+        applyTotemEffect();
     }
 
     private void applyTotemEffect() {
@@ -30,30 +29,18 @@ public class TotemPieceView extends ImageView {
         shadow.setRadius(2.0);
         shadow.setOffsetX(-3.0);
         shadow.setOffsetY(3);
-        shadow.setColor(Color.color(0, 0, 0, 0.5));
+        shadow.setColor(javafx.scene.paint.Color.color(0, 0, 0, 0.5));
         this.setEffect(shadow);
     }
 
-    public void setTotemType(Totem totemType) {
-        this.totemType = totemType;
-        this.setImage(new Image(totemType.getTotemStanding()));
+    public PlayerView getPlayer() {
+        return player;
+    }
 
-        if (this.totemType != Totem.NONE) {
+    public void setPlayer(PlayerView player) {
+        this.player = player;
+        if (this.player != null) {
             applyTotemEffect();
-        } else {
-            this.setEffect(null);
         }
-    }
-
-    public void setPlayerName(String playerName) {
-        this.playerName = playerName;
-    }
-
-    public Totem getTotemType() {
-        return totemType;
-    }
-
-    public String getPlayerName() {
-        return playerName;
     }
 }

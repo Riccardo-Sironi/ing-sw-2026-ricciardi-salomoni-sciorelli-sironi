@@ -77,7 +77,7 @@ public class GUI extends Application implements View {
         smallModel = new SmallModel("");
 
         smallModel.setEra(Era.ERA_I);
-        smallModel.setPhase(new OfferResolutionPhase().toString());
+        smallModel.setPhase(new PlacingTotemPhase().toString());
         smallModel.setRound(0);
         smallModel.setActive(true);
         smallModel.setCanSkip(false);
@@ -143,9 +143,9 @@ public class GUI extends Application implements View {
         ArrayList<PlayerView> turnOrderTile = new ArrayList<>();
         turnOrderTile.add(smallModel.getOpponents().get(0));
         turnOrderTile.add(smallModel.getOpponents().get(1));
-        turnOrderTile.add(null);
-        turnOrderTile.add(null);
         turnOrderTile.add(clientPlayer);
+        turnOrderTile.add(null);
+        turnOrderTile.add(null);
 
         smallModel.getTurnOrderTile().addAll(turnOrderTile);
 

@@ -70,11 +70,10 @@ public class TurnOrderTileView extends TileView {
 
             for (int i = 0; i < totemPieces.size(); i++) {
                 if (i >= points.size()) break;
+                if (totemPieces.get(i).getPlayer() == null) break;
 
                 TotemPieceView t = totemPieces.get(i);
-                if (t.getPlayerName() != null) {
-                    setupPlayerNamePopup(t);
-                }
+                setupPlayerNamePopup(t);
 
                 Point2D p = points.get(i);
 
@@ -93,8 +92,9 @@ public class TurnOrderTileView extends TileView {
     }
 
     private void setupPlayerNamePopup(TotemPieceView totemPiece) {
-        if (totemPiece.getTotemType() == Totem.NONE) return;
-        Popup popup = EffectsManager.createTotemPopup(totemPiece.getTotemType(), totemPiece.getPlayerName());
+        Totem totemType = Totem.getTotem(totemPiece.getPlayer().getColor());
+        if (totemType == Totem.NONE) return;
+        Popup popup = EffectsManager.createTotemPopup(totemType, totemPiece.getPlayer().getNickname());
 
         totemPiece.setOnMouseEntered((event) -> {
             popup.show(totemPiece, event.getScreenX(), event.getScreenY());
@@ -107,5 +107,9 @@ public class TurnOrderTileView extends TileView {
         totemPiece.setOnMouseExited((event) -> {
             EffectsManager.playPopupOut(popup);
         });
+    }
+
+    public ArrayList<TotemPieceView> getTotemPieces() {
+        return totemPieces;
     }
 }

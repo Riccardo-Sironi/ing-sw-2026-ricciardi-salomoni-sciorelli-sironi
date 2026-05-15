@@ -3,6 +3,7 @@ package it.polimi.gc06.mesos.view.gui.controllers;
 import it.polimi.gc06.mesos.controller.ModelListener;
 import it.polimi.gc06.mesos.dtos.SmallModelEditor;
 import it.polimi.gc06.mesos.model.cards.Card;
+import it.polimi.gc06.mesos.model.gameTurnManager.PlacingTotemPhase;
 import it.polimi.gc06.mesos.view.gui.elements.*;
 import it.polimi.gc06.mesos.view.gui.helpers.EffectsManager;
 import it.polimi.gc06.mesos.view.gui.helpers.Totem;
@@ -770,9 +771,41 @@ public class BoardController implements ModelListener {
             transition.play();
 
             // TODO : the card should be redrawn in the inventory so no need to remove the effects but we keep it for now
-            card.setOnMouseClicked(event2 -> {
-            });
+            card.setOnMouseClicked(null);
         });
+    }
+
+    public void applySetTotemAnimation(OfferTileView tile) {
+        TotemPieceView totemPiece = turnOrderTile.getTotemPieces().stream()
+                .filter(tp -> tp.getPlayer().getNickname().equals(smallModel.getPlayer().getNickname()))
+                .findFirst()
+                .orElse(null);
+
+        if (totemPiece != null) {
+            tile.setOnMouseClicked(e -> {
+                TotemPieceView totemPieceView = new TotemPieceView(totemPiece.getPlayer());
+                tile.setTotem(totemPieceView);
+
+                // TODO : THIS IS JUST TO TEST IF THIS WILL WORK, THE SMALL MODEL WILL BE UPDATED ANYWAY
+
+                ArrayList<PlayerView> newTurnOrderTile = new ArrayList<>();
+                for (PlayerView playerView : smallModel.getTurnOrderTile()) {
+                    if (playerView == null || playerView.getNickname().equals(smallModel.getPlayer().getNickname())) {
+                        newTurnOrderTile.add(null);
+                    } else {
+                        newTurnOrderTile.add(playerView);
+                    }
+                }
+                smallModel.getTurnOrderTile().clear();
+                smallModel.getTurnOrderTile().addAll(newTurnOrderTile);
+
+                // TODO : TESTING PURPOSE, THIS WILL BE CALLED FROM THE HANDLE FUNCTION
+                drawTurnOrderTile();
+
+                tile.setOnMouseClicked(null);
+                EffectsManager.setTileEffect(tile);
+            });
+        }
     }
 
     private void applyEffectToContainerCardViews(HBox container) {
@@ -803,7 +836,7 @@ public class BoardController implements ModelListener {
         ArrayList<TotemPieceView> totemPieces = new ArrayList<>();
         for (PlayerView player : smallModel.getTurnOrderTile()) {
             if (player != null) {
-                totemPieces.add(new TotemPieceView(Totem.getTotem(player.getColor()), player.getNickname()));
+                totemPieces.add(new TotemPieceView(player));
             } else {
                 totemPieces.add(new TotemPieceView());
             }
@@ -826,9 +859,15 @@ public class BoardController implements ModelListener {
     private void drawOfferTrack() {
         for (int i = 0; i < smallModel.getOfferTrack().size(); i++) {
             if (smallModel.getOfferTrack().get(i).getPlayer() != null) {
-                offerTrackTiles.get(i).setTotem(new TotemPieceView(Totem.getTotem(smallModel.getOfferTrack().get(i).getPlayer().getColor()), smallModel.getOfferTrack().get(i).getPlayer().getNickname()));
+                offerTrackTiles.get(i).setTotem(new TotemPieceView(smallModel.getOfferTrack().get(i).getPlayer()));
             } else {
-                offerTrackTiles.get(i).setTotem(new TotemPieceView());
+                OfferTileView tile = offerTrackTiles.get(i);
+                tile.setTotem(new TotemPieceView());
+
+                if (smallModel.isActive() && smallModel.getPhase().equals(new PlacingTotemPhase().toString())) {
+                    // TODO : this should work but keep an eye on it
+                    applySetTotemAnimation(tile);
+                }
             }
 
             EffectsManager.setTileEffect(offerTrackTiles.get(i));
