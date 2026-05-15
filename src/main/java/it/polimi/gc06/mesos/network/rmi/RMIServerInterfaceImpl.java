@@ -4,8 +4,8 @@ import it.polimi.gc06.mesos.controller.GameController;
 import it.polimi.gc06.mesos.network.client.ServerConnection;
 import it.polimi.gc06.mesos.network.server.MatchManager;
 import it.polimi.gc06.mesos.network.server.RMIClientManager;
-import it.polimi.gc06.mesos.network.socket.commands.ControllerCommand;
-import it.polimi.gc06.mesos.network.socket.commands.Request;
+import it.polimi.gc06.mesos.controller.commands.ControllerCommand;
+import it.polimi.gc06.mesos.controller.commands.Request;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;

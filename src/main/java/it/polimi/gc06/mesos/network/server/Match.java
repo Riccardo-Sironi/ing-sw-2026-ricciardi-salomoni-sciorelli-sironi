@@ -5,7 +5,7 @@ import it.polimi.gc06.mesos.gameExceptions.IllegalGameActionException;
 import it.polimi.gc06.mesos.model.GameModel;
 import it.polimi.gc06.mesos.model.InstancesManager.ModelInstancesManager;
 import it.polimi.gc06.mesos.network.leaderboard.LeaderboardDAO;
-import it.polimi.gc06.mesos.network.socket.commands.ControllerCommand;
+import it.polimi.gc06.mesos.controller.commands.ControllerCommand;
 
 import java.io.IOException;
 import java.util.ArrayList;

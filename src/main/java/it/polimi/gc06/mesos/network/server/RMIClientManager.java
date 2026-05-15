@@ -5,7 +5,7 @@ import it.polimi.gc06.mesos.controller.ModelListener;
 import it.polimi.gc06.mesos.dtos.ErrorDTO;
 import it.polimi.gc06.mesos.dtos.SmallModelEditor;
 import it.polimi.gc06.mesos.network.client.ServerConnection;
-import it.polimi.gc06.mesos.network.socket.commands.ControllerCommand;
+import it.polimi.gc06.mesos.controller.commands.ControllerCommand;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;

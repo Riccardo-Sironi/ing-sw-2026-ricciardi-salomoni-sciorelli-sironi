@@ -5,11 +5,12 @@ import it.polimi.gc06.mesos.controller.GameController;
 import it.polimi.gc06.mesos.controller.ModelListener;
 import it.polimi.gc06.mesos.dtos.ErrorDTO;
 import it.polimi.gc06.mesos.dtos.SmallModelEditor;
-import it.polimi.gc06.mesos.network.socket.commands.ControllerCommand;
+import it.polimi.gc06.mesos.controller.commands.ControllerCommand;
 
 import java.io.*;
 import java.net.Socket;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class TCPClientManager implements VirtualClient, ModelListener {
@@ -22,16 +23,18 @@ public class TCPClientManager implements VirtualClient, ModelListener {
     private final BlockingQueue<SmallModelEditor> noticeQueue;
     private final ObjectInputStream inFromClient;
     private final ObjectOutputStream outToClient;
+    private final CompletableFuture<Void> waitForDispatcher; //
     private boolean closed;
 
     public TCPClientManager(Socket socket, String nickname, MatchManager sharedManager, ObjectInputStream inFromClient,
-                            ObjectOutputStream outToClient) {
+                            ObjectOutputStream outToClient, CompletableFuture waitForDispatcher) {
         this.socket = socket;
         this.nickname = nickname;
         this.sharedManager = sharedManager;
         noticeQueue = new LinkedBlockingQueue<>();
         this.inFromClient = inFromClient;
         this.outToClient = outToClient;
+        this.waitForDispatcher = waitForDispatcher;
         closed = false;
         actionQueue = null;
     }
@@ -57,6 +60,10 @@ public class TCPClientManager implements VirtualClient, ModelListener {
 
     @Override
     public void run() {
+
+        //before doing anything it waits for dispatcher confirm
+        waitForDispatcher.join();
+
         //prepares the sender that responds to listener notice, necessary to ensure thread-safe notice
         Thread sender = new Thread(this::senderLoop);
         sender.start();

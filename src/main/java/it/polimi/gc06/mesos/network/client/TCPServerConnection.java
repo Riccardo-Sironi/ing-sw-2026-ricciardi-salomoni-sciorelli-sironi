@@ -4,8 +4,9 @@ import it.polimi.gc06.mesos.controller.ModelListener;
 import it.polimi.gc06.mesos.dtos.DTOvisitor;
 import it.polimi.gc06.mesos.dtos.GameStateChangeDTO;
 import it.polimi.gc06.mesos.dtos.SmallModelEditor;
-import it.polimi.gc06.mesos.network.socket.commands.ControllerCommand;
-import it.polimi.gc06.mesos.network.socket.commands.Request;
+import it.polimi.gc06.mesos.controller.commands.ControllerCommand;
+import it.polimi.gc06.mesos.controller.commands.Request;
+import it.polimi.gc06.mesos.network.socket.BlockingBox;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -15,8 +16,8 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class TCPServerConnection implements ServerConnection, Runnable {
@@ -34,17 +35,17 @@ public class TCPServerConnection implements ServerConnection, Runnable {
     private Client prioritizedListener;
 
     //state
-    private boolean nicknameSent;
-    private boolean isInsideMatch;
+    private volatile boolean nicknameSent;
+    private volatile boolean isInsideMatch;
 
     //futures and result
     //if isDone it means that the value was accepted, otherwise it is emptied
-    private CompletableFuture<String> request;
-    private CompletableFuture<Boolean> success; //represents whether the last request was successful
-    private CompletableFuture<String> matches;
-    private CompletableFuture<Integer> matchID;
-    private CompletableFuture<String> matchStatus;
-    private BlockingQueue<ControllerCommand> commands;
+    private final BlockingBox<String> request;
+    private final BlockingBox<Boolean> success; //represents whether the last request was successful
+    private final BlockingBox<String> matches;
+    private final BlockingBox<Integer> matchID;
+    private final BlockingBox<String> matchStatus;
+    private final BlockingQueue<ControllerCommand> commands;
 
     public TCPServerConnection(String host, int port) {
         this.host = host;
@@ -53,11 +54,11 @@ public class TCPServerConnection implements ServerConnection, Runnable {
         listeners = new ArrayList<>();
         prioritizedListener = null;
 
-        request = new CompletableFuture<>();
-        success = new CompletableFuture<>();
-        matches = new CompletableFuture<>();
-        matchID = new CompletableFuture<>();
-        matchStatus = new CompletableFuture<>();
+        request = new BlockingBox<>();
+        success = new BlockingBox<>();
+        matches = new BlockingBox<>();
+        matchID = new BlockingBox<>();
+        matchStatus = new BlockingBox<>();
         commands = new LinkedBlockingQueue<>();
 
         out = null;
@@ -75,54 +76,41 @@ public class TCPServerConnection implements ServerConnection, Runnable {
 
     @Override
     public void ping() {
-        if (!request.complete("PING")) throw new IllegalStateException("An action is already getting performed");
+        if (!request.store("PING")) throw new IllegalStateException("An action is already getting performed");
     }
 
     @Override
     public boolean login(String nickname) throws Exception {
         //if the action was already performed before with success, exit
         if (nicknameSent || isInsideMatch) throw new IllegalStateException("This action shouldn't be performed now");
-        if (!request.complete(nickname)) throw new IllegalStateException("An action is already getting performed");
-        boolean success = this.success.join();
-        this.success = new CompletableFuture<>(); //reset success
-        nicknameSent = success;
-        return success;
+        if (!request.store("LOGIN"+nickname)) throw new IllegalStateException("An action is already getting performed");
+        return this.success.take();
     }
 
     @Override
     public void logout(String nickname) throws Exception {
-        if (!nicknameSent || isInsideMatch)
-            throw new IllegalStateException("Login not yet performed or match already started");
-        if (!request.complete("LOGOUT")) throw new IllegalStateException("An action is already getting performed");
-        nicknameSent = false;
+        if (!nicknameSent || isInsideMatch) throw new IllegalStateException("Login not yet performed or match already started");
+        if (!request.store("LOGOUT")) throw new IllegalStateException("An action is already getting performed");
     }
 
     @Override
     public int getPlayersMatchId(String nickname) throws Exception {
-        if (!request.complete("MATCH_ID")) throw new IllegalStateException("An action is already getting performed");
-
-        int matchId = this.matchID.join();
-        this.matchID = new CompletableFuture<>(); // reset
-        return matchId;
+        if (!request.store("MATCH_ID")) throw new IllegalStateException("An action is already getting performed");
+        return this.matchID.take();
     }
 
     @Override
     public String getMatchInfo(int matchId) throws Exception {
-        if (!request.complete("MATCH_STATUS_" + matchId))
+        if (!request.store("MATCH_STATUS_" + matchId))
             throw new IllegalStateException("An action is already getting performed");
-
-        String info = this.matchStatus.join();
-        this.matchStatus = new CompletableFuture<>(); // reset
-        return info;
+        return this.matchStatus.take();
     }
 
     @Override
     public String getAvailableMatches() throws Exception {
         if (isInsideMatch) throw new IllegalStateException("Match already started");
-        if (!request.complete("AVAILABLE")) throw new IllegalStateException("An action is already getting performed");
-        String matches = this.matches.join();
-        this.matches = new CompletableFuture<>();
-        return matches;
+        if (!request.store("AVAILABLE")) throw new IllegalStateException("An action is already getting performed");
+        return this.matches.take();
     }
 
     @Override
@@ -131,12 +119,10 @@ public class TCPServerConnection implements ServerConnection, Runnable {
             throw new IllegalStateException("Login already performed or nickname not valid.");
         //if the action (or match join) was already performed before with success, exit
         if (isInsideMatch) throw new IllegalStateException("Match action already performed");
-        if (!request.complete("CREATE" + numOfPlayers))
+        if (!request.store("CREATE" + numOfPlayers))
             throw new IllegalStateException("An action is already getting performed");
 
-        boolean success = this.success.join();
-        this.success = new CompletableFuture<>(); //reset success
-        isInsideMatch = success;
+        boolean success = this.success.take();
         if (!success) throw new IllegalArgumentException("Match num of player not valid.");
         return 0;
     }
@@ -147,42 +133,40 @@ public class TCPServerConnection implements ServerConnection, Runnable {
             throw new IllegalStateException("Login already performed or nickname not valid.");
         //if the action (or match join) was already performed before with success, exit
         if (isInsideMatch) throw new IllegalStateException("Match action already performed");
-        if (!request.complete("JOIN" + matchId))
+        if (!request.store("JOIN" + matchId))
             throw new IllegalStateException("An action is already getting performed");
 
-        boolean success = this.success.join();
-        this.success = new CompletableFuture<>(); //reset success
-        isInsideMatch = success;
+        boolean success = this.success.take();
         return success;
     }
 
     @Override
     public void placeTotem(String nickname, int tileIndex) throws Exception {
-        if (!isInsideMatch) throw new IllegalStateException("Match action not performed");
+        if (!isInsideMatch) throw new IllegalStateException("Not inside a match yet.");
         commands.put(new ControllerCommand(nickname, tileIndex, Request.OFFER_TRACK_REQUEST));
     }
 
     @Override
     public void pickCardFromBottom(String nickname, int cardIndex) throws Exception {
-        if (!isInsideMatch) throw new IllegalStateException("Match action not performed");
+        if (!isInsideMatch) throw new IllegalStateException("Not inside a match yet.");
         commands.put(new ControllerCommand(nickname, cardIndex, Request.BOTTOM_CARD_REQUEST));
     }
 
     @Override
     public void pickCardFromTop(String nickname, int cardIndex) throws Exception {
-        if (!isInsideMatch) throw new IllegalStateException("Match action not performed");
+        if (!isInsideMatch) throw new IllegalStateException("Not inside a match yet.");
         commands.put(new ControllerCommand(nickname, cardIndex, Request.TOP_CARD_REQUEST));
     }
 
     @Override
     public void pickBuildingFromBottom(String nickname, int cardIndex) throws Exception {
-        if (!isInsideMatch) throw new IllegalStateException("Match action not performed");
+        if (!isInsideMatch) throw new IllegalStateException("Not inside a match yet.");
         commands.put(new ControllerCommand(nickname, cardIndex, Request.BOTTOM_BUILDING_REQUEST));
     }
 
     @Override
     public void pickBuildingFromTop(String nickname, int cardIndex) throws Exception {
-        if (!isInsideMatch) throw new IllegalStateException("Match action not performed");
+        if (!isInsideMatch) throw new IllegalStateException("Not inside a match yet.");
         commands.put(new ControllerCommand(nickname, cardIndex, Request.TOP_BUILDING_REQUEST));
     }
 
@@ -197,32 +181,39 @@ public class TCPServerConnection implements ServerConnection, Runnable {
             while (true) {
                 while (!isInsideMatch) {
 
-                    req = request.join(); //takes request
+                    req = request.look(); //takes request
 
                     //request dispatch
                     if (req.equals("AVAILABLE") || req.startsWith("MATCH_STATUS_")) {
                         //request that needs a matches result
                         out.writeObject(req);
-                        matches.complete((String) in.readObject());
+                        matches.store((String) in.readObject());
                     } else if (req.equals("PING") || req.equals("LOGOUT")) {
                         //request that do not need a result
                         out.writeObject(req);
+                        if(req.equals("LOGOUT")) nicknameSent = false;
                     } else if (req.equals("MATCH_ID")) {
                         // request that needs a match ID
                         out.writeObject(req);
-                        matchID.complete((Integer) in.readObject());
+                        matchID.store((Integer) in.readObject());
                     } else {
                         //request that needs a confirmation
                         out.writeObject(req);
-                        success.complete(((String) in.readObject()).equals("OK"));
+                        if(((String) in.readObject()).equals("OK")){
+                            success.store(true);
+                            if(req.startsWith("LOGIN")) nicknameSent = true;
+                            else isInsideMatch = true;
+                        }
+                        else success.store(false);
                     }
 
-                    request = new CompletableFuture<>(); //permits other actions
+                    request.empty(); //permits other actions
                 }
 
                 new Thread(this::DTOReceiverLoop).start(); //starts the receiver
                 while (isInsideMatch) {
-                    out.writeObject(commands.take());
+                    ControllerCommand cmd = commands.poll(100, TimeUnit.MILLISECONDS);
+                    if (cmd != null) out.writeObject(cmd);
                 }
             }
 

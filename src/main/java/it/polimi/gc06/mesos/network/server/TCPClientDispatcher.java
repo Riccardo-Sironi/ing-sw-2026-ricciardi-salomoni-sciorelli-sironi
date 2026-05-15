@@ -1,5 +1,6 @@
 package it.polimi.gc06.mesos.network.server;
 
+import it.polimi.gc06.mesos.network.socket.BlockingBox;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -14,15 +15,15 @@ public class TCPClientDispatcher implements Runnable {
     private final MatchManager sharedManager;
     private ObjectInputStream in;
     private ObjectOutputStream out;
-    private CompletableFuture<String> mainLoopRequest;
-    private CompletableFuture<Boolean> mainLoopConfirm;
+    private final BlockingBox<String> mainLoopRequest;
+    private final BlockingBox<Boolean> mainLoopConfirm;
     private String nickname;
 
     public TCPClientDispatcher(Socket clientSocket, MatchManager sharedManager) {
         this.clientSocket = clientSocket;
         this.sharedManager = sharedManager;
-        this.mainLoopRequest = new CompletableFuture<>();
-        this.mainLoopConfirm = new CompletableFuture<>();
+        this.mainLoopRequest = new BlockingBox<>();
+        this.mainLoopConfirm = new BlockingBox<>();
     }
 
     @Override
@@ -38,64 +39,65 @@ public class TCPClientDispatcher implements Runnable {
         }
 
         nickname = null;
-        mainLoopConfirm.complete(true); //necessary to avoid deadlock
+        mainLoopConfirm.store(true); //necessary to avoid deadlock
         new Thread(this::receiverLoop).start();
 
         try {
             String input;
 
             //nickname handling
-            nickname = mainLoopRequest.join(); //client side: nickname request
-            mainLoopRequest = new CompletableFuture<>();
-            while (!sharedManager.login(nickname)) {
+            String nicknameReq = mainLoopRequest.take(); //client side: login request
+            while (!nicknameReq.startsWith("LOGIN") || !sharedManager.login(nicknameReq.substring(5))) {
                 out.writeObject("KO");
-                mainLoopConfirm.complete(true);
-                nickname = mainLoopRequest.join();
-                mainLoopRequest = new CompletableFuture<>();
+                mainLoopConfirm.store(true);
+                nicknameReq = mainLoopRequest.take();
             }
+            nickname = nicknameReq.substring(5);
             out.writeObject("OK");
-            mainLoopConfirm.complete(true);
+            mainLoopConfirm.store(true);
 
+            //creates dispatcher confirm
+            CompletableFuture<Void> managerConfirm = new CompletableFuture<>();
             //match handling
             boolean success = false; //whether ot not the match request was dispatched
             while (!success) {
-                input = mainLoopRequest.join(); //client side: create match or join match decision
-                mainLoopRequest = new CompletableFuture<>();
+                input = mainLoopRequest.take(); //client side: create match or join match decision
                 if (input.startsWith("CREATE")) {
                     input = input.substring(6);
                     if (!isNumeric(input) || Integer.parseInt(input) < Match.MIN_PLAYERS
                             || Integer.parseInt(input) > Match.MAX_PLAYERS) {
                         out.writeObject("KO");
-                        mainLoopConfirm.complete(true);
+                        mainLoopConfirm.store(true);
                     } else {
                         Match newMatch = sharedManager.createMatch(Integer.parseInt(input));
-                        mainLoopConfirm.completeExceptionally(new Exception());
+                        mainLoopConfirm.storeException(new Exception());
                         sharedManager.joinMatch(newMatch.getMatchId(), new TCPClientManager(clientSocket, nickname,
-                                sharedManager, in, out));
+                                sharedManager, in, out, managerConfirm));
                         out.writeObject("OK");
                         success = true;
                     }
                 } else if (input.startsWith("JOIN")) {
                     input = input.substring(4);
                     if (!isNumeric(input) || !sharedManager.joinMatch(Integer.parseInt(input), new TCPClientManager(
-                            clientSocket, nickname, sharedManager, in, out))) {
+                            clientSocket, nickname, sharedManager, in, out, managerConfirm))) {
                         out.writeObject("KO");
-                        mainLoopConfirm.complete(true);
+                        mainLoopConfirm.store(true);
                     } else {
-                        mainLoopConfirm.completeExceptionally(new Exception());
-                        out.writeObject("OK");
+                        mainLoopConfirm.storeException(new Exception());
+                        out.writeObject("OK"); //manager confirm is needed or this message could go in conflict with manager (for the last player)
+                        managerConfirm.complete(null); //now the client managers can start
                         success = true;
                     }
                 } else {
                     out.writeObject("KO");
-                    mainLoopConfirm.complete(true);
+                    mainLoopConfirm.store(true);
                 }
             }
         } catch (IOException | IllegalArgumentException | CompletionException e) {
             System.err.print("Error while accepting player: ");
             e.printStackTrace();
             if (nickname != null) sharedManager.logout(nickname);
-            mainLoopConfirm.completeExceptionally(e);
+            mainLoopConfirm.storeException(e);
         }
     }
 
@@ -105,8 +107,7 @@ public class TCPClientDispatcher implements Runnable {
         try {
             while (true) {
 
-                mainLoopConfirm.join();
-                mainLoopConfirm = new CompletableFuture<>();
+                mainLoopConfirm.take();
 
                 String input = (String) in.readObject();
 
@@ -131,11 +132,11 @@ public class TCPClientDispatcher implements Runnable {
                         out.writeObject(sharedManager.getPlayersMatchId(nickname));
                         break;
                     default:
-                        mainLoopRequest.complete(input);
+                        mainLoopRequest.store(input);
                 }
             }
         } catch (IOException | ClassNotFoundException | CompletionException e) {
-            mainLoopRequest.completeExceptionally(e);
+            mainLoopRequest.storeException(e);
         }
     }
 

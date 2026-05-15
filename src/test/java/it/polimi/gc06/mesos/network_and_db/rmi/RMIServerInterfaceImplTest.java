@@ -5,7 +5,7 @@ import it.polimi.gc06.mesos.network.client.ServerConnection;
 import it.polimi.gc06.mesos.network.rmi.RMIServerInterfaceImpl;
 import it.polimi.gc06.mesos.network.server.MatchManager;
 import it.polimi.gc06.mesos.network.server.RMIClientManager;
-import it.polimi.gc06.mesos.network.socket.commands.ControllerCommand;
+import it.polimi.gc06.mesos.controller.commands.ControllerCommand;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;

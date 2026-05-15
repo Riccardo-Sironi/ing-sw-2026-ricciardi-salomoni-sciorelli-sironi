@@ -1,7 +1,7 @@
 package it.polimi.gc06.mesos.network.server;
 
 import it.polimi.gc06.mesos.controller.GameController;
-import it.polimi.gc06.mesos.network.socket.commands.ControllerCommand;
+import it.polimi.gc06.mesos.controller.commands.ControllerCommand;
 
 import java.util.concurrent.BlockingQueue;
 
