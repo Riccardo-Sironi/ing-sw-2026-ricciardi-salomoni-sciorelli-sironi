@@ -151,31 +151,19 @@ public class EffectsManager {
     }
 
     public static void setTileEffect(OfferTileView tile) {
+        if (!smallModel.isActive() || !smallModel.getPhase().equals(new PlacingTotemPhase().toString())) {
+            defaultTile(tile);
+            return;
+        }
 
-        if (!smallModel.isActive()) return;
-        if (!smallModel.getPhase().equals(new PlacingTotemPhase().toString())) return;
+        if ((tile.getTotem().getPlayer() == null)) {
+            freeTile(tile);
+        } else {
+            occupiedTile(tile);
+        }
+    }
 
-        // occupied tile slot effect
-        InnerShadow occupiedEffect = new InnerShadow();
-        occupiedEffect.setColor(Color.rgb(200, 0, 0, 1));
-        occupiedEffect.setRadius(20);
-        occupiedEffect.setChoke(0.1);
-        occupiedEffect.setBlurType(BlurType.GAUSSIAN);
-
-        Timeline blockIn = new Timeline(
-                new KeyFrame(Duration.millis(200),
-                        new KeyValue(occupiedEffect.colorProperty(), Color.rgb(200, 0, 0, 1))
-                )
-        );
-
-        Timeline blockOut = new Timeline(
-                new KeyFrame(Duration.millis(200),
-                        new KeyValue(occupiedEffect.colorProperty(), Color.rgb(0, 0, 0, 0))
-                )
-        );
-
-        // free tile slot effect
-
+    public static void freeTile(OfferTileView tile) {
         InnerShadow freeEffect = new InnerShadow();
         freeEffect.setColor(Color.web("#009DFFFF"));
         freeEffect.setRadius(20);
@@ -209,39 +197,66 @@ public class EffectsManager {
         scaleOut.setToX(1);
         scaleOut.setToY(1);
 
-        if ((tile.getTotem().getPlayer() == null)) {
-            tile.setOnMouseEntered(e -> {
-                colorAdjust.setInput(freeEffect);
-                tile.setEffect(colorAdjust);
-                hoverIn.play();
-                scaleOut.stop();
-                scaleIn.play();
-                tile.setCursor(Cursor.HAND);
-            });
+        tile.setOnMouseEntered(e -> {
+            colorAdjust.setInput(freeEffect);
+            tile.setEffect(colorAdjust);
+            hoverIn.play();
+            scaleOut.stop();
+            scaleIn.play();
+            tile.setCursor(Cursor.HAND);
+        });
 
-            tile.setOnMouseExited(e -> {
-                hoverOut.play();
-                scaleIn.stop();
-                scaleOut.play();
-                tile.setEffect(freeEffect);
-            });
-        } else {
-            tile.setScaleX(1);
-            tile.setScaleY(1);
-            tile.setCursor(Cursor.DEFAULT);
+        tile.setOnMouseExited(e -> {
+            hoverOut.play();
+            scaleIn.stop();
+            scaleOut.play();
+            tile.setEffect(freeEffect);
+        });
+    }
 
-            tile.setOnMouseEntered(e -> {
-                tile.setEffect(occupiedEffect);
-                blockOut.stop();
-                blockIn.play();
-            });
+    public static void occupiedTile(OfferTileView tile) {
+        InnerShadow occupiedEffect = new InnerShadow();
+        occupiedEffect.setColor(Color.rgb(200, 0, 0, 1));
+        occupiedEffect.setRadius(20);
+        occupiedEffect.setChoke(0.1);
+        occupiedEffect.setBlurType(BlurType.GAUSSIAN);
 
-            tile.setOnMouseExited(e -> {
-                blockOut.play();
-                blockIn.stop();
-                tile.setEffect(null);
-            });
-        }
+        Timeline blockIn = new Timeline(
+                new KeyFrame(Duration.millis(200),
+                        new KeyValue(occupiedEffect.colorProperty(), Color.rgb(200, 0, 0, 1))
+                )
+        );
+
+        Timeline blockOut = new Timeline(
+                new KeyFrame(Duration.millis(200),
+                        new KeyValue(occupiedEffect.colorProperty(), Color.rgb(0, 0, 0, 0))
+                )
+        );
+
+        tile.setScaleX(1);
+        tile.setScaleY(1);
+        tile.setCursor(Cursor.DEFAULT);
+
+        tile.setOnMouseEntered(e -> {
+            tile.setEffect(occupiedEffect);
+            blockOut.stop();
+            blockIn.play();
+        });
+
+        tile.setOnMouseExited(e -> {
+            blockOut.play();
+            blockIn.stop();
+            tile.setEffect(null);
+        });
+    }
+
+    public static void defaultTile(OfferTileView tile) {
+        tile.setEffect(null);
+        tile.setOnMouseClicked(null);
+        tile.setOnMouseEntered(null);
+        tile.setOnMouseExited(null);
+        tile.setScaleX(1);
+        tile.setScaleY(1);
     }
 
     public static Popup createTotemPopup(Totem totemType, String playerName) {
