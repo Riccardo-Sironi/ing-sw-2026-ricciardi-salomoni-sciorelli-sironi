@@ -164,6 +164,8 @@ public class BoardController implements ModelListener {
     @FXML
     private HBox bottomBuildingsContainer;
 
+    private StackPane inventoryOverlay = null;
+
     private TurnOrderTileView turnOrderTile;
     private ArrayList<OfferTileView> offerTrackTiles;
 
@@ -229,8 +231,9 @@ public class BoardController implements ModelListener {
                     drawPlayerInventory();
                     drawOpponentsSidebar();
                 }
+                // HIDE OPPONETS SIDE BAR
                 if (e.getCode() == KeyCode.O) {
-                    if (!mainRoot.getChildren().contains(opponentsSidebar)) {
+                    if (!mainRoot.getChildren().contains(opponentsSidebar) && leftZone.getChildren().contains(inventoryBox)) {
                         mainRoot.getChildren().add(opponentsSidebar);
                         leftZone.prefWidthProperty().bind(mainRoot.widthProperty().multiply(0.85));
                     } else {
@@ -238,14 +241,43 @@ public class BoardController implements ModelListener {
                         leftZone.prefWidthProperty().bind(mainRoot.widthProperty());
                     }
                 }
-                if (e.getCode() == KeyCode.I) {
-                    // A BIT BUGGY SO SHOULD NOT RELEASE UNTIL FIX
-                    if (!leftZone.getChildren().contains(inventoryBox)) {
+                // FOCUS MODE (HIDE INVENTORY AND OPPONENTS)
+                if (e.getCode() == KeyCode.F) {
+                    Pane root = (Pane) mainRoot.getParent();
+
+                    if (inventoryOverlay != null && inventoryOverlay.getChildren().contains(inventoryBox)) {
+                        hideInventoryOverlay(root);
+                    }
+
+                    if (!leftZone.getChildren().contains(inventoryBox) && !mainRoot.getChildren().contains(opponentsSidebar)) {
                         leftZone.getChildren().add(inventoryBox);
+                        mainRoot.getChildren().add(opponentsSidebar);
+
+                        // re-bind the board root height to previous dimension
                         boardRoot.prefHeightProperty().bind(leftZone.heightProperty().multiply(0.80));
+                        leftZone.prefWidthProperty().bind(mainRoot.widthProperty().multiply(0.85));
                     } else {
                         leftZone.getChildren().remove(inventoryBox);
+                        mainRoot.getChildren().remove(opponentsSidebar);
+
+                        // the board takes the full height of leftzone
                         boardRoot.prefHeightProperty().bind(leftZone.heightProperty());
+                        // the left zone takes ful width
+                        leftZone.prefWidthProperty().bind(mainRoot.widthProperty());
+                    }
+                }
+                // SHOW INVENTORY WHILE IN FOCUS MODE
+                if (e.getCode() == KeyCode.I) {
+                    if (leftZone.getChildren().contains(inventoryBox)) {
+                        return;
+                    }
+
+                    Pane root = (Pane) mainRoot.getParent();
+
+                    if (inventoryOverlay != null && inventoryOverlay.getChildren().contains(inventoryBox)) {
+                        hideInventoryOverlay(root);
+                    } else {
+                        showInventoryOverlay(root);
                     }
                 }
             });
@@ -274,6 +306,7 @@ public class BoardController implements ModelListener {
 
         leftZone.prefWidthProperty().bind(mainRoot.widthProperty().multiply(WIDTH_LEFT_ZONE));
         opponentsSidebar.prefWidthProperty().bind(mainRoot.widthProperty().multiply(WIDTH_OPPONENTS));
+        leftZone.prefHeightProperty().bind(mainRoot.heightProperty());
         opponentsSidebar.prefHeightProperty().bind(mainRoot.heightProperty());
 
         initOpponentsSideBar();
@@ -523,7 +556,7 @@ public class BoardController implements ModelListener {
             }
 
             String backgroundInventoryStyle = "-fx-background-color: rgba(" + backgroundColor + ", 0.4);";
-            String borderInventoryStyle = "-fx-border-color: rgba(" + borderColor + ", 1.0); -fx-border-width: 2px; -fx-border-radius: 10px";
+            String borderInventoryStyle = "-fx-border-color: rgba(" + borderColor + ", 1.0); -fx-border-width: 2px; -fx-border-radius: 10px; -fx-background-radius: 10px";
 
             opp.setStyle(backgroundInventoryStyle + borderInventoryStyle);
 
@@ -666,7 +699,7 @@ public class BoardController implements ModelListener {
         }
 
         String backgroundInventoryStyle = "-fx-background-color: rgba(" + backgroundColor + ", 0.4);";
-        String borderInventoryStyle = "-fx-border-color: rgba(" + borderColor + ", 1.0); -fx-border-width: 2px; -fx-border-radius: 10px";
+        String borderInventoryStyle = "-fx-border-color: rgba(" + borderColor + ", 1.0); -fx-border-width: 2px; -fx-border-radius: 10px; -fx-background-radius: 10px";
 
         inventoryBox.setStyle(backgroundInventoryStyle + borderInventoryStyle);
     }
@@ -1058,6 +1091,39 @@ public class BoardController implements ModelListener {
 
     private void drawRoundText() {
         roundText.setText("Round " + smallModel.getRound());
+    }
+
+    private void showInventoryOverlay(Pane root) {
+        if (inventoryOverlay == null) {
+            inventoryOverlay = new StackPane();
+            inventoryOverlay.setStyle("-fx-background-color: rgba(0, 0, 0, 0.7);");
+            inventoryOverlay.prefWidthProperty().bind(root.widthProperty());
+            inventoryOverlay.prefHeightProperty().bind(root.heightProperty());
+
+            inventoryOverlay.setOnMouseClicked(event -> {
+                if (event.getTarget() == inventoryOverlay && inventoryOverlay.getChildren().contains(inventoryBox)) {
+                    hideInventoryOverlay(root);
+                }
+            });
+        }
+
+        inventoryBox.maxWidthProperty().bind(leftZone.widthProperty().multiply(0.95));
+        inventoryBox.maxHeightProperty().bind(leftZone.heightProperty().multiply(0.25));
+
+        inventoryOverlay.getChildren().add(inventoryBox);
+        if (!root.getChildren().contains(inventoryOverlay)) {
+            root.getChildren().add(inventoryOverlay);
+        }
+    }
+
+    private void hideInventoryOverlay(Pane root) {
+        inventoryOverlay.getChildren().remove(inventoryBox);
+        root.getChildren().remove(inventoryOverlay);
+
+        inventoryBox.maxWidthProperty().unbind();
+        inventoryBox.maxHeightProperty().unbind();
+        inventoryBox.setMaxWidth(Region.USE_COMPUTED_SIZE);
+        inventoryBox.setMaxHeight(Region.USE_COMPUTED_SIZE);
     }
 
     @Override
