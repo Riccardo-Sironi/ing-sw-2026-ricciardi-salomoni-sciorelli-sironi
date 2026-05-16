@@ -74,6 +74,7 @@ public class TCPClientDispatcher implements Runnable {
                         sharedManager.joinMatch(newMatch.getMatchId(), new TCPClientManager(clientSocket, nickname,
                                 sharedManager, in, out, managerConfirm));
                         out.writeObject("OK");
+                        managerConfirm.complete(null);
                         success = true;
                     }
                 } else if (input.startsWith("JOIN")) {

@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import it.polimi.gc06.mesos.model.Player;
 
+import java.io.Serializable;
+
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.PROPERTY,
@@ -15,7 +17,7 @@ import it.polimi.gc06.mesos.model.Player;
         @JsonSubTypes.Type(value = ChooseCardTileEffect.class, name = "ChooseCardTileEffect")
 })
 
-public interface TileEffect {
+public interface TileEffect extends Serializable {
 
     /**
      * Applies the effect to the player.

@@ -21,19 +21,19 @@ public class TCPClientManager implements VirtualClient, ModelListener {
     private final MatchManager sharedManager;
     private GameController controller;
     private final BlockingQueue<SmallModelEditor> noticeQueue;
-    private final ObjectInputStream inFromClient;
-    private final ObjectOutputStream outToClient;
+    private final ObjectInputStream in;
+    private final ObjectOutputStream out;
     private final CompletableFuture<Void> waitForDispatcher; //
     private boolean closed;
 
-    public TCPClientManager(Socket socket, String nickname, MatchManager sharedManager, ObjectInputStream inFromClient,
-                            ObjectOutputStream outToClient, CompletableFuture waitForDispatcher) {
+    public TCPClientManager(Socket socket, String nickname, MatchManager sharedManager, ObjectInputStream in,
+                            ObjectOutputStream out, CompletableFuture<Void> waitForDispatcher) {
         this.socket = socket;
         this.nickname = nickname;
         this.sharedManager = sharedManager;
         noticeQueue = new LinkedBlockingQueue<>();
-        this.inFromClient = inFromClient;
-        this.outToClient = outToClient;
+        this.in = in;
+        this.out = out;
         this.waitForDispatcher = waitForDispatcher;
         closed = false;
         actionQueue = null;
@@ -73,14 +73,16 @@ public class TCPClientManager implements VirtualClient, ModelListener {
         try {
             while (true) {
 
-                command = (ControllerCommand) inFromClient.readObject();
+                command = (ControllerCommand) in.readObject();
                 //handling client input
                 System.out.println("'" + nickname + "' client sent: " + command);
                 try {
-                    if (actionQueue != null) {
+                    if (actionQueue != null && command != null) {
                         actionQueue.put(command);
-                    } else {
+                    } else if (command != null){
                         sendErrorMessage("The match hasn't started yet!");
+                    } else{
+                        sendErrorMessage("Null command sent.");
                     }
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
@@ -127,7 +129,7 @@ public class TCPClientManager implements VirtualClient, ModelListener {
                 return;
             }
             try {
-                outToClient.writeObject(notice);
+                out.writeObject(notice);
             } catch (IOException e) {
                 System.err.print("Error on '" + nickname + "' notice dispatch: ");
                 e.printStackTrace();
@@ -138,8 +140,8 @@ public class TCPClientManager implements VirtualClient, ModelListener {
     public void closeConnection() {
         if (closed) return;
         closed = true;
-        if (outToClient != null) try {
-            outToClient.close();
+        if (out != null) try {
+            out.close();
         } catch (IOException _) {
         }
         if (nickname != null) sharedManager.logout(nickname);
@@ -148,8 +150,8 @@ public class TCPClientManager implements VirtualClient, ModelListener {
             if (!socket.isClosed()) socket.close();
         } catch (IOException _) {
         }
-        if (inFromClient != null) try {
-            inFromClient.close();
+        if (in != null) try {
+            in.close();
         } catch (IOException _) {
         }
     }

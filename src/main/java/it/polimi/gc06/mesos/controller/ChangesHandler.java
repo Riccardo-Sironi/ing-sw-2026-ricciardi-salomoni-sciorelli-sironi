@@ -7,6 +7,8 @@ import it.polimi.gc06.mesos.model.Era;
 import it.polimi.gc06.mesos.model.GameModel;
 import it.polimi.gc06.mesos.model.Player;
 import it.polimi.gc06.mesos.model.gameBoard.Board;
+import it.polimi.gc06.mesos.model.gameBoard.TileEffect;
+import it.polimi.gc06.mesos.model.gameBoard.TileSlot;
 import it.polimi.gc06.mesos.model.gameTurnManager.TurnManager;
 
 import java.beans.PropertyChangeEvent;
@@ -118,7 +120,6 @@ public class ChangesHandler {
         lastPhase = turnManager.getPhase().toString();
         lastEra = board.getCurrentEra();
 
-        //saves players last states
         //saves players resources & prestige
         for(Player p : model.getPlayers()){
             PlayerState ps = lastPlayersState.stream().filter(s -> s.getPlayer().getNickname().equals(p.getNickname()))
@@ -171,9 +172,16 @@ public class ChangesHandler {
             colorMap.put(p.getNickname(),p.getPlayerColor());
         }
 
+        //prepares data
+        boolean isActive = turnManager.getActivePlayer().getNickname().equals(nickname);
+        ArrayList<TileEffect> effects = new ArrayList<>(
+                board.getOfferTrack().stream().map(TileSlot::getTileEffect).toList()
+        );
+
         return new GameStartedDTO(nickname,
                 new ArrayList<>(turnManager.getPlayersOrder().stream().map(Player::getNickname).toList()),
-                colorMap, foodMap, new ArrayList<>(board.getTopRow()), new ArrayList<>(board.getTopBuildings())
+                colorMap, foodMap, new ArrayList<>(board.getTopRow()), new ArrayList<>(board.getTopBuildings()),
+                isActive, effects
         );
     }
 

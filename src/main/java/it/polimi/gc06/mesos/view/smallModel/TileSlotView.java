@@ -11,6 +11,11 @@ public class TileSlotView {
         this.player = null;
     }
 
+    public TileSlotView(TileEffect effect) {
+        this.tileEffect = effect;
+        this.player = null;
+    }
+
     /**
      * Returns the player currently on the tile.
      *
