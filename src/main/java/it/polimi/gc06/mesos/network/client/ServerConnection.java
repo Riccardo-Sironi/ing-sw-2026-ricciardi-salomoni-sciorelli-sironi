@@ -7,7 +7,10 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 public interface ServerConnection extends Remote, SmallModelNotifier {
-    void receiveDTO(SmallModelEditor dto) throws RemoteException;
+
+    void startConnection() throws Exception;
+
+    void receiveDTO(SmallModelEditor dto) throws Exception;
 
     void ping() throws RemoteException;
 

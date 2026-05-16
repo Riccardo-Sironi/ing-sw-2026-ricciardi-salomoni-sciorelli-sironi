@@ -4,6 +4,7 @@ import it.polimi.gc06.mesos.controller.ModelListener;
 import it.polimi.gc06.mesos.dtos.SmallModelEditor;
 import it.polimi.gc06.mesos.network.rmi.RMIServerInterface;
 
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -14,12 +15,21 @@ import java.util.List;
 public class RMIServerConnection extends UnicastRemoteObject implements ServerConnection {
     private final List<ModelListener> listeners = new ArrayList<>();
     private Client prioritizedListener = null;
-    private final RMIServerInterface serverStub;
+    private RMIServerInterface serverStub;
+
+    private final String host;
+    private final int port;
 
     public RMIServerConnection(String host, int port) throws Exception {
         super();
+        this.host = host;
+        this.port = port;
+    }
+
+    public void startConnection() throws RemoteException, NotBoundException {
         Registry registry = LocateRegistry.getRegistry(host, port);
         this.serverStub = (RMIServerInterface) registry.lookup("MesosRMIServer");
+
     }
 
     /**

@@ -1,11 +1,11 @@
 package it.polimi.gc06.mesos.network.client;
 
 import it.polimi.gc06.mesos.controller.ModelListener;
+import it.polimi.gc06.mesos.controller.commands.ControllerCommand;
+import it.polimi.gc06.mesos.controller.commands.Request;
 import it.polimi.gc06.mesos.dtos.DTOvisitor;
 import it.polimi.gc06.mesos.dtos.GameStateChangeDTO;
 import it.polimi.gc06.mesos.dtos.SmallModelEditor;
-import it.polimi.gc06.mesos.controller.commands.ControllerCommand;
-import it.polimi.gc06.mesos.controller.commands.Request;
 import it.polimi.gc06.mesos.network.socket.BlockingBox;
 
 import java.io.EOFException;
@@ -69,6 +69,11 @@ public class TCPServerConnection implements ServerConnection, Runnable {
     }
 
     @Override
+    public void startConnection() throws Exception {
+        new Thread(this).start();
+    }
+
+    @Override
     public void receiveDTO(SmallModelEditor dto) {
         prioritizedListener.update(dto);
         listeners.forEach(l -> l.update(dto));
@@ -83,13 +88,15 @@ public class TCPServerConnection implements ServerConnection, Runnable {
     public boolean login(String nickname) throws Exception {
         //if the action was already performed before with success, exit
         if (nicknameSent || isInsideMatch) throw new IllegalStateException("This action shouldn't be performed now");
-        if (!request.store("LOGIN"+nickname)) throw new IllegalStateException("An action is already getting performed");
+        if (!request.store("LOGIN" + nickname))
+            throw new IllegalStateException("An action is already getting performed");
         return this.success.take();
     }
 
     @Override
     public void logout(String nickname) throws Exception {
-        if (!nicknameSent || isInsideMatch) throw new IllegalStateException("Login not yet performed or match already started");
+        if (!nicknameSent || isInsideMatch)
+            throw new IllegalStateException("Login not yet performed or match already started");
         if (!request.store("LOGOUT")) throw new IllegalStateException("An action is already getting performed");
     }
 
@@ -115,7 +122,7 @@ public class TCPServerConnection implements ServerConnection, Runnable {
 
     @Override
     public int createMatch(int numOfPlayers, String nickname) throws Exception {
-        if (!nicknameSent || !login(nickname))
+        if (!nicknameSent)
             throw new IllegalStateException("Login already performed or nickname not valid.");
         //if the action (or match join) was already performed before with success, exit
         if (isInsideMatch) throw new IllegalStateException("Match action already performed");
@@ -129,7 +136,7 @@ public class TCPServerConnection implements ServerConnection, Runnable {
 
     @Override
     public boolean joinMatch(int matchId, String nickname) throws Exception {
-        if (!nicknameSent || !login(nickname))
+        if (!nicknameSent)
             throw new IllegalStateException("Login already performed or nickname not valid.");
         //if the action (or match join) was already performed before with success, exit
         if (isInsideMatch) throw new IllegalStateException("Match action already performed");
@@ -191,7 +198,7 @@ public class TCPServerConnection implements ServerConnection, Runnable {
                     } else if (req.equals("PING") || req.equals("LOGOUT")) {
                         //request that do not need a result
                         out.writeObject(req);
-                        if(req.equals("LOGOUT")) nicknameSent = false;
+                        if (req.equals("LOGOUT")) nicknameSent = false;
                     } else if (req.equals("MATCH_ID")) {
                         // request that needs a match ID
                         out.writeObject(req);
@@ -199,12 +206,11 @@ public class TCPServerConnection implements ServerConnection, Runnable {
                     } else {
                         //request that needs a confirmation
                         out.writeObject(req);
-                        if(((String) in.readObject()).equals("OK")){
+                        if (((String) in.readObject()).equals("OK")) {
                             success.store(true);
-                            if(req.startsWith("LOGIN")) nicknameSent = true;
+                            if (req.startsWith("LOGIN")) nicknameSent = true;
                             else isInsideMatch = true;
-                        }
-                        else success.store(false);
+                        } else success.store(false);
                     }
 
                     request.empty(); //permits other actions
