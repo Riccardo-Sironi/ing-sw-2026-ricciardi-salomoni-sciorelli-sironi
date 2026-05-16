@@ -21,6 +21,7 @@ import it.polimi.gc06.mesos.view.smallModel.SmallModel;
 import it.polimi.gc06.mesos.view.smallModel.TileSlotView;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
@@ -42,8 +43,12 @@ public class GUI extends Application implements View {
 
     public static GUIDTOvisitor guidtovisitor;
 
+    private static Stage primaryStage;
+
     @Override
     public void start(Stage stage) throws IOException {
+        primaryStage = stage;
+
         gameViewController = new FXMLLoader(
                 getClass().getResource("/it/polimi/gc06/mesos/fxml/mesos.fxml")
         ).getController();
@@ -58,19 +63,21 @@ public class GUI extends Application implements View {
 
         mockSmallModel();
 
-        FXMLLoader gameViewLoader = new FXMLLoader(
-                getClass().getResource("/it/polimi/gc06/mesos/fxml/Mesos.fxml")
-        );
-        Scene scene = new Scene(gameViewLoader.load(), WIDTH, HEIGHT);
-        scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/it/polimi/gc06/mesos/css/board_style.css")).toExternalForm());
+        changeScene("/it/polimi/gc06/mesos/fxml/Start.fxml");
+        primaryStage.show();
+    }
 
-        // ModelListener controller = gameViewLoader.getController();
-        // smallModel.setListener(controller);
-
-        stage.setTitle("Mesos");
-        stage.setScene(scene);
-        javafx.application.Platform.runLater(() -> stage.setMaximized(true));
-        stage.show();
+    public static void changeScene(String fxmlPath) {
+        try {
+            FXMLLoader loader = new FXMLLoader(GUI.class.getResource(fxmlPath));
+            Scene scene = new Scene(loader.load(), WIDTH, HEIGHT);
+            scene.getStylesheets().add(Objects.requireNonNull(GUI.class.getResource("/it/polimi/gc06/mesos/css/board_style.css")).toExternalForm());
+            primaryStage.setTitle("Mesos");
+            javafx.application.Platform.runLater(() -> primaryStage.setMaximized(true));
+            primaryStage.setScene(scene);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void mockSmallModel() throws IOException {

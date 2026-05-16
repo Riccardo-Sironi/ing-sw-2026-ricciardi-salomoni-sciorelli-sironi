@@ -231,7 +231,7 @@ public class BoardController implements ModelListener {
                     drawPlayerInventory();
                     drawOpponentsSidebar();
                 }
-                // HIDE OPPONETS SIDE BAR
+                // HIDE OPPONENTS SIDE BAR
                 if (e.getCode() == KeyCode.O) {
                     if (!mainRoot.getChildren().contains(opponentsSidebar) && leftZone.getChildren().contains(inventoryBox)) {
                         mainRoot.getChildren().add(opponentsSidebar);
