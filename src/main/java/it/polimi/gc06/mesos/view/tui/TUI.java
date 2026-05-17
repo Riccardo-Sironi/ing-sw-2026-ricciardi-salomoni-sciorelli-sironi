@@ -405,14 +405,17 @@ public class TUI implements View, ModelListener {
         players.addAll(smallModel.getOpponents());
 
         // Player aggiuntivi per testare
-        players.add(playerview3);
-        players.add(playerview4);
-        players.add(playerview5);
+//        players.add(playerview3);
+//        players.add(playerview4);
+//        players.add(playerview5);
 
 
-        tuiBoardRenderer.printCardRow(topCards);
-        tuiBoardRenderer.printOfferTrack(offerTrack);
-        tuiBoardRenderer.printCardRow(bottomCards);
+        //tuiBoardRenderer.printCardRow(topCards);
+        tuiBoardRenderer.printCardRow(smallModel.getTopRow());
+        //tuiBoardRenderer.printOfferTrack(offerTrack);
+        tuiBoardRenderer.printOfferTrack(smallModel.getOfferTrack());
+        //tuiBoardRenderer.printCardRow(bottomCards);
+        tuiBoardRenderer.printCardRow(smallModel.getBottomRow());
         tuiBoardRenderer.printPlayerInfo(players);
 
         if (!statusMessage.isEmpty()) {
