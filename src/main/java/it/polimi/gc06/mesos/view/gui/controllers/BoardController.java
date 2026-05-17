@@ -394,6 +394,9 @@ public class BoardController implements ModelListener {
 
         skipButtonContainer.prefWidthProperty().bind(leftZone.widthProperty().multiply(0.15));
         skipButtonContainer.setAlignment(Pos.CENTER);
+        VBox.setVgrow(skipButtonContainer, Priority.NEVER);
+
+        setupSkipButton();
     }
 
     private void configureTokensContainer(VBox container, ImageView containerImageView, Image containerImage,
@@ -815,13 +818,17 @@ public class BoardController implements ModelListener {
     }
 
     private void drawSkipButton() {
-        if (smallModel == null) return;
-        if (!smallModel.isActive() || !smallModel.isCanSkip()) {
-            skipButton.setDisable(true);
-            toggleSkipButton(false);
+        if (!smallModel.getPhase().equals(new OfferResolutionPhase().toString())) {
+            skipButton.setVisible(false);
         } else {
-            skipButton.setDisable(false);
-            toggleSkipButton(true);
+            skipButton.setVisible(true);
+            if (!smallModel.isActive() || !smallModel.isCanSkip()) {
+                skipButton.setDisable(false);
+                toggleSkipButton(true);
+            } else {
+                skipButton.setDisable(false);
+                toggleSkipButton(true);
+            }
         }
     }
 
@@ -966,6 +973,43 @@ public class BoardController implements ModelListener {
         }
     }
 
+    private void setupSkipButton() {
+        skipButton.setFont(mesosFont);
+
+        ScaleTransition inS = new ScaleTransition(Duration.millis(150), skipButton);
+        TranslateTransition inT = new TranslateTransition(Duration.millis(150), skipButton);
+        inS.setInterpolator(Interpolator.EASE_BOTH);
+        inT.setInterpolator(Interpolator.EASE_OUT);
+        inS.setToX(1.1);
+        inS.setToY(1.1);
+        inT.setToY(-3);
+        ScaleTransition outS = new ScaleTransition(Duration.millis(150), skipButton);
+        TranslateTransition outT = new TranslateTransition(Duration.millis(150), skipButton);
+        outS.setInterpolator(Interpolator.EASE_BOTH);
+        outT.setInterpolator(Interpolator.EASE_BOTH);
+        outS.setToX(1);
+        outS.setToY(1);
+        outT.setToY(1);
+
+        skipButton.setOnMouseEntered(e -> {
+            outT.stop();
+            inT.play();
+            outS.stop();
+            inS.play();
+        });
+
+        skipButton.setOnMouseExited(e -> {
+            inT.stop();
+            outT.play();
+            inS.stop();
+            outS.play();
+        });
+
+        skipButton.setOnMouseClicked(e -> {
+            // TODO : skip turn request
+        });
+    }
+
     private void initTurnOrderTile() {
         Image turnOrderImage = loadImage(imageFetcher.getTurnOrderTileUrl());
         turnOrderTile = new TurnOrderTileView(turnOrderImage);
@@ -1042,7 +1086,6 @@ public class BoardController implements ModelListener {
         skipButton.pseudoClassStateChanged(DISABLED_STYLE, !canSkip);
         skipButton.applyCss();
         skipButton.setCursor(canSkip ? Cursor.HAND : Cursor.DEFAULT);
-
     }
 
     private void toggleHelpOverlay() {

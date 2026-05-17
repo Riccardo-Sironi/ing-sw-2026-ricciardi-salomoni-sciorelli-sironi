@@ -22,14 +22,14 @@
 }
 
 #skipButton {
-    -fx-background-color: white;
-    -fx-border-color: #D3523B;
-    -fx-border-width: 2px;
-    -fx-text-fill: #D3523B;
-    -fx-padding: 15px 25px;
-    -fx-border-radius: 12px;
-    -fx-background-radius: 12px;
-    -fx-font-weight: bold;
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-padding: 20 35;
+    -fx-background-image: url('/skip_button_overlay.png');
+    -fx-background-size: cover;
+    -fx-background-position: center;
+    -fx-background-repeat: no-repeat;
+    -fx-text-fill: #151010;
 }
 
 /* ==========================INVENTORY=============================== */
