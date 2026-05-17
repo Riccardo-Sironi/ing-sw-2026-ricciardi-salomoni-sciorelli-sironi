@@ -1,18 +1,6 @@
 [
   {
     "cardInfo": {
-      "class": "BuilderCard",
-      "prestige": 0,
-      "foodDiscount": 0
-    },
-    "numOfPlayers": 0,
-    "validImagesUrls": [
-      "url1",
-      "url2"
-    ]
-  },
-  {
-    "cardInfo": {
       "class": "ShamanCard",
       "nStars": 1
     },
@@ -81,6 +69,646 @@
     "validImagesUrls": [
       "cards/fronts/characters/hunter/male_hunter_supply_card.png",
       "cards/fronts/characters/hunter/female_hunter_supply_card.png"
+    ]
+  },
+  {
+    "cardInfo": {
+      "class": "BuilderCard",
+      "era": "ERA_I",
+      "foodDiscount": 1,
+      "prestige": 3
+    },
+    "numOfPlayers": 2,
+    "validImagesUrls": [
+      "/cards/fronts/characters/builder/ERA_I/builder_f1_p3_eI.png"
+    ]
+  },
+  {
+    "cardInfo": {
+      "class": "BuilderCard",
+      "era": "ERA_I",
+      "foodDiscount": 2,
+      "prestige": 0
+    },
+    "numOfPlayers": 2,
+    "validImagesUrls": [
+      "/cards/fronts/characters/builder/ERA_I/builder_f2_p0_eI.png"
+    ]
+  },
+  {
+    "cardInfo": {
+      "class": "BuilderCard",
+      "era": "ERA_I",
+      "foodDiscount": 1,
+      "prestige": 2
+    },
+    "numOfPlayers": 2,
+    "validImagesUrls": [
+      "/cards/fronts/characters/builder/ERA_I/builder_f1_p2_eI.png"
+    ]
+  },
+  {
+    "cardInfo": {
+      "class": "BuilderCard",
+      "era": "ERA_II",
+      "foodDiscount": 1,
+      "prestige": 4
+    },
+    "numOfPlayers": 2,
+    "validImagesUrls": [
+      "/cards/fronts/characters/builder/ERA_II/builder_f1_p4_eII.png"
+    ]
+  },
+  {
+    "cardInfo": {
+      "class": "BuilderCard",
+      "era": "ERA_II",
+      "foodDiscount": 2,
+      "prestige": 1
+    },
+    "numOfPlayers": 2,
+    "validImagesUrls": [
+      "/cards/fronts/characters/builder/ERA_II/builder_f2_p1_eII.png"
+    ]
+  },
+  {
+    "cardInfo": {
+      "class": "BuilderCard",
+      "era": "ERA_II",
+      "foodDiscount": 2,
+      "prestige": 3
+    },
+    "numOfPlayers": 2,
+    "validImagesUrls": [
+      "/cards/fronts/characters/builder/ERA_II/builder_f2_p3_eII.png"
+    ]
+  },
+  {
+    "cardInfo": {
+      "class": "BuilderCard",
+      "era": "ERA_III",
+      "foodDiscount": 1,
+      "prestige": 5
+    },
+    "numOfPlayers": 2,
+    "validImagesUrls": [
+      "/cards/fronts/characters/builder/ERA_III/builder_f1_p5_eIII.png"
+    ]
+  },
+  {
+    "cardInfo": {
+      "class": "BuilderCard",
+      "era": "ERA_III",
+      "foodDiscount": 2,
+      "prestige": 3
+    },
+    "numOfPlayers": 2,
+    "validImagesUrls": [
+      "/cards/fronts/characters/builder/ERA_III/builder_f2_p3_eIII.png"
+    ]
+  },
+  {
+    "cardInfo": {
+      "class": "BuilderCard",
+      "era": "ERA_III",
+      "foodDiscount": 2,
+      "prestige": 2
+    },
+    "numOfPlayers": 2,
+    "validImagesUrls": [
+      "/cards/fronts/characters/builder/ERA_III/builder_f2_p2_eIII.png"
+    ]
+  },
+  {
+    "cardInfo": {
+      "class": "BuilderCard",
+      "era": "ERA_II",
+      "foodDiscount": 1,
+      "prestige": 2
+    },
+    "numOfPlayers": 3,
+    "validImagesUrls": [
+      "/cards/fronts/characters/builder/ERA_II/builder_f1_p2_eII.png"
+    ]
+  },
+  {
+    "cardInfo": {
+      "class": "BuilderCard",
+      "era": "ERA_I",
+      "foodDiscount": 2,
+      "prestige": 1
+    },
+    "numOfPlayers": 5,
+    "validImagesUrls": [
+      "/cards/fronts/characters/builder/ERA_I/builder_f2_p1_eI.png"
+    ]
+  },
+  {
+    "cardInfo": {
+      "class": "BuilderCard",
+      "era": "ERA_III",
+      "foodDiscount": 1,
+      "prestige": 4
+    },
+    "numOfPlayers": 5,
+    "validImagesUrls": [
+      "/cards/fronts/characters/builder/ERA_III/builder_f1_p4_eIII.png"
+    ]
+  },
+  {
+    "cardInfo": {
+      "class": "HuntEvent",
+      "era": "ERA_I",
+      "prestigeGain": 1
+    },
+    "numOfPlayers": 2,
+    "validImagesUrls": [
+      "/cards/fronts/events/ERA_I/hunting_event.png"
+    ]
+  },
+  {
+    "cardInfo": {
+      "class": "SustenanceEvent",
+      "era": "ERA_I",
+      "prestigeLoss": 1
+    },
+    "numOfPlayers": 2,
+    "validImagesUrls": [
+      "/cards/fronts/events/ERA_I/sustenance_event.png"
+    ]
+  },
+  {
+    "cardInfo": {
+      "class": "RitualEvent",
+      "era": "ERA_I",
+      "prestigeGain": 5,
+      "prestigeLoss": 3
+    },
+    "numOfPlayers": 2,
+    "validImagesUrls": [
+      "/cards/fronts/events/ERA_I/ritual_event.png"
+    ]
+  },
+  {
+    "cardInfo": {
+      "class": "PaintingsEvent",
+      "era": "ERA_I",
+      "prestigeGain": 1,
+      "prestigeLoss": 2,
+      "minNumberOfArtists": 1
+    },
+    "numOfPlayers": 2,
+    "validImagesUrls": [
+      "/cards/fronts/events/ERA_I/paintings_event.png"
+    ]
+  },
+  {
+    "cardInfo": {
+      "class": "HuntEvent",
+      "era": "ERA_II",
+      "prestigeGain": 2
+    },
+    "numOfPlayers": 2,
+    "validImagesUrls": [
+      "/cards/fronts/events/ERA_II/hunting_event.png"
+    ]
+  },
+  {
+    "cardInfo": {
+      "class": "SustenanceEvent",
+      "era": "ERA_II",
+      "prestigeLoss": 2
+    },
+    "numOfPlayers": 2,
+    "validImagesUrls": [
+      "/cards/fronts/events/ERA_II/sustenance_event.png"
+    ]
+  },
+  {
+    "cardInfo": {
+      "class": "RitualEvent",
+      "era": "ERA_II",
+      "prestigeGain": 10,
+      "prestigeLoss": 5
+    },
+    "numOfPlayers": 2,
+    "validImagesUrls": [
+      "/cards/fronts/events/ERA_II/ritual_event.png"
+    ]
+  },
+  {
+    "cardInfo": {
+      "class": "PaintingsEvent",
+      "era": "ERA_II",
+      "prestigeGain": 2,
+      "prestigeLoss": 2,
+      "minNumberOfArtists": 2
+    },
+    "numOfPlayers": 2,
+    "validImagesUrls": [
+      "/cards/fronts/events/ERA_II/paintings_event.png"
+    ]
+  },
+  {
+    "cardInfo": {
+      "class": "HuntEvent",
+      "era": "ERA_III",
+      "prestigeGain": 3
+    },
+    "numOfPlayers": 2,
+    "validImagesUrls": [
+      "/cards/fronts/events/ERA_III/hunting_event.png"
+    ]
+  },
+  {
+    "cardInfo": {
+      "class": "PaintingsEvent",
+      "era": "ERA_III",
+      "prestigeGain": 3,
+      "prestigeLoss": 2,
+      "minNumberOfArtists": 3
+    },
+    "numOfPlayers": 2,
+    "validImagesUrls": [
+      "/cards/fronts/events/ERA_III/paintings_event_final.png"
+    ]
+  },
+  {
+    "cardInfo": {
+      "class": "SustenanceEvent",
+      "era": "ERA_III",
+      "prestigeLoss": 3
+    },
+    "numOfPlayers": 2,
+    "validImagesUrls": [
+      "/cards/fronts/events/ERA_III/sustenance_event_final.png"
+    ]
+  },
+  {
+    "cardInfo": {
+      "class": "RitualEvent",
+      "era": "ERA_III",
+      "prestigeGain": 15,
+      "prestigeLoss": 7
+    },
+    "numOfPlayers": 2,
+    "validImagesUrls": [
+      "/cards/fronts/events/ERA_III/ritual_event_final.png"
+    ]
+  },
+  {
+    "cardInfo": {
+      "class": "InventorCard",
+      "icon": "HIDE"
+    },
+    "numOfPlayers": 2,
+    "validImagesUrls": [
+      "/cards/fronts/characters/inventor/male_inventor_hide.png"
+    ]
+  },
+  {
+    "cardInfo": {
+      "class": "InventorCard",
+      "icon": "BOAT"
+    },
+    "numOfPlayers": 2,
+    "validImagesUrls": [
+      "/cards/fronts/characters/inventor/female_inventor_boat.png"
+    ]
+  },
+  {
+    "cardInfo": {
+      "class": "InventorCard",
+      "icon": "ARROWHEAD"
+    },
+    "numOfPlayers": 2,
+    "validImagesUrls": [
+      "/cards/fronts/characters/inventor/male_inventor_arrowhead.png"
+    ]
+  },
+  {
+    "cardInfo": {
+      "class": "InventorCard",
+      "icon": "BREAD"
+    },
+    "numOfPlayers": 2,
+    "validImagesUrls": [
+      "/cards/fronts/characters/inventor/female_inventor_bread.png",
+      "/cards/fronts/characters/inventor/male_inventor_bread.png"
+    ]
+  },
+  {
+    "cardInfo": {
+      "class": "InventorCard",
+      "icon": "FIGURE"
+    },
+    "numOfPlayers": 2,
+    "validImagesUrls": [
+      "/cards/fronts/characters/inventor/female_inventor_figure.png"
+    ]
+  },
+  {
+    "cardInfo": {
+      "class": "InventorCard",
+      "icon": "ROPE"
+    },
+    "numOfPlayers": 2,
+    "validImagesUrls": [
+      "/cards/fronts/characters/inventor/female_inventor_rope.png",
+      "/cards/fronts/characters/inventor/male_inventor_rope.png"
+    ]
+  },
+  {
+    "cardInfo": {
+      "class": "InventorCard",
+      "icon": "FLUTE"
+    },
+    "numOfPlayers": 2,
+    "validImagesUrls": [
+      "/cards/fronts/characters/inventor/female_inventor_flute.png",
+      "/cards/fronts/characters/inventor/male_inventor_flute.png"
+    ]
+  },
+  {
+    "cardInfo": {
+      "class": "InventorCard",
+      "icon": "BOWL"
+    },
+    "numOfPlayers": 2,
+    "validImagesUrls": [
+      "/cards/fronts/characters/inventor/female_inventor_bowl.png",
+      "/cards/fronts/characters/inventor/male_inventor_bowl.png"
+    ]
+  },
+  {
+    "cardInfo": {
+      "class": "InventorCard",
+      "icon": "HOOK"
+    },
+    "numOfPlayers": 2,
+    "validImagesUrls": [
+      "/cards/fronts/characters/inventor/male_inventor_hook.png"
+    ]
+  },
+  {
+    "cardInfo": {
+      "class": "InventorCard",
+      "icon": "NECKLACE"
+    },
+    "numOfPlayers": 2,
+    "validImagesUrls": [
+      "/cards/fronts/characters/inventor/female_inventor_necklace.png",
+      "/cards/fronts/characters/inventor/male_inventor_necklace.png"
+    ]
+  },
+  {
+    "cardInfo": {
+      "class": "ObserverSetBuildingCard",
+      "foodCost": 4,
+      "prestigeGain": 3
+    },
+    "numOfPlayers": 2,
+    "validImagesUrls": [
+      "/cards/fronts/buildings/ERA_I/set_all_characters.png"
+    ]
+  },
+  {
+    "cardInfo": {
+      "class": "ObserverPairBuildingCard",
+      "foodCost": 3,
+      "prestigeGain": 4
+    },
+    "numOfPlayers": 2,
+    "validImagesUrls": [
+      "/cards/fronts/buildings/ERA_I/pair_builders.png"
+    ]
+  },
+  {
+    "cardInfo": {
+      "class": "EndGameBuildingCard",
+      "prestigeEffect": "DOUBLE_BUILDERS",
+      "foodCost": 6,
+      "prestigeGain": 4
+    },
+    "numOfPlayers": 2,
+    "validImagesUrls": [
+      "/cards/fronts/buildings/ERA_II/double_builder.png"
+    ]
+  },
+  {
+    "cardInfo": {
+      "class": "EndGameBuildingCard",
+      "prestigeEffect": "COUNT_SETS",
+      "foodCost": 5,
+      "prestigeGain": 6
+    },
+    "numOfPlayers": 2,
+    "validImagesUrls": [
+      "/cards/fronts/buildings/ERA_II/count_sets.png"
+    ]
+  },
+  {
+    "cardInfo": {
+      "class": "EndGameBuildingCard",
+      "prestigeEffect": "COUNT_HUNTERS",
+      "foodCost": 8,
+      "prestigeGain": 8
+    },
+    "numOfPlayers": 2,
+    "validImagesUrls": [
+      "/cards/fronts/buildings/ERA_III/count_hunters.png"
+    ]
+  },
+  {
+    "cardInfo": {
+      "class": "EndGameBuildingCard",
+      "prestigeEffect": "COUNT_GATHERERS",
+      "foodCost": 7,
+      "prestigeGain": 6
+    },
+    "numOfPlayers": 2,
+    "validImagesUrls": [
+      "/cards/fronts/buildings/ERA_III/count_gatherers.png"
+    ]
+  },
+  {
+    "cardInfo": {
+      "class": "EndGameBuildingCard",
+      "prestigeEffect": "COUNT_SHAMANS",
+      "foodCost": 7,
+      "prestigeGain": 4
+    },
+    "numOfPlayers": 2,
+    "validImagesUrls": [
+      "/cards/fronts/buildings/ERA_III/count_shamans.png"
+    ]
+  },
+  {
+    "cardInfo": {
+      "class": "EndGameBuildingCard",
+      "prestigeEffect": "COUNT_BUILDERS",
+      "foodCost": 6,
+      "prestigeGain": 3
+    },
+    "numOfPlayers": 2,
+    "validImagesUrls": [
+      "/cards/fronts/buildings/ERA_III/count_builders.png"
+    ]
+  },
+  {
+    "cardInfo": {
+      "class": "EndGameBuildingCard",
+      "prestigeEffect": "COUNT_ARTISTS",
+      "foodCost": 7,
+      "prestigeGain": 4
+    },
+    "numOfPlayers": 2,
+    "validImagesUrls": [
+      "/cards/fronts/buildings/ERA_III/count_astists.png"
+    ]
+  },
+  {
+    "cardInfo": {
+      "class": "EndGameBuildingCard",
+      "prestigeEffect": "COUNT_INVENTORS",
+      "foodCost": 6,
+      "prestigeGain": 6
+    },
+    "numOfPlayers": 2,
+    "validImagesUrls": [
+      "/cards/fronts/buildings/ERA_III/count_inventors.png"
+    ]
+  },
+  {
+    "cardInfo": {
+      "class": "EndGameBuildingCard",
+      "prestigeEffect": "FIXED_25",
+      "foodCost": 10,
+      "prestigeGain": 0
+    },
+    "numOfPlayers": 2,
+    "validImagesUrls": [
+      "/cards/fronts/buildings/ERA_III/fixed_25.png"
+    ]
+  },
+  {
+    "cardInfo": {
+      "class": "ModifierBuildingCard",
+      "cardKey": "SUSTENANCE_GATHERER_DISCOUNT",
+      "foodCost": 4,
+      "prestigeGain": 4
+    },
+    "numOfPlayers": 2,
+    "validImagesUrls": [
+      "/cards/fronts/buildings/ERA_I/sustenance_gatherer_discount.png"
+    ]
+  },
+  {
+    "cardInfo": {
+      "class": "ModifierBuildingCard",
+      "cardKey": "SUSTENANCE_ARTIST_DISCOUNT",
+      "foodCost": 5,
+      "prestigeGain": 3
+    },
+    "numOfPlayers": 2,
+    "validImagesUrls": [
+      "/cards/fronts/buildings/ERA_I/sustenance_painter_discount.png"
+    ]
+  },
+  {
+    "cardInfo": {
+      "class": "ModifierBuildingCard",
+      "cardKey": "RITUAL_NO_LOSS_CARD",
+      "foodCost": 5,
+      "prestigeGain": 2
+    },
+    "numOfPlayers": 2,
+    "validImagesUrls": [
+      "/cards/fronts/buildings/ERA_I/ritual_no_loss.png"
+    ]
+  },
+  {
+    "cardInfo": {
+      "class": "ModifierBuildingCard",
+      "cardKey": "TILE_FOOD_BONUS",
+      "foodCost": 3,
+      "prestigeGain": 3
+    },
+    "numOfPlayers": 2,
+    "validImagesUrls": [
+      "/cards/fronts/buildings/ERA_I/tile_food_bonus.png"
+    ]
+  },
+  {
+    "cardInfo": {
+      "class": "ModifierBuildingCard",
+      "cardKey": "RITUAL_DOUBLE_WIN_CARD",
+      "foodCost": 7,
+      "prestigeGain": 0
+    },
+    "numOfPlayers": 2,
+    "validImagesUrls": [
+      "/cards/fronts/buildings/ERA_II/ritual_double_win.png"
+    ]
+  },
+  {
+    "cardInfo": {
+      "class": "ModifierBuildingCard",
+      "cardKey": "RITUAL_THREE_STAR_CARD",
+      "foodCost": 6,
+      "prestigeGain": 4
+    },
+    "numOfPlayers": 2,
+    "validImagesUrls": [
+      "/cards/fronts/buildings/ERA_II/ritual_three_stars.png"
+    ]
+  },
+  {
+    "cardInfo": {
+      "class": "ModifierBuildingCard",
+      "cardKey": "SUSTENANCE_INVENTOR_DISCOUNT",
+      "foodCost": 7,
+      "prestigeGain": 4
+    },
+    "numOfPlayers": 2,
+    "validImagesUrls": [
+      "/cards/fronts/buildings/ERA_II/sustenance_builder_discount.png"
+    ]
+  },
+  {
+    "cardInfo": {
+      "class": "ModifierBuildingCard",
+      "cardKey": "HUNT_PRESTIGE_AND_FOOD_GAIN_CARD",
+      "foodCost": 7,
+      "prestigeGain": 2
+    },
+    "numOfPlayers": 2,
+    "validImagesUrls": [
+      "/cards/fronts/buildings/ERA_II/hunt_prestige_and_food_gain.png"
+    ]
+  },
+  {
+    "cardInfo": {
+      "class": "ModifierBuildingCard",
+      "cardKey": "PICK_FROM_TOP",
+      "foodCost": 9,
+      "prestigeGain": 3
+    },
+    "numOfPlayers": 2,
+    "validImagesUrls": [
+      "/cards/fronts/buildings/ERA_III/pick_from_top.png"
+    ]
+  },
+  {
+    "cardInfo": {
+      "class": "ModifierBuildingCard",
+      "cardKey": "PAINTING_FOOD_GAIN_CARD",
+      "foodCost": 5,
+      "prestigeGain": 6
+    },
+    "numOfPlayers": 2,
+    "validImagesUrls": [
+      "/cards/fronts/buildings/ERA_II/painting_food_gain.png"
     ]
   }
 ]

@@ -59,7 +59,7 @@ public class ModelInstancesManager {
 
         //creates players
         ArrayList<Player> players = new ArrayList<Player>();
-        List<Color> colors = new ArrayList<>(Arrays.asList(Color.values()));
+        List<Color> colors = new ArrayList<>(Arrays.asList(Color.values())); // TODO : player should choose color, not be assigned randomly
         for (int i = 0; i < numOfPlayers; i++)
             players.add(new Player(nicknames.removeFirst(), colors.removeFirst(), registry));
 
