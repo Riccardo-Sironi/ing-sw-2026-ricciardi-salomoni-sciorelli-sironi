@@ -942,9 +942,10 @@ public class BoardController implements ModelListener {
 
                 int index = turnOrderTile.getTotemPieces().indexOf(totemPiece);
                 if (index != -1) {
-                    turnOrderTile.getTotemPieces().set(index, new TotemPieceView());
+                    ArrayList<TotemPieceView> totemPieces = turnOrderTile.getTotemPieces();
+                    totemPieces.set(index, new TotemPieceView());
 
-                    turnOrderTile.setTotemPieces(turnOrderTile.getTotemPieces());
+                    turnOrderTile.setTotemPieces(totemPieces);
                 }
             });
         }

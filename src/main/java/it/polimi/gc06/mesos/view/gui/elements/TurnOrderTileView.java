@@ -70,7 +70,7 @@ public class TurnOrderTileView extends TileView {
 
             for (int i = 0; i < totemPieces.size(); i++) {
                 if (i >= points.size()) break;
-                if (totemPieces.get(i).getPlayer() == null) break;
+                if (totemPieces.get(i).getPlayer() == null) continue;
 
                 TotemPieceView t = totemPieces.get(i);
                 setupPlayerNamePopup(t);
