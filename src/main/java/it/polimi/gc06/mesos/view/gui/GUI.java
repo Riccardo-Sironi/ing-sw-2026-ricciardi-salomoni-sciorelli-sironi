@@ -1,16 +1,10 @@
 package it.polimi.gc06.mesos.view.gui;
 
-import it.polimi.gc06.mesos.controller.ModelListener;
-import it.polimi.gc06.mesos.model.Color;
 import it.polimi.gc06.mesos.model.Era;
-import it.polimi.gc06.mesos.model.cards.characters.ArtistCard;
-import it.polimi.gc06.mesos.model.cards.characters.GathererCard;
-import it.polimi.gc06.mesos.model.cards.characters.HunterCard;
-import it.polimi.gc06.mesos.model.cards.characters.ShamanCard;
-import it.polimi.gc06.mesos.model.gameBoard.ChooseCardTileEffect;
-import it.polimi.gc06.mesos.model.gameBoard.FoodTileEffect;
-import it.polimi.gc06.mesos.model.gameTurnManager.OfferResolutionPhase;
-import it.polimi.gc06.mesos.model.gameTurnManager.PlacingTotemPhase;
+import it.polimi.gc06.mesos.model.GameModel;
+import it.polimi.gc06.mesos.model.InstancesManager.ModelInstancesManager;
+import it.polimi.gc06.mesos.model.Player;
+import it.polimi.gc06.mesos.model.gameBoard.TileSlot;
 import it.polimi.gc06.mesos.view.View;
 import it.polimi.gc06.mesos.view.gui.controllers.BoardController;
 import it.polimi.gc06.mesos.view.gui.controllers.GameViewController;
@@ -21,12 +15,12 @@ import it.polimi.gc06.mesos.view.smallModel.SmallModel;
 import it.polimi.gc06.mesos.view.smallModel.TileSlotView;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Objects;
 
 public class GUI extends Application implements View {
@@ -63,7 +57,7 @@ public class GUI extends Application implements View {
 
         mockSmallModel();
 
-        changeScene("/it/polimi/gc06/mesos/fxml/Start.fxml");
+        changeScene("/it/polimi/gc06/mesos/fxml/Mesos.fxml");
         primaryStage.show();
     }
 
@@ -81,110 +75,71 @@ public class GUI extends Application implements View {
     }
 
     private void mockSmallModel() throws IOException {
+        ModelInstancesManager modelInstancesManager = new ModelInstancesManager();
+        ArrayList<String> players = new ArrayList<>();
+        for (int i = 1; i <= 5; i++) {
+            players.add("Player " + i);
+        }
+        GameModel gameModel = modelInstancesManager.createGame(players);
+
+        gameModel.startGame();
+
+        HashMap<Player, PlayerView> playersMap = new HashMap<>();
+
         smallModel = new SmallModel("");
 
-        smallModel.setEra(Era.ERA_I);
-        smallModel.setPhase(new PlacingTotemPhase().toString());
-        smallModel.setRound(0);
-        smallModel.setActive(true);
+        smallModel.setEra(gameModel.getBoard().getCurrentEra());
+        smallModel.setPhase(gameModel.getTurnManager().getPhase().toString());
+        smallModel.setRound(gameModel.getTurnManager().getRound());
+        smallModel.setActive(gameModel.getTurnManager().getActivePlayer().getNickname().equals("Player 1"));
         smallModel.setCanSkip(false);
         smallModel.setLeaderboard(new ArrayList<>());
-        smallModel.setTribeDeckSize(80);
+        smallModel.setTribeDeckSize(gameModel.getTribeCardsDeck().get(Era.ERA_I).size() + gameModel.getTribeCardsDeck().get(Era.ERA_II).size() + gameModel.getTribeCardsDeck().get(Era.ERA_III).size());
 
-        smallModel.setTopDrawNum(1);
-        smallModel.setBottomDrawNum(0);
+        Player clientPlayer = null;
 
-        smallModel.setPlayer("Player 1", Color.RED);
-        PlayerView clientPlayer = smallModel.getPlayer();
-        clientPlayer.setNumFood(5);
-        clientPlayer.setNumPrestige(10);
+        for (Player player : gameModel.getPlayers()) {
+            if (player.getNickname().equals("Player 1")) {
+                clientPlayer = player;
+                PlayerView p = new PlayerView(player.getNickname(), player.getPlayerColor());
+                playersMap.put(player, p);
+                smallModel.setPlayer(player.getNickname(), player.getPlayerColor());
+                smallModel.getPlayer().setNumFood(player.getFoodTokens());
+                smallModel.getPlayer().setNumPrestige(player.getPrestigeTokens());
+            } else {
+                PlayerView p = new PlayerView(player.getNickname(), player.getPlayerColor());
+                playersMap.put(player, p);
+                smallModel.getOpponents().add(p);
+            }
+        }
 
-        clientPlayer.getCharacters().add(new ShamanCard(Era.ERA_I, 1));
-        clientPlayer.getCharacters().add(new ArtistCard(Era.ERA_I));
-        clientPlayer.getCharacters().add(new ShamanCard(Era.ERA_I, 3));
-        clientPlayer.getCharacters().add(new GathererCard(Era.ERA_I));
-        clientPlayer.getCharacters().add(new HunterCard(Era.ERA_I, false));
-        clientPlayer.getCharacters().add(new ShamanCard(Era.ERA_I, 2));
-        clientPlayer.getCharacters().add(new ArtistCard(Era.ERA_I));
-        clientPlayer.getCharacters().add(new HunterCard(Era.ERA_I, true));
+        smallModel.setTopDrawNum(clientPlayer.getTopDrawNum());
+        smallModel.setBottomDrawNum(clientPlayer.getBottomDrawNum());
 
-
-        PlayerView p2 = new PlayerView("Player 2", Color.BLUE);
-        p2.setNumFood(5);
-        p2.getCharacters().add(new ShamanCard(Era.ERA_I, 3));
-        p2.getCharacters().add(new ShamanCard(Era.ERA_I, 3));
-        p2.getCharacters().add(new ShamanCard(Era.ERA_I, 3));
-        p2.getCharacters().add(new ShamanCard(Era.ERA_I, 3));
-        PlayerView p3 = new PlayerView("Player 3", Color.WHITE);
-        p3.setNumPrestige(10);
-        PlayerView p4 = new PlayerView("Player 4", Color.PURPLE);
-        p4.setNumFood(100);
-        p4.getCharacters().add(new ShamanCard(Era.ERA_I, 1));
-        p4.getCharacters().add(new ShamanCard(Era.ERA_I, 1));
-        p4.setNumPrestige(100);
-        PlayerView p5 = new PlayerView("Player 5", Color.YELLOW);
-
-        smallModel.getOpponents().add(p2);
-        smallModel.getOpponents().add(p3);
-        smallModel.getOpponents().add(p4);
-        smallModel.getOpponents().add(p5);
-
-        smallModel.getTopRow().add(new ShamanCard(Era.ERA_I, 1));
-        smallModel.getTopRow().add(new ArtistCard(Era.ERA_I));
-        smallModel.getTopRow().add(new ShamanCard(Era.ERA_I, 3));
-        smallModel.getTopRow().add(new GathererCard(Era.ERA_I));
-        smallModel.getTopRow().add(new HunterCard(Era.ERA_I, false));
-        smallModel.getTopRow().add(new ShamanCard(Era.ERA_I, 2));
-        smallModel.getTopRow().add(new ArtistCard(Era.ERA_I));
-        smallModel.getTopRow().add(new HunterCard(Era.ERA_I, true));
-
-        smallModel.getBottomRow().add(new ShamanCard(Era.ERA_I, 1));
-        smallModel.getBottomRow().add(new ArtistCard(Era.ERA_I));
-        smallModel.getBottomRow().add(new ShamanCard(Era.ERA_I, 3));
-        smallModel.getBottomRow().add(new GathererCard(Era.ERA_I));
-        smallModel.getBottomRow().add(new HunterCard(Era.ERA_I, false));
-        smallModel.getBottomRow().add(new ShamanCard(Era.ERA_I, 2));
-        smallModel.getBottomRow().add(new ArtistCard(Era.ERA_I));
-        smallModel.getBottomRow().add(new HunterCard(Era.ERA_I, true));
+        smallModel.getTopRow().addAll(gameModel.getBoard().getTopRow());
+        smallModel.getBottomRow().addAll(gameModel.getBoard().getBottomRow());
+        smallModel.getTopBuildings().addAll(gameModel.getBoard().getTopBuildings());
+        smallModel.getBottomBuildings().addAll(gameModel.getBoard().getBottomBuildings());
 
         ArrayList<PlayerView> turnOrderTile = new ArrayList<>();
-        turnOrderTile.add(smallModel.getOpponents().get(0));
-        turnOrderTile.add(smallModel.getOpponents().get(1));
-        turnOrderTile.add(clientPlayer);
-        turnOrderTile.add(null);
-        turnOrderTile.add(null);
+        for (TileSlot slot : gameModel.getBoard().getTurnOrderTile().slots()) {
+            turnOrderTile.add(playersMap.get(slot.getPlayer()));
+        }
 
         smallModel.getTurnOrderTile().addAll(turnOrderTile);
 
-        TileSlotView tA = new TileSlotView();
-        tA.setTileEffect(new FoodTileEffect(3));
-        smallModel.getOfferTrack().add(tA);
-
-        TileSlotView tB = new TileSlotView();
-        tB.setTileEffect(new ChooseCardTileEffect(0, 1));
-        tB.setPlayer(smallModel.getOpponents().get(2));
-        smallModel.getOfferTrack().add(tB);
-
-        TileSlotView tC = new TileSlotView();
-        tC.setTileEffect(new ChooseCardTileEffect(1, 0));
-        smallModel.getOfferTrack().add(tC);
-
-        TileSlotView tD = new TileSlotView();
-        tD.setTileEffect(new ChooseCardTileEffect(0, 2));
-        smallModel.getOfferTrack().add(tD);
-
-        TileSlotView tE = new TileSlotView();
-        tE.setTileEffect(new ChooseCardTileEffect(1, 1));
-        tE.setPlayer(smallModel.getOpponents().get(3));
-        smallModel.getOfferTrack().add(tE);
-
-        TileSlotView tF = new TileSlotView();
-        tF.setTileEffect(new ChooseCardTileEffect(2, 0));
-        smallModel.getOfferTrack().add(tF);
-
-        TileSlotView tG = new TileSlotView();
-        tG.setTileEffect(new ChooseCardTileEffect(2, 1));
-        smallModel.getOfferTrack().add(tG);
+        smallModel.getOfferTrack().addAll(gameModel.getBoard().getOfferTrack().stream().map(slot -> {
+            if (slot.isEmpty()) {
+                TileSlotView slotView = new TileSlotView();
+                slotView.setTileEffect(slot.getTileEffect());
+                return slotView;
+            } else {
+                TileSlotView slotView = new TileSlotView();
+                slotView.setPlayer(playersMap.get(slot.getPlayer()));
+                slotView.setTileEffect(slot.getTileEffect());
+                return slotView;
+            }
+        }).toList());
 
         imageFetcher = new ImageFetcher(turnOrderTile.size());
     }
