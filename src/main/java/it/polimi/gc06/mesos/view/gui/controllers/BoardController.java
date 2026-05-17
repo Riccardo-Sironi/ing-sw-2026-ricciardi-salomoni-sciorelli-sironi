@@ -166,8 +166,8 @@ public class BoardController implements ModelListener {
 
     private StackPane inventoryOverlay = null;
 
-    private TurnOrderTileView turnOrderTile;
-    private ArrayList<OfferTileView> offerTrackTiles;
+    private TurnOrderTileView turnOrderTile = null;
+    private ArrayList<OfferTileView> offerTrackTiles = null;
 
     private HashMap<String, OpponentBox> opponentsBoxes;
 
@@ -192,7 +192,9 @@ public class BoardController implements ModelListener {
         if (smallModel != null) {
             drawEverything();
         }
+    }
 
+    public void setupGameCommands() {
         Platform.runLater(() -> {
             mainRoot.requestLayout();
             mainRoot.getScene().setOnKeyPressed(e -> {
@@ -295,6 +297,7 @@ public class BoardController implements ModelListener {
         drawOfferTrack();
         drawSkipButton();
         drawPlayerInventory();
+        initOpponentsSideBar(); //
         drawOpponentsSidebar();
     }
 
@@ -306,8 +309,6 @@ public class BoardController implements ModelListener {
         opponentsSidebar.prefWidthProperty().bind(mainRoot.widthProperty().multiply(WIDTH_OPPONENTS));
         leftZone.prefHeightProperty().bind(mainRoot.heightProperty());
         opponentsSidebar.prefHeightProperty().bind(mainRoot.heightProperty());
-
-        initOpponentsSideBar();
 
         leftZone.setSpacing(10);
 
@@ -375,8 +376,6 @@ public class BoardController implements ModelListener {
         configureScrollPane(topCharactersScroll, topCharactersContainer, topWidth.multiply(0.7).subtract(20));
         configureScrollPane(buildingsScroll, buildingsContainer, topWidth.multiply(0.3).subtract(20));
 
-        updateBottomRowLayout(true);
-
         centerRowBox.setAlignment(Pos.CENTER);
         centerRowBox.setSpacing(30);
         deckContainer.prefWidthProperty().bind(leftZone.widthProperty().multiply(0.15));
@@ -386,11 +385,11 @@ public class BoardController implements ModelListener {
         setupDeckPopup();
 
         turnOrderContainer.setAlignment(Pos.CENTER_RIGHT);
-        initTurnOrderTile();
+        //initTurnOrderTile();
 
         offerTrackContainer.setAlignment(Pos.CENTER);
         offerTrackContainer.setSpacing(-2);
-        initOfferTrack();
+        //initOfferTrack();
 
         skipButtonContainer.prefWidthProperty().bind(leftZone.widthProperty().multiply(0.15));
         skipButtonContainer.setAlignment(Pos.CENTER);
@@ -1025,6 +1024,10 @@ public class BoardController implements ModelListener {
     }
 
     public void drawTurnOrderTile() {
+        if (turnOrderTile == null) {
+            initTurnOrderTile();
+        }
+
         ArrayList<TotemPieceView> totemPieces = new ArrayList<>();
         for (PlayerView player : smallModel.getTurnOrderTile()) {
             if (player != null) {
@@ -1049,6 +1052,11 @@ public class BoardController implements ModelListener {
     }
 
     private void drawOfferTrack() {
+
+        if (offerTrackTiles == null) {
+            initOfferTrack();
+        }
+
         for (int i = 0; i < smallModel.getOfferTrack().size(); i++) {
             if (smallModel.getOfferTrack().get(i).getPlayer() != null) {
                 offerTrackTiles.get(i).setTotem(new TotemPieceView(smallModel.getOfferTrack().get(i).getPlayer()));
@@ -1177,6 +1185,7 @@ public class BoardController implements ModelListener {
 
     @Override
     public void update(SmallModelEditor dto) {
+        System.out.println("PROVA");
         Platform.runLater(() -> {
             dto.accept(guidtovisitor);
         });

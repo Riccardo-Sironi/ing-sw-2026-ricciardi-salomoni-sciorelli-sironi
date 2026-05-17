@@ -1,5 +1,8 @@
 package it.polimi.gc06.mesos.view.gui.controllers;
 
+import it.polimi.gc06.mesos.network.client.Client;
+import it.polimi.gc06.mesos.view.gui.GUI;
+import it.polimi.gc06.mesos.view.smallModel.SmallModel;
 import javafx.animation.Animation;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
@@ -16,6 +19,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.util.Duration;
+
 import java.net.URL;
 
 public class LoginController {
@@ -46,6 +50,8 @@ public class LoginController {
 
     @FXML
     private DropShadow buttonShadow;
+
+    private static String nickname = "";
 
     private static final String FONT_PATH = "/it/polimi/gc06/mesos/fonts/ArcadianG.ttf";
     private static final String SUBMIT_BUTTON_STYLE = "-fx-background-color: transparent; -fx-border-color: #2B2B2B; -fx-border-width: 3; -fx-text-fill: #2B2B2B; -fx-background-radius: 10; -fx-border-radius: 10; -fx-cursor: hand;";
@@ -134,7 +140,7 @@ public class LoginController {
 
     @FXML
     public void handleLogin(ActionEvent event) {
-        String nickname = nicknameField.getText().trim();
+        nickname = nicknameField.getText().trim();
 
         if (nickname.isEmpty()) {
             nicknameField.setStyle(FIELD_ERROR_STYLE);
@@ -142,6 +148,46 @@ public class LoginController {
         }
 
         nicknameField.setStyle(FIELD_DEFAULT_STYLE);
+
+        GUI.client = new Client();
+        GUI.client.connect("RMI", "localhost", 1099);
+
+        try {
+            if (!GUI.client.getServerConnection().login(nickname)) {
+                nicknameField.setStyle(FIELD_ERROR_STYLE);
+                return;
+            }
+        } catch (Exception e) {
+        }
+
+        GUI.smallModel = new SmallModel(nickname);
+        GUI.client.setSmallModel(GUI.smallModel);
+
+        try {
+            GUI.client.getServerConnection().joinMatch(0, nickname);
+        } catch (Exception e) {
+        }
+
+        GUI.subscribeGUI();
+
+        while (GUI.smallModel.getPhase() == null) {
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return;
+            }
+        }
+
+        GUI.changeScene("/it/polimi/gc06/mesos/fxml/mesos.fxml");
+
+        // TODO : match selection process ...
+
         System.out.println("Login as: " + nickname);
+    }
+
+
+    public static String getNickname() {
+        return nickname;
     }
 }

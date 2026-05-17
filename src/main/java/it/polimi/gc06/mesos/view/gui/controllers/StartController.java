@@ -1,5 +1,6 @@
 package it.polimi.gc06.mesos.view.gui.controllers;
 
+import it.polimi.gc06.mesos.view.gui.GUI;
 import javafx.animation.Animation;
 import javafx.animation.FadeTransition;
 
@@ -157,6 +158,7 @@ public class StartController {
 
     @FXML
     public void handleStart(Event event) {
+        GUI.changeScene("/it/polimi/gc06/mesos/fxml/login.fxml");
         System.out.println("Start game");
     }
 }

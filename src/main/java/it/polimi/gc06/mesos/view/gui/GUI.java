@@ -1,20 +1,23 @@
 package it.polimi.gc06.mesos.view.gui;
 
+import it.polimi.gc06.mesos.controller.ModelListener;
+import it.polimi.gc06.mesos.dtos.SmallModelEditor;
 import it.polimi.gc06.mesos.model.Era;
 import it.polimi.gc06.mesos.model.GameModel;
 import it.polimi.gc06.mesos.model.InstancesManager.ModelInstancesManager;
 import it.polimi.gc06.mesos.model.Player;
 import it.polimi.gc06.mesos.model.gameBoard.TileSlot;
+import it.polimi.gc06.mesos.network.client.Client;
 import it.polimi.gc06.mesos.view.View;
-import it.polimi.gc06.mesos.view.gui.controllers.BoardController;
-import it.polimi.gc06.mesos.view.gui.controllers.GameViewController;
-import it.polimi.gc06.mesos.view.gui.controllers.LobbyGuiController;
+import it.polimi.gc06.mesos.view.gui.controllers.*;
 import it.polimi.gc06.mesos.view.gui.visitors.GUIDTOvisitor;
 import it.polimi.gc06.mesos.view.smallModel.PlayerView;
 import it.polimi.gc06.mesos.view.smallModel.SmallModel;
 import it.polimi.gc06.mesos.view.smallModel.TileSlotView;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
@@ -23,14 +26,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
 
-public class GUI extends Application implements View {
+public class GUI extends Application implements View, ModelListener {
 
     public static int WIDTH = 1920;
     public static int HEIGHT = 1080;
 
     public static SmallModel smallModel;
     public static ImageFetcher imageFetcher;
+    public static Client client;
 
+    public static StartController startController;
+    public static LoginController loginController;
     public static GameViewController gameViewController;
     public static BoardController boardController;
     public static LobbyGuiController lobbyGuiController;
@@ -39,9 +45,12 @@ public class GUI extends Application implements View {
 
     private static Stage primaryStage;
 
+    private static GUI gui;
+
     @Override
     public void start(Stage stage) throws IOException {
         primaryStage = stage;
+        gui = this;
 
         gameViewController = new FXMLLoader(
                 getClass().getResource("/it/polimi/gc06/mesos/fxml/mesos.fxml")
@@ -57,7 +66,7 @@ public class GUI extends Application implements View {
 
         mockSmallModel();
 
-        changeScene("/it/polimi/gc06/mesos/fxml/Mesos.fxml");
+        changeScene("/it/polimi/gc06/mesos/fxml/start.fxml");
         primaryStage.show();
     }
 
@@ -69,6 +78,14 @@ public class GUI extends Application implements View {
             primaryStage.setTitle("Mesos");
             javafx.application.Platform.runLater(() -> primaryStage.setMaximized(true));
             primaryStage.setScene(scene);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void subscribeGUI() {
+        try {
+            client.getServerConnection().subscribe(gui);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -142,5 +159,18 @@ public class GUI extends Application implements View {
         }).toList());
 
         imageFetcher = new ImageFetcher(turnOrderTile.size());
+    }
+
+
+    @Override
+    public void update(SmallModelEditor dto) {
+        System.out.println("Updating");
+        // TODO : this is not working because we reload the FXMl every time we change scene, so the controllers are
+        //  not the same as the ones in the visitor, need to find a way to update the controllers in the visitor e
+        //  very time we change scene
+
+        Platform.runLater(() -> {
+            dto.accept(guidtovisitor);
+        });
     }
 }
