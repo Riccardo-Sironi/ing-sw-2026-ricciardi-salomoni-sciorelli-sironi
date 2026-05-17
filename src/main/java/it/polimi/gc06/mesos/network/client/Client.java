@@ -46,4 +46,11 @@ public class Client implements ModelListener {
     public void update(SmallModelEditor dto) {
         dto.edit(smallModel);
     }
+
+    /**
+     * For testing purpose only!
+     */
+    public SmallModel getModel(){
+        return smallModel;
+    }
 }

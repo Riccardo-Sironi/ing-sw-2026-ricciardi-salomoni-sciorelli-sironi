@@ -1,10 +1,11 @@
-package it.polimi.gc06.mesos.network_and_db.network;
+package it.polimi.gc06.mesos.network_and_db.tcp;
 
 import it.polimi.gc06.mesos.controller.commands.ControllerCommand;
 import it.polimi.gc06.mesos.controller.commands.Request;
 import it.polimi.gc06.mesos.dtos.ErrorDTO;
 import it.polimi.gc06.mesos.dtos.GameStartedDTO;
 import it.polimi.gc06.mesos.dtos.SmallModelEditor;
+import it.polimi.gc06.mesos.model.gameTurnManager.PlacingTotemPhase;
 import it.polimi.gc06.mesos.network.server.ServerMain;
 import it.polimi.gc06.mesos.view.smallModel.SmallModel;
 import org.junit.jupiter.api.BeforeEach;
@@ -154,7 +155,6 @@ public class TCPClientManagerTest {
     @Test
     public void testReceiveCorrectDTO() {
         String[] names = {"Alice", "Bob", "Carl"};
-        // Avvia una partita standard a 3 giocatori
         startSimpleMatch(List.of(names));
 
         try {
@@ -172,6 +172,27 @@ public class TCPClientManagerTest {
             SmallModelEditor dto = (SmallModelEditor) activeC.in.readObject();
             dto.edit(activeC.model);
             assertEquals(activeC.model.getOfferTrack().get(pos).getPlayer().getNickname(), active, "Dto didnt modify the model correctly.");
+
+        } catch (ClassNotFoundException | IOException e) {
+            fail("Unexpected exception while reading dto: " + e.getMessage());
+        } catch (NoSuchElementException e){
+            fail("Unexpected error: "+e.getMessage());
+        }
+    }
+
+    @Test
+    public void testFirstDtoSetsPhase(){
+        String[] names = {"Alice", "Bob", "Carl"};
+        // Avvia una partita standard a 3 giocatori
+        startSimpleMatch(List.of(names));
+
+        try {
+            for(String name : names) {
+                SmallModelEditor firstDto = (SmallModelEditor) clients.get(name).in().readObject();
+                assertInstanceOf(GameStartedDTO.class, firstDto, "First dto should be GameStartedDTO");
+                firstDto.edit(clients.get(name).model);
+                assertEquals(clients.get(name).model.getPhase(),(new PlacingTotemPhase()).toString());
+            }
 
         } catch (ClassNotFoundException | IOException e) {
             fail("Unexpected exception while reading dto: " + e.getMessage());

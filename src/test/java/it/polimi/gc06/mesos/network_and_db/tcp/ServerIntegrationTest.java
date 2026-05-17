@@ -1,4 +1,4 @@
-package it.polimi.gc06.mesos.network_and_db.network;
+package it.polimi.gc06.mesos.network_and_db.tcp;
 
 import it.polimi.gc06.mesos.network.server.ServerMain;
 import org.junit.jupiter.api.*;
