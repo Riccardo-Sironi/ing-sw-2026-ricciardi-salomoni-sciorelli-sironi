@@ -6,11 +6,10 @@ import it.polimi.gc06.mesos.view.smallModel.SmallModel;
 
 public class Client implements ModelListener {
 
-    private final SmallModel smallModel;
+    private SmallModel smallModel;
     private ServerConnection serverConnection = null;
 
-    public Client(SmallModel smallModel) {
-        this.smallModel = smallModel;
+    public Client() {
     }
 
     public void connect(String tech, String host, int port) {
@@ -50,7 +49,16 @@ public class Client implements ModelListener {
     /**
      * For testing purpose only!
      */
-    public SmallModel getModel(){
+    public SmallModel getModel() {
         return smallModel;
+    }
+
+    /**
+     * ...
+     *
+     * @param smallModel
+     */
+    public void setSmallModel(SmallModel smallModel) {
+        this.smallModel = smallModel;
     }
 }

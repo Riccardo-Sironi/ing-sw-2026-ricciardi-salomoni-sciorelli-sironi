@@ -60,8 +60,9 @@ public class Match {
      * @throws IOException if there's an error during the creation of the match components
      */
     private synchronized void start() throws IOException {
-        GameModel model = new ModelInstancesManager().createGame(
-                players.stream().map(VirtualClient::getNickname).collect(Collectors.toCollection(ArrayList::new)));
+        ArrayList<String> playerNames = new ArrayList<>(players.stream().map(VirtualClient::getNickname).collect(Collectors.toCollection(ArrayList::new)));
+        GameModel model = new ModelInstancesManager().createGame(playerNames);
+
         model.startGame();
         controller = new GameController(model);
         hasStarted = true;

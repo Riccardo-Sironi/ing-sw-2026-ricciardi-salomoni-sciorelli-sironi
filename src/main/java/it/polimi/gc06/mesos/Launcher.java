@@ -67,10 +67,8 @@ public class Launcher {
         LobbyTui lobbyTui = new LobbyTui();
         ConnectionDetails det = lobbyTui.askConnectionDetails();
 
-        SmallModel smallModel = new SmallModel(det.nickname());
-
         try {
-            Client client = new Client(smallModel);
+            Client client = new Client();
             client.connect(det.tech(), det.ip(), det.port());
 
             String nickname = det.nickname();
@@ -81,6 +79,9 @@ public class Launcher {
                 System.out.print("Insert your nickname: ");
                 nickname = scanner.nextLine().trim();
             }
+
+            SmallModel smallModel = new SmallModel(det.nickname());
+            client.setSmallModel(smallModel);
 
             lobbyTui.start(client, nickname);
 
