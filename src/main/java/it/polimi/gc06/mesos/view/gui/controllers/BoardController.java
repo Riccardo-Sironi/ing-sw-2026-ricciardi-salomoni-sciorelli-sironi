@@ -188,8 +188,6 @@ public class BoardController implements ModelListener {
     @FXML
     public void initialize() {
         setupArchitecturalLayout();
-        updateBottomRowLayout(true);
-
 
         if (smallModel != null) {
             drawEverything();
@@ -374,8 +372,10 @@ public class BoardController implements ModelListener {
         topRowBox.setAlignment(Pos.CENTER);
         topRowBox.setSpacing(20);
         DoubleBinding topWidth = leftZone.widthProperty().multiply(0.80).subtract(40);
-        configureScrollPane(topCharactersScroll, topCharactersContainer, topWidth.multiply(0.75));
-        configureScrollPane(buildingsScroll, buildingsContainer, topWidth.multiply(0.25));
+        configureScrollPane(topCharactersScroll, topCharactersContainer, topWidth.multiply(0.7).subtract(20));
+        configureScrollPane(buildingsScroll, buildingsContainer, topWidth.multiply(0.3).subtract(20));
+
+        updateBottomRowLayout(true);
 
         centerRowBox.setAlignment(Pos.CENTER);
         centerRowBox.setSpacing(30);
@@ -470,20 +470,20 @@ public class BoardController implements ModelListener {
 
     public void updateBottomRowLayout(boolean showBuildings) {
         bottomRowBox.setAlignment(Pos.CENTER);
-        bottomRowBox.setSpacing(showBuildings ? 40 : 0);
+        bottomRowBox.setSpacing(showBuildings ? 20 : 0);
 
-        DoubleBinding bottomWidth = leftZone.widthProperty().multiply(0.60);
-        if (showBuildings) bottomWidth = bottomWidth.subtract(40);
+        DoubleBinding bottomWidth = leftZone.widthProperty().multiply(0.80);
+        if (showBuildings) bottomWidth = bottomWidth.subtract(20);
 
         if (showBuildings) {
-            configureScrollPane(bottomCharactersScroll, bottomCharactersContainer, bottomWidth.multiply(0.75));
+            configureScrollPane(bottomCharactersScroll, bottomCharactersContainer, bottomWidth.multiply(0.7));
             if (bottomBuildingsScroll != null) {
                 bottomBuildingsScroll.setVisible(true);
                 bottomBuildingsScroll.setManaged(true);
-                configureScrollPane(bottomBuildingsScroll, bottomBuildingsContainer, bottomWidth.multiply(0.25));
+                configureScrollPane(bottomBuildingsScroll, bottomBuildingsContainer, bottomWidth.multiply(0.3));
             }
         } else {
-            configureScrollPane(bottomCharactersScroll, bottomCharactersContainer, bottomWidth);
+            configureScrollPane(bottomCharactersScroll, bottomCharactersContainer, bottomWidth.multiply(0.7));
             if (bottomBuildingsScroll != null) {
                 bottomBuildingsScroll.setVisible(false);
                 bottomBuildingsScroll.setManaged(false);
@@ -788,6 +788,11 @@ public class BoardController implements ModelListener {
     }
 
     private void drawBottomBuildingCards() {
+        if (smallModel.getBottomBuildings().isEmpty()) {
+            updateBottomRowLayout(false);
+        } else {
+            updateBottomRowLayout(true);
+        }
         if (bottomBuildingsContainer == null) return;
         bottomBuildingsContainer.getChildren().clear();
         if (smallModel == null) return;
