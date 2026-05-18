@@ -3,7 +3,7 @@ package it.polimi.gc06.mesos.dtos;
 import it.polimi.gc06.mesos.model.cards.Card;
 import it.polimi.gc06.mesos.view.smallModel.SmallModel;
 
-public class PickBottomBuildingsDTO implements SmallModelEditor{
+public class PickBottomBuildingsDTO implements SmallModelEditor {
 
     private final String player;
     private final int cardIndex;
@@ -15,11 +15,10 @@ public class PickBottomBuildingsDTO implements SmallModelEditor{
 
     @Override
     public void edit(SmallModel smallModel) {
-        Card card = smallModel.getBottomBuildings().get(cardIndex);
-        if(smallModel.getPlayer().getNickname().equals(player)) {
+        Card card = smallModel.getBottomBuildings().remove(cardIndex);
+        if (smallModel.getPlayer().getNickname().equals(player)) {
             smallModel.getPlayer().getCharacters().add(card);
-        }
-        else{
+        } else {
             smallModel.getOpponents().stream().filter(v -> v.getNickname().equals(player)).findFirst()
                     .orElseThrow(IllegalStateException::new).getCharacters().add(card);
         }
