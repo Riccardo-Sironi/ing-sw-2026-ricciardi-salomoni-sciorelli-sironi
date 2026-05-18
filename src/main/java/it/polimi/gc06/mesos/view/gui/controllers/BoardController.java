@@ -959,11 +959,11 @@ public class BoardController implements ModelListener {
         }
     }
 
-    private void applyEffectToContainerCardViews(HBox container) {
+    private void applyEffectToContainerCardViews(HBox container, int drawNum) {
         if (container == null) return;
         for (Node node : container.getChildren()) {
             if (node instanceof CardView cardView) {
-                CardEffectVisitor visitor = new CardEffectVisitor(cardView, smallModel.getTopDrawNum());
+                CardEffectVisitor visitor = new CardEffectVisitor(cardView, drawNum);
                 cardView.getCard().accept(visitor);
             }
         }
@@ -1200,25 +1200,25 @@ public class BoardController implements ModelListener {
 
     public void handleTopRowPick() {
         drawTopRowCards();
-        applyEffectToContainerCardViews(buildingsContainer);
+        applyEffectToContainerCardViews(buildingsContainer, smallModel.getTopDrawNum());
         drawSkipButton();
     }
 
     public void handleBottomRowPick() {
         drawBottomRowCards();
-        applyEffectToContainerCardViews(bottomBuildingsContainer);
+        applyEffectToContainerCardViews(bottomBuildingsContainer, smallModel.getBottomDrawNum());
         drawSkipButton();
     }
 
     public void handleTopBuildingsPick() {
         drawTopBuildingsCards();
-        applyEffectToContainerCardViews(topCharactersContainer);
+        applyEffectToContainerCardViews(topCharactersContainer, smallModel.getTopDrawNum());
         drawSkipButton();
     }
 
     public void handleBottomBuildingsPick() {
         drawBottomBuildingCards();
-        applyEffectToContainerCardViews(bottomCharactersContainer);
+        applyEffectToContainerCardViews(bottomCharactersContainer, smallModel.getBottomDrawNum());
         drawSkipButton();
     }
 
@@ -1232,10 +1232,7 @@ public class BoardController implements ModelListener {
     }
 
     public void handleActivePlayerChanged() {
-        applyEffectToContainerCardViews(topCharactersContainer);
-        applyEffectToContainerCardViews(buildingsContainer);
-        applyEffectToContainerCardViews(bottomCharactersContainer);
-        applyEffectToContainerCardViews(bottomBuildingsContainer);
+        updateAllBoardEffects();
         drawSkipButton();
     }
 
@@ -1247,13 +1244,22 @@ public class BoardController implements ModelListener {
     public void handlePlayerResourcesChange() {
         drawPlayerInventory();
         drawOpponentsSidebar();
+        updateAllBoardEffects();
     }
 
     public void handlePhaseChanged() {
         drawPhaseText();
+        updateAllBoardEffects();
     }
 
     public void handleEraChanged() {
         drawEraText();
+    }
+
+    public void updateAllBoardEffects() {
+        applyEffectToContainerCardViews(topCharactersContainer, smallModel.getTopDrawNum());
+        applyEffectToContainerCardViews(buildingsContainer, smallModel.getTopDrawNum());
+        applyEffectToContainerCardViews(bottomCharactersContainer, smallModel.getBottomDrawNum());
+        applyEffectToContainerCardViews(bottomBuildingsContainer, smallModel.getBottomDrawNum());
     }
 }
