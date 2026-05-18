@@ -38,7 +38,6 @@ public class CardEffectVisitor extends CardVisitor {
             EffectsManager.disableCard(cardView);
         } else {
             EffectsManager.normalCard(cardView);
-
         }
     }
 

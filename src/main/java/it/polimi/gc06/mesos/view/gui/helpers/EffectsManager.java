@@ -140,6 +140,7 @@ public class EffectsManager {
         dropShadow.setColor(Color.color(0, 0, 0, 0.5));
         card.setEffect(dropShadow);
         card.setCursor(Cursor.DEFAULT);
+        card.setMouseTransparent(true);
         card.setCanBePicked(false);
     }
 
