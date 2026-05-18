@@ -75,6 +75,7 @@ public class EffectsManager {
         colorAdjust.setContrast(0);
         card.setEffect(colorAdjust);
         card.setStyle("-fx-cursor: default; -fx-focus-traversable: false");
+
         card.setMouseTransparent(true);
         card.setCanBePicked(false);
     }
@@ -91,8 +92,6 @@ public class EffectsManager {
         dropShadow.setSpread(0.65);
         card.setEffect(dropShadow);
         card.setCursor(Cursor.HAND);
-        card.setMouseTransparent(false);
-        card.setCanBePicked(true);
 
         Timeline in = new Timeline(
                 new KeyFrame(Duration.millis(200),
@@ -130,6 +129,9 @@ public class EffectsManager {
             scaleIn.stop();
             scaleOut.play();
         });
+
+        card.setMouseTransparent(false);
+        card.setCanBePicked(true);
     }
 
     public static void normalCard(CardView card) {
@@ -140,6 +142,7 @@ public class EffectsManager {
         dropShadow.setColor(Color.color(0, 0, 0, 0.5));
         card.setEffect(dropShadow);
         card.setCursor(Cursor.DEFAULT);
+        
         card.setMouseTransparent(true);
         card.setCanBePicked(false);
     }

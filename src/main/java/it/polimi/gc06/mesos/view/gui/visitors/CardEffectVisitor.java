@@ -30,6 +30,7 @@ public class CardEffectVisitor extends CardVisitor {
     @Override
     public void visit(BuildingCard card) {
         applyActiveEffect();
+        checkIfCanBePicked();
     }
 
     @Override
@@ -53,6 +54,14 @@ public class CardEffectVisitor extends CardVisitor {
         if (isActive && nPick > 0) {
             EffectsManager.activeCard(cardView);
         } else {
+            EffectsManager.disableCard(cardView);
+        }
+    }
+
+    private void checkIfCanBePicked() {
+        BuildingCard building = (BuildingCard) cardView.getCard();
+        int nFood = smallModel.getPlayer().getNumFood();
+        if (building.getFoodCost() > nFood + 3 * smallModel.getPlayer().getNumGatherer()) {
             EffectsManager.disableCard(cardView);
         }
     }
