@@ -285,7 +285,8 @@ public class BoardController implements ModelListener {
     public void drawEverything() {
         drawEraText();
         drawRoundText();
-        drawPhaseTest();
+        drawPhaseText();
+        drawEraText();
         drawDeck();
         drawTopRowCards();
         drawTopBuildingsCards();
@@ -295,7 +296,7 @@ public class BoardController implements ModelListener {
         drawOfferTrack();
         drawSkipButton();
         drawPlayerInventory();
-        initOpponentsSideBar(); //
+        initOpponentsSideBar();
         drawOpponentsSidebar();
     }
 
@@ -383,11 +384,9 @@ public class BoardController implements ModelListener {
         setupDeckPopup();
 
         turnOrderContainer.setAlignment(Pos.CENTER_RIGHT);
-        //initTurnOrderTile();
 
         offerTrackContainer.setAlignment(Pos.CENTER);
         offerTrackContainer.setSpacing(-2);
-        //initOfferTrack();
 
         skipButtonContainer.prefWidthProperty().bind(leftZone.widthProperty().multiply(0.15));
         skipButtonContainer.setAlignment(Pos.CENTER);
@@ -933,6 +932,11 @@ public class BoardController implements ModelListener {
 
             transition.play();
 
+            transition.setOnFinished(e -> {
+                // TODO : differentiate between the containers to know which request to send
+//                client.getServerConnection().
+            });
+
             // TODO : the card should be redrawn in the inventory so no need to remove the effects but we keep it for now
             card.setOnMouseClicked(null);
         });
@@ -940,21 +944,16 @@ public class BoardController implements ModelListener {
 
     public void applySetTotemAnimation(OfferTileView tile) {
         TotemPieceView totemPiece = turnOrderTile.getTotemPieces().stream()
-                .filter(tp -> tp.getPlayer().getNickname().equals(smallModel.getPlayer().getNickname()))
+                .filter(tp -> tp.getPlayer() != null && tp.getPlayer().getNickname().equals(smallModel.getPlayer().getNickname()))
                 .findFirst()
                 .orElse(null);
 
         if (totemPiece != null) {
             tile.setOnMouseClicked(e -> {
-                TotemPieceView newTotemForOffer = new TotemPieceView(totemPiece.getPlayer());
-                tile.setTotem(newTotemForOffer);
-
-                int index = turnOrderTile.getTotemPieces().indexOf(totemPiece);
-                if (index != -1) {
-                    ArrayList<TotemPieceView> totemPieces = turnOrderTile.getTotemPieces();
-                    totemPieces.set(index, new TotemPieceView());
-
-                    turnOrderTile.setTotemPieces(totemPieces);
+                try {
+                    client.getServerConnection().placeTotem(smallModel.getPlayer().getNickname(), offerTrackTiles.indexOf(tile));
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
                 }
             });
         }
@@ -1132,7 +1131,7 @@ public class BoardController implements ModelListener {
         eraText.setText(smallModel.getEra().toString());
     }
 
-    private void drawPhaseTest() {
+    private void drawPhaseText() {
         phaseText.setText(
                 switch (smallModel.getPhase()) {
                     case "placing_totem" -> "Placing Totem Phase";
@@ -1229,11 +1228,7 @@ public class BoardController implements ModelListener {
     }
 
     public void handleRoundChanged() {
-        drawDeck();
-        drawTopRowCards();
-        drawTopBuildingsCards();
-        drawBottomRowCards();
-        drawBottomBuildingCards();
+        drawRoundText();
     }
 
     public void handleActivePlayerChanged() {
@@ -1252,5 +1247,13 @@ public class BoardController implements ModelListener {
     public void handlePlayerResourcesChange() {
         drawPlayerInventory();
         drawOpponentsSidebar();
+    }
+
+    public void handlePhaseChanged() {
+        drawPhaseText();
+    }
+
+    public void handleEraChanged() {
+        drawEraText();
     }
 }

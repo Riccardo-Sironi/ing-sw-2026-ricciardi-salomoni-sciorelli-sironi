@@ -34,9 +34,12 @@ public class GUIDTOvisitor extends DTOvisitor {
 
     @Override
     public void visit(GameStateChangeDTO dto) {
+        System.out.println("Game state change!");
         Platform.runLater(() -> {
             // TODO : we have to differentiate this changes somehow
             boardController.handleRoundChanged();
+            boardController.handlePhaseChanged();
+            boardController.handleEraChanged();
             gameViewController.handlePhaseChanged();
             gameViewController.showEraOverlay();
         });
@@ -44,6 +47,7 @@ public class GUIDTOvisitor extends DTOvisitor {
 
     @Override
     public void visit(BuildingsRefillDTO dto) {
+        System.out.println("Building refill!");
         Platform.runLater(() -> {
             boardController.handleTopBuildingsRefill();
         });
@@ -51,6 +55,7 @@ public class GUIDTOvisitor extends DTOvisitor {
 
     @Override
     public void visit(GameStartedDTO dto) {
+        System.out.println("Game started!");
         Platform.runLater(() -> {
             boardController.handleGameStarted();
             // TODO : after drawing the board, show the era and phase overlays with a timer or something like that
@@ -61,6 +66,7 @@ public class GUIDTOvisitor extends DTOvisitor {
 
     @Override
     public void visit(PickBottomRowDTO dto) {
+        System.out.println("Pick bottom row!");
         Platform.runLater(() -> {
             boardController.handleBottomRowPick();
         });
@@ -68,6 +74,7 @@ public class GUIDTOvisitor extends DTOvisitor {
 
     @Override
     public void visit(PickBottomBuildingsDTO dto) {
+        System.out.println("Pick bottom buildings!");
         Platform.runLater(() -> {
             boardController.handleBottomBuildingsPick();
         });
@@ -75,6 +82,7 @@ public class GUIDTOvisitor extends DTOvisitor {
 
     @Override
     public void visit(PickTopRowDTO dto) {
+        System.out.println("Pick top row!");
         Platform.runLater(() -> {
             boardController.handleTopRowPick();
         });
@@ -82,6 +90,7 @@ public class GUIDTOvisitor extends DTOvisitor {
 
     @Override
     public void visit(PickTopBuildingsDTO dto) {
+        System.out.println("Pick top buildings!");
         Platform.runLater(() -> {
             boardController.handleTopBuildingsPick();
         });
@@ -89,6 +98,7 @@ public class GUIDTOvisitor extends DTOvisitor {
 
     @Override
     public void visit(PlayerResourcesChangeDTO dto) {
+        System.out.println("Player resources change!");
         Platform.runLater(() -> {
             boardController.handlePlayerResourcesChange();
         });
@@ -96,6 +106,7 @@ public class GUIDTOvisitor extends DTOvisitor {
 
     @Override
     public void visit(PlayerStateChangeDTO dto) {
+        System.out.println("Player state change!");
         Platform.runLater(() -> {
             boardController.handleActivePlayerChanged();
         });
@@ -103,6 +114,7 @@ public class GUIDTOvisitor extends DTOvisitor {
 
     @Override
     public void visit(TopRowRefillDTO dto) {
+        System.out.println("Top row refill!");
         Platform.runLater(() -> {
             boardController.handleTopRowRefill();
         });
@@ -110,6 +122,7 @@ public class GUIDTOvisitor extends DTOvisitor {
 
     @Override
     public void visit(TotemMovedDTO dto) {
+        System.out.println("Totem moved!");
         Platform.runLater(() -> {
             boardController.handleTotemMoved();
         });

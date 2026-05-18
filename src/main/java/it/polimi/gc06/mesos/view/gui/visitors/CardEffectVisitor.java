@@ -34,10 +34,11 @@ public class CardEffectVisitor extends CardVisitor {
 
     @Override
     public void visit(EventCard card) {
-        if (smallModel.isActive() && PHASE_OFFER_RESOLUTION.equals(smallModel.getPhase())) {
+        if (PHASE_OFFER_RESOLUTION.equals(smallModel.getPhase())) {
             EffectsManager.disableCard(cardView);
         } else {
             EffectsManager.normalCard(cardView);
+
         }
     }
 
