@@ -65,8 +65,8 @@ public class LoginController {
 
     @FXML
     public void initialize() {
-        loadImage(backgroundImageView, "/login_background.png");
-        loadImage(particlesImageView, "/fire_particles.gif");
+        loadImage(backgroundImageView, "/imgs/background/login_background.png");
+        loadImage(particlesImageView, "/imgs/effect/fire_particles.gif");
         loadFonts();
 
         setupDynamicLayout();

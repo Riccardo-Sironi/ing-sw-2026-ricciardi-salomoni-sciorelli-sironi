@@ -334,17 +334,17 @@ public class BoardController implements ModelListener {
         tokensBox.setAlignment(Pos.CENTER);
         tokensBox.setSpacing(5);
 
-        configureTokensContainer(prestigeTokensBox, prestigeTokensImage, loadImage("prestige_token.png"), prestigeTokensText);
-        configureTokensContainer(foodTokensBox, foodTokensImage, loadImage("food_token.png"), foodTokensText);
+        configureTokensContainer(prestigeTokensBox, prestigeTokensImage, loadImage("imgs/tokens/prestige_token.png"), prestigeTokensText);
+        configureTokensContainer(foodTokensBox, foodTokensImage, loadImage("imgs/tokens/food_token.png"), foodTokensText);
 
         playerStatsBox.setAlignment(Pos.CENTER);
         playerStatsBox.setSpacing(5);
 
-        configureStatContainer(shamanStarsBox, shamanStarsImage, loadImage("shaman_stars_token.png"), shamanStarsText);
-        configureStatContainer(gathererQuantityBox, gathererQuantityImage, loadImage("gatherers_token.png"), gathererQuantityText);
-        configureStatContainer(hunterQuantityBox, hunterQuantityImage, loadImage("hunters_token.png"), hunterQuantityText);
-        configureStatContainer(artistQuantityBox, artistQuantityImage, loadImage("artists_token.png"), artistQuantityText);
-        configureStatContainer(buildersDiscountBox, buildersDiscountImage, loadImage("builder_discount_token.png"), buildersDiscountText);
+        configureStatContainer(shamanStarsBox, shamanStarsImage, loadImage("imgs/tokens/shaman_stars_token.png"), shamanStarsText);
+        configureStatContainer(gathererQuantityBox, gathererQuantityImage, loadImage("imgs/tokens/gatherers_token.png"), gathererQuantityText);
+        configureStatContainer(hunterQuantityBox, hunterQuantityImage, loadImage("imgs/tokens/hunters_token.png"), hunterQuantityText);
+        configureStatContainer(artistQuantityBox, artistQuantityImage, loadImage("imgs/tokens/artists_token.png"), artistQuantityText);
+        configureStatContainer(buildersDiscountBox, buildersDiscountImage, loadImage("imgs/tokens/builder_discount_token.png"), buildersDiscountText);
 
         topBar.prefHeightProperty().bind(boardRoot.heightProperty().multiply(0.1));
         topRowBox.prefHeightProperty().bind(boardRoot.heightProperty().multiply(0.30));
@@ -576,11 +576,11 @@ public class BoardController implements ModelListener {
                 opponentsSidebar.widthProperty()
         ));
 
-        VBox shamanStarsStat = createResponsiveStat("shaman_stars_token.png", 6.5, container::setShamanStarsText);
-        VBox gatherersStat = createResponsiveStat("gatherers_token.png", 6.5, container::setGatherersText);
-        VBox huntersStat = createResponsiveStat("hunters_token.png", 6.5, container::setHuntersText);
-        VBox artistsStat = createResponsiveStat("artists_token.png", 6.5, container::setArtistsText);
-        VBox builderDiscount = createResponsiveStat("builder_discount_token.png", 6.5, container::setBuildersDiscountText);
+        VBox shamanStarsStat = createResponsiveStat("imgs/tokens/shaman_stars_token.png", 6.5, container::setShamanStarsText);
+        VBox gatherersStat = createResponsiveStat("imgs/tokens/gatherers_token.png", 6.5, container::setGatherersText);
+        VBox huntersStat = createResponsiveStat("imgs/tokens/hunters_token.png", 6.5, container::setHuntersText);
+        VBox artistsStat = createResponsiveStat("imgs/tokens/artists_token.png", 6.5, container::setArtistsText);
+        VBox builderDiscount = createResponsiveStat("imgs/tokens/builder_discount_token.png", 6.5, container::setBuildersDiscountText);
 
         container.getShamanStarsText().setFill(Color.WHITE);
         container.getGatherersText().setFill(Color.WHITE);

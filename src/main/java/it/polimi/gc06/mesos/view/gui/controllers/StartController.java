@@ -64,9 +64,9 @@ public class StartController {
     @FXML
     public void initialize() {
 
-        loadImage(backgroundImageView, "/mesos.png", "background");
-        loadImage(flamesImageView, "/flames.gif", "flames");
-        loadImage(particlesImageView, "/fire_particles.gif", "particles");
+        loadImage(backgroundImageView, "/imgs/background/mesos.png", "background");
+        loadImage(flamesImageView, "/imgs/effect/flames.gif", "flames");
+        loadImage(particlesImageView, "/imgs/effect/fire_particles.gif", "particles");
         loadFonts();
 
         setupDynamicLayout();

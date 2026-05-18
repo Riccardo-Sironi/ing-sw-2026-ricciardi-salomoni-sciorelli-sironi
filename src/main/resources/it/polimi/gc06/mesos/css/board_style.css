@@ -1,7 +1,7 @@
 #root {
     -fx-background-color: #ffffff;
     -fx-padding: 0px;
-    -fx-background-image: url('/board_background_era_I.png');
+    -fx-background-image: url('/imgs/background/board_background_era_I.png');
     -fx-background-size: cover;
     -fx-background-position: center;
     -fx-background-repeat: no-repeat;
@@ -25,7 +25,7 @@
     -fx-background-color: transparent;
     -fx-background-insets: 0;
     -fx-padding: 20 35;
-    -fx-background-image: url('/skip_button_overlay.png');
+    -fx-background-image: url('/imgs/overlay/skip_button_overlay.png');
     -fx-background-size: cover;
     -fx-background-position: center;
     -fx-background-repeat: no-repeat;
