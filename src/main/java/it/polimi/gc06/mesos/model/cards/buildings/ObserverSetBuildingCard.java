@@ -9,9 +9,11 @@ public class ObserverSetBuildingCard extends BuildingCard implements DrawObserve
 
     @Override
     public void update(Player player) {
-        if (player.hasCompletedSet()) {
-            player.addFoodTokens(5);
-            player.decreaseCharactersSets();
+        if (player.getBuildingCards().contains(this)) {
+            if (player.hasCompletedSet()) {
+                player.addFoodTokens(5);
+                player.decreaseCharactersSets();
+            }
         }
     }
 
@@ -22,7 +24,9 @@ public class ObserverSetBuildingCard extends BuildingCard implements DrawObserve
      * @param visitor the visitor that will visit the card.
      */
     @Override
-    public void accept(CardVisitor visitor) {visitor.visit(this);}
+    public void accept(CardVisitor visitor) {
+        visitor.visit(this);
+    }
 
 
     /**
@@ -34,7 +38,7 @@ public class ObserverSetBuildingCard extends BuildingCard implements DrawObserve
      * @return true if the given object is exactly of the same class, false otherwise.
      */
     @Override
-    public boolean equals(Object o){
+    public boolean equals(Object o) {
         if (o == null) return false;
         return getClass() == o.getClass();
     }
