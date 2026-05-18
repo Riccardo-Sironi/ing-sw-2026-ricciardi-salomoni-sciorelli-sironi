@@ -80,13 +80,15 @@ public class ChangesHandler {
         //check if the round has changed
         if (lastRound != turnManager.getRound()) {
             changes.add(new GameStateChangeDTO(turnManager.getRound()));
+            changes.add(new TopRowRefillDTO(new ArrayList<>(board.getTopRow()), new ArrayList<>(board.getBottomRow())));
+            changes.add(new BuildingsRefillDTO(new ArrayList<>(board.getTopBuildings()), new ArrayList<>(board.getBottomBuildings())));
         }
 
         //checks last era
         if (lastEra == null || !lastEra.equals(board.getCurrentEra())) {
             changes.add(new GameStateChangeDTO(board.getCurrentEra()));
-            changes.add(new TopRowRefillDTO(new ArrayList<>(board.getTopRow())));
-            changes.add(new BuildingsRefillDTO(new ArrayList<>(board.getTopBuildings())));
+            changes.add(new TopRowRefillDTO(new ArrayList<>(board.getTopRow()), new ArrayList<>(board.getBottomRow())));
+            changes.add(new BuildingsRefillDTO(new ArrayList<>(board.getTopBuildings()), new ArrayList<>(board.getBottomBuildings())));
         }
 
         //check last phase
