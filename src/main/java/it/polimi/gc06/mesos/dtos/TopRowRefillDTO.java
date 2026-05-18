@@ -17,6 +17,8 @@ public class TopRowRefillDTO implements SmallModelEditor, Serializable {
 
     @Override
     public void edit(SmallModel smallModel) {
+        // TODO : this is almost neve called (FIX)
+        smallModel.getTopRow().clear();
         smallModel.getTopRow().addAll(cards);
     }
 

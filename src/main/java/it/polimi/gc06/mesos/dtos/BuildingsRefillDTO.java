@@ -17,6 +17,8 @@ public class BuildingsRefillDTO implements SmallModelEditor, Serializable {
 
     @Override
     public void edit(SmallModel smallModel) {
+        // TODO : this is almost neve called (FIX)
+        smallModel.getTopBuildings().clear();
         smallModel.getTopBuildings().addAll(cards);
     }
 
