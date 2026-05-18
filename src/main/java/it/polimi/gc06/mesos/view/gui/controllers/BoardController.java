@@ -525,6 +525,9 @@ public class BoardController implements ModelListener {
                 opp.getCardsContainer().getChildren().add(cardView);
             }
 
+            opp.getPrestigeTokensText().setText(String.valueOf(opponent.getNumPrestige()));
+            opp.getFoodTokensText().setText(String.valueOf(opponent.getNumFood()));
+
             opp.getShamanStarsText().setText(String.valueOf(opponent.getNumShamanStar()));
             opp.getGatherersText().setText(String.valueOf(opponent.getNumGatherer()));
             opp.getHuntersText().setText(String.valueOf(opponent.getNumHunter()));
@@ -573,11 +576,18 @@ public class BoardController implements ModelListener {
                 opponentsSidebar.widthProperty()
         ));
 
+        VBox prestigeStat = createResponsiveStat("imgs/tokens/prestige_token.png", 6.5, container::setPrestigeTokensText);
+        VBox foodStat = createResponsiveStat("imgs/tokens/food_token.png", 6.5, container::setFoodTokensText);
+
         VBox shamanStarsStat = createResponsiveStat("imgs/tokens/shaman_stars_token.png", 6.5, container::setShamanStarsText);
         VBox gatherersStat = createResponsiveStat("imgs/tokens/gatherers_token.png", 6.5, container::setGatherersText);
         VBox huntersStat = createResponsiveStat("imgs/tokens/hunters_token.png", 6.5, container::setHuntersText);
         VBox artistsStat = createResponsiveStat("imgs/tokens/artists_token.png", 6.5, container::setArtistsText);
         VBox builderDiscount = createResponsiveStat("imgs/tokens/builder_discount_token.png", 6.5, container::setBuildersDiscountText);
+
+        container.getPrestigeTokensText().setFill(Color.WHITE);
+        container.getFoodTokensText().setFill(Color.WHITE);
+        container.getTokensBox().setSpacing(20);
 
         container.getShamanStarsText().setFill(Color.WHITE);
         container.getGatherersText().setFill(Color.WHITE);
@@ -585,6 +595,7 @@ public class BoardController implements ModelListener {
         container.getArtistsText().setFill(Color.WHITE);
         container.getBuildersDiscountText().setFill(Color.WHITE);
 
+        container.getTokensBox().getChildren().addAll(prestigeStat, foodStat);
         container.getStatsBox().getChildren().addAll(shamanStarsStat, gatherersStat, huntersStat, artistsStat, builderDiscount);
 
         configureScrollPane(container.getCardsScroll(), container.getCardsContainer(), container.widthProperty().multiply(0.8));

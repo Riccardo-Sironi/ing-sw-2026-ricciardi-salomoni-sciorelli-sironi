@@ -28,6 +28,10 @@ public class OpponentBox extends VBox {
     private Text artistsText;
     private Text buildersDiscountText;
 
+    // --- NUOVI CAMPI PER CIBO E PRESTIGIO ---
+    private Text prestigeTokensText;
+    private Text foodTokensText;
+
     public OpponentBox(String nickname, String rgbColor, PlayerView player) {
         super();
         this.setAlignment(Pos.CENTER);
@@ -89,6 +93,7 @@ public class OpponentBox extends VBox {
         Region spacer4 = new Region();
         VBox.setVgrow(spacer4, Priority.ALWAYS);
 
+        // Notare che tokensBox è già messo SOPRA allo statsBox in questa riga
         this.detailsContainer.getChildren().addAll(spacer1, this.tokensBox, spacer2, this.statsBox, spacer3, this.cardsScroll, spacer4);
 
         this.detailsContainer.setManaged(false);
@@ -100,91 +105,33 @@ public class OpponentBox extends VBox {
         this.getChildren().addAll(this.nicknameText, this.detailsContainer);
     }
 
-    public Text getNicknameText() {
-        return nicknameText;
-    }
+    public Text getNicknameText() { return nicknameText; }
+    public VBox getDetailsContainer() { return detailsContainer; }
+    public HBox getTokensBox() { return tokensBox; }
+    public HBox getStatsBox() { return statsBox; }
+    public ScrollPane getCardsScroll() { return cardsScroll; }
+    public HBox getCardsContainer() { return cardsContainer; }
+    public Text getShamanStarsText() { return shamanStarsText; }
+    public Text getGatherersText() { return gatherersText; }
+    public Text getHuntersText() { return huntersText; }
+    public Text getArtistsText() { return artistsText; }
+    public Text getBuildersDiscountText() { return buildersDiscountText; }
 
-    public VBox getDetailsContainer() {
-        return detailsContainer;
-    }
+    public Text getPrestigeTokensText() { return prestigeTokensText; }
+    public Text getFoodTokensText() { return foodTokensText; }
 
-    public HBox getTokensBox() {
-        return tokensBox;
-    }
+    public void setNicknameText(Text nicknameText) { this.nicknameText = nicknameText; }
+    public void setDetailsContainer(VBox detailsContainer) { this.detailsContainer = detailsContainer; }
+    public void setTokensBox(HBox tokensBox) { this.tokensBox = tokensBox; }
+    public void setStatsBox(HBox statsBox) { this.statsBox = statsBox; }
+    public void setCardsScroll(ScrollPane cardsScroll) { this.cardsScroll = cardsScroll; }
+    public void setCardsContainer(HBox cardsContainer) { this.cardsContainer = cardsContainer; }
+    public void setShamanStarsText(Text shamanStarsText) { this.shamanStarsText = shamanStarsText; }
+    public void setGatherersText(Text gatherersText) { this.gatherersText = gatherersText; }
+    public void setHuntersText(Text huntersText) { this.huntersText = huntersText; }
+    public void setArtistsText(Text artistsText) { this.artistsText = artistsText; }
+    public void setBuildersDiscountText(Text buildersDiscountText) { this.buildersDiscountText = buildersDiscountText; }
 
-    public HBox getStatsBox() {
-        return statsBox;
-    }
-
-    public ScrollPane getCardsScroll() {
-        return cardsScroll;
-    }
-
-    public HBox getCardsContainer() {
-        return cardsContainer;
-    }
-
-    public Text getShamanStarsText() {
-        return shamanStarsText;
-    }
-
-    public Text getGatherersText() {
-        return gatherersText;
-    }
-
-    public Text getHuntersText() {
-        return huntersText;
-    }
-
-    public Text getArtistsText() {
-        return artistsText;
-    }
-
-    public Text getBuildersDiscountText() {
-        return buildersDiscountText;
-    }
-
-    public void setNicknameText(Text nicknameText) {
-        this.nicknameText = nicknameText;
-    }
-
-    public void setDetailsContainer(VBox detailsContainer) {
-        this.detailsContainer = detailsContainer;
-    }
-
-    public void setTokensBox(HBox tokensBox) {
-        this.tokensBox = tokensBox;
-    }
-
-    public void setStatsBox(HBox statsBox) {
-        this.statsBox = statsBox;
-    }
-
-    public void setCardsScroll(ScrollPane cardsScroll) {
-        this.cardsScroll = cardsScroll;
-    }
-
-    public void setCardsContainer(HBox cardsContainer) {
-        this.cardsContainer = cardsContainer;
-    }
-
-    public void setShamanStarsText(Text shamanStarsText) {
-        this.shamanStarsText = shamanStarsText;
-    }
-
-    public void setGatherersText(Text gatherersText) {
-        this.gatherersText = gatherersText;
-    }
-
-    public void setHuntersText(Text huntersText) {
-        this.huntersText = huntersText;
-    }
-
-    public void setArtistsText(Text artistsText) {
-        this.artistsText = artistsText;
-    }
-
-    public void setBuildersDiscountText(Text buildersDiscountText) {
-        this.buildersDiscountText = buildersDiscountText;
-    }
+    public void setPrestigeTokensText(Text prestigeTokensText) { this.prestigeTokensText = prestigeTokensText; }
+    public void setFoodTokensText(Text foodTokensText) { this.foodTokensText = foodTokensText; }
 }
