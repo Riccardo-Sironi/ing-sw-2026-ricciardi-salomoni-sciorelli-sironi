@@ -119,13 +119,29 @@ public class GameViewController implements ModelListener {
     }
 
     public void showPhaseOverlay() {
-        String path = smallModel.getPhase().toLowerCase() + "_phase_overlay.png";
-        playOverlay(new Image(path));
+        if (smallModel.getPhase() == null) return;
+
+        String path = "/imgs/overlay/" + smallModel.getPhase().toLowerCase() + "_phase_overlay.png";
+
+        java.io.InputStream imageStream = getClass().getResourceAsStream(path);
+        if (imageStream != null) {
+            playOverlay(new Image(imageStream));
+        } else {
+            System.err.println("ERROR: Phase overlay image not found at path: " + path);
+        }
     }
 
     public void showEraOverlay() {
-        String path = smallModel.getEra().toString().toLowerCase() + "_overlay.png";
-        playOverlay(new Image(path));
+        if (smallModel.getEra() == null) return;
+        
+        String path = "/imgs/overlay/" + smallModel.getEra().name().toLowerCase() + "_overlay.png";
+
+        java.io.InputStream imageStream = getClass().getResourceAsStream(path);
+        if (imageStream != null) {
+            playOverlay(new Image(imageStream));
+        } else {
+            System.err.println("ERROR: Era overlay image not found at path: " + path);
+        }
     }
 
     @Override

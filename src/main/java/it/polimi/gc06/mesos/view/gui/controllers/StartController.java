@@ -1,5 +1,6 @@
 package it.polimi.gc06.mesos.view.gui.controllers;
 
+import it.polimi.gc06.mesos.view.gui.GUI;
 import javafx.animation.Animation;
 import javafx.animation.FadeTransition;
 import javafx.animation.ParallelTransition;
@@ -177,13 +178,13 @@ public class StartController {
         System.out.println("Start game");
 
         // TIMERS (milliseconds)
-        double timeFadeParticles  = 500;
-        double timeFadeTexts      = 1500;
-        double timeShrinkFlames   = 3000;
-        double timeFadeFlames     = 1500;
+        double timeFadeParticles = 500;
+        double timeFadeTexts = 1500;
+        double timeShrinkFlames = 3000;
+        double timeFadeFlames = 1500;
         double timeFadeBackground = 2000;
-        double timeWaitInTheDark  = 200;
-        double timeFadeInLogin    = 500;
+        double timeWaitInTheDark = 200;
+        double timeFadeInLogin = 500;
 
         try {
             URL loginUrl = getClass().getResource("/it/polimi/gc06/mesos/fxml/Login.fxml");
@@ -245,8 +246,7 @@ public class StartController {
             }
 
             shutdown.setOnFinished(e -> {
-                Stage stage = (Stage) rootPane.getScene().getWindow();
-                stage.getScene().setRoot(loginRoot);
+                GUI.primaryStage.setScene(new Scene(loginRoot, GUI.WIDTH, GUI.HEIGHT));
                 loginRoot.setOpacity(0.0);
 
                 PauseTransition pauseTransition = new PauseTransition(Duration.millis(timeWaitInTheDark));

@@ -146,10 +146,6 @@ public class GUI extends Application implements View, ModelListener {
     @Override
     public void update(SmallModelEditor dto) {
         System.out.println("Updating");
-        // TODO : this is not working because we reload the FXMl every time we change scene, so the controllers are
-        //  not the same as the ones in the visitor, need to find a way to update the controllers in the visitor e
-        //  very time we change scene
-
         Platform.runLater(() -> {
             dto.accept(guidtovisitor);
         });

@@ -7,7 +7,7 @@
           "numOfTopCards": 0,
           "numOfBottomCards": 1
         },
-        "offerTileUrl": "offer_tile_B.png"
+        "offerTileUrl": "cards/fronts/offer_tile/offer_tile_B.png"
       },
       {
         "tileEffect": {
@@ -15,7 +15,7 @@
           "numOfTopCards": 1,
           "numOfBottomCards": 0
         },
-        "offerTileUrl": "offer_tile_C.png"
+        "offerTileUrl": "cards/fronts/offer_tile/offer_tile_C.png"
       },
       {
         "tileEffect": {
@@ -23,7 +23,7 @@
           "numOfTopCards": 1,
           "numOfBottomCards": 1
         },
-        "offerTileUrl": "offer_tile_E.png"
+        "offerTileUrl": "cards/fronts/offer_tile/offer_tile_E.png"
       },
       {
         "tileEffect": {
@@ -31,10 +31,10 @@
           "numOfTopCards": 2,
           "numOfBottomCards": 0
         },
-        "offerTileUrl": "offer_tile_F.png"
+        "offerTileUrl": "cards/fronts/offer_tile/offer_tile_F.png"
       }
     ],
-    "turnOrderTileUrl": "turn_order_tile_2_players.png"
+    "turnOrderTileUrl": "cards/fronts/turn_order/turn_order_tile_2_players.png"
   },
   "3": {
     "offerTiles": [
@@ -44,10 +44,10 @@
           "numOfTopCards": 0,
           "numOfBottomCards": 2
         },
-        "offerTileUrl": "offer_tile_D.png"
+        "offerTileUrl": "cards/fronts/offer_tile/offer_tile_D.png"
       }
     ],
-    "turnOrderTileUrl": "turn_order_tile_3_players.png"
+    "turnOrderTileUrl": "cards/fronts/turn_order/turn_order_tile_3_players.png"
   },
   "4": {
     "offerTiles": [
@@ -57,10 +57,10 @@
           "numOfTopCards": 2,
           "numOfBottomCards": 1
         },
-        "offerTileUrl": "offer_tile_G.png"
+        "offerTileUrl": "cards/fronts/offer_tile/offer_tile_G.png"
       }
     ],
-    "turnOrderTileUrl": "turn_order_tile_4_players.png"
+    "turnOrderTileUrl": "cards/fronts/turn_order/turn_order_tile_4_players.png"
   },
   "5": {
     "offerTiles": [
@@ -69,9 +69,9 @@
           "class": "FoodTileEffect",
           "numFood": 3
         },
-        "offerTileUrl": "offer_tile_A.png"
+        "offerTileUrl": "cards/fronts/offer_tile/offer_tile_A.png"
       }
     ],
-    "turnOrderTileUrl": "turn_order_tile_5_players.png"
+    "turnOrderTileUrl": "cards/fronts/turn_order/turn_order_tile_5_players.png"
   }
 }

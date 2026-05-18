@@ -58,7 +58,7 @@ public class LobbyGuiController implements ModelListener {
         lobbyContainer.setFillHeight(false);
         HBox.setHgrow(lobbyContainer, Priority.NEVER);
 
-        backgroundImage.setImage(new Image("imgs/background/mesos.png"));
+        backgroundImage.setImage(new Image(getClass().getResourceAsStream("/imgs/background/mesos.png")));
         backgroundImage.fitHeightProperty().bind(lobbyRoot.heightProperty());
         backgroundImage.fitWidthProperty().bind(lobbyRoot.widthProperty());
 
@@ -106,7 +106,7 @@ public class LobbyGuiController implements ModelListener {
                 totemBox.setPadding(new Insets(60));
                 totemBox.setCursor(Cursor.HAND);
 
-                ImageView totemImage = new ImageView(totem.getTotemStanding());
+                ImageView totemImage = new ImageView(new Image(getClass().getResourceAsStream(totem.getTotemStanding())));
                 totemImage.fitHeightProperty().bind(totemSelectionBox.heightProperty().multiply(0.4));
                 totemImage.setPreserveRatio(true);
 

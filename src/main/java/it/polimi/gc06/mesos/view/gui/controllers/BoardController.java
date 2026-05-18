@@ -189,9 +189,7 @@ public class BoardController implements ModelListener {
     public void initialize() {
         setupArchitecturalLayout();
 
-        if (smallModel != null) {
-            drawEverything();
-        }
+        setupGameCommands();
     }
 
     public void setupGameCommands() {

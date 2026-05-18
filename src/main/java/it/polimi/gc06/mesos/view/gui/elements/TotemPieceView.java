@@ -9,15 +9,20 @@ import javafx.scene.image.ImageView;
 public class TotemPieceView extends ImageView {
     private PlayerView player;
 
+    // In TotemPieceView.java
     public TotemPieceView() {
-        super(Totem.NONE.getTotemStanding());
+        super(); // Use empty constructor
+        // Load image via InputStream
+        this.setImage(new javafx.scene.image.Image(getClass().getResourceAsStream(Totem.NONE.getTotemStanding())));
         this.player = null;
         this.setPreserveRatio(true);
         this.setSmooth(true);
     }
 
     public TotemPieceView(PlayerView player) {
-        super(Totem.getTotem(player.getColor()).getTotemStanding());
+        super(); // Use empty constructor
+        // Load image via InputStream
+        this.setImage(new javafx.scene.image.Image(getClass().getResourceAsStream(Totem.getTotem(player.getColor()).getTotemStanding())));
         this.player = player;
         this.setPreserveRatio(true);
         this.setSmooth(true);

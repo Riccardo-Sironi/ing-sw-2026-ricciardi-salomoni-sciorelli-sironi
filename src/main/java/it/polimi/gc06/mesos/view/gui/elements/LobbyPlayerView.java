@@ -37,7 +37,7 @@ public class LobbyPlayerView extends VBox {
         this.setSpacing(40);
         this.setStyle("-fx-background-color: rgb(" + totem.getTotemColorRGBbrighter() + "); -fx-border-color: rgb( " + totem.getTotemColorRGB() + "); -fx-border-width: 2px; -fx-border-radius: 10px; -fx-background-radius: 10px;");
 
-        totemImage = new ImageView(totem.getTotemStanding());
+        totemImage = new ImageView(new Image(getClass().getResourceAsStream(totem.getTotemStanding())));
         totemImage.setPreserveRatio(true);
         totemImage.fitHeightProperty().bind(this.heightProperty().multiply(0.3));
         DropShadow shadow = new DropShadow();
@@ -74,7 +74,7 @@ public class LobbyPlayerView extends VBox {
 
     public void setTotem(Totem totem) {
         this.totem = totem;
-        totemImage.setImage(new Image("totem.getTotemStanding()"));
+        totemImage.setImage(new Image(getClass().getResourceAsStream(totem.getTotemStanding())));
     }
 
     public String getPlayerNameLabel() {

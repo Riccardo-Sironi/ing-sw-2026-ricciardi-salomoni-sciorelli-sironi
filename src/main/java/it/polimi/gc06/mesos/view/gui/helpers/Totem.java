@@ -11,11 +11,11 @@ public enum Totem {
     NONE;
 
     public String getTotemStanding() {
-        return this.name().toLowerCase() + "_standing_totem.png";
+        return "/imgs/totems/" + this.name().toLowerCase() + "_standing_totem.png";
     }
 
     public String getTotemTurnOrderOverlay() {
-        return this.name().toLowerCase() + "_turn_order_totem_overlay.png";
+        return "/imgs/totems/" + this.name().toLowerCase() + "_totem_overlay.png";
     }
 
     public static Totem getTotem(Color color) {
