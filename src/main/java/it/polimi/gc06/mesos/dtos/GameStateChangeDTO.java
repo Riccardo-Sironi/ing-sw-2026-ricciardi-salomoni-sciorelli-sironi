@@ -4,11 +4,12 @@ import it.polimi.gc06.mesos.model.Era;
 import it.polimi.gc06.mesos.model.gameTurnManager.OfferResolutionPhase;
 import it.polimi.gc06.mesos.network.leaderboard.Score;
 import it.polimi.gc06.mesos.view.smallModel.SmallModel;
+import it.polimi.gc06.mesos.view.smallModel.TileSlotView;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class GameStateChangeDTO implements SmallModelEditor{
+public class GameStateChangeDTO implements SmallModelEditor {
 
     private final Era era;
     private final int round;
@@ -36,7 +37,7 @@ public class GameStateChangeDTO implements SmallModelEditor{
         leaderboard = null;
     }
 
-    public GameStateChangeDTO(Collection<Score> scores){
+    public GameStateChangeDTO(Collection<Score> scores) {
         this.era = null;
         this.round = -1;
         this.phase = null;
@@ -45,29 +46,36 @@ public class GameStateChangeDTO implements SmallModelEditor{
 
     @Override
     public void edit(SmallModel smallModel) throws IllegalStateException {
-        if(phase != null){
-            if(smallModel.getPhase().equals(new OfferResolutionPhase().toString())){
-                for(int i = smallModel.getOfferTrack().size()-1; i>=0; i++) {
-                    smallModel.getTurnOrderTile().set(smallModel.getTurnOrderTile().size() - i - 1,
-                            smallModel.getOfferTrack().get(i).getPlayer());
-                    smallModel.getOfferTrack().get(i).removePlayer();
+        // TODO : should separate the events
+
+        if (phase != null) {
+            if (smallModel.getPhase().equals(new OfferResolutionPhase().toString())) {
+                int turnOrderCount = 0;
+                for (TileSlotView tileSlot : smallModel.getOfferTrack()) {
+                    if (tileSlot.getPlayer() != null) {
+                        smallModel.getTurnOrderTile().set(turnOrderCount, tileSlot.getPlayer());
+                        smallModel.getOfferTrack().get(smallModel.getOfferTrack().indexOf(tileSlot)).removePlayer();
+                        turnOrderCount++;
+                    }
                 }
             }
             smallModel.setPhase(phase);
         }
-        if(era != null){
+        if (era != null) {
             //top/bottom row
             smallModel.getBottomRow().clear(); //empty bottom
             smallModel.getBottomRow().addAll(smallModel.getTopRow()); //copy top to bottom
             smallModel.getTopRow().clear(); //empty top
             //buildings
-            smallModel.getBottomBuildings().clear();; //empty bottom
+            smallModel.getBottomBuildings().clear();
+            //empty bottom
             smallModel.getBottomBuildings().addAll(smallModel.getTopBuildings()); //copy top to bottom
-            smallModel.getTopBuildings().clear();; //empty top
+            smallModel.getTopBuildings().clear();
+            //empty top
             smallModel.setEra(era);
         }
-        if(round >= 0) smallModel.setRound(round);
-        if(leaderboard != null) smallModel.setLeaderboard(leaderboard);
+        if (round >= 0) smallModel.setRound(round);
+        if (leaderboard != null) smallModel.setLeaderboard(leaderboard);
     }
 
     @Override
@@ -75,7 +83,7 @@ public class GameStateChangeDTO implements SmallModelEditor{
         visitor.visit(this);
     }
 
-    public boolean isEndgame(){
+    public boolean isEndgame() {
         return leaderboard != null;
     }
 }
