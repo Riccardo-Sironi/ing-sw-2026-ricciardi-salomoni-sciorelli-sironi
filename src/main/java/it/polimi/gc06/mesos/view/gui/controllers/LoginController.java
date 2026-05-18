@@ -2,7 +2,6 @@ package it.polimi.gc06.mesos.view.gui.controllers;
 
 import it.polimi.gc06.mesos.network.client.Client;
 import it.polimi.gc06.mesos.view.gui.GUI;
-import it.polimi.gc06.mesos.view.gui.ImageFetcher;
 import it.polimi.gc06.mesos.view.smallModel.SmallModel;
 import javafx.animation.Animation;
 import javafx.animation.FadeTransition;
@@ -13,65 +12,54 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.*;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.net.URL;
+import java.rmi.RemoteException;
 
 public class LoginController {
 
-    @FXML
-    private StackPane rootPane;
-
-    @FXML
-    private ImageView backgroundImageView;
-
-    @FXML
-    private ImageView particlesImageView;
-
-    @FXML
-    private Region bottomGlow;
-
-    @FXML
-    private VBox loginBox;
-
-    @FXML
-    private Label promptLabel;
-
-    @FXML
-    private TextField nicknameField;
-
-    @FXML
-    private Button joinButton;
-
-    @FXML
-    private DropShadow buttonShadow;
+    @FXML private StackPane rootPane;
+    @FXML private ImageView backgroundImageView;
+    @FXML private ImageView particlesImageView;
+    @FXML private Region bottomGlow;
+    @FXML private VBox loginBox;
+    @FXML private Label promptLabel;
+    @FXML private TextField nicknameField;
+    @FXML private Button joinButton;
+    @FXML private DropShadow buttonShadow;
 
     private static String nickname = "";
+    private boolean transitionStarted = false;
 
     private static final String FONT_PATH = "/it/polimi/gc06/mesos/fonts/ArcadianG.ttf";
-    private static final String SUBMIT_BUTTON_STYLE = "-fx-background-color: transparent; -fx-border-color: #2B2B2B; -fx-border-width: 3; -fx-text-fill: #2B2B2B; -fx-background-radius: 10; -fx-border-radius: 10; -fx-cursor: hand;";
-    private static final String HOVER_BUTTON_STYLE = "-fx-background-color: rgba(0,0,0,0.1); -fx-border-color: #2B2B2B; -fx-border-width: 3; -fx-text-fill: #2B2B2B; -fx-background-radius: 10; -fx-border-radius: 10; -fx-cursor: hand;";
-    private static final String FIELD_DEFAULT_STYLE = "-fx-background-color: transparent; -fx-border-color: transparent transparent #2B2B2B transparent; -fx-border-width: 0 0 3 0; -fx-text-fill: #2B2B2B; -fx-prompt-text-fill: rgba(43,43,43,0.5); -fx-alignment: center;";
-    private static final String FIELD_ERROR_STYLE = "-fx-background-color: transparent; -fx-border-color: transparent transparent #8a0303 transparent; -fx-border-width: 0 0 3 0; -fx-text-fill: #2B2B2B; -fx-prompt-text-fill: rgba(43,43,43,0.5); -fx-alignment: center;";
+
+    private static final String BTN_STYLE_DEFAULT = "-fx-background-color: transparent; -fx-border-color: #2B2B2B; -fx-border-width: 3; -fx-text-fill: #2B2B2B; -fx-background-radius: 10; -fx-border-radius: 10; -fx-cursor: hand;";
+    private static final String BTN_STYLE_HOVER   = "-fx-background-color: rgba(0,0,0,0.1); -fx-border-color: #2B2B2B; -fx-border-width: 3; -fx-text-fill: #2B2B2B; -fx-background-radius: 10; -fx-border-radius: 10; -fx-cursor: hand;";
+    private static final String FIELD_STYLE_VALID = "-fx-background-color: transparent; -fx-border-color: transparent transparent #2B2B2B transparent; -fx-border-width: 0 0 3 0; -fx-text-fill: #2B2B2B; -fx-prompt-text-fill: rgba(43,43,43,0.5); -fx-alignment: center;";
+    private static final String FIELD_STYLE_ERROR = "-fx-background-color: transparent; -fx-border-color: transparent transparent #8a0303 transparent; -fx-border-width: 0 0 3 0; -fx-text-fill: #2B2B2B; -fx-prompt-text-fill: rgba(43,43,43,0.5); -fx-alignment: center;";
 
     @FXML
     public void initialize() {
         loadImage(backgroundImageView, "/imgs/background/login_background.png");
         loadImage(particlesImageView, "/imgs/effect/fire_particles.gif");
-        loadFonts();
 
+        loadFonts();
         setupDynamicLayout();
-        setupAnimations();
-        setupButtonAnimations();
+        setupGlowAnimation();
+        setupButtonInteractions();
 
         Platform.runLater(nicknameField::requestFocus);
     }
@@ -94,7 +82,7 @@ public class LoginController {
         }
     }
 
-    private void setupAnimations() {
+    private void setupGlowAnimation() {
         if (bottomGlow != null) {
             FadeTransition glowPulse = new FadeTransition(Duration.seconds(0.25), bottomGlow);
             glowPulse.setFromValue(0.7);
@@ -107,126 +95,138 @@ public class LoginController {
 
     private void loadFonts() {
         try {
-            Font titleFont = Font.loadFont(getClass().getResourceAsStream(FONT_PATH), 50);
-            Font fieldFont = Font.loadFont(getClass().getResourceAsStream(FONT_PATH), 35);
-            Font buttonFont = Font.loadFont(getClass().getResourceAsStream(FONT_PATH), 30);
-
-            if (titleFont != null) promptLabel.setFont(titleFont);
-            if (fieldFont != null) nicknameField.setFont(fieldFont);
-            if (buttonFont != null) joinButton.setFont(buttonFont);
+            setFontIfValid(promptLabel, 50);
+            setFontIfValid(nicknameField, 35);
+            setFontIfValid(joinButton, 30);
         } catch (Exception e) {
             System.err.println("Font Loading Error: " + e.getMessage());
         }
     }
 
+    private void setFontIfValid(Region node, double size) {
+        Font font = Font.loadFont(getClass().getResourceAsStream(FONT_PATH), size);
+        if (font == null) return;
+
+        if (node instanceof Label) ((Label) node).setFont(font);
+        else if (node instanceof TextField) ((TextField) node).setFont(font);
+        else if (node instanceof Button) ((Button) node).setFont(font);
+    }
+
     private void loadImage(ImageView imageView, String path) {
         if (imageView == null) return;
         URL url = getClass().getResource(path);
-        if (url != null) {
-            imageView.setImage(new Image(url.toExternalForm()));
-        }
+        if (url != null) imageView.setImage(new Image(url.toExternalForm()));
     }
 
-    private void setupButtonAnimations() {
-        joinButton.setOnMouseEntered(e -> joinButton.setStyle(HOVER_BUTTON_STYLE));
-        joinButton.setOnMouseExited(e -> joinButton.setStyle(SUBMIT_BUTTON_STYLE));
+    private void setupButtonInteractions() {
+        joinButton.setOnMouseEntered(e -> joinButton.setStyle(BTN_STYLE_HOVER));
+        joinButton.setOnMouseExited(e -> joinButton.setStyle(BTN_STYLE_DEFAULT));
 
-        joinButton.setOnMousePressed(e -> {
-            joinButton.setTranslateY(0.5);
-            if (buttonShadow != null) buttonShadow.setOffsetY(0.5);
-        });
+        joinButton.setOnMousePressed(e -> applyButtonPressEffect(0.5, 0.5));
+        joinButton.setOnMouseReleased(e -> applyButtonPressEffect(0, 2.5));
+    }
 
-        joinButton.setOnMouseReleased(e -> {
-            joinButton.setTranslateY(0);
-            if (buttonShadow != null) buttonShadow.setOffsetY(2.5);
-        });
+    private void applyButtonPressEffect(double translateY, double shadowOffsetY) {
+        joinButton.setTranslateY(translateY);
+        if (buttonShadow != null) buttonShadow.setOffsetY(shadowOffsetY);
     }
 
     @FXML
     public void handleLogin(ActionEvent event) {
+        if (transitionStarted) return;
+
         nickname = nicknameField.getText().trim();
 
         if (nickname.isEmpty()) {
-            nicknameField.setStyle(FIELD_ERROR_STYLE);
+            handleLoginError();
             return;
         }
 
-        nicknameField.setStyle(FIELD_DEFAULT_STYLE);
+        nicknameField.setStyle(FIELD_STYLE_VALID);
+        lockUIForTransition();
 
+        if (!connectToServer()) {
+            unlockUI();
+            return;
+        }
+
+        System.out.println("Login as: " + nickname);
+        performSceneTransition();
+    }
+
+    private void handleLoginError() {
+        nicknameField.setStyle(FIELD_STYLE_ERROR);
+    }
+
+    private void lockUIForTransition() {
+        transitionStarted = true;
+        rootPane.setDisable(true);
+    }
+
+    private void unlockUI() {
+        transitionStarted = false;
+        rootPane.setDisable(false);
+    }
+
+    private boolean connectToServer() {
         GUI.client = new Client();
         GUI.client.connect("RMI", "localhost", 1099);
 
         try {
             if (!GUI.client.getServerConnection().login(nickname)) {
-                nicknameField.setStyle(FIELD_ERROR_STYLE);
-                return;
+                handleLoginError();
+                return false;
             }
         } catch (Exception e) {
+            System.err.println("Connection Error");
         }
 
         GUI.smallModel = new SmallModel(nickname);
         GUI.client.setSmallModel(GUI.smallModel);
-
-        // TODO : match selection process ... for now we force to join the first match of the list
-
-        try {
-            GUI.client.getServerConnection().joinMatch(0, nickname);
-        } catch (Exception e) {
-        }
-
-        GUI.subscribeGUI();
-
-        while (GUI.smallModel.getPhase() == null) {
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                return;
-            }
-        }
-
-        try {
-            GUI.imageFetcher = new ImageFetcher(GUI.smallModel.getOpponents().size() + 1);
-        } catch (Exception e) {
-        }
-
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/it/polimi/gc06/mesos/fxml/Lobby.fxml"));
-            loader.load();
-            GUI.guidtovisitor.setLobbyGuiController(loader.getController());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-
-        // TODO : THIS SHOULD BE DONE IN THE LOBBY ONCE WE HAVE IT
-
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/it/polimi/gc06/mesos/fxml/Mesos.fxml"));
-            Parent root = loader.load();
-
-            GameViewController gameViewController = loader.getController();
-
-            GUI.guidtovisitor.setGameViewController(gameViewController);
-            GUI.guidtovisitor.setBoardController(gameViewController.getBoardController());
-
-            Scene scene = new Scene(root, GUI.WIDTH, GUI.HEIGHT);
-
-            scene.getStylesheets().add(java.util.Objects.requireNonNull(
-                    GUI.class.getResource("/it/polimi/gc06/mesos/css/board_style.css")
-            ).toExternalForm());
-
-            javafx.application.Platform.runLater(() -> GUI.primaryStage.setMaximized(true));
-            GUI.primaryStage.setTitle("Mesos");
-            GUI.primaryStage.setScene(scene);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        System.out.println("Login as: " + nickname);
+        return true;
     }
 
+    private void performSceneTransition() {
+        try {
+            URL selectGameUrl = getClass().getResource("/it/polimi/gc06/mesos/fxml/SelectGame.fxml");
+            Parent selectGameRoot = new FXMLLoader(selectGameUrl).load();
+
+            if (rootPane.getScene() != null) {
+                rootPane.getScene().setFill(Color.BLACK);
+            }
+
+            FadeTransition fadeOut = new FadeTransition(Duration.millis(800), rootPane);
+            fadeOut.setToValue(0.0);
+
+            fadeOut.setOnFinished(e -> swapSceneAndFadeIn(selectGameRoot));
+            fadeOut.play();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            unlockUI(); // in case of critical failure, unlock the UI
+        }
+    }
+
+    private void swapSceneAndFadeIn(Parent newRoot) {
+        Stage stage = (Stage) rootPane.getScene().getWindow();
+
+        double currentWidth = stage.getScene().getWidth();
+        double currentHeight = stage.getScene().getHeight();
+
+        stage.getScene().setRoot(newRoot);
+
+        if (newRoot instanceof Region) {
+            ((Region) newRoot).setPrefSize(currentWidth, currentHeight);
+        }
+
+        newRoot.applyCss();
+        newRoot.layout();
+
+        newRoot.setOpacity(0.0);
+        FadeTransition fadeIn = new FadeTransition(Duration.millis(800), newRoot);
+        fadeIn.setToValue(1.0);
+        fadeIn.play();
+    }
 
     public static String getNickname() {
         return nickname;
