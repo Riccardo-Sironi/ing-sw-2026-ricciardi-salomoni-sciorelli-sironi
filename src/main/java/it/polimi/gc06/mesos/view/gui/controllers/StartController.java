@@ -1,27 +1,29 @@
 package it.polimi.gc06.mesos.view.gui.controllers;
 
-import it.polimi.gc06.mesos.view.gui.GUI;
 import javafx.animation.Animation;
 import javafx.animation.FadeTransition;
-
+import javafx.animation.ParallelTransition;
+import javafx.animation.PauseTransition;
+import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
-
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.NumberBinding;
-
 import javafx.event.Event;
-
 import javafx.fxml.FXML;
-
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-
+import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import java.io.IOException;
 import java.net.URL;
 
 public class StartController {
@@ -56,6 +58,9 @@ public class StartController {
     @FXML
     private ImageView particlesImageView;
 
+    private boolean transitionStarted = false;
+    private FadeTransition glowPulse;
+
     @FXML
     public void initialize() {
 
@@ -74,7 +79,7 @@ public class StartController {
         pressPulse.play();
 
         if (bottomGlow != null) {
-            FadeTransition glowPulse = new FadeTransition(Duration.seconds(0.25), bottomGlow);
+            glowPulse = new FadeTransition(Duration.seconds(0.25), bottomGlow);
             glowPulse.setFromValue(0.3);
             glowPulse.setToValue(0.9);
             glowPulse.setCycleCount(Animation.INDEFINITE);
@@ -103,19 +108,24 @@ public class StartController {
         rightPulse.setAutoReverse(true);
         rightPulse.play();
 
-        Platform.runLater(() -> rootPane.requestFocus());
+        Platform.runLater(() -> {
+            rootPane.requestFocus();
+
+            Scene currentScene = rootPane.getScene();
+            if (currentScene != null) {
+                currentScene.setOnMouseClicked(this::handleStart);
+                currentScene.setOnKeyPressed(this::handleStart);
+            }
+        });
     }
 
     private void setupDynamicLayout() {
-
         backgroundImageView.fitWidthProperty().bind(rootPane.widthProperty());
         backgroundImageView.fitHeightProperty().bind(rootPane.heightProperty());
         backgroundImageView.setPreserveRatio(false);
 
         flamesImageView.setPreserveRatio(true);
-
         flamesImageView.fitWidthProperty().bind(rootPane.widthProperty().multiply(0.57));
-
         flamesImageView.translateYProperty().bind(rootPane.heightProperty().multiply(0.3));
 
         particlesImageView.setPreserveRatio(true);
@@ -143,22 +153,118 @@ public class StartController {
 
     private void loadFonts() {
         try {
-            Font titleFont = Font.loadFont(getClass().
-                    getResourceAsStream("/it/polimi/gc06/mesos/fonts/Cave-Stone.ttf"), 200);
-            Font subtitleFont = Font.loadFont(getClass().
-                    getResourceAsStream("/it/polimi/gc06/mesos/fonts/KidKnowledge.otf"), 45);
+            Font titleFont = Font.loadFont(getClass().getResourceAsStream("/it/polimi/gc06/mesos/fonts/Cave-Stone.ttf"), 200);
+            Font subtitleFont = Font.loadFont(getClass().getResourceAsStream("/it/polimi/gc06/mesos/fonts/KidKnowledge.otf"), 45);
 
             if (titleFont != null) titleLabel.setFont(titleFont);
             if (subtitleFont != null) pressKeyLabel.setFont(subtitleFont);
 
         } catch (Exception e) {
+            System.err.println("Error: Loading Fonts failed");
             e.printStackTrace();
         }
     }
 
     @FXML
     public void handleStart(Event event) {
-        GUI.changeScene("/it/polimi/gc06/mesos/fxml/login.fxml");
+
+        if (transitionStarted) {
+            return;
+        }
+        transitionStarted = true;
+        rootPane.setDisable(true);
+
         System.out.println("Start game");
+
+        // TIMERS (milliseconds)
+        double timeFadeParticles  = 500;
+        double timeFadeTexts      = 1500;
+        double timeShrinkFlames   = 3000;
+        double timeFadeFlames     = 1500;
+        double timeFadeBackground = 2000;
+        double timeWaitInTheDark  = 200;
+        double timeFadeInLogin    = 500;
+
+        try {
+            URL loginUrl = getClass().getResource("/it/polimi/gc06/mesos/fxml/Login.fxml");
+            if (loginUrl == null) {
+                System.err.println("Error: Login.fxml hasn't been found");
+                return;
+            }
+
+            FXMLLoader loader = new FXMLLoader(loginUrl);
+            Parent loginRoot = loader.load();
+
+            if (rootPane.getScene() != null) {
+                rootPane.getScene().setFill(Color.BLACK);
+            }
+
+            if (pressKeyLabel != null) {
+                pressKeyLabel.setVisible(false);
+            }
+            if (glowPulse != null) {
+                glowPulse.stop();
+            }
+
+            ParallelTransition shutdown = new ParallelTransition();
+
+            if (flamesImageView != null) {
+                flamesImageView.translateYProperty().unbind();
+
+                TranslateTransition moveFlames = new TranslateTransition(Duration.millis(timeShrinkFlames), flamesImageView);
+                moveFlames.setByY(1000);
+
+                FadeTransition fadeFlames = new FadeTransition(Duration.millis(timeFadeFlames), flamesImageView);
+                fadeFlames.setToValue(0.5);
+
+                shutdown.getChildren().addAll(moveFlames, fadeFlames);
+            }
+
+            if (particlesImageView != null) {
+                FadeTransition fadeParticles = new FadeTransition(Duration.millis(timeFadeParticles), particlesImageView);
+                fadeParticles.setToValue(0.0);
+                shutdown.getChildren().add(fadeParticles);
+            }
+
+            if (titleLabel != null) {
+                FadeTransition fadeTitle = new FadeTransition(Duration.millis(timeFadeTexts), titleLabel);
+                fadeTitle.setToValue(0.0);
+                shutdown.getChildren().add(fadeTitle);
+            }
+
+            if (bottomGlow != null) {
+                FadeTransition fadeGlow = new FadeTransition(Duration.millis(timeFadeParticles), bottomGlow);
+                fadeGlow.setToValue(0.0);
+                shutdown.getChildren().add(fadeGlow);
+            }
+
+            if (backgroundImageView != null) {
+                FadeTransition fadeBackground = new FadeTransition(Duration.millis(timeFadeBackground), backgroundImageView);
+                fadeBackground.setToValue(0.0);
+                shutdown.getChildren().add(fadeBackground);
+            }
+
+            shutdown.setOnFinished(e -> {
+                Stage stage = (Stage) rootPane.getScene().getWindow();
+                stage.getScene().setRoot(loginRoot);
+                loginRoot.setOpacity(0.0);
+
+                PauseTransition pauseTransition = new PauseTransition(Duration.millis(timeWaitInTheDark));
+
+                pauseTransition.setOnFinished(event2 -> {
+                    FadeTransition fadeIn = new FadeTransition(Duration.millis(timeFadeInLogin), loginRoot);
+                    fadeIn.setToValue(1.0);
+                    fadeIn.play();
+                });
+
+                pauseTransition.play();
+            });
+
+            shutdown.play();
+
+        } catch (IOException e) {
+            System.err.println("Error I/O in loading Login.fxml");
+            e.printStackTrace();
+        }
     }
 }
