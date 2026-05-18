@@ -91,6 +91,7 @@ public class EffectsManager {
         dropShadow.setSpread(0.65);
         card.setEffect(dropShadow);
         card.setCursor(Cursor.HAND);
+        card.setMouseTransparent(false);
         card.setCanBePicked(true);
 
         Timeline in = new Timeline(
