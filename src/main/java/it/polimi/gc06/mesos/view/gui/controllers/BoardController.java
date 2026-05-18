@@ -740,18 +740,24 @@ public class BoardController implements ModelListener {
     private void drawTopRowCards() {
         topCharactersContainer.getChildren().clear();
         if (smallModel == null) return;
-        for (Card card : smallModel.getTopRow()) {
+        for (int i = 0; i < smallModel.getTopRow().size(); i++) {
+            Card card = smallModel.getTopRow().get(i);
+            final int cardIndex = i;
+
             CardView cardView = new CardView(loadImage(imageFetcher.fetch(card)));
             cardView.fitHeightProperty().bind(topRowBox.heightProperty().multiply(RESIZE_CARD_FACTOR));
-
             cardView.setCard(card);
+
+            applyPickCardAnimation(cardView, playerCardsContainer, mainRoot, () -> {
+                try {
+                    client.getServerConnection().pickCardFromTop(smallModel.getPlayer().getNickname(), cardIndex);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            });
 
             CardEffectVisitor visitor = new CardEffectVisitor(cardView, smallModel.getTopDrawNum());
             cardView.getCard().accept(visitor);
-
-            if (cardView.canBePicked()) {
-                applyPickCardAnimation(cardView, playerCardsContainer, mainRoot);
-            }
 
             topCharactersContainer.getChildren().add(cardView);
         }
@@ -760,18 +766,25 @@ public class BoardController implements ModelListener {
     private void drawTopBuildingsCards() {
         buildingsContainer.getChildren().clear();
         if (smallModel == null) return;
-        for (Card building : smallModel.getTopBuildings()) {
+
+        for (int i = 0; i < smallModel.getTopBuildings().size(); i++) {
+            Card building = smallModel.getTopBuildings().get(i);
+            final int cardIndex = i;
+
             CardView cardView = new CardView(loadImage(imageFetcher.fetch(building)));
             cardView.fitHeightProperty().bind(topRowBox.heightProperty().multiply(RESIZE_CARD_FACTOR));
-
             cardView.setCard(building);
+
+            applyPickCardAnimation(cardView, playerCardsContainer, mainRoot, () -> {
+                try {
+                    client.getServerConnection().pickBuildingFromTop(smallModel.getPlayer().getNickname(), cardIndex);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            });
 
             CardEffectVisitor visitor = new CardEffectVisitor(cardView, smallModel.getTopDrawNum());
             cardView.getCard().accept(visitor);
-
-            if (cardView.canBePicked()) {
-                applyPickCardAnimation(cardView, playerCardsContainer, mainRoot);
-            }
 
             buildingsContainer.getChildren().add(cardView);
         }
@@ -780,45 +793,60 @@ public class BoardController implements ModelListener {
     private void drawBottomRowCards() {
         bottomCharactersContainer.getChildren().clear();
         if (smallModel == null) return;
-        for (Card card : smallModel.getBottomRow()) {
+
+        for (int i = 0; i < smallModel.getBottomRow().size(); i++) {
+            Card card = smallModel.getBottomRow().get(i);
+            final int cardIndex = i;
+
             CardView cardView = new CardView(loadImage(imageFetcher.fetch(card)));
             cardView.fitHeightProperty().bind(bottomRowBox.heightProperty().multiply(RESIZE_CARD_FACTOR));
-
             cardView.setCard(card);
+
+            applyPickCardAnimation(cardView, playerCardsContainer, mainRoot, () -> {
+                try {
+                    client.getServerConnection().pickCardFromBottom(smallModel.getPlayer().getNickname(), cardIndex);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            });
 
             CardEffectVisitor visitor = new CardEffectVisitor(cardView, smallModel.getBottomDrawNum());
             cardView.getCard().accept(visitor);
-
-            if (cardView.canBePicked()) {
-                applyPickCardAnimation(cardView, playerCardsContainer, mainRoot);
-            }
 
             bottomCharactersContainer.getChildren().add(cardView);
         }
     }
 
     private void drawBottomBuildingCards() {
+        // Gestione layout visivo esistente
         if (smallModel.getBottomBuildings().isEmpty()) {
             updateBottomRowLayout(false);
         } else {
             updateBottomRowLayout(true);
         }
+
         if (bottomBuildingsContainer == null) return;
         bottomBuildingsContainer.getChildren().clear();
         if (smallModel == null) return;
 
-        for (Card building : smallModel.getBottomBuildings()) {
+        for (int i = 0; i < smallModel.getBottomBuildings().size(); i++) {
+            Card building = smallModel.getBottomBuildings().get(i);
+            final int cardIndex = i;
+
             CardView cardView = new CardView(loadImage(imageFetcher.fetch(building)));
             cardView.fitHeightProperty().bind(bottomRowBox.heightProperty().multiply(RESIZE_CARD_FACTOR));
-
             cardView.setCard(building);
+
+            applyPickCardAnimation(cardView, playerCardsContainer, mainRoot, () -> {
+                try {
+                    client.getServerConnection().pickBuildingFromBottom(smallModel.getPlayer().getNickname(), cardIndex);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            });
 
             CardEffectVisitor visitor = new CardEffectVisitor(cardView, smallModel.getBottomDrawNum());
             cardView.getCard().accept(visitor);
-
-            if (cardView.canBePicked()) {
-                applyPickCardAnimation(cardView, playerCardsContainer, mainRoot);
-            }
 
             bottomBuildingsContainer.getChildren().add(cardView);
         }
@@ -885,7 +913,7 @@ public class BoardController implements ModelListener {
      *
      * @param card the card picked
      */
-    public static void applyPickCardAnimation(CardView card, HBox targetContainer, HBox mainRoot) {
+    public static void applyPickCardAnimation(CardView card, HBox targetContainer, HBox mainRoot, Runnable networkRequest) {
         card.setOnMouseClicked(event -> {
             Bounds cardScreen = card.localToScreen(card.getBoundsInLocal());
             Bounds targetScreen = targetContainer.localToScreen(targetContainer.getBoundsInLocal());
@@ -938,15 +966,14 @@ public class BoardController implements ModelListener {
                 EffectsManager.normalCard(card);
                 card.setOnMouseEntered(ev -> {
                 });
-                targetContainer.getChildren().add(card); // TODO : we could do this and then redraw the original container
+                //targetContainer.getChildren().add(card); // TODO : we could do this and then redraw the original container
+
+                if (networkRequest != null) {
+                    networkRequest.run();
+                }
             });
 
             transition.play();
-
-            transition.setOnFinished(e -> {
-                // TODO : differentiate between the containers to know which request to send
-//                client.getServerConnection().
-            });
 
             // TODO : the card should be redrawn in the inventory so no need to remove the effects but we keep it for now
             card.setOnMouseClicked(null);
@@ -1245,6 +1272,7 @@ public class BoardController implements ModelListener {
     public void handleActivePlayerChanged() {
         updateAllBoardEffects();
         drawSkipButton();
+        drawOfferTrack();
     }
 
     public void handleGameStarted() {
@@ -1261,6 +1289,13 @@ public class BoardController implements ModelListener {
     public void handlePhaseChanged() {
         drawPhaseText();
         updateAllBoardEffects();
+        drawOfferTrack();
+        drawTurnOrderTile();
+        drawTopRowCards();
+        drawTopBuildingsCards();
+        drawBottomRowCards();
+        drawBottomBuildingCards();
+        drawSkipButton();
     }
 
     public void handleEraChanged() {
