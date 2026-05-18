@@ -35,15 +35,9 @@ public class GUI extends Application implements View, ModelListener {
     public static ImageFetcher imageFetcher;
     public static Client client;
 
-    public static StartController startController;
-    public static LoginController loginController;
-    public static GameViewController gameViewController;
-    public static BoardController boardController;
-    public static LobbyGuiController lobbyGuiController;
-
     public static GUIDTOvisitor guidtovisitor;
 
-    private static Stage primaryStage;
+    public static Stage primaryStage;
 
     private static GUI gui;
 
@@ -51,20 +45,7 @@ public class GUI extends Application implements View, ModelListener {
     public void start(Stage stage) throws IOException {
         primaryStage = stage;
         gui = this;
-
-        gameViewController = new FXMLLoader(
-                getClass().getResource("/it/polimi/gc06/mesos/fxml/mesos.fxml")
-        ).getController();
-        boardController = new FXMLLoader(
-                getClass().getResource("/it/polimi/gc06/mesos/fxml/board.fxml")
-        ).getController();
-        lobbyGuiController = new FXMLLoader(
-                getClass().getResource("/it/polimi/gc06/mesos/fxml/lobby.fxml")
-        ).getController();
-
-        guidtovisitor = new GUIDTOvisitor(boardController, gameViewController, lobbyGuiController);
-
-        mockSmallModel();
+        guidtovisitor = new GUIDTOvisitor();
 
         changeScene("/it/polimi/gc06/mesos/fxml/start.fxml");
         primaryStage.show();

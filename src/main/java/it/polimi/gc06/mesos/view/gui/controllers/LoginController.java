@@ -2,6 +2,7 @@ package it.polimi.gc06.mesos.view.gui.controllers;
 
 import it.polimi.gc06.mesos.network.client.Client;
 import it.polimi.gc06.mesos.view.gui.GUI;
+import it.polimi.gc06.mesos.view.gui.ImageFetcher;
 import it.polimi.gc06.mesos.view.smallModel.SmallModel;
 import javafx.animation.Animation;
 import javafx.animation.FadeTransition;
@@ -10,6 +11,9 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.binding.NumberBinding;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -163,6 +167,8 @@ public class LoginController {
         GUI.smallModel = new SmallModel(nickname);
         GUI.client.setSmallModel(GUI.smallModel);
 
+        // TODO : match selection process ... for now we force to join the first match of the list
+
         try {
             GUI.client.getServerConnection().joinMatch(0, nickname);
         } catch (Exception e) {
@@ -179,9 +185,44 @@ public class LoginController {
             }
         }
 
-        GUI.changeScene("/it/polimi/gc06/mesos/fxml/mesos.fxml");
+        try {
+            GUI.imageFetcher = new ImageFetcher(GUI.smallModel.getOpponents().size() + 1);
+        } catch (Exception e) {
+        }
 
-        // TODO : match selection process ...
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/it/polimi/gc06/mesos/fxml/Lobby.fxml"));
+            loader.load();
+            GUI.guidtovisitor.setLobbyGuiController(loader.getController());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        // TODO : THIS SHOULD BE DONE IN THE LOBBY ONCE WE HAVE IT
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/it/polimi/gc06/mesos/fxml/Mesos.fxml"));
+            Parent root = loader.load();
+
+            GameViewController gameViewController = loader.getController();
+
+            GUI.guidtovisitor.setGameViewController(gameViewController);
+            GUI.guidtovisitor.setBoardController(gameViewController.getBoardController());
+
+            Scene scene = new Scene(root, GUI.WIDTH, GUI.HEIGHT);
+
+            scene.getStylesheets().add(java.util.Objects.requireNonNull(
+                    GUI.class.getResource("/it/polimi/gc06/mesos/css/board_style.css")
+            ).toExternalForm());
+
+            javafx.application.Platform.runLater(() -> GUI.primaryStage.setMaximized(true));
+            GUI.primaryStage.setTitle("Mesos");
+            GUI.primaryStage.setScene(scene);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         System.out.println("Login as: " + nickname);
     }

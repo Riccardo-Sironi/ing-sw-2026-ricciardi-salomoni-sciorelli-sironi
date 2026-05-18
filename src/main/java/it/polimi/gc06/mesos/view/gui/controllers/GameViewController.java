@@ -28,6 +28,13 @@ public class GameViewController implements ModelListener {
     @FXML
     private HBox overlaysBox;
 
+    @FXML
+    private BoardController boardController;
+
+    public BoardController getBoardController() {
+        return boardController;
+    }
+
     private ImageView overlay;
     private SequentialTransition overlaySequence;
 
@@ -112,7 +119,7 @@ public class GameViewController implements ModelListener {
     }
 
     public void showPhaseOverlay() {
-        String path = smallModel.getPhase().toLowerCase() + "_overlay.png";
+        String path = smallModel.getPhase().toLowerCase() + "_phase_overlay.png";
         playOverlay(new Image(path));
     }
 

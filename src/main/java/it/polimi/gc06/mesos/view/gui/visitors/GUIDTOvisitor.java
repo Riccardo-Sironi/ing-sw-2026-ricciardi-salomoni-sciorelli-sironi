@@ -1,6 +1,5 @@
 package it.polimi.gc06.mesos.view.gui.visitors;
 
-import it.polimi.gc06.mesos.controller.GameController;
 import it.polimi.gc06.mesos.dtos.*;
 import it.polimi.gc06.mesos.view.gui.controllers.BoardController;
 import it.polimi.gc06.mesos.view.gui.controllers.GameViewController;
@@ -13,10 +12,19 @@ public class GUIDTOvisitor extends DTOvisitor {
     GameViewController gameViewController;
     LobbyGuiController lobbyGuiController;
 
-    public GUIDTOvisitor(BoardController boardController, GameViewController gameViewController, LobbyGuiController lobbyGuiController) {
-        this.boardController = boardController;
-        this.gameViewController = gameViewController;
+    public GUIDTOvisitor() {
+    }
+
+    public void setLobbyGuiController(LobbyGuiController lobbyGuiController) {
         this.lobbyGuiController = lobbyGuiController;
+    }
+
+    public void setBoardController(BoardController boardController) {
+        this.boardController = boardController;
+    }
+
+    public void setGameViewController(GameViewController gameViewController) {
+        this.gameViewController = gameViewController;
     }
 
     @Override
