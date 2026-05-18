@@ -2,7 +2,7 @@ package it.polimi.gc06.mesos.dtos;
 
 import it.polimi.gc06.mesos.view.smallModel.SmallModel;
 
-public class PlayerStateChangeDTO implements SmallModelEditor{
+public class PlayerStateChangeDTO implements SmallModelEditor {
 
     private final String player;
     private int isActive;
@@ -24,9 +24,13 @@ public class PlayerStateChangeDTO implements SmallModelEditor{
 
     @Override
     public void edit(SmallModel smallModel) throws IllegalStateException {
-        if(!smallModel.getPlayer().getNickname().equals(player)) return;
-        if(isActive == 1 || isActive == 0) smallModel.setActive(isActive == 1);
-        if(canSkip == 1 || canSkip == 0) smallModel.setCanSkip(canSkip == 1);
+        if (!smallModel.getPlayer().getNickname().equals(player)) {
+            smallModel.setActive(false);
+            smallModel.setCanSkip(false);
+        } else {
+            if (isActive != -1) smallModel.setActive(isActive == 1);
+            if (canSkip != -1) smallModel.setCanSkip(canSkip == 1);
+        }
     }
 
     @Override
