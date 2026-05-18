@@ -26,7 +26,7 @@ public class TCPServerConnectionTest {
     @Test
     public void testLogin(){
         String nickname = "Alice";
-        Client c = new Client(new SmallModel(nickname));
+        Client c = new Client();
         c.connect("TCP","localhost",1234);
         ServerConnection conn = c.getServerConnection();
         try {
@@ -37,7 +37,7 @@ public class TCPServerConnectionTest {
     @Test
     public void testMatchCreation(){
         String nickname = "Alice";
-        Client c = new Client(new SmallModel(nickname));
+        Client c = new Client();
         c.connect("TCP","localhost",1234);
         ServerConnection conn = c.getServerConnection();
         try {
@@ -49,7 +49,7 @@ public class TCPServerConnectionTest {
     @Test
     public void testMatchJoin(){
         String nickname = "Alice";
-        Client c = new Client(new SmallModel(nickname));
+        Client c = new Client();
         c.connect("TCP","localhost",1234);
         ServerConnection conn = c.getServerConnection();
         try {
@@ -58,12 +58,12 @@ public class TCPServerConnectionTest {
         } catch(Exception e) { fail("Match creation failed due to exception: "+e.getMessage()); }
 
         String nickname2 = "Bob";
-        Client c2 = new Client(new SmallModel(nickname2));
+        Client c2 = new Client();
         c2.connect("TCP","localhost",1234);
         ServerConnection conn2 = c2.getServerConnection();
         try {
             assertTrue(conn2.login(nickname2), "Login failed");
-            conn2.joinMatch(0,nickname2);
+            assertTrue(conn2.joinMatch(0,nickname2));
         } catch(Exception e) { fail("Match join failed due to exception: "+e.getMessage()); }
     }
 
@@ -71,7 +71,7 @@ public class TCPServerConnectionTest {
     public void testMatchStart(){
 
         String nickname = "Alice";
-        Client c = new Client(new SmallModel(nickname));
+        Client c = new Client();
         c.connect("TCP","localhost",1234);
         ServerConnection conn = c.getServerConnection();
         try {
@@ -82,7 +82,7 @@ public class TCPServerConnectionTest {
         ArrayList<Client> joiners = new ArrayList<>();
         for(int i=0; i<2; i++){
             String nickname2 = "Bob"+i;
-            Client c2 = new Client(new SmallModel(nickname2));
+            Client c2 = new Client();
             joiners.add(c2);
             c2.connect("TCP","localhost",1234);
             ServerConnection conn2 = c2.getServerConnection();

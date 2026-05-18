@@ -100,15 +100,17 @@ public class TCPServerConnection implements ServerConnection, Runnable {
         if (!request.store("LOGOUT")) throw new IllegalStateException("An action is already getting performed");
     }
 
+    //TODO: sistemare
     @Override
     public int getPlayersMatchId(String nickname) throws Exception {
         if (!request.store("MATCH_ID")) throw new IllegalStateException("An action is already getting performed");
         return this.matchID.take();
     }
 
+    //TODO: sistemare
     @Override
     public String getMatchInfo(int matchId) throws Exception {
-        if (!request.store("MATCH_STATUS_" + matchId))
+        if (!request.store("MATCH_STATUS" + matchId))
             throw new IllegalStateException("An action is already getting performed");
         return this.matchStatus.take();
     }
@@ -131,7 +133,7 @@ public class TCPServerConnection implements ServerConnection, Runnable {
 
         boolean success = this.success.take();
         if (!success) throw new IllegalArgumentException("Match num of player not valid.");
-        return 0;
+        return 0; //TODO: sistemare
     }
 
     @Override
@@ -191,7 +193,7 @@ public class TCPServerConnection implements ServerConnection, Runnable {
                     req = request.look(); //takes request
 
                     //request dispatch
-                    if (req.equals("AVAILABLE") || req.startsWith("MATCH_STATUS_")) {
+                    if (req.equals("AVAILABLE") || req.startsWith("MATCH_STATUS")) {
                         //request that needs a matches result
                         out.writeObject(req);
                         matches.store((String) in.readObject());

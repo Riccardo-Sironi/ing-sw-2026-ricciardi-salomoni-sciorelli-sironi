@@ -116,21 +116,25 @@ public class TCPClientDispatcher implements Runnable {
                     // Start parsing from the 13th character (right after the _ )
                     int queryId = Integer.parseInt(input.substring(13));
                     out.writeObject(sharedManager.getMatchInfo(queryId));
+                    mainLoopConfirm.store(true); //self-resets the receiver loop
                     continue;
-                }
+                } //TODO: sistemare
 
                 switch (input) {
                     case "AVAILABLE":
                         out.writeObject(sharedManager.getAvailableMatchesString());
+                        mainLoopConfirm.store(true); //self-resets the receiver loop
                         break;
                     case "LOGOUT":
                         if (nickname != null) sharedManager.logout(nickname);
+                        mainLoopConfirm.store(true); //self-resets the receiver loop
                         break;
                     //TODO: da capire ping
                     case "PING":
                         break;
                     case "MATCH_ID":
                         out.writeObject(sharedManager.getPlayersMatchId(nickname));
+                        mainLoopConfirm.store(true); //self-resets the receiver loop
                         break;
                     default:
                         mainLoopRequest.store(input);
