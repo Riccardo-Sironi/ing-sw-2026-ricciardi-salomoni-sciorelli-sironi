@@ -857,12 +857,12 @@ public class BoardController implements ModelListener {
             skipButton.setVisible(false);
         } else {
             skipButton.setVisible(true);
-            if (!smallModel.isActive() || !smallModel.isCanSkip()) {
+            if (smallModel.isActive() && smallModel.isCanSkip()) {
                 skipButton.setDisable(false);
                 toggleSkipButton(true);
             } else {
-                skipButton.setDisable(false);
-                toggleSkipButton(true);
+                skipButton.setDisable(true);
+                toggleSkipButton(false);
             }
         }
     }
@@ -915,6 +915,8 @@ public class BoardController implements ModelListener {
      */
     public static void applyPickCardAnimation(CardView card, HBox targetContainer, HBox mainRoot, Runnable networkRequest) {
         card.setOnMouseClicked(event -> {
+            card.setOnMouseClicked(null);
+
             Bounds cardScreen = card.localToScreen(card.getBoundsInLocal());
             Bounds targetScreen = targetContainer.localToScreen(targetContainer.getBoundsInLocal());
             if (cardScreen == null || targetScreen == null) return;
@@ -966,7 +968,7 @@ public class BoardController implements ModelListener {
                 EffectsManager.normalCard(card);
                 card.setOnMouseEntered(ev -> {
                 });
-                //targetContainer.getChildren().add(card); // TODO : we could do this and then redraw the original container
+                targetContainer.getChildren().add(card); // TODO : we could do this and then redraw the original container
 
                 if (networkRequest != null) {
                     networkRequest.run();
@@ -974,9 +976,6 @@ public class BoardController implements ModelListener {
             });
 
             transition.play();
-
-            // TODO : the card should be redrawn in the inventory so no need to remove the effects but we keep it for now
-            card.setOnMouseClicked(null);
         });
     }
 
@@ -1228,12 +1227,14 @@ public class BoardController implements ModelListener {
 
     public void handleTopRowRefill() {
         drawTopRowCards();
+        drawBottomRowCards();
         drawDeck();
     }
 
     public void handleTopBuildingsRefill() {
         drawTopBuildingsCards();
         drawBottomBuildingCards();
+        drawDeck();
     }
 
     public void handleTopRowPick() {
@@ -1296,6 +1297,7 @@ public class BoardController implements ModelListener {
         drawBottomRowCards();
         drawBottomBuildingCards();
         drawSkipButton();
+        drawDeck();
     }
 
     public void handleEraChanged() {

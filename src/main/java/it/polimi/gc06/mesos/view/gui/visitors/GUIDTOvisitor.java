@@ -41,7 +41,7 @@ public class GUIDTOvisitor extends DTOvisitor {
             boardController.handlePhaseChanged();
             boardController.handleEraChanged();
             gameViewController.handlePhaseChanged();
-            gameViewController.showEraOverlay();
+            //gameViewController.showEraOverlay();
         });
     }
 
@@ -59,7 +59,7 @@ public class GUIDTOvisitor extends DTOvisitor {
         Platform.runLater(() -> {
             boardController.handleGameStarted();
             // TODO : after drawing the board, show the era and phase overlays with a timer or something like that
-            gameViewController.showEraOverlay();
+            //gameViewController.showEraOverlay();
             gameViewController.showPhaseOverlay();
         });
     }
