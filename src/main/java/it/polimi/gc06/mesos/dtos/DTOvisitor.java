@@ -45,7 +45,7 @@ public abstract class DTOvisitor {
         visit((SmallModelEditor) dto);
     }
 
-    public void visit(TotemMovedDTO dto) {
+    public void visit(TotemOfferMoveDTO dto) {
         visit((SmallModelEditor) dto);
     }
 

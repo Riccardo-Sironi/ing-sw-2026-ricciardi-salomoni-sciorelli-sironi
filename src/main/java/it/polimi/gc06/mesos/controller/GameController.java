@@ -19,7 +19,7 @@ public class GameController {
 
     private final GameModel model;
     private final ArrayList<ModelListener> listeners;
-    private final Map<String,ModelListener> listenerMap;
+    private final Map<String, ModelListener> listenerMap;
 
     public GameController(GameModel model) {
         this.model = model;
@@ -59,7 +59,7 @@ public class GameController {
         model.getChangeHandler().registerState();
         turnManager.getPhase().placeTotem(turnManager, activePlayer, tile, model.getBoard());
 
-        TotemMovedDTO dto = new TotemMovedDTO(playerNickname,tileIndex);
+        TotemOfferMoveDTO dto = new TotemOfferMoveDTO(playerNickname, tileIndex);
         listeners.forEach(l -> l.update(dto));
         model.getChangeHandler().getChanges().forEach(c ->
                 listeners.forEach(l -> l.update(c)));
@@ -82,7 +82,7 @@ public class GameController {
         }
 
         TribeCard card = model.getBoard().getBottomCardFromIndex(cardIndex);
-        PickBottomRowDTO dto = new PickBottomRowDTO(playerNickname,cardIndex); //prepares the dto if needed
+        PickBottomRowDTO dto = new PickBottomRowDTO(playerNickname, cardIndex); //prepares the dto if needed
 
         model.getChangeHandler().registerState();
         CardBottomRowControllerVisitor cardPickerVisitor = new CardBottomRowControllerVisitor(turnManager, activePlayer, model);
@@ -113,7 +113,7 @@ public class GameController {
         }
 
         TribeCard card = model.getBoard().getTopCardFromIndex(cardIndex);
-        PickTopRowDTO dto = new PickTopRowDTO(playerNickname,cardIndex); //prepares the dto if needed
+        PickTopRowDTO dto = new PickTopRowDTO(playerNickname, cardIndex); //prepares the dto if needed
 
         model.getChangeHandler().registerState();
         CardTopRowControllerVisitor cardPickerVisitor = new CardTopRowControllerVisitor(turnManager, activePlayer, model);
@@ -146,7 +146,7 @@ public class GameController {
         }
 
         BuildingCard card = model.getBoard().getBottomBuildingFromIndex(cardIndex);
-        PickBottomBuildingsDTO dto = new PickBottomBuildingsDTO(playerNickname,cardIndex); //prepares the dto if needed
+        PickBottomBuildingsDTO dto = new PickBottomBuildingsDTO(playerNickname, cardIndex); //prepares the dto if needed
 
         model.getChangeHandler().registerState();
         turnManager.getPhase().pickCardFromBottom(turnManager, activePlayer, card, model.getBoard());
@@ -175,7 +175,7 @@ public class GameController {
         }
 
         BuildingCard card = model.getBoard().getTopBuildingFromIndex(cardIndex);
-        PickTopBuildingsDTO dto = new PickTopBuildingsDTO(playerNickname,cardIndex); //prepares the dto if needed
+        PickTopBuildingsDTO dto = new PickTopBuildingsDTO(playerNickname, cardIndex); //prepares the dto if needed
 
         model.getChangeHandler().registerState();
         turnManager.getPhase().pickCardFromTop(turnManager, activePlayer, card, model.getBoard());
@@ -213,9 +213,9 @@ public class GameController {
      *
      * @throws IllegalStateException if the game has already ended.
      */
-    public void sendGameStartInfo() throws IllegalStateException{
-        if(isGameFinished()) throw new IllegalStateException();
-        listenerMap.forEach((s,l) -> l.update(model.getChangeHandler().getStartingStateAsDTO(s)));
+    public void sendGameStartInfo() throws IllegalStateException {
+        if (isGameFinished()) throw new IllegalStateException();
+        listenerMap.forEach((s, l) -> l.update(model.getChangeHandler().getStartingStateAsDTO(s)));
     }
 
     public boolean isGameFinished() {
@@ -224,7 +224,7 @@ public class GameController {
 
     public void addListener(ModelListener listener, String nickname) {
         listeners.add(listener);
-        listenerMap.put(nickname,listener);
+        listenerMap.put(nickname, listener);
     }
 
     public void removeListener(ModelListener listener, String nickname) {

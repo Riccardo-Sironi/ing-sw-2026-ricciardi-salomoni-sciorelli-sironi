@@ -3,12 +3,12 @@ package it.polimi.gc06.mesos.dtos;
 import it.polimi.gc06.mesos.view.smallModel.PlayerView;
 import it.polimi.gc06.mesos.view.smallModel.SmallModel;
 
-public class TotemMovedDTO implements SmallModelEditor {
+public class TotemOfferMoveDTO implements SmallModelEditor {
 
     private final String player;
     private final int index;
 
-    public TotemMovedDTO(String player, int index) {
+    public TotemOfferMoveDTO(String player, int index) {
         this.player = player;
         this.index = index;
     }
