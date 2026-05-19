@@ -59,9 +59,9 @@ public class CardEffectVisitor extends CardVisitor {
     }
 
     private void checkIfCanBePicked() {
+        if (!smallModel.getPhase().equals(PHASE_OFFER_RESOLUTION)) return;
         BuildingCard building = (BuildingCard) cardView.getCard();
-        int nFood = smallModel.getPlayer().getNumFood();
-        if (building.getFoodCost() > nFood + 3 * smallModel.getPlayer().getNumGatherer()) {
+        if (building.getFoodCost() - smallModel.getPlayer().getBuildersDiscount() > smallModel.getPlayer().getNumFood()) {
             EffectsManager.disableCard(cardView);
         }
     }
