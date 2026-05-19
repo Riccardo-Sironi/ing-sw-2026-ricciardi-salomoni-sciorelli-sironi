@@ -40,6 +40,9 @@ public class GameViewController {
 
     @FXML
     public void initialize() {
+
+        guidtovisitor.setGameViewController(this);
+
         if (board != null) {
             board.prefWidthProperty().bind(root.widthProperty());
             board.prefHeightProperty().bind(root.heightProperty());

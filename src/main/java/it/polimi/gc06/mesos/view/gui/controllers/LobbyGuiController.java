@@ -43,6 +43,8 @@ public class LobbyGuiController {
 
     @FXML
     public void initialize() {
+        guidtovisitor.setLobbyGuiController(this);
+
         players = new EnumMap<>(Totem.class);
 
         setupArchitecturalLayout();

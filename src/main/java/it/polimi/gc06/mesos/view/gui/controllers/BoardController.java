@@ -187,6 +187,9 @@ public class BoardController {
 
     @FXML
     public void initialize() {
+
+        guidtovisitor.setBoardController(this);
+
         setupArchitecturalLayout();
 
         setupGameCommands();

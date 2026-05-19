@@ -2,6 +2,7 @@ package it.polimi.gc06.mesos.view.gui.controllers;
 
 import it.polimi.gc06.mesos.network.client.Client;
 import it.polimi.gc06.mesos.view.gui.GUI;
+import it.polimi.gc06.mesos.view.gui.GameScene;
 import it.polimi.gc06.mesos.view.smallModel.SmallModel;
 import javafx.animation.Animation;
 import javafx.animation.FadeTransition;
@@ -196,7 +197,7 @@ public class LoginController {
 
     private void performSceneTransition() {
         try {
-            URL selectGameUrl = getClass().getResource("/it/polimi/gc06/mesos/fxml/SelectGame.fxml");
+            URL selectGameUrl = getClass().getResource(GameScene.SELECT.getPath());
             Parent selectGameRoot = new FXMLLoader(selectGameUrl).load();
 
             if (rootPane.getScene() != null) {
@@ -216,7 +217,7 @@ public class LoginController {
     }
 
     private void swapSceneAndFadeIn(Parent newRoot) {
-        Stage stage = (Stage) rootPane.getScene().getWindow();
+        Stage stage = GUI.primaryStage;
 
         double currentWidth = stage.getScene().getWidth();
         double currentHeight = stage.getScene().getHeight();

@@ -1,6 +1,7 @@
 package it.polimi.gc06.mesos.view.gui.controllers;
 
 import it.polimi.gc06.mesos.view.gui.GUI;
+import it.polimi.gc06.mesos.view.gui.GameScene;
 import it.polimi.gc06.mesos.view.gui.ImageFetcher;
 import javafx.animation.Animation;
 import javafx.animation.FadeTransition;
@@ -9,11 +10,8 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.binding.NumberBinding;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
@@ -229,8 +227,11 @@ public class SelectGameController {
 
         try {
             int currentMatchId = GUI.client.getServerConnection().createMatch(numPlayers, LoginController.getNickname());
-            System.out.println("match " + (currentMatchId + 1) + " created");
-            proceedToLobby();
+            System.out.println("match " + (currentMatchId) + " created");
+
+            proceedToGame();
+
+            //proceedToLobby();
         } catch (Exception e) {
             rootPane.setDisable(false);
             e.printStackTrace();
@@ -250,13 +251,42 @@ public class SelectGameController {
         try {
             boolean joined = GUI.client.getServerConnection().joinMatch(matchId, LoginController.getNickname());
             if (joined) {
-                proceedToLobby();
+
+                proceedToGame();
+
+                //proceedToLobby();
             } else {
                 rootPane.setDisable(false);
                 handleRefresh();
             }
         } catch (Exception e) {
             rootPane.setDisable(false);
+            e.printStackTrace();
+        }
+    }
+
+    private void proceedToGame() {
+        GUI.subscribeGUI();
+
+        // TODO : we need a waiting screen but for now we'll keep this
+        while (GUI.smallModel.getPhase() == null) {
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        try {
+            // init the ImageFetcher
+            GUI.imageFetcher = new ImageFetcher(GUI.smallModel.getOpponents().size() + 1);
+        } catch (Exception e) {
+        }
+
+        try {
+            GUI.changeScene(GameScene.GAME.getPath());
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

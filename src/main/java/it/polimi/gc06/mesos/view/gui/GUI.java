@@ -47,7 +47,8 @@ public class GUI extends Application implements View, ModelListener {
         gui = this;
         guidtovisitor = new GUIDTOvisitor();
 
-        changeScene("/it/polimi/gc06/mesos/fxml/start.fxml");
+        changeScene(GameScene.START.getPath());
+        
         primaryStage.show();
     }
 
@@ -56,9 +57,12 @@ public class GUI extends Application implements View, ModelListener {
             FXMLLoader loader = new FXMLLoader(GUI.class.getResource(fxmlPath));
             Scene scene = new Scene(loader.load(), WIDTH, HEIGHT);
             scene.getStylesheets().add(Objects.requireNonNull(GUI.class.getResource("/it/polimi/gc06/mesos/css/board_style.css")).toExternalForm());
-            primaryStage.setTitle("Mesos");
-            javafx.application.Platform.runLater(() -> primaryStage.setMaximized(true));
-            primaryStage.setScene(scene);
+
+            Platform.runLater(() -> {
+                primaryStage.setTitle("Mesos");
+                primaryStage.setScene(scene);
+                primaryStage.setMaximized(true);
+            });
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -72,80 +76,9 @@ public class GUI extends Application implements View, ModelListener {
         }
     }
 
-    private void mockSmallModel() throws IOException {
-        ModelInstancesManager modelInstancesManager = new ModelInstancesManager();
-        ArrayList<String> players = new ArrayList<>();
-        for (int i = 1; i <= 5; i++) {
-            players.add("Player " + i);
-        }
-        GameModel gameModel = modelInstancesManager.createGame(players);
-
-        gameModel.startGame();
-
-        HashMap<Player, PlayerView> playersMap = new HashMap<>();
-
-        smallModel = new SmallModel("");
-
-        smallModel.setEra(gameModel.getBoard().getCurrentEra());
-        smallModel.setPhase(gameModel.getTurnManager().getPhase().toString());
-        smallModel.setRound(gameModel.getTurnManager().getRound());
-        smallModel.setActive(gameModel.getTurnManager().getActivePlayer().getNickname().equals("Player 1"));
-        smallModel.setCanSkip(false);
-        smallModel.setLeaderboard(new ArrayList<>());
-        smallModel.setTribeDeckSize(gameModel.getTribeCardsDeck().get(Era.ERA_I).size() + gameModel.getTribeCardsDeck().get(Era.ERA_II).size() + gameModel.getTribeCardsDeck().get(Era.ERA_III).size());
-
-        Player clientPlayer = null;
-
-        for (Player player : gameModel.getPlayers()) {
-            if (player.getNickname().equals("Player 1")) {
-                clientPlayer = player;
-                PlayerView p = new PlayerView(player.getNickname(), player.getPlayerColor());
-                playersMap.put(player, p);
-                smallModel.setPlayer(player.getNickname(), player.getPlayerColor());
-                smallModel.getPlayer().setNumFood(player.getFoodTokens());
-                smallModel.getPlayer().setNumPrestige(player.getPrestigeTokens());
-            } else {
-                PlayerView p = new PlayerView(player.getNickname(), player.getPlayerColor());
-                playersMap.put(player, p);
-                smallModel.getOpponents().add(p);
-            }
-        }
-
-        smallModel.setTopDrawNum(clientPlayer.getTopDrawNum());
-        smallModel.setBottomDrawNum(clientPlayer.getBottomDrawNum());
-
-        smallModel.getTopRow().addAll(gameModel.getBoard().getTopRow());
-        smallModel.getBottomRow().addAll(gameModel.getBoard().getBottomRow());
-        smallModel.getTopBuildings().addAll(gameModel.getBoard().getTopBuildings());
-        smallModel.getBottomBuildings().addAll(gameModel.getBoard().getBottomBuildings());
-
-        ArrayList<PlayerView> turnOrderTile = new ArrayList<>();
-        for (TileSlot slot : gameModel.getBoard().getTurnOrderTile().slots()) {
-            turnOrderTile.add(playersMap.get(slot.getPlayer()));
-        }
-
-        smallModel.getTurnOrderTile().addAll(turnOrderTile);
-
-        smallModel.getOfferTrack().addAll(gameModel.getBoard().getOfferTrack().stream().map(slot -> {
-            if (slot.isEmpty()) {
-                TileSlotView slotView = new TileSlotView();
-                slotView.setTileEffect(slot.getTileEffect());
-                return slotView;
-            } else {
-                TileSlotView slotView = new TileSlotView();
-                slotView.setPlayer(playersMap.get(slot.getPlayer()));
-                slotView.setTileEffect(slot.getTileEffect());
-                return slotView;
-            }
-        }).toList());
-
-        imageFetcher = new ImageFetcher(turnOrderTile.size());
-    }
-
-
     @Override
     public void update(SmallModelEditor dto) {
-        System.out.println("Updating");
+        System.out.println("Received update request");
         Platform.runLater(() -> {
             dto.accept(guidtovisitor);
         });
