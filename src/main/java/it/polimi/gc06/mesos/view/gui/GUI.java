@@ -55,13 +55,34 @@ public class GUI extends Application implements View, ModelListener {
     public static void changeScene(String fxmlPath) {
         try {
             FXMLLoader loader = new FXMLLoader(GUI.class.getResource(fxmlPath));
-            Scene scene = new Scene(loader.load(), WIDTH, HEIGHT);
-            scene.getStylesheets().add(Objects.requireNonNull(GUI.class.getResource("/it/polimi/gc06/mesos/css/board_style.css")).toExternalForm());
+            Parent newRoot = loader.load();
+
+            String css = Objects.requireNonNull(GUI.class.getResource("/it/polimi/gc06/mesos/css/board_style.css")).toExternalForm();
 
             Platform.runLater(() -> {
-                primaryStage.setTitle("Mesos");
-                primaryStage.setScene(scene);
-                primaryStage.setMaximized(true);
+                if (primaryStage.getScene() == null) {
+                    Scene scene = new Scene(newRoot, WIDTH, HEIGHT);
+                    scene.getStylesheets().add(css);
+                    primaryStage.setTitle("Mesos");
+                    primaryStage.setScene(scene);
+                    primaryStage.setMaximized(true);
+                } else {
+                    Scene scene = primaryStage.getScene();
+
+                    double currentWidth = scene.getWidth();
+                    double currentHeight = scene.getHeight();
+
+                    newRoot.getStylesheets().add(css);
+
+                    scene.setRoot(newRoot);
+
+                    if (newRoot instanceof javafx.scene.layout.Region) {
+                        ((javafx.scene.layout.Region) newRoot).setPrefSize(currentWidth, currentHeight);
+                    }
+
+                    newRoot.applyCss();
+                    newRoot.layout();
+                }
             });
         } catch (IOException e) {
             e.printStackTrace();
