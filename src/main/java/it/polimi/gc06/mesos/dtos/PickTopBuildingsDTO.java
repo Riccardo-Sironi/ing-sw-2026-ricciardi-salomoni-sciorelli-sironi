@@ -21,7 +21,7 @@ public class PickTopBuildingsDTO implements SmallModelEditor {
             smallModel.getPlayer().getBuildings().add(card);
         } else {
             smallModel.getOpponents().stream().filter(v -> v.getNickname().equals(player)).findFirst()
-                    .orElseThrow(IllegalStateException::new).getCharacters().add(card);
+                    .orElseThrow(IllegalStateException::new).getBuildings().add(card);
         }
     }
 
