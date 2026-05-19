@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import it.polimi.gc06.mesos.model.cards.Card;
 import it.polimi.gc06.mesos.model.gameBoard.TileEffect;
 import it.polimi.gc06.mesos.view.smallModel.TileSlotView;
+import javafx.scene.image.Image;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,7 +18,7 @@ public class ImageFetcher {
 
     private final int numOfPlayers;
     private final Random randomizer;
-    private final IdentityHashMap<Card, String> cardMap;
+    private final IdentityHashMap<Card, Image> cardMap;
     private final ArrayList<CardImagesInfo> cardInfos;
     private final IdentityHashMap<TileEffect, String> offerTileMap;
     private final ArrayList<OfferTileInfo> tileInfos;
@@ -58,14 +59,25 @@ public class ImageFetcher {
      * @return the image.
      * @throws NoSuchElementException if the fetching logic fails to find a valid image
      */
-    public String fetch(Card card) throws NoSuchElementException {
+    public Image fetch(Card card) throws NoSuchElementException {
 
         if (cardMap.containsKey(card)) return cardMap.get(card);
 
         //fetching logic
         CardImagesInfo info = cardInfos.stream().filter(i -> i.numOfPlayers <= numOfPlayers)
                 .filter(i -> i.cardInfo.equals(card)).findFirst().orElseThrow(NoSuchElementException::new);
-        cardMap.put(card, info.validImagesUrls.get(randomizer.nextInt(0, info.validImagesUrls.size())));
+
+        String path = info.validImagesUrls.get(randomizer.nextInt(0, info.validImagesUrls.size()));
+        
+        Image img;
+        try {
+            if (!path.startsWith("/")) path = "/" + path;
+            img = new Image(Objects.requireNonNull(getClass().getResourceAsStream(path)));
+        } catch (Exception e) {
+            System.err.println("image not found: " + path);
+            img = null;
+        }
+        cardMap.put(card, img);
 
         return cardMap.get(card);
     }

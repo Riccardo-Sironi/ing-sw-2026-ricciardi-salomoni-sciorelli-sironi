@@ -1,7 +1,5 @@
 package it.polimi.gc06.mesos.view.gui.controllers;
 
-import it.polimi.gc06.mesos.controller.ModelListener;
-import it.polimi.gc06.mesos.dtos.SmallModelEditor;
 import it.polimi.gc06.mesos.model.cards.Card;
 import it.polimi.gc06.mesos.model.gameTurnManager.EndOfRoundPhase;
 import it.polimi.gc06.mesos.model.gameTurnManager.EventResolutionPhase;
@@ -261,7 +259,7 @@ public class BoardController {
                         leftZone.getChildren().remove(inventoryBox);
                         mainRoot.getChildren().remove(opponentsSidebar);
 
-                        // the board takes the full height of leftzone
+                        // the board takes the full height of left zone
                         boardRoot.prefHeightProperty().bind(leftZone.heightProperty());
                         // the left zone takes ful width
                         leftZone.prefWidthProperty().bind(mainRoot.widthProperty());
@@ -523,7 +521,7 @@ public class BoardController {
             opp.getCardsContainer().getChildren().clear();
 
             for (Card c : opponent.getCharacters()) {
-                CardView cardView = new CardView(loadImage(imageFetcher.fetch(c)));
+                CardView cardView = new CardView(imageFetcher.fetch(c));
                 cardView.fitHeightProperty().bind(opp.getCardsContainer().heightProperty().multiply(RESIZE_CARD_FACTOR));
                 opp.getCardsContainer().getChildren().add(cardView);
             }
@@ -690,7 +688,7 @@ public class BoardController {
         playerCardsContainer.getChildren().clear();
 
         for (Card card : p.getCharacters()) {
-            CardView cardView = new CardView(loadImage(imageFetcher.fetch(card)));
+            CardView cardView = new CardView(imageFetcher.fetch(card));
             cardView.fitHeightProperty().bind(inventoryBox.heightProperty().multiply(RESIZE_CARD_FACTOR));
             playerCardsContainer.getChildren().add(cardView);
         }
@@ -747,7 +745,7 @@ public class BoardController {
             Card card = smallModel.getTopRow().get(i);
             final int cardIndex = i;
 
-            CardView cardView = new CardView(loadImage(imageFetcher.fetch(card)));
+            CardView cardView = new CardView(imageFetcher.fetch(card));
             cardView.fitHeightProperty().bind(topRowBox.heightProperty().multiply(RESIZE_CARD_FACTOR));
             cardView.setCard(card);
 
@@ -774,7 +772,7 @@ public class BoardController {
             Card building = smallModel.getTopBuildings().get(i);
             final int cardIndex = i;
 
-            CardView cardView = new CardView(loadImage(imageFetcher.fetch(building)));
+            CardView cardView = new CardView(imageFetcher.fetch(building));
             cardView.fitHeightProperty().bind(topRowBox.heightProperty().multiply(RESIZE_CARD_FACTOR));
             cardView.setCard(building);
 
@@ -801,7 +799,7 @@ public class BoardController {
             Card card = smallModel.getBottomRow().get(i);
             final int cardIndex = i;
 
-            CardView cardView = new CardView(loadImage(imageFetcher.fetch(card)));
+            CardView cardView = new CardView(imageFetcher.fetch(card));
             cardView.fitHeightProperty().bind(bottomRowBox.heightProperty().multiply(RESIZE_CARD_FACTOR));
             cardView.setCard(card);
 
@@ -836,7 +834,7 @@ public class BoardController {
             Card building = smallModel.getBottomBuildings().get(i);
             final int cardIndex = i;
 
-            CardView cardView = new CardView(loadImage(imageFetcher.fetch(building)));
+            CardView cardView = new CardView(imageFetcher.fetch(building));
             cardView.fitHeightProperty().bind(bottomRowBox.heightProperty().multiply(RESIZE_CARD_FACTOR));
             cardView.setCard(building);
 
