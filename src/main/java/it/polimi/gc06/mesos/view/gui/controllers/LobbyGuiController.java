@@ -163,13 +163,13 @@ public class LobbyGuiController implements ModelListener {
             totemBox.setOnMouseClicked(e -> {
                 totemSelectionBox.setDisable(true);
 
-                try {
-                    System.out.println("Inviando al server la scelta del totem: " + totem);
-                    GUI.client.getServerConnection().chooseTotem(LoginController.getNickname(), totem.ordinal());
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                    totemSelectionBox.setDisable(false);
-                }
+//                try {
+//                    System.out.println("Inviando al server la scelta del totem: " + totem);
+//                    GUI.client.getServerConnection().chooseTotem(LoginController.getNickname(), totem.ordinal());
+//                } catch (Exception ex) {
+//                    ex.printStackTrace();
+//                    totemSelectionBox.setDisable(false);
+//                }
             });
         }
     }
