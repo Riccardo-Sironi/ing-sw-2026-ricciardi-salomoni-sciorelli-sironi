@@ -33,19 +33,6 @@ public class GUIDTOvisitor extends DTOvisitor {
     }
 
     @Override
-    public void visit(GameStateChangeDTO dto) {
-        System.out.println("Game state change!");
-        Platform.runLater(() -> {
-            // TODO : we have to differentiate this changes somehow
-            boardController.handleRoundChanged();
-            boardController.handlePhaseChanged();
-            boardController.handleEraChanged();
-            gameViewController.handlePhaseChanged();
-            //gameViewController.showEraOverlay();
-        });
-    }
-
-    @Override
     public void visit(BuildingsRefillDTO dto) {
         System.out.println("Building refill!");
         Platform.runLater(() -> {
@@ -125,6 +112,33 @@ public class GUIDTOvisitor extends DTOvisitor {
         System.out.println("Totem moved!");
         Platform.runLater(() -> {
             boardController.handleTotemMoved();
+        });
+    }
+
+    @Override
+    public void visit(PhaseChangeDTO dto) {
+        System.out.println("Phase change!");
+
+        Platform.runLater(() -> {
+            boardController.handlePhaseChanged();
+            gameViewController.handlePhaseChanged();
+        });
+    }
+
+    @Override
+    public void visit(EraChangeDTO dto) {
+        System.out.println("Era change!");
+        Platform.runLater(() -> {
+            boardController.handleEraChanged();
+            gameViewController.showEraOverlay();
+        });
+    }
+
+    @Override
+    public void visit(RoundChangeDTO dto) {
+        System.out.println("Round change!");
+        Platform.runLater(() -> {
+            boardController.handleRoundChanged();
         });
     }
 }

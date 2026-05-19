@@ -48,4 +48,16 @@ public abstract class DTOvisitor {
     public void visit(TotemMovedDTO dto) {
         visit((SmallModelEditor) dto);
     }
+
+    public void visit(PhaseChangeDTO dto) {
+        visit((SmallModelEditor) dto);
+    }
+
+    public void visit(EraChangeDTO dto) {
+        visit((SmallModelEditor) dto);
+    }
+
+    public void visit(RoundChangeDTO dto) {
+        visit((SmallModelEditor) dto);
+    }
 }
