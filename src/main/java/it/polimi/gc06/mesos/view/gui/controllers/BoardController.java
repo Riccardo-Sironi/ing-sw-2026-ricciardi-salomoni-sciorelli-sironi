@@ -508,6 +508,12 @@ public class BoardController {
                 opp.getCardsContainer().getChildren().add(cardView);
             }
 
+            for (Card b : opponent.getBuildings()) {
+                CardView cardView = new CardView(imageFetcher.fetch(b));
+                cardView.fitHeightProperty().bind(opp.getCardsContainer().heightProperty().multiply(RESIZE_CARD_FACTOR));
+                opp.getCardsContainer().getChildren().add(cardView);
+            }
+
             opp.getPrestigeTokensText().setText(String.valueOf(opponent.getNumPrestige()));
             opp.getFoodTokensText().setText(String.valueOf(opponent.getNumFood()));
 
@@ -671,6 +677,13 @@ public class BoardController {
 
         for (Card card : p.getCharacters()) {
             CardView cardView = new CardView(imageFetcher.fetch(card));
+            cardView.fitHeightProperty().bind(inventoryBox.heightProperty().multiply(RESIZE_CARD_FACTOR));
+            playerCardsContainer.getChildren().add(cardView);
+        }
+
+        // TODO : add player buildings container
+        for (Card building : p.getBuildings()) {
+            CardView cardView = new CardView(imageFetcher.fetch(building));
             cardView.fitHeightProperty().bind(inventoryBox.heightProperty().multiply(RESIZE_CARD_FACTOR));
             playerCardsContainer.getChildren().add(cardView);
         }
