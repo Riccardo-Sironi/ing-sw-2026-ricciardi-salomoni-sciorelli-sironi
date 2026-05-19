@@ -14,10 +14,6 @@ public enum Totem {
         return "/imgs/totems/" + this.name().toLowerCase() + "_standing_totem.png";
     }
 
-    public String getTotemTurnOrderOverlay() {
-        return "/imgs/totems/" + this.name().toLowerCase() + "_totem_overlay.png";
-    }
-
     public static Totem getTotem(Color color) {
         switch (color) {
             case RED:

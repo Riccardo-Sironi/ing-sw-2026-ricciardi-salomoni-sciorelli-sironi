@@ -2,8 +2,10 @@ package it.polimi.gc06.mesos.view.gui;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import it.polimi.gc06.mesos.model.Color;
 import it.polimi.gc06.mesos.model.cards.Card;
 import it.polimi.gc06.mesos.model.gameBoard.TileEffect;
+import it.polimi.gc06.mesos.view.gui.helpers.Totem;
 import it.polimi.gc06.mesos.view.smallModel.TileSlotView;
 import javafx.scene.image.Image;
 
@@ -19,6 +21,8 @@ public class ImageFetcher {
     private final int numOfPlayers;
     private final Random randomizer;
     private final IdentityHashMap<Card, Image> cardMap;
+    private static final EnumMap<Color, Image> totemsMap = new EnumMap<>(Color.class);
+    private static Image noneTotemImage = null;
     private final ArrayList<CardImagesInfo> cardInfos;
     private final IdentityHashMap<TileEffect, String> offerTileMap;
     private final ArrayList<OfferTileInfo> tileInfos;
@@ -49,7 +53,28 @@ public class ImageFetcher {
         for (int i = 2; i <= numOfPlayers; i++) {
             tileInfos.addAll(map.get(i).offerTiles);
         }
+
         turnOrderTileUrl = map.get(numOfPlayers).turnOrderTileUrl;
+
+        for (Color color : Color.values()) {
+            String path = Totem.getTotem(color).getTotemStanding();
+
+            try {
+                Image img = new Image(Objects.requireNonNull(getClass().getResourceAsStream(path)));
+                totemsMap.put(color, img);
+            } catch (Exception e) {
+                System.err.println("ERRORE: Impossibile caricare il totem per il colore: " + color);
+            }
+        }
+
+        String path = Totem.NONE.getTotemStanding();
+
+        try {
+            Image img = new Image(Objects.requireNonNull(getClass().getResourceAsStream(path)));
+            noneTotemImage = img;
+        } catch (Exception e) {
+            System.err.println("ERRORE: Impossibile caricare il totem per il colore: NONE ");
+        }
     }
 
     /**
@@ -68,7 +93,7 @@ public class ImageFetcher {
                 .filter(i -> i.cardInfo.equals(card)).findFirst().orElseThrow(NoSuchElementException::new);
 
         String path = info.validImagesUrls.get(randomizer.nextInt(0, info.validImagesUrls.size()));
-        
+
         Image img;
         try {
             if (!path.startsWith("/")) path = "/" + path;
@@ -99,6 +124,14 @@ public class ImageFetcher {
         offerTileMap.put(effect, info.offerTileUrl);
 
         return offerTileMap.get(effect);
+    }
+
+    public static Image getTotemImage(Color color) {
+        return totemsMap.get(color);
+    }
+
+    public static Image getTotemImage() {
+        return noneTotemImage;
     }
 
     public String getTurnOrderTileUrl() {
