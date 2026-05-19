@@ -200,26 +200,6 @@ public class BoardController {
                 if (e.getCode() == KeyCode.H) {
                     toggleHelpOverlay();
                 }
-                if (e.getCode() == KeyCode.DIGIT1) {
-                    smallModel.setPhase(new PlacingTotemPhase().toString());
-                    smallModel.setActive(true);
-                    drawEverything();
-                }
-                if (e.getCode() == KeyCode.DIGIT2) {
-                    smallModel.setPhase(new OfferResolutionPhase().toString());
-                    smallModel.setActive(true);
-                    drawEverything();
-                }
-                if (e.getCode() == KeyCode.DIGIT3) {
-                    smallModel.setPhase(new EventResolutionPhase().toString());
-                    smallModel.setActive(true);
-                    drawEverything();
-                }
-                if (e.getCode() == KeyCode.DIGIT4) {
-                    smallModel.setPhase(new EndOfRoundPhase().toString());
-                    smallModel.setActive(true);
-                    drawEverything();
-                }
                 if (e.getCode() == KeyCode.DIGIT8) {
                     currentLayout = LayoutConfiguration.CAVE_COLORS;
                     drawPlayerInventory();
