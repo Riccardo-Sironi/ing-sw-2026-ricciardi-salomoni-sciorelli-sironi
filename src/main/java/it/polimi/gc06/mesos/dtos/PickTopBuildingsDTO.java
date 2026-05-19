@@ -15,9 +15,10 @@ public class PickTopBuildingsDTO implements SmallModelEditor {
 
     @Override
     public void edit(SmallModel smallModel) {
-        Card card = smallModel.getTopBuildings().remove(cardIndex);
+        Card card = smallModel.getTopBuildings().get(cardIndex);
+        smallModel.getTopBuildings().set(cardIndex, null);
         if (smallModel.getPlayer().getNickname().equals(player)) {
-            smallModel.getPlayer().getCharacters().add(card);
+            smallModel.getPlayer().getBuildings().add(card);
         } else {
             smallModel.getOpponents().stream().filter(v -> v.getNickname().equals(player)).findFirst()
                     .orElseThrow(IllegalStateException::new).getCharacters().add(card);

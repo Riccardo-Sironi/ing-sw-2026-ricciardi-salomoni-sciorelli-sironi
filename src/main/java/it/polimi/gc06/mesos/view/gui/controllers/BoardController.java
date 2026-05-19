@@ -1,8 +1,6 @@
 package it.polimi.gc06.mesos.view.gui.controllers;
 
 import it.polimi.gc06.mesos.model.cards.Card;
-import it.polimi.gc06.mesos.model.gameTurnManager.EndOfRoundPhase;
-import it.polimi.gc06.mesos.model.gameTurnManager.EventResolutionPhase;
 import it.polimi.gc06.mesos.model.gameTurnManager.OfferResolutionPhase;
 import it.polimi.gc06.mesos.model.gameTurnManager.PlacingTotemPhase;
 import it.polimi.gc06.mesos.view.gui.elements.*;
@@ -723,6 +721,8 @@ public class BoardController {
         if (smallModel == null) return;
         for (int i = 0; i < smallModel.getTopRow().size(); i++) {
             Card card = smallModel.getTopRow().get(i);
+            if (card == null) continue;
+
             final int cardIndex = i;
 
             CardView cardView = new CardView(imageFetcher.fetch(card));
@@ -750,6 +750,8 @@ public class BoardController {
 
         for (int i = 0; i < smallModel.getTopBuildings().size(); i++) {
             Card building = smallModel.getTopBuildings().get(i);
+            if (building == null) continue;
+
             final int cardIndex = i;
 
             CardView cardView = new CardView(imageFetcher.fetch(building));
@@ -777,6 +779,8 @@ public class BoardController {
 
         for (int i = 0; i < smallModel.getBottomRow().size(); i++) {
             Card card = smallModel.getBottomRow().get(i);
+            if (card == null) continue;
+
             final int cardIndex = i;
 
             CardView cardView = new CardView(imageFetcher.fetch(card));
@@ -812,6 +816,8 @@ public class BoardController {
 
         for (int i = 0; i < smallModel.getBottomBuildings().size(); i++) {
             Card building = smallModel.getBottomBuildings().get(i);
+            if (building == null) continue;
+
             final int cardIndex = i;
 
             CardView cardView = new CardView(imageFetcher.fetch(building));
@@ -1107,7 +1113,6 @@ public class BoardController {
 
     private void toggleSkipButton(boolean canSkip) {
         skipButton.pseudoClassStateChanged(DISABLED_STYLE, !canSkip);
-        skipButton.applyCss();
         skipButton.setCursor(canSkip ? Cursor.HAND : Cursor.DEFAULT);
     }
 
