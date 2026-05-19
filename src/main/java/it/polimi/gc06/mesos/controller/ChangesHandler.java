@@ -50,7 +50,8 @@ public class ChangesHandler {
         ArrayList<SmallModelEditor> changes = new ArrayList<>();
 
         if (board.isEndGame()) {
-            changes.add(new GameStateChangeDTO(model.getLeaderboard().getScores()));
+            changes.add(new LeaderboardChangeDTO(model.getLeaderboard().getScores()));
+            //changes.add(new GameStateChangeDTO(model.getLeaderboard().getScores()));
             return changes;
         }
 
@@ -59,8 +60,8 @@ public class ChangesHandler {
             PlayerState ps = lastPlayersState.stream().filter(s -> s.getPlayer().getNickname().equals(p.getNickname()))
                     .findFirst().orElseThrow(IllegalStateException::new);
             changes.add(new PlayerResourcesChangeDTO(
-                    ps.player.getNickname(), p.getTopDrawNum() - ps.getTopDraw(), p.getBottomDrawNum() - ps.getBottomDraw(),
-                    p.getFoodTokens() - ps.getFood(), p.getPrestigeTokens() - ps.getPrestige()
+                    ps.player.getNickname(), p.getTopDrawNum(), p.getBottomDrawNum(),
+                    p.getFoodTokens(), p.getPrestigeTokens()
             ));
         }
 
@@ -79,21 +80,24 @@ public class ChangesHandler {
 
         //check if the round has changed
         if (lastRound != turnManager.getRound()) {
-            changes.add(new GameStateChangeDTO(turnManager.getRound()));
+            changes.add(new RoundChangeDTO(turnManager.getRound()));
+            // changes.add(new GameStateChangeDTO(turnManager.getRound()));
             changes.add(new TopRowRefillDTO(new ArrayList<>(board.getTopRow()), new ArrayList<>(board.getBottomRow())));
             changes.add(new BuildingsRefillDTO(new ArrayList<>(board.getTopBuildings()), new ArrayList<>(board.getBottomBuildings())));
         }
 
         //checks last era
         if (lastEra == null || !lastEra.equals(board.getCurrentEra())) {
-            changes.add(new GameStateChangeDTO(board.getCurrentEra()));
+            changes.add(new EraChangeDTO(board.getCurrentEra()));
+            //changes.add(new GameStateChangeDTO(board.getCurrentEra()));
             changes.add(new TopRowRefillDTO(new ArrayList<>(board.getTopRow()), new ArrayList<>(board.getBottomRow())));
             changes.add(new BuildingsRefillDTO(new ArrayList<>(board.getTopBuildings()), new ArrayList<>(board.getBottomBuildings())));
         }
 
         //check last phase
         if (lastPhase == null || !lastPhase.equals(turnManager.getPhase().toString())) {
-            changes.add(new GameStateChangeDTO(turnManager.getPhase().toString()));
+            //changes.add(new GameStateChangeDTO(turnManager.getPhase().toString()));
+            changes.add(new PhaseChangeDTO(turnManager.getPhase().toString()));
         }
 
         //check active player change and right to skip of the new player
