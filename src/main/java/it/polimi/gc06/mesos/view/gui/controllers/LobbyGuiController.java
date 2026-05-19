@@ -27,7 +27,7 @@ import java.util.EnumMap;
 import static it.polimi.gc06.mesos.view.gui.GUI.guidtovisitor;
 
 
-public class LobbyGuiController implements ModelListener {
+public class LobbyGuiController {
     @FXML
     public StackPane lobbyRoot;
     @FXML
@@ -182,10 +182,5 @@ public class LobbyGuiController implements ModelListener {
 
         ParallelTransition enterAnimation = new ParallelTransition(fade, slide, scale);
         enterAnimation.play();
-    }
-
-    @Override
-    public void update(SmallModelEditor dto) {
-        dto.accept(guidtovisitor);
     }
 }

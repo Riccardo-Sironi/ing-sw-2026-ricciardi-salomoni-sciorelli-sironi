@@ -46,7 +46,7 @@ import java.util.function.Consumer;
 
 import static it.polimi.gc06.mesos.view.gui.GUI.*;
 
-public class BoardController implements ModelListener {
+public class BoardController {
 
     @FXML
     private HBox mainRoot;
@@ -1215,14 +1215,6 @@ public class BoardController implements ModelListener {
         inventoryBox.maxHeightProperty().unbind();
         inventoryBox.setMaxWidth(Region.USE_COMPUTED_SIZE);
         inventoryBox.setMaxHeight(Region.USE_COMPUTED_SIZE);
-    }
-
-    @Override
-    public void update(SmallModelEditor dto) {
-        System.out.println("PROVA");
-        Platform.runLater(() -> {
-            dto.accept(guidtovisitor);
-        });
     }
 
     public void handleTopRowRefill() {

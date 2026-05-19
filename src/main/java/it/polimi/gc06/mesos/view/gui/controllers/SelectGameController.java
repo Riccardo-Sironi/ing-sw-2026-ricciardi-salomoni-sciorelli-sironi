@@ -1,6 +1,7 @@
 package it.polimi.gc06.mesos.view.gui.controllers;
 
 import it.polimi.gc06.mesos.view.gui.GUI;
+import it.polimi.gc06.mesos.view.gui.ImageFetcher;
 import javafx.animation.Animation;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
@@ -8,8 +9,11 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.binding.NumberBinding;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
@@ -27,20 +31,32 @@ import java.util.regex.Pattern;
 
 public class SelectGameController {
 
-    @FXML private StackPane rootPane;
-    @FXML private ImageView backgroundImageView;
-    @FXML private ImageView particlesImageView;
-    @FXML private Region bottomGlow;
+    @FXML
+    private StackPane rootPane;
+    @FXML
+    private ImageView backgroundImageView;
+    @FXML
+    private ImageView particlesImageView;
+    @FXML
+    private Region bottomGlow;
 
-    @FXML private VBox mainBox;
-    @FXML private Label titleLabel;
-    @FXML private ScrollPane matchesScrollPane;
-    @FXML private VBox matchesContainer;
+    @FXML
+    private VBox mainBox;
+    @FXML
+    private Label titleLabel;
+    @FXML
+    private ScrollPane matchesScrollPane;
+    @FXML
+    private VBox matchesContainer;
 
-    @FXML private Button refreshButton;
-    @FXML private Button createButton;
-    @FXML private HBox playersSelectionBox;
-    @FXML private Label playersLabel;
+    @FXML
+    private Button refreshButton;
+    @FXML
+    private Button createButton;
+    @FXML
+    private HBox playersSelectionBox;
+    @FXML
+    private Label playersLabel;
 
     private Font titleFont;
     private Font itemFont;
@@ -97,8 +113,8 @@ public class SelectGameController {
     private void setupButtonsAndScroll() {
         styleButton(refreshButton);
         styleButton(createButton);
-        for(Node n : playersSelectionBox.getChildren()){
-            if(n instanceof Button) styleButton((Button) n);
+        for (Node n : playersSelectionBox.getChildren()) {
+            if (n instanceof Button) styleButton((Button) n);
         }
 
         matchesScrollPane.setOnScroll(event -> {
@@ -323,8 +339,14 @@ public class SelectGameController {
 
         btn.setOnMouseEntered(e -> btn.setStyle(HOVER_STYLE));
         btn.setOnMouseExited(e -> btn.setStyle(BTN_STYLE));
-        btn.setOnMousePressed(e -> { btn.setTranslateY(0.5); textShadow.setOffsetY(0.5); });
-        btn.setOnMouseReleased(e -> { btn.setTranslateY(0); textShadow.setOffsetY(2.5); });
+        btn.setOnMousePressed(e -> {
+            btn.setTranslateY(0.5);
+            textShadow.setOffsetY(0.5);
+        });
+        btn.setOnMouseReleased(e -> {
+            btn.setTranslateY(0);
+            textShadow.setOffsetY(2.5);
+        });
     }
 
     private int extractMatchId(String matchString) {

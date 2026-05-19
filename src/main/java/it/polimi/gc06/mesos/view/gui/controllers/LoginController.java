@@ -27,19 +27,27 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.net.URL;
-import java.rmi.RemoteException;
 
 public class LoginController {
 
-    @FXML private StackPane rootPane;
-    @FXML private ImageView backgroundImageView;
-    @FXML private ImageView particlesImageView;
-    @FXML private Region bottomGlow;
-    @FXML private VBox loginBox;
-    @FXML private Label promptLabel;
-    @FXML private TextField nicknameField;
-    @FXML private Button joinButton;
-    @FXML private DropShadow buttonShadow;
+    @FXML
+    private StackPane rootPane;
+    @FXML
+    private ImageView backgroundImageView;
+    @FXML
+    private ImageView particlesImageView;
+    @FXML
+    private Region bottomGlow;
+    @FXML
+    private VBox loginBox;
+    @FXML
+    private Label promptLabel;
+    @FXML
+    private TextField nicknameField;
+    @FXML
+    private Button joinButton;
+    @FXML
+    private DropShadow buttonShadow;
 
     private static String nickname = "";
     private boolean transitionStarted = false;
@@ -47,7 +55,7 @@ public class LoginController {
     private static final String FONT_PATH = "/it/polimi/gc06/mesos/fonts/ArcadianG.ttf";
 
     private static final String BTN_STYLE_DEFAULT = "-fx-background-color: transparent; -fx-border-color: #2B2B2B; -fx-border-width: 3; -fx-text-fill: #2B2B2B; -fx-background-radius: 10; -fx-border-radius: 10; -fx-cursor: hand;";
-    private static final String BTN_STYLE_HOVER   = "-fx-background-color: rgba(0,0,0,0.1); -fx-border-color: #2B2B2B; -fx-border-width: 3; -fx-text-fill: #2B2B2B; -fx-background-radius: 10; -fx-border-radius: 10; -fx-cursor: hand;";
+    private static final String BTN_STYLE_HOVER = "-fx-background-color: rgba(0,0,0,0.1); -fx-border-color: #2B2B2B; -fx-border-width: 3; -fx-text-fill: #2B2B2B; -fx-background-radius: 10; -fx-border-radius: 10; -fx-cursor: hand;";
     private static final String FIELD_STYLE_VALID = "-fx-background-color: transparent; -fx-border-color: transparent transparent #2B2B2B transparent; -fx-border-width: 0 0 3 0; -fx-text-fill: #2B2B2B; -fx-prompt-text-fill: rgba(43,43,43,0.5); -fx-alignment: center;";
     private static final String FIELD_STYLE_ERROR = "-fx-background-color: transparent; -fx-border-color: transparent transparent #8a0303 transparent; -fx-border-width: 0 0 3 0; -fx-text-fill: #2B2B2B; -fx-prompt-text-fill: rgba(43,43,43,0.5); -fx-alignment: center;";
 

@@ -17,7 +17,7 @@ import javafx.util.Duration;
 import static it.polimi.gc06.mesos.view.gui.GUI.guidtovisitor;
 import static it.polimi.gc06.mesos.view.gui.GUI.smallModel;
 
-public class GameViewController implements ModelListener {
+public class GameViewController {
 
     @FXML
     private StackPane root;
@@ -133,7 +133,7 @@ public class GameViewController implements ModelListener {
 
     public void showEraOverlay() {
         if (smallModel.getEra() == null) return;
-        
+
         String path = "/imgs/overlay/" + smallModel.getEra().name().toLowerCase() + "_overlay.png";
 
         java.io.InputStream imageStream = getClass().getResourceAsStream(path);
@@ -142,11 +142,6 @@ public class GameViewController implements ModelListener {
         } else {
             System.err.println("ERROR: Era overlay image not found at path: " + path);
         }
-    }
-
-    @Override
-    public void update(SmallModelEditor dto) {
-        dto.accept(guidtovisitor);
     }
 
     public void handleRoundChanged() {
