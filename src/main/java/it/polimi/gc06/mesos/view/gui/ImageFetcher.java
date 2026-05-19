@@ -24,6 +24,7 @@ public class ImageFetcher {
     private static final EnumMap<Color, Image> totemsMap = new EnumMap<>(Color.class);
     private static Image noneTotemImage = null;
     private final ArrayList<CardImagesInfo> cardInfos;
+    private static Image nullCardImage = null;
     private final IdentityHashMap<TileEffect, String> offerTileMap;
     private final ArrayList<OfferTileInfo> tileInfos;
     private final String turnOrderTileUrl;
@@ -75,6 +76,9 @@ public class ImageFetcher {
         } catch (Exception e) {
             System.err.println("ERRORE: Impossibile caricare il totem per il colore: NONE ");
         }
+
+        String nulCardPath = "/cards/fronts/null_card.png";
+        nullCardImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream(nulCardPath)));
     }
 
     /**
@@ -132,6 +136,10 @@ public class ImageFetcher {
 
     public static Image getTotemImage() {
         return noneTotemImage;
+    }
+
+    public static Image getNullCardImage() {
+        return nullCardImage;
     }
 
     public String getTurnOrderTileUrl() {
