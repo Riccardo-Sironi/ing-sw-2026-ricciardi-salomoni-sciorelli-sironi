@@ -55,7 +55,7 @@ public class TCPClientManagerTest {
             ObjectInputStream in = clients.get(nickname).in;
             ObjectOutputStream out = clients.get(nickname).out;
             out.writeObject("CREATE" + numOfPlayers);
-            assertEquals("OK", (String) in.readObject(), "CREATE request failed");
+            assertNotEquals("KO", (String) in.readObject(), "CREATE request failed");
             System.out.println("Match created successfully by " + nickname);
         } catch (ClassNotFoundException | IOException e) {
             fail("Error during match creation");

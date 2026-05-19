@@ -41,11 +41,9 @@ public class TCPServerConnection implements ServerConnection, Runnable {
     //futures and result
     //if isDone it means that the value was accepted, otherwise it is emptied
     private final BlockingBox<String> request;
-    private final BlockingBox<Boolean> success; //represents whether the last request was successful
-    private final BlockingBox<String> matches;
-    private final BlockingBox<Integer> matchID;
-    private final BlockingBox<String> matchStatus;
+    private final BlockingBox<Object> result;
     private final BlockingQueue<ControllerCommand> commands;
+    private final BlockingQueue<Object> responses;
 
     public TCPServerConnection(String host, int port) {
         this.host = host;
@@ -55,11 +53,9 @@ public class TCPServerConnection implements ServerConnection, Runnable {
         prioritizedListener = null;
 
         request = new BlockingBox<>();
-        success = new BlockingBox<>();
-        matches = new BlockingBox<>();
-        matchID = new BlockingBox<>();
-        matchStatus = new BlockingBox<>();
+        result = new BlockingBox<>();
         commands = new LinkedBlockingQueue<>();
+        responses = new LinkedBlockingQueue<>();
 
         out = null;
         in = null;
@@ -81,7 +77,7 @@ public class TCPServerConnection implements ServerConnection, Runnable {
 
     @Override
     public void ping() {
-        if (!request.store("PING")) throw new IllegalStateException("An action is already getting performed");
+        //Does nothing (only valid in RMI)
     }
 
     @Override
@@ -90,7 +86,11 @@ public class TCPServerConnection implements ServerConnection, Runnable {
         if (nicknameSent || isInsideMatch) throw new IllegalStateException("This action shouldn't be performed now");
         if (!request.store("LOGIN" + nickname))
             throw new IllegalStateException("An action is already getting performed");
-        return this.success.take();
+        if(((String)this.result.take()).equals("OK")){
+            nicknameSent = true;
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -100,26 +100,24 @@ public class TCPServerConnection implements ServerConnection, Runnable {
         if (!request.store("LOGOUT")) throw new IllegalStateException("An action is already getting performed");
     }
 
-    //TODO: sistemare
     @Override
     public int getPlayersMatchId(String nickname) throws Exception {
         if (!request.store("MATCH_ID")) throw new IllegalStateException("An action is already getting performed");
-        return this.matchID.take();
+        return (Integer) this.result.take();
     }
 
-    //TODO: sistemare
     @Override
     public String getMatchInfo(int matchId) throws Exception {
         if (!request.store("MATCH_STATUS" + matchId))
             throw new IllegalStateException("An action is already getting performed");
-        return this.matchStatus.take();
+        return (String) result.take();
     }
 
     @Override
     public String getAvailableMatches() throws Exception {
         if (isInsideMatch) throw new IllegalStateException("Match already started");
         if (!request.store("AVAILABLE")) throw new IllegalStateException("An action is already getting performed");
-        return this.matches.take();
+        return (String) result.take();
     }
 
     @Override
@@ -131,9 +129,10 @@ public class TCPServerConnection implements ServerConnection, Runnable {
         if (!request.store("CREATE" + numOfPlayers))
             throw new IllegalStateException("An action is already getting performed");
 
-        boolean success = this.success.take();
-        if (!success) throw new IllegalArgumentException("Match num of player not valid.");
-        return 0; //TODO: sistemare
+        String r = (String) result.take();
+        if(r.equals("KO")) throw new IllegalArgumentException("Match num of player not valid.");
+        else isInsideMatch = true;
+        return Integer.parseInt(r);
     }
 
     @Override
@@ -145,8 +144,11 @@ public class TCPServerConnection implements ServerConnection, Runnable {
         if (!request.store("JOIN" + matchId))
             throw new IllegalStateException("An action is already getting performed");
 
-        boolean success = this.success.take();
-        return success;
+        if(((String)this.result.take()).equals("OK")){
+            nicknameSent = true;
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -186,42 +188,31 @@ public class TCPServerConnection implements ServerConnection, Runnable {
             out = new ObjectOutputStream(socket.getOutputStream());
             in = new ObjectInputStream(socket.getInputStream());
 
-            String req;
-            while (true) {
-                while (!isInsideMatch) {
+            new Thread(this::requestHandlerLoop).start();
 
-                    req = request.look(); //takes request
+            while(true){
+                //sends command if necessary
+                ControllerCommand cmd = commands.poll(5,TimeUnit.MILLISECONDS);
+                if(cmd!=null) out.writeObject(cmd);
 
-                    //request dispatch
-                    if (req.equals("AVAILABLE") || req.startsWith("MATCH_STATUS")) {
-                        //request that needs a matches result
-                        out.writeObject(req);
-                        matches.store((String) in.readObject());
-                    } else if (req.equals("PING") || req.equals("LOGOUT")) {
-                        //request that do not need a result
-                        out.writeObject(req);
-                        if (req.equals("LOGOUT")) nicknameSent = false;
-                    } else if (req.equals("MATCH_ID")) {
-                        // request that needs a match ID
-                        out.writeObject(req);
-                        matchID.store((Integer) in.readObject());
-                    } else {
-                        //request that needs a confirmation
-                        out.writeObject(req);
-                        if (((String) in.readObject()).equals("OK")) {
-                            success.store(true);
-                            if (req.startsWith("LOGIN")) nicknameSent = true;
-                            else isInsideMatch = true;
-                        } else success.store(false);
+                //dispatches input
+                Object input = in.readObject();
+                if(input instanceof SmallModelEditor dto){
+                    AtomicBoolean isEndgame = new AtomicBoolean();
+                    DTOvisitor visitor = new DTOvisitor() {
+                        @Override
+                        public void visit(GameStateChangeDTO dto) {
+                            isEndgame.set(dto.isEndgame());
+                        }
+                    };
+                    visitor.visit(dto);
+                    if (isEndgame.get()) {
+                        isInsideMatch = false;
                     }
-
-                    request.empty(); //permits other actions
+                    receiveDTO(dto);
                 }
-
-                new Thread(this::DTOReceiverLoop).start(); //starts the receiver
-                while (isInsideMatch) {
-                    ControllerCommand cmd = commands.poll(100, TimeUnit.MILLISECONDS);
-                    if (cmd != null) out.writeObject(cmd);
+                else{
+                    responses.put(input);
                 }
             }
 
@@ -235,29 +226,14 @@ public class TCPServerConnection implements ServerConnection, Runnable {
         }
     }
 
-    private void DTOReceiverLoop() {
-        try {
-            while (true) {
-                SmallModelEditor dto = (SmallModelEditor) in.readObject();
-                AtomicBoolean isEndgame = new AtomicBoolean();
-                DTOvisitor visitor = new DTOvisitor() {
-                    @Override
-                    public void visit(GameStateChangeDTO dto) {
-                        isEndgame.set(dto.isEndgame());
-                    }
-                };
-                visitor.visit(dto);
-                if (isEndgame.get()) {
-                    isInsideMatch = false;
-                    receiveDTO(dto);
-                    return;
-                }
-                receiveDTO(dto);
-
-            }
-        } catch (ClassNotFoundException | IOException e) {
-            System.err.println("Server connection ended or fatal error occurred.");
-            e.printStackTrace();
+    private void requestHandlerLoop(){
+        while (true) try{
+            out.writeObject(request.look());
+            Object res = null;
+            result.store(responses.take());
+            request.empty(); // prepares for next request
+        } catch (InterruptedException | IOException _){
+            return;
         }
     }
 

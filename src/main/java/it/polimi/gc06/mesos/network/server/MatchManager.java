@@ -140,7 +140,7 @@ public class MatchManager {
     }
 
     /**
-     * For testing.
+     * Checks if a match has started.
      *
      * @param id the id of {@link Match} that will be checked.
      * @return if the match has started.
@@ -151,7 +151,7 @@ public class MatchManager {
     }
 
     /**
-     * For testing.
+     * Checks if a match has ended.
      *
      * @param id the id of {@link Match} that will be checked.
      * @return if the match has ended.
@@ -159,5 +159,15 @@ public class MatchManager {
     public boolean hasMatchEnded(int id) {
         return activeMatches.values().stream().filter(m -> m.getMatchId() == id)
                 .allMatch(Match::hasEnded);
+    }
+
+    /**
+     * Checks if a match has ended.
+     *
+     * @param id the id of {@link Match} that will be checked.
+     * @return if the match is running.
+     */
+    public boolean isMatchRunning(int id){
+        return hasMatchStarted(id) && !hasMatchEnded(id);
     }
 }

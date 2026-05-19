@@ -11,7 +11,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-public class RMIClientManager implements VirtualClient, ModelListener {
+public class RMIClientManager implements VirtualClient{
     private final String nickname;
     private final ServerConnection rmiClient;
     private final MatchManager sharedManager;

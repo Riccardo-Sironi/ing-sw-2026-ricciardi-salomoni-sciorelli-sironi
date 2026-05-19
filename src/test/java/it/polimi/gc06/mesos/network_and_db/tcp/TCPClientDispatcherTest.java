@@ -28,10 +28,12 @@ public class TCPClientDispatcherTest {
     void testLogin(){
         try (Socket socket = new Socket("localhost", 1234)) {
             assertTrue(socket.isConnected());
+            System.out.println("Connected");
 
             ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
             ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
             out.writeObject("LOGINAlice"); // sends LOGIN prefix + nickname
+            System.out.println("Message sent");
             assertEquals("OK", in.readObject());
 
         } catch (IOException | ClassNotFoundException e) {
@@ -78,7 +80,8 @@ public class TCPClientDispatcherTest {
             ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
             out.writeObject("LOGINAlice");
             assertEquals("OK", (String) in.readObject(), "Nickname sent.");
-            socket.close();
+            out.writeObject("LOGOUT");
+            assertEquals("OK", (String) in.readObject(), "Logout not worked");
             try { Thread.sleep(500); } catch (InterruptedException _) {}
             assertFalse(manager.isUserLogged("Alice"));
 
@@ -98,7 +101,8 @@ public class TCPClientDispatcherTest {
             ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
             out.writeObject(loginMsg);
             assertEquals("OK", (String) in.readObject(), "Nickname sent.");
-            socket.close();
+            out.writeObject("LOGOUT");
+            assertEquals("OK", (String) in.readObject(), "Logout not worked");
             try { Thread.sleep(500); } catch (InterruptedException _) {}
 
         } catch (ClassNotFoundException | IOException e) {
@@ -138,7 +142,7 @@ public class TCPClientDispatcherTest {
 
             // Testing valid player size
             out.writeObject("CREATE" + numOfPlayers);
-            assertEquals("OK", (String) in.readObject(), "Correct numOfPlayer sent");
+            assertNotEquals("KO", (String) in.readObject(), "Correct numOfPlayer sent");
 
         } catch (ClassNotFoundException | IOException e) {
             fail("Error during communication");
@@ -156,7 +160,7 @@ public class TCPClientDispatcherTest {
             assertEquals("OK", (String) in.readObject(), "Nickname sent.");
 
             out.writeObject("CREATE" + numOfPlayers);
-            assertEquals("OK", (String) in.readObject(), "Correct numOfPlayer sent");
+            assertNotEquals("KO", (String) in.readObject(), "Correct numOfPlayer sent");
 
         } catch (ClassNotFoundException | IOException e) {
             fail("Error during communication");

@@ -26,7 +26,7 @@ public class TCPServerConnectionTest {
     @Test
     public void testLogin(){
         String nickname = "Alice";
-        Client c = new Client();
+        Client c = new Client(nickname);
         c.connect("TCP","localhost",1234);
         ServerConnection conn = c.getServerConnection();
         try {
@@ -37,19 +37,22 @@ public class TCPServerConnectionTest {
     @Test
     public void testMatchCreation(){
         String nickname = "Alice";
-        Client c = new Client();
+        Client c = new Client(nickname);
         c.connect("TCP","localhost",1234);
         ServerConnection conn = c.getServerConnection();
         try {
             assertTrue(conn.login(nickname), "Login failed");
             conn.createMatch(5,nickname);
-        } catch(Exception e) { fail("Match creation failed due to exception: "+e.getMessage()); }
+        } catch(Exception e) {
+            e.printStackTrace();
+            fail("Match creation failed due to exception: ");
+        }
     }
 
     @Test
     public void testMatchJoin(){
         String nickname = "Alice";
-        Client c = new Client();
+        Client c = new Client(nickname);
         c.connect("TCP","localhost",1234);
         ServerConnection conn = c.getServerConnection();
         try {
@@ -58,7 +61,7 @@ public class TCPServerConnectionTest {
         } catch(Exception e) { fail("Match creation failed due to exception: "+e.getMessage()); }
 
         String nickname2 = "Bob";
-        Client c2 = new Client();
+        Client c2 = new Client(nickname);
         c2.connect("TCP","localhost",1234);
         ServerConnection conn2 = c2.getServerConnection();
         try {
@@ -71,18 +74,21 @@ public class TCPServerConnectionTest {
     public void testMatchStart(){
 
         String nickname = "Alice";
-        Client c = new Client();
+        Client c = new Client(nickname);
         c.connect("TCP","localhost",1234);
         ServerConnection conn = c.getServerConnection();
         try {
             assertTrue(conn.login(nickname), "'"+nickname+"' login failed");
             conn.createMatch(3,nickname);
-        } catch(Exception e) { fail("Match creation failed due to exception: "+e.getMessage()); }
+        } catch(Exception e) {
+            e.printStackTrace();
+            fail("Match creation failed due to exception.");
+        }
 
         ArrayList<Client> joiners = new ArrayList<>();
         for(int i=0; i<2; i++){
             String nickname2 = "Bob"+i;
-            Client c2 = new Client();
+            Client c2 = new Client(nickname2);
             joiners.add(c2);
             c2.connect("TCP","localhost",1234);
             ServerConnection conn2 = c2.getServerConnection();

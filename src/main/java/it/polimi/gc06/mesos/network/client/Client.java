@@ -9,7 +9,13 @@ public class Client implements ModelListener {
     private SmallModel smallModel;
     private ServerConnection serverConnection = null;
 
-    public Client() {
+    public Client(){
+
+    }
+
+    //TODO: remove if small model needs to be instantiated out of the client
+    public Client(String nickname) {
+        smallModel = new SmallModel(nickname);
     }
 
     public void connect(String tech, String host, int port) {
