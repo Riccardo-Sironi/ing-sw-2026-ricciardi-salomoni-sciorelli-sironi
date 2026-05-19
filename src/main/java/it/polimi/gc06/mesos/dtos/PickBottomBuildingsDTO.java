@@ -15,8 +15,8 @@ public class PickBottomBuildingsDTO implements SmallModelEditor {
 
     @Override
     public void edit(SmallModel smallModel) {
-        Card card = smallModel.getBottomBuildings().get(cardIndex);
-        smallModel.getBottomBuildings().set(cardIndex, null);
+        Card card = smallModel.getBottomBuildings().remove(cardIndex);
+
         if (smallModel.getPlayer().getNickname().equals(player)) {
             smallModel.getPlayer().getBuildings().add(card);
         } else {

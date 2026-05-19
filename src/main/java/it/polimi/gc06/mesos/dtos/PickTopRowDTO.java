@@ -15,8 +15,8 @@ public class PickTopRowDTO implements SmallModelEditor {
 
     @Override
     public void edit(SmallModel smallModel) {
-        Card card = smallModel.getTopRow().get(cardIndex);
-        smallModel.getTopRow().set(cardIndex, null);
+        Card card = smallModel.getTopRow().remove(cardIndex);
+
         if (smallModel.getPlayer().getNickname().equals(player)) {
             smallModel.getPlayer().getCharacters().add(card);
         } else {
