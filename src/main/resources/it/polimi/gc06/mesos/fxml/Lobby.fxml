@@ -1,28 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
 <StackPane xmlns="http://javafx.com/javafx"
            xmlns:fx="http://javafx.com/fxml"
            fx:controller="it.polimi.gc06.mesos.view.gui.controllers.LobbyGuiController"
            fx:id="lobbyRoot">
 
-    <padding>
-        <Insets top="20" right="20" bottom="20" left="20"/>
-    </padding>
-
     <ImageView fx:id="backgroundImage"/>
 
-    <HBox fx:id="lobbyContainer">
-    </HBox>
+    <VBox fx:id="mainContent" alignment="CENTER" spacing="50">
+        <padding>
+            <Insets top="40" right="40" bottom="40" left="40"/>
+        </padding>
 
-    <HBox fx:id="totemSelectionBox">
-    </HBox>
+        <HBox fx:id="lobbyContainer" alignment="CENTER" spacing="20" />
+
+        <HBox fx:id="totemSelectionBox" alignment="CENTER" spacing="20" />
+    </VBox>
 
 </StackPane>
