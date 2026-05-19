@@ -6,6 +6,8 @@ import it.polimi.gc06.mesos.view.gui.controllers.GameViewController;
 import it.polimi.gc06.mesos.view.gui.controllers.LobbyGuiController;
 import javafx.application.Platform;
 
+import static it.polimi.gc06.mesos.view.gui.GUI.smallModel;
+
 public class GUIDTOvisitor extends DTOvisitor {
 
     BoardController boardController;
@@ -139,6 +141,14 @@ public class GUIDTOvisitor extends DTOvisitor {
         System.out.println("Round change!");
         Platform.runLater(() -> {
             boardController.handleRoundChanged();
+        });
+    }
+
+    @Override
+    public void visit(TotemTurnMoveDTO dto) {
+        System.out.println("Totem turn move!");
+        Platform.runLater(() -> {
+            boardController.handleTotemTurnMove();
         });
     }
 }

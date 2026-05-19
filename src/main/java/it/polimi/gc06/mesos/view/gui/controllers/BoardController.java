@@ -192,72 +192,76 @@ public class BoardController {
     }
 
     public void setupGameCommands() {
-        Platform.runLater(() -> {
-            mainRoot.requestLayout();
-            mainRoot.getScene().setOnKeyPressed(e -> {
-                if (e.getCode() == KeyCode.H) {
-                    toggleHelpOverlay();
-                }
-                if (e.getCode() == KeyCode.DIGIT8) {
-                    currentLayout = LayoutConfiguration.CAVE_COLORS;
-                    drawPlayerInventory();
-                    drawOpponentsSidebar();
-                }
-                if (e.getCode() == KeyCode.DIGIT9) {
-                    currentLayout = LayoutConfiguration.CAVE;
-                    drawPlayerInventory();
-                    drawOpponentsSidebar();
-                }
-                // HIDE OPPONENTS SIDE BAR
-                if (e.getCode() == KeyCode.O) {
-                    if (!mainRoot.getChildren().contains(opponentsSidebar) && leftZone.getChildren().contains(inventoryBox)) {
-                        mainRoot.getChildren().add(opponentsSidebar);
-                        leftZone.prefWidthProperty().bind(mainRoot.widthProperty().multiply(0.85));
-                    } else {
-                        mainRoot.getChildren().remove(opponentsSidebar);
-                        leftZone.prefWidthProperty().bind(mainRoot.widthProperty());
-                    }
-                }
-                // FOCUS MODE (HIDE INVENTORY AND OPPONENTS)
-                if (e.getCode() == KeyCode.F) {
-                    Pane root = (Pane) mainRoot.getParent();
+        mainRoot.sceneProperty().addListener((observable, oldScene, newScene) -> {
+            if (newScene != null) {
+                Platform.runLater(() -> {
+                    mainRoot.requestLayout();
+                    mainRoot.getScene().setOnKeyPressed(e -> {
+                        if (e.getCode() == KeyCode.H) {
+                            toggleHelpOverlay();
+                        }
+                        if (e.getCode() == KeyCode.DIGIT8) {
+                            currentLayout = LayoutConfiguration.CAVE_COLORS;
+                            drawPlayerInventory();
+                            drawOpponentsSidebar();
+                        }
+                        if (e.getCode() == KeyCode.DIGIT9) {
+                            currentLayout = LayoutConfiguration.CAVE;
+                            drawPlayerInventory();
+                            drawOpponentsSidebar();
+                        }
+                        // HIDE OPPONENTS SIDE BAR
+                        if (e.getCode() == KeyCode.O) {
+                            if (!mainRoot.getChildren().contains(opponentsSidebar) && leftZone.getChildren().contains(inventoryBox)) {
+                                mainRoot.getChildren().add(opponentsSidebar);
+                                leftZone.prefWidthProperty().bind(mainRoot.widthProperty().multiply(0.85));
+                            } else {
+                                mainRoot.getChildren().remove(opponentsSidebar);
+                                leftZone.prefWidthProperty().bind(mainRoot.widthProperty());
+                            }
+                        }
+                        // FOCUS MODE (HIDE INVENTORY AND OPPONENTS)
+                        if (e.getCode() == KeyCode.F) {
+                            Pane root = (Pane) mainRoot.getParent();
 
-                    if (inventoryOverlay != null && inventoryOverlay.getChildren().contains(inventoryBox)) {
-                        hideInventoryOverlay(root);
-                    }
+                            if (inventoryOverlay != null && inventoryOverlay.getChildren().contains(inventoryBox)) {
+                                hideInventoryOverlay(root);
+                            }
 
-                    if (!leftZone.getChildren().contains(inventoryBox) && !mainRoot.getChildren().contains(opponentsSidebar)) {
-                        leftZone.getChildren().add(inventoryBox);
-                        mainRoot.getChildren().add(opponentsSidebar);
+                            if (!leftZone.getChildren().contains(inventoryBox) && !mainRoot.getChildren().contains(opponentsSidebar)) {
+                                leftZone.getChildren().add(inventoryBox);
+                                mainRoot.getChildren().add(opponentsSidebar);
 
-                        // re-bind the board root height to previous dimension
-                        boardRoot.prefHeightProperty().bind(leftZone.heightProperty().multiply(0.80));
-                        leftZone.prefWidthProperty().bind(mainRoot.widthProperty().multiply(0.85));
-                    } else {
-                        leftZone.getChildren().remove(inventoryBox);
-                        mainRoot.getChildren().remove(opponentsSidebar);
+                                // re-bind the board root height to previous dimension
+                                boardRoot.prefHeightProperty().bind(leftZone.heightProperty().multiply(0.80));
+                                leftZone.prefWidthProperty().bind(mainRoot.widthProperty().multiply(0.85));
+                            } else {
+                                leftZone.getChildren().remove(inventoryBox);
+                                mainRoot.getChildren().remove(opponentsSidebar);
 
-                        // the board takes the full height of left zone
-                        boardRoot.prefHeightProperty().bind(leftZone.heightProperty());
-                        // the left zone takes ful width
-                        leftZone.prefWidthProperty().bind(mainRoot.widthProperty());
-                    }
-                }
-                // SHOW INVENTORY WHILE IN FOCUS MODE
-                if (e.getCode() == KeyCode.I) {
-                    if (leftZone.getChildren().contains(inventoryBox)) {
-                        return;
-                    }
+                                // the board takes the full height of left zone
+                                boardRoot.prefHeightProperty().bind(leftZone.heightProperty());
+                                // the left zone takes ful width
+                                leftZone.prefWidthProperty().bind(mainRoot.widthProperty());
+                            }
+                        }
+                        // SHOW INVENTORY WHILE IN FOCUS MODE
+                        if (e.getCode() == KeyCode.I) {
+                            if (leftZone.getChildren().contains(inventoryBox)) {
+                                return;
+                            }
 
-                    Pane root = (Pane) mainRoot.getParent();
+                            Pane root = (Pane) mainRoot.getParent();
 
-                    if (inventoryOverlay != null && inventoryOverlay.getChildren().contains(inventoryBox)) {
-                        hideInventoryOverlay(root);
-                    } else {
-                        showInventoryOverlay(root);
-                    }
-                }
-            });
+                            if (inventoryOverlay != null && inventoryOverlay.getChildren().contains(inventoryBox)) {
+                                hideInventoryOverlay(root);
+                            } else {
+                                showInventoryOverlay(root);
+                            }
+                        }
+                    });
+                });
+            }
         });
     }
 
@@ -1287,5 +1291,10 @@ public class BoardController {
         applyEffectToContainerCardViews(buildingsContainer, smallModel.getTopDrawNum());
         applyEffectToContainerCardViews(bottomCharactersContainer, smallModel.getBottomDrawNum());
         applyEffectToContainerCardViews(bottomBuildingsContainer, smallModel.getBottomDrawNum());
+    }
+
+    public void handleTotemTurnMove() {
+        drawTurnOrderTile();
+        drawOfferTrack();
     }
 }

@@ -9,6 +9,7 @@ import it.polimi.gc06.mesos.model.Player;
 import it.polimi.gc06.mesos.model.gameBoard.Board;
 import it.polimi.gc06.mesos.model.gameBoard.TileEffect;
 import it.polimi.gc06.mesos.model.gameBoard.TileSlot;
+import it.polimi.gc06.mesos.model.gameTurnManager.OfferResolutionPhase;
 import it.polimi.gc06.mesos.model.gameTurnManager.TurnManager;
 
 import java.beans.PropertyChangeEvent;
@@ -84,6 +85,10 @@ public class ChangesHandler {
             // changes.add(new GameStateChangeDTO(turnManager.getRound()));
             changes.add(new TopRowRefillDTO(new ArrayList<>(board.getTopRow()), new ArrayList<>(board.getBottomRow())));
             changes.add(new BuildingsRefillDTO(new ArrayList<>(board.getTopBuildings()), new ArrayList<>(board.getBottomBuildings())));
+        }
+
+        if (lastPhase != null && lastPhase.equals(new OfferResolutionPhase().toString()) && !lastPhase.equals(turnManager.getPhase().toString())) {
+            changes.add(new TotemTurnMoveDTO());
         }
 
         //checks last era
