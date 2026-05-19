@@ -23,7 +23,9 @@ public class GathererCard extends CharacterCard {
      * @param visitor the visitor that will visit the card.
      */
     @Override
-    public void accept(CardVisitor visitor) {visitor.visit(this);}
+    public void accept(CardVisitor visitor) {
+        visitor.visit(this);
+    }
 
 
     /**
@@ -34,7 +36,8 @@ public class GathererCard extends CharacterCard {
      * @return true if the given object is exactly of the same class.
      */
     @Override
-    public boolean equals(Object o){
+    public boolean equals(Object o) {
+        if (o == null) return false;
         return getClass() == o.getClass();
     }
 }
