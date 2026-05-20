@@ -1,14 +1,19 @@
 package it.polimi.gc06.mesos.network_and_db.tcp;
 
+import it.polimi.gc06.mesos.model.gameTurnManager.OfferResolutionPhase;
 import it.polimi.gc06.mesos.model.gameTurnManager.PlacingTotemPhase;
 import it.polimi.gc06.mesos.network.client.Client;
 import it.polimi.gc06.mesos.network.client.ServerConnection;
 import it.polimi.gc06.mesos.network.server.ServerMain;
+import it.polimi.gc06.mesos.view.smallModel.PlayerView;
 import it.polimi.gc06.mesos.view.smallModel.SmallModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -72,9 +77,14 @@ public class TCPServerConnectionTest {
 
     @Test
     public void testMatchStart(){
+        createMatchAndStart(3);
+    }
 
+    private List<Client> createMatchAndStart(int n){
         String nickname = "Alice";
-        Client c = new Client(nickname);
+        ArrayList<Client> clients = new ArrayList<Client>();
+        clients.add(new Client(nickname));
+        Client c = clients.getFirst();
         c.connect("TCP","localhost",1234);
         ServerConnection conn = c.getServerConnection();
         try {
@@ -85,11 +95,10 @@ public class TCPServerConnectionTest {
             fail("Match creation failed due to exception.");
         }
 
-        ArrayList<Client> joiners = new ArrayList<>();
-        for(int i=0; i<2; i++){
+        for(int i=0; i<n-1; i++){
             String nickname2 = "Bob"+i;
             Client c2 = new Client(nickname2);
-            joiners.add(c2);
+            clients.add(c2);
             c2.connect("TCP","localhost",1234);
             ServerConnection conn2 = c2.getServerConnection();
             try {
@@ -106,9 +115,42 @@ public class TCPServerConnectionTest {
 
         String expectedPhase = new PlacingTotemPhase().toString();
 
-        assertEquals(expectedPhase, c.getModel().getPhase(), nickname + " doesn't see the game start.");
-        assertEquals(expectedPhase, joiners.get(0).getModel().getPhase(), "Bob0 doesn't see the game start.");
-        assertEquals(expectedPhase, joiners.get(1).getModel().getPhase(), "Bob1 doesn't see the game start.");
+        assertEquals(expectedPhase, clients.get(0).getModel().getPhase(), nickname + " doesn't see the game start.");
+        assertEquals(expectedPhase, clients.get(1).getModel().getPhase(), "Bob0 doesn't see the game start.");
+        assertEquals(expectedPhase, clients.get(2).getModel().getPhase(), "Bob1 doesn't see the game start.");
+
+        return clients;
+    }
+
+    private Client getActiveClient(List<Client> clients){
+        return clients.stream().filter(c -> c.getModel().isActive()).findFirst().orElse(null);
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {400})
+    public void testFirstPhase(int timeout) throws Exception {
+        int n = 3;
+        List<Client> clients = createMatchAndStart(n);
+
+        //placing totem phase
+        for(int i=0;i<n;i++){
+            Client active = getActiveClient(clients);
+            if(active == null) fail("Active player not found.");
+            try{
+                active.getServerConnection().placeTotem(active.getModel().getPlayer().getNickname(),i);
+                Thread.sleep(timeout);
+            }catch (Exception e){
+                e.printStackTrace();
+                fail("Unexpected exception during placing totem phase");
+            }
+        }
+
+        //check if phase has changed
+        Thread.sleep(timeout);
+        assertTrue(clients.stream().map(c -> c.getModel().getPhase())
+                .allMatch(p -> p.equals(new OfferResolutionPhase().toString())),"Phase didnt " +
+                "change in specified time requirements");
+        //offer resolution phase
     }
 
 }

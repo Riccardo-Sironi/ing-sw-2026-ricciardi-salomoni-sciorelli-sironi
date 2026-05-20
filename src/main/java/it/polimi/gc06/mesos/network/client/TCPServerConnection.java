@@ -71,6 +71,7 @@ public class TCPServerConnection implements ServerConnection, Runnable {
 
     @Override
     public void receiveDTO(SmallModelEditor dto) {
+        System.out.println("'"+Thread.currentThread().getName()+"' client received a dto: "+dto.getClass().getSimpleName());
         prioritizedListener.update(dto);
         listeners.forEach(l -> l.update(dto));
     }
@@ -145,7 +146,7 @@ public class TCPServerConnection implements ServerConnection, Runnable {
             throw new IllegalStateException("An action is already getting performed");
 
         if(((String)this.result.take()).equals("OK")){
-            nicknameSent = true;
+            isInsideMatch = true;
             return true;
         }
         return false;
@@ -182,19 +183,26 @@ public class TCPServerConnection implements ServerConnection, Runnable {
     }
 
     @Override
+    public void handleSkip(String nickname) throws Exception {
+        if (!isInsideMatch) throw new IllegalStateException("Not inside a match yet.");
+        commands.put(new ControllerCommand(nickname, 0, Request.SKIP_REQUEST));
+    }
+
+    @Override
     public void run() {
+
+        Thread reqThread = new Thread(this::requestHandlerLoop);
+        Thread cmdThread = new Thread(this::commandHandlerLoop);
+
         try (Socket socket = new Socket(host, port)) {
 
             out = new ObjectOutputStream(socket.getOutputStream());
             in = new ObjectInputStream(socket.getInputStream());
 
-            new Thread(this::requestHandlerLoop).start();
+            reqThread.start();
+            cmdThread.start();
 
             while(true){
-                //sends command if necessary
-                ControllerCommand cmd = commands.poll(5,TimeUnit.MILLISECONDS);
-                if(cmd!=null) out.writeObject(cmd);
-
                 //dispatches input
                 Object input = in.readObject();
                 if(input instanceof SmallModelEditor dto){
@@ -216,20 +224,26 @@ public class TCPServerConnection implements ServerConnection, Runnable {
                 }
             }
 
-        } catch (ClassNotFoundException | EOFException e) {
+        } catch (ClassNotFoundException | EOFException _) {
             System.err.println("Server connection ended.");
-            e.printStackTrace();
         } catch (IOException e) {
             System.err.println("Invalid data for server communication.");
             e.printStackTrace();
         } catch (InterruptedException _) {
+        } finally {
+            //whatever the case, tries to interrupt the thread
+            reqThread.interrupt();
+            cmdThread.interrupt();
         }
     }
 
     private void requestHandlerLoop(){
         while (true) try{
-            out.writeObject(request.look());
-            Object res = null;
+            String req = request.look();
+            synchronized (out){
+                out.writeObject(req);
+                out.flush();
+            }
             result.store(responses.take());
             request.empty(); // prepares for next request
         } catch (InterruptedException | IOException _){
@@ -237,7 +251,16 @@ public class TCPServerConnection implements ServerConnection, Runnable {
         }
     }
 
-    public void handleSkip(String nickname) {
+    private void commandHandlerLoop(){
+        while(true) try{
+            ControllerCommand cmd = commands.poll(5,TimeUnit.MILLISECONDS);
+            if(cmd!=null){
+                synchronized (out){
+                    out.writeObject(cmd);
+                    out.flush();
+                }
+            }
+        } catch(IOException | InterruptedException _){}
     }
 
     @Override

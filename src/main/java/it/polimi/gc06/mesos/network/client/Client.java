@@ -48,8 +48,10 @@ public class Client implements ModelListener {
      * @param dto the dto that the notification stemmed from.
      */
     @Override
-    public void update(SmallModelEditor dto) {
-        dto.edit(smallModel);
+    public void update(SmallModelEditor dto){
+        try {
+            dto.edit(smallModel); //if it's an error DTO an Error will be thrown
+        }catch (Error _) {}
     }
 
     /**
