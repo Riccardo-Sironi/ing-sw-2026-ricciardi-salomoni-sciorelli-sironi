@@ -190,7 +190,7 @@ public class BoardController {
 
         setupGameCommands();
 
-        Platform.runLater(this::drawEverything);
+
     }
 
     public void setupGameCommands() {

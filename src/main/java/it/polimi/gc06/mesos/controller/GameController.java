@@ -224,7 +224,7 @@ public class GameController {
      * it updates the model and notifies all clients about the change.
      *
      * @param playerNickname the nickname of the player who is choosing the totem color.
-     * @param color the color chosen by the player for their totem.
+     * @param color          the color chosen by the player for their totem.
      */
 
     public void handleChooseTotemColor(String playerNickname, Color color) {
@@ -239,6 +239,14 @@ public class GameController {
 
         ChooseTotemColorDTO dto = new ChooseTotemColorDTO(playerNickname, color);
         listeners.forEach(l -> l.update(dto));
+
+        boolean areAllPlayersReady = model.getPlayers().stream().allMatch(player -> player.getPlayerColor() != null);
+
+        // if all the players have selected di color we send the DTO to start the game
+        if (areAllPlayersReady) {
+            MesosStartedDTO dto2 = new MesosStartedDTO();
+            listeners.forEach(l -> l.update(dto2));
+        }
 
     }
 

@@ -13,7 +13,7 @@ public abstract class DTOvisitor {
         visit((SmallModelEditor) dto);
     }
 
-    public void visit(GameStartedDTO dto) {
+    public void visit(LobbyInitializedDTO dto) {
         visit((SmallModelEditor) dto);
     }
 
@@ -66,6 +66,10 @@ public abstract class DTOvisitor {
     }
 
     public void visit(ChooseTotemColorDTO dto) {
+        visit((SmallModelEditor) dto);
+    }
+
+    public void visit(MesosStartedDTO dto) {
         visit((SmallModelEditor) dto);
     }
 }

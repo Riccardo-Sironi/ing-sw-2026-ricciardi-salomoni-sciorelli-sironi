@@ -3,7 +3,7 @@ package it.polimi.gc06.mesos.network_and_db.tcp;
 import it.polimi.gc06.mesos.controller.commands.ControllerCommand;
 import it.polimi.gc06.mesos.controller.commands.Request;
 import it.polimi.gc06.mesos.dtos.ErrorDTO;
-import it.polimi.gc06.mesos.dtos.GameStartedDTO;
+import it.polimi.gc06.mesos.dtos.LobbyInitializedDTO;
 import it.polimi.gc06.mesos.dtos.SmallModelEditor;
 import it.polimi.gc06.mesos.model.gameTurnManager.PlacingTotemPhase;
 import it.polimi.gc06.mesos.network.server.ServerMain;
@@ -32,10 +32,13 @@ public class TCPClientManagerTest {
             ServerMain.main(new String[]{"1234", "1099"});
         });
         serverThread.start();
-        try { Thread.sleep(1000); } catch (InterruptedException _) {}
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException _) {
+        }
     }
 
-    private void connect(String nickname){
+    private void connect(String nickname) {
         try {
             Socket socket = new Socket("localhost", 1234);
             ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
@@ -50,7 +53,7 @@ public class TCPClientManagerTest {
         }
     }
 
-    private void createMatch(String nickname, int numOfPlayers){
+    private void createMatch(String nickname, int numOfPlayers) {
         try {
             ObjectInputStream in = clients.get(nickname).in;
             ObjectOutputStream out = clients.get(nickname).out;
@@ -62,7 +65,7 @@ public class TCPClientManagerTest {
         }
     }
 
-    private void joinMatch(String nickname, int id){
+    private void joinMatch(String nickname, int id) {
         try {
             ObjectInputStream in = clients.get(nickname).in;
             ObjectOutputStream out = clients.get(nickname).out;
@@ -73,26 +76,29 @@ public class TCPClientManagerTest {
         }
     }
 
-    private void startSimpleMatch(List<String> names){
-        for(String name : names){
+    private void startSimpleMatch(List<String> names) {
+        for (String name : names) {
             connect(name);
         }
         createMatch(names.getFirst(), names.size());
-        for(int i = 1; i < names.size(); i++){
+        for (int i = 1; i < names.size(); i++) {
             joinMatch(names.get(i), 0);
         }
-        try { Thread.sleep(800); } catch (InterruptedException _) {}
+        try {
+            Thread.sleep(800);
+        } catch (InterruptedException _) {
+        }
         assertTrue(ServerMain.getMatchManager().hasMatchStarted(0), "Match started check");
     }
 
     @Test
-    public void testGameStart(){
+    public void testGameStart() {
         String[] names = {"Alice", "Bob", "Carl"};
         startSimpleMatch(List.of(names));
         try {
             Client c = clients.get(names[0]);
             SmallModelEditor editor = (SmallModelEditor) c.in.readObject();
-            assertInstanceOf(GameStartedDTO.class, editor, "First DTO should be GameStartedDTO");
+            assertInstanceOf(LobbyInitializedDTO.class, editor, "First DTO should be GameStartedDTO");
         } catch (ClassNotFoundException | IOException e) {
             fail("Unexpected exception while reading dto: " + e.getMessage());
         }
@@ -106,7 +112,7 @@ public class TCPClientManagerTest {
     private List<String> getInactivePLayers() throws NoSuchElementException {
         List<String> r = clients.entrySet().stream().filter(e -> !e.getValue().model.isActive())
                 .map(Entry::getKey).toList();
-        if(r.isEmpty()) throw new NoSuchElementException("Cant get inactive player");
+        if (r.isEmpty()) throw new NoSuchElementException("Cant get inactive player");
         return r;
     }
 
@@ -117,9 +123,9 @@ public class TCPClientManagerTest {
         startSimpleMatch(List.of(names));
 
         try {
-            for(String name : names) {
+            for (String name : names) {
                 SmallModelEditor firstDto = (SmallModelEditor) clients.get(name).in().readObject();
-                assertInstanceOf(GameStartedDTO.class, firstDto, "First dto should be GameStartedDTO");
+                assertInstanceOf(LobbyInitializedDTO.class, firstDto, "First dto should be GameStartedDTO");
                 firstDto.edit(clients.get(name).model);
             }
 
@@ -134,21 +140,21 @@ public class TCPClientManagerTest {
             assertInstanceOf(ErrorDTO.class, responseDto, "Server should have answered with an ErrorDTO");
 
             //invalid action (from active player)
-            ControllerCommand invalidCommand = new ControllerCommand(active,0, Request.SKIP_REQUEST);
+            ControllerCommand invalidCommand = new ControllerCommand(active, 0, Request.SKIP_REQUEST);
             activeC.out().writeObject(invalidCommand);
             responseDto = activeC.in().readObject();
             assertInstanceOf(ErrorDTO.class, responseDto, "Server should have answered with an ErrorDTO");
 
             //valid action from inactive player
-            ControllerCommand validCommand = new ControllerCommand(inactive.getFirst(),0, Request.OFFER_TRACK_REQUEST);
+            ControllerCommand validCommand = new ControllerCommand(inactive.getFirst(), 0, Request.OFFER_TRACK_REQUEST);
             inactiveC.getFirst().out().writeObject(validCommand);
             responseDto = inactiveC.getFirst().in().readObject();
             assertInstanceOf(ErrorDTO.class, responseDto, "Server should have answered with an ErrorDTO");
 
         } catch (ClassNotFoundException | IOException e) {
             fail("Unexpected exception while reading dto: " + e.getMessage());
-        } catch (NoSuchElementException e){
-            fail("Unexpected error: "+e.getMessage());
+        } catch (NoSuchElementException e) {
+            fail("Unexpected error: " + e.getMessage());
         }
     }
 
@@ -158,9 +164,9 @@ public class TCPClientManagerTest {
         startSimpleMatch(List.of(names));
 
         try {
-            for(String name : names) {
+            for (String name : names) {
                 SmallModelEditor firstDto = (SmallModelEditor) clients.get(name).in().readObject();
-                assertInstanceOf(GameStartedDTO.class, firstDto, "First dto should be GameStartedDTO");
+                assertInstanceOf(LobbyInitializedDTO.class, firstDto, "First dto should be GameStartedDTO");
                 firstDto.edit(clients.get(name).model);
             }
 
@@ -168,39 +174,40 @@ public class TCPClientManagerTest {
             Client activeC = clients.get(active);
 
             int pos = 0;
-            activeC.out.writeObject(new ControllerCommand(active,pos,Request.OFFER_TRACK_REQUEST));
+            activeC.out.writeObject(new ControllerCommand(active, pos, Request.OFFER_TRACK_REQUEST));
             SmallModelEditor dto = (SmallModelEditor) activeC.in.readObject();
             dto.edit(activeC.model);
             assertEquals(activeC.model.getOfferTrack().get(pos).getPlayer().getNickname(), active, "Dto didnt modify the model correctly.");
 
         } catch (ClassNotFoundException | IOException e) {
             fail("Unexpected exception while reading dto: " + e.getMessage());
-        } catch (NoSuchElementException e){
-            fail("Unexpected error: "+e.getMessage());
+        } catch (NoSuchElementException e) {
+            fail("Unexpected error: " + e.getMessage());
         }
     }
 
     @Test
-    public void testFirstDtoSetsPhase(){
+    public void testFirstDtoSetsPhase() {
         String[] names = {"Alice", "Bob", "Carl"};
         // Avvia una partita standard a 3 giocatori
         startSimpleMatch(List.of(names));
 
         try {
-            for(String name : names) {
+            for (String name : names) {
                 SmallModelEditor firstDto = (SmallModelEditor) clients.get(name).in().readObject();
-                assertInstanceOf(GameStartedDTO.class, firstDto, "First dto should be GameStartedDTO");
+                assertInstanceOf(LobbyInitializedDTO.class, firstDto, "First dto should be GameStartedDTO");
                 firstDto.edit(clients.get(name).model);
-                assertEquals(clients.get(name).model.getPhase(),(new PlacingTotemPhase()).toString());
+                assertEquals(clients.get(name).model.getPhase(), (new PlacingTotemPhase()).toString());
             }
 
         } catch (ClassNotFoundException | IOException e) {
             fail("Unexpected exception while reading dto: " + e.getMessage());
-        } catch (NoSuchElementException e){
-            fail("Unexpected error: "+e.getMessage());
+        } catch (NoSuchElementException e) {
+            fail("Unexpected error: " + e.getMessage());
         }
     }
 
 
-    record Client (Socket socket, ObjectInputStream in, ObjectOutputStream out, SmallModel model){}
+    record Client(Socket socket, ObjectInputStream in, ObjectOutputStream out, SmallModel model) {
+    }
 }

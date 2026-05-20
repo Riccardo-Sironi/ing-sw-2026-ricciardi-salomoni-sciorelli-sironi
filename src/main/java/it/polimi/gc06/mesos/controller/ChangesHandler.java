@@ -212,7 +212,7 @@ public class ChangesHandler {
                     + model.getTribeCardsDeck().get(Era.ERA_III).size();
         }
 
-        return new GameStartedDTO(
+        return new LobbyInitializedDTO(
                 nickname,
                 new ArrayList<>(turnManager.getPlayersOrder().stream().map(Player::getNickname).toList()),
                 colorMap,

@@ -12,7 +12,7 @@ import it.polimi.gc06.mesos.view.smallModel.TileSlotView;
 import java.util.ArrayList;
 import java.util.Map;
 
-public class GameStartedDTO implements SmallModelEditor {
+public class LobbyInitializedDTO implements SmallModelEditor {
 
     private final ArrayList<String> playersOrder;
     private final Map<String, Color> colorMap;
@@ -31,12 +31,12 @@ public class GameStartedDTO implements SmallModelEditor {
     private final int bottomDrawNum;
     private final int tribeDeckSize;
 
-    public GameStartedDTO(String nickname, ArrayList<String> playersOrder, Map<String, Color> colorMap,
-                          Map<String, Integer> foodMap, Map<String, Integer> prestigeMap,
-                          ArrayList<Card> topRow, ArrayList<Card> topBuildings,
-                          ArrayList<Card> bottomRow, ArrayList<Card> bottomBuildings,
-                          boolean isActive, ArrayList<TileEffect> tileEffects,
-                          int topDrawNum, int bottomDrawNum, int tribeDeckSize) {
+    public LobbyInitializedDTO(String nickname, ArrayList<String> playersOrder, Map<String, Color> colorMap,
+                               Map<String, Integer> foodMap, Map<String, Integer> prestigeMap,
+                               ArrayList<Card> topRow, ArrayList<Card> topBuildings,
+                               ArrayList<Card> bottomRow, ArrayList<Card> bottomBuildings,
+                               boolean isActive, ArrayList<TileEffect> tileEffects,
+                               int topDrawNum, int bottomDrawNum, int tribeDeckSize) {
         this.playersOrder = playersOrder;
         this.colorMap = colorMap;
         this.foodMap = foodMap;

@@ -33,20 +33,24 @@ public class GUIDTOvisitor extends DTOvisitor {
     }
 
     @Override
-    public void visit(BuildingsRefillDTO dto) {
-        System.out.println("Building refill!");
+    public void visit(MesosStartedDTO dto) {
         Platform.runLater(() -> {
-            boardController.handleTopBuildingsRefill();
+            System.out.println("Game started!");
+            boardController.handleGameStarted();
+            gameViewController.showEraOverlay();
         });
     }
 
     @Override
-    public void visit(GameStartedDTO dto) {
-        System.out.println("Game started!");
+    public void visit(LobbyInitializedDTO dto) {
+        System.out.println("Lobby started!");
+    }
+
+    @Override
+    public void visit(BuildingsRefillDTO dto) {
+        System.out.println("Building refill!");
         Platform.runLater(() -> {
-            if (boardController != null) {
-                boardController.handleGameStarted();
-            }
+            boardController.handleTopBuildingsRefill();
         });
     }
 
