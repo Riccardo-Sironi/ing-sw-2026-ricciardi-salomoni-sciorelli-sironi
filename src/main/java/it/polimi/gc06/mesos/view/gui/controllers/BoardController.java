@@ -1003,11 +1003,84 @@ public class BoardController {
 
         if (totemPiece != null) {
             tile.setOnMouseClicked(e -> {
-                try {
-                    client.getServerConnection().placeTotem(smallModel.getPlayer().getNickname(), offerTrackTiles.indexOf(tile));
-                } catch (Exception ex) {
-                    throw new RuntimeException(ex);
+                // prevent the player from click others tiles during animation
+                for (OfferTileView t : offerTrackTiles) {
+                    t.setOnMouseClicked(null);
+                    EffectsManager.defaultTile(t);
                 }
+                tile.setOnMouseClicked(null);
+
+                Bounds totemScreen = totemPiece.localToScreen(totemPiece.getBoundsInLocal());
+                Bounds tileScreen = tile.localToScreen(tile.getBoundsInLocal());
+
+                // if the bounds are null, it means that the node is not currently rendered on the screen,
+                // so we skip the animation and directly send the network request
+                if (totemScreen == null || tileScreen == null) {
+                    try {
+                        client.getServerConnection().placeTotem(smallModel.getPlayer().getNickname(), offerTrackTiles.indexOf(tile));
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                    return;
+                }
+
+                Pane overlayPane = new Pane();
+                Pane root = (Pane) mainRoot.getScene().getRoot();
+                Bounds rootScreen = root.localToScreen(root.getBoundsInLocal());
+
+                overlayPane.prefWidthProperty().bind(root.widthProperty());
+                overlayPane.prefHeightProperty().bind(root.heightProperty());
+                overlayPane.setMouseTransparent(true);
+                root.getChildren().add(overlayPane);
+
+                double totemWidth = totemScreen.getWidth();
+                double totemHeight = totemScreen.getHeight();
+
+                double startX = totemScreen.getMinX() - rootScreen.getMinX();
+                double startY = totemScreen.getMinY() - rootScreen.getMinY();
+
+                // we use exact location of the totem after redraw
+                double targetCenterX = tileScreen.getMinX() + (tile.getWidth() * 0.5) - rootScreen.getMinX();
+                double targetCenterY = tileScreen.getMinY() + (tile.getHeight() * 0.2) - rootScreen.getMinY();
+
+                double targetX = targetCenterX - (totemWidth / 2);
+                double targetY = targetCenterY - (totemHeight / 2);
+
+                // create ghost totem
+                ImageView ghostTotem = new ImageView(imageFetcher.getTotemImage(smallModel.getPlayer().getColor()));
+                ghostTotem.setFitWidth(totemWidth);
+                ghostTotem.setFitHeight(totemHeight);
+                ghostTotem.setPreserveRatio(true);
+
+                ghostTotem.relocate(startX, startY);
+                overlayPane.getChildren().add(ghostTotem);
+
+                // hide the totem piece in the turn order tile during the animation
+                totemPiece.setVisible(false);
+
+                double deltaX = targetX - startX;
+                double deltaY = targetY - startY;
+                double distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+
+                long durationMs = (long) (distance / 0.9);
+                durationMs = Math.clamp(durationMs, 300, 650);
+
+                TranslateTransition transition = new TranslateTransition(Duration.millis(durationMs), ghostTotem);
+                transition.setToX(deltaX);
+                transition.setToY(deltaY);
+                transition.setInterpolator(Interpolator.EASE_OUT);
+
+                transition.setOnFinished(ev -> {
+                    root.getChildren().remove(overlayPane);
+
+                    try {
+                        client.getServerConnection().placeTotem(smallModel.getPlayer().getNickname(), offerTrackTiles.indexOf(tile));
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                });
+
+                transition.play();
             });
         }
     }
