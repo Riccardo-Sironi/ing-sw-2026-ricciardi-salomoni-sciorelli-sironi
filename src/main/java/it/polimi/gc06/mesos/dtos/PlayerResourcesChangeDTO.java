@@ -34,6 +34,10 @@ public class PlayerResourcesChangeDTO implements SmallModelEditor {
         }
     }
 
+    public String getPlayer() {
+        return player;
+    }
+
     @Override
     public void accept(DTOvisitor visitor) {
         visitor.visit(this);

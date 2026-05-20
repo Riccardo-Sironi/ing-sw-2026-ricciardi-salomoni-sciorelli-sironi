@@ -64,7 +64,7 @@ public class GUIDTOvisitor extends DTOvisitor {
     public void visit(PickBottomRowDTO dto) {
         System.out.println("Pick bottom row!");
         Platform.runLater(() -> {
-            boardController.handleBottomRowPick();
+            boardController.handleBottomRowPick(dto);
         });
     }
 
@@ -72,7 +72,7 @@ public class GUIDTOvisitor extends DTOvisitor {
     public void visit(PickBottomBuildingsDTO dto) {
         System.out.println("Pick bottom buildings!");
         Platform.runLater(() -> {
-            boardController.handleBottomBuildingsPick();
+            boardController.handleBottomBuildingsPick(dto);
         });
     }
 
@@ -80,7 +80,7 @@ public class GUIDTOvisitor extends DTOvisitor {
     public void visit(PickTopRowDTO dto) {
         System.out.println("Pick top row!");
         Platform.runLater(() -> {
-            boardController.handleTopRowPick();
+            boardController.handleTopRowPick(dto);
         });
     }
 
@@ -88,7 +88,7 @@ public class GUIDTOvisitor extends DTOvisitor {
     public void visit(PickTopBuildingsDTO dto) {
         System.out.println("Pick top buildings!");
         Platform.runLater(() -> {
-            boardController.handleTopBuildingsPick();
+            boardController.handleTopBuildingsPick(dto);
         });
     }
 
@@ -96,7 +96,7 @@ public class GUIDTOvisitor extends DTOvisitor {
     public void visit(PlayerResourcesChangeDTO dto) {
         System.out.println("Player resources change!");
         Platform.runLater(() -> {
-            boardController.handlePlayerResourcesChange();
+            boardController.handlePlayerResourcesChange(dto);
         });
     }
 

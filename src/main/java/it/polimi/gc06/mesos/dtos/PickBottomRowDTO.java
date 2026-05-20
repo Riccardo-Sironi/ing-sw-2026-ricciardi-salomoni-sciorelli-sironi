@@ -25,6 +25,14 @@ public class PickBottomRowDTO implements SmallModelEditor {
         }
     }
 
+    public String getPlayer() {
+        return player;
+    }
+
+    public int getCardIndex() {
+        return cardIndex;
+    }
+
     @Override
     public void accept(DTOvisitor visitor) {
         visitor.visit(this);

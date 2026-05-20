@@ -1,5 +1,6 @@
 package it.polimi.gc06.mesos.view.gui.controllers;
 
+import it.polimi.gc06.mesos.dtos.*;
 import it.polimi.gc06.mesos.model.cards.Card;
 import it.polimi.gc06.mesos.model.gameTurnManager.PlacingTotemPhase;
 import it.polimi.gc06.mesos.view.gui.elements.*;
@@ -203,13 +204,13 @@ public class BoardController {
                         }
                         if (e.getCode() == KeyCode.DIGIT8) {
                             currentLayout = LayoutConfiguration.CAVE_COLORS;
-                            drawPlayerInventory();
-                            drawOpponentsSidebar();
+                            drawInventoryTheme();
+                            drawOpponentsTheme();
                         }
                         if (e.getCode() == KeyCode.DIGIT9) {
                             currentLayout = LayoutConfiguration.CAVE;
-                            drawPlayerInventory();
-                            drawOpponentsSidebar();
+                            drawInventoryTheme();
+                            drawOpponentsTheme();
                         }
                         // HIDE OPPONENTS SIDE BAR
                         if (e.getCode() == KeyCode.O) {
@@ -279,9 +280,13 @@ public class BoardController {
         drawTurnOrderTile();
         drawOfferTrack();
         drawSkipButton();
-        drawPlayerInventory();
+        drawPlayerCards();
+        drawPlayerStats();
+        drawInventoryTheme();
         initOpponentsSideBar();
-        drawOpponentsSidebar();
+        drawOpponentsCards();
+        drawOpponentsStats();
+        drawOpponentsTheme();
     }
 
     private void setupArchitecturalLayout() {
@@ -497,7 +502,22 @@ public class BoardController {
         }
     }
 
-    public void drawOpponentsSidebar() {
+    public void drawOpponentsStats() {
+        for (PlayerView opponent : smallModel.getOpponents()) {
+            OpponentBox opp = opponentsBoxes.get(opponent.getNickname());
+
+            opp.getPrestigeTokensText().setText(String.valueOf(opponent.getNumPrestige()));
+            opp.getFoodTokensText().setText(String.valueOf(opponent.getNumFood()));
+
+            opp.getShamanStarsText().setText(String.valueOf(opponent.getNumShamanStar()));
+            opp.getGatherersText().setText(String.valueOf(opponent.getNumGatherer()));
+            opp.getHuntersText().setText(String.valueOf(opponent.getNumHunter()));
+            opp.getArtistsText().setText(String.valueOf(opponent.getNumArtist()));
+            opp.getBuildersDiscountText().setText(String.valueOf(opponent.getBuildersDiscount()));
+        }
+    }
+
+    public void drawOpponentsCards() {
         for (PlayerView opponent : smallModel.getOpponents()) {
             OpponentBox opp = opponentsBoxes.get(opponent.getNickname());
 
@@ -514,15 +534,12 @@ public class BoardController {
                 cardView.fitHeightProperty().bind(opp.getCardsContainer().heightProperty().multiply(RESIZE_CARD_FACTOR));
                 opp.getCardsContainer().getChildren().add(cardView);
             }
+        }
+    }
 
-            opp.getPrestigeTokensText().setText(String.valueOf(opponent.getNumPrestige()));
-            opp.getFoodTokensText().setText(String.valueOf(opponent.getNumFood()));
-
-            opp.getShamanStarsText().setText(String.valueOf(opponent.getNumShamanStar()));
-            opp.getGatherersText().setText(String.valueOf(opponent.getNumGatherer()));
-            opp.getHuntersText().setText(String.valueOf(opponent.getNumHunter()));
-            opp.getArtistsText().setText(String.valueOf(opponent.getNumArtist()));
-            opp.getBuildersDiscountText().setText(String.valueOf(opponent.getBuildersDiscount()));
+    public void drawOpponentsTheme() {
+        for (PlayerView opponent : smallModel.getOpponents()) {
+            OpponentBox opp = opponentsBoxes.get(opponent.getNickname());
 
             String backgroundColor;
             String borderColor;
@@ -661,9 +678,7 @@ public class BoardController {
         return stat;
     }
 
-    private void drawPlayerInventory() {
-        if (smallModel == null || smallModel.getPlayer() == null) return;
-
+    private void drawPlayerStats() {
         PlayerView p = smallModel.getPlayer();
 
         prestigeTokensText.setText(String.valueOf(p.getNumPrestige()));
@@ -673,6 +688,10 @@ public class BoardController {
         hunterQuantityText.setText(String.valueOf(p.getNumHunter()));
         artistQuantityText.setText(String.valueOf(p.getNumArtist()));
         buildersDiscountText.setText(String.valueOf(p.getBuildersDiscount()));
+    }
+
+    private void drawPlayerCards() {
+        PlayerView p = smallModel.getPlayer();
 
         playerCardsContainer.getChildren().clear();
 
@@ -688,6 +707,10 @@ public class BoardController {
             cardView.fitHeightProperty().bind(inventoryBox.heightProperty().multiply(RESIZE_CARD_FACTOR));
             playerCardsContainer.getChildren().add(cardView);
         }
+    }
+
+    private void drawInventoryTheme() {
+        PlayerView p = smallModel.getPlayer();
 
         String backgroundColor;
         String borderColor;
@@ -1223,28 +1246,49 @@ public class BoardController {
         drawDeck();
     }
 
-    public void handleTopRowPick() {
+    public void handleTopRowPick(PickTopRowDTO dto) {
         drawTopRowCards();
         applyEffectToContainerCardViews(buildingsContainer, smallModel.getTopDrawNum());
         drawSkipButton();
+
+        if (dto.getPlayer().equals(smallModel.getPlayer().getNickname())) {
+            drawPlayerCards();
+        } else {
+            drawOpponentsCards();
+        }
     }
 
-    public void handleBottomRowPick() {
+    public void handleBottomRowPick(PickBottomRowDTO dto) {
         drawBottomRowCards();
         applyEffectToContainerCardViews(bottomBuildingsContainer, smallModel.getBottomDrawNum());
         drawSkipButton();
+        if (dto.getPlayer().equals(smallModel.getPlayer().getNickname())) {
+            drawPlayerCards();
+        } else {
+            drawOpponentsCards();
+        }
     }
 
-    public void handleTopBuildingsPick() {
+    public void handleTopBuildingsPick(PickTopBuildingsDTO dto) {
         drawTopBuildingsCards();
         applyEffectToContainerCardViews(topCharactersContainer, smallModel.getTopDrawNum());
         drawSkipButton();
+        if (dto.getPlayer().equals(smallModel.getPlayer().getNickname())) {
+            drawPlayerCards();
+        } else {
+            drawOpponentsCards();
+        }
     }
 
-    public void handleBottomBuildingsPick() {
+    public void handleBottomBuildingsPick(PickBottomBuildingsDTO dto) {
         drawBottomBuildingCards();
         applyEffectToContainerCardViews(bottomCharactersContainer, smallModel.getBottomDrawNum());
         drawSkipButton();
+        if (dto.getPlayer().equals(smallModel.getPlayer().getNickname())) {
+            drawPlayerCards();
+        } else {
+            drawOpponentsCards();
+        }
     }
 
     public void handleTotemMoved() {
@@ -1262,14 +1306,12 @@ public class BoardController {
         drawOfferTrack();
     }
 
-    public void handleGameStarted() {
-        // TODO : da fare bene
-        drawEverything();
-    }
-
-    public void handlePlayerResourcesChange() {
-        drawPlayerInventory();
-        drawOpponentsSidebar();
+    public void handlePlayerResourcesChange(PlayerResourcesChangeDTO dto) {
+        if (dto.getPlayer().equals(smallModel.getPlayer().getNickname())) {
+            drawPlayerStats();
+        } else {
+            drawOpponentsStats();
+        }
         updateAllBoardEffects();
     }
 
