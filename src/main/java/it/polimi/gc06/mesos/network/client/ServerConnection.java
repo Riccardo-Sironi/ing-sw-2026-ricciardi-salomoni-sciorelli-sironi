@@ -1,6 +1,7 @@
 package it.polimi.gc06.mesos.network.client;
 
 import it.polimi.gc06.mesos.dtos.SmallModelEditor;
+import it.polimi.gc06.mesos.model.Color;
 import it.polimi.gc06.mesos.view.smallModel.SmallModelNotifier;
 
 import java.rmi.Remote;
@@ -39,5 +40,7 @@ public interface ServerConnection extends Remote, SmallModelNotifier {
     public void pickBuildingFromTop(String nickname, int cardIndex) throws Exception;
 
     public void handleSkip(String nickname) throws Exception;
+
+    public void chooseTotemColor(String nickname, Color color) throws Exception;
 }
 

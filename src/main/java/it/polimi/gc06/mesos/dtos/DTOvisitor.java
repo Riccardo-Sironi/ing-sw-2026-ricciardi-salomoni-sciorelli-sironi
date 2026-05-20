@@ -64,4 +64,8 @@ public abstract class DTOvisitor {
     public void visit(TotemTurnMoveDTO dto) {
         visit((SmallModelEditor) dto);
     }
+
+    public void visit(ChooseTotemColorDTO dto) {
+        visit((SmallModelEditor) dto);
+    }
 }
