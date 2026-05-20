@@ -5,23 +5,23 @@ import it.polimi.gc06.mesos.view.smallModel.PlayerView;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.ImageView;
 
+import static it.polimi.gc06.mesos.view.gui.GUI.imageFetcher;
+
 public class TotemPieceView extends ImageView {
     private PlayerView player;
 
     // In TotemPieceView.java
     public TotemPieceView() {
-        super(); // Use empty constructor
-        // Load image via InputStream
-        this.setImage(ImageFetcher.getTotemImage());
+        super();
+        this.setImage(imageFetcher.getTotemImage());
         this.player = null;
         this.setPreserveRatio(true);
         this.setSmooth(true);
     }
 
     public TotemPieceView(PlayerView player) {
-        super(); // Use empty constructor
-        // Load image via InputStream
-        this.setImage(ImageFetcher.getTotemImage(player.getColor()));
+        super();
+        this.setImage(imageFetcher.getTotemImage(player.getColor()));
         this.player = player;
         this.setPreserveRatio(true);
         this.setSmooth(true);

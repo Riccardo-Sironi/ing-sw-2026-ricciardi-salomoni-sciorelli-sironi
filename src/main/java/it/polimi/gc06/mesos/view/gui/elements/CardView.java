@@ -6,6 +6,8 @@ import it.polimi.gc06.mesos.view.gui.helpers.EffectsManager;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
+import static it.polimi.gc06.mesos.view.gui.GUI.imageFetcher;
+
 public class CardView extends ImageView {
 
     private Card card;
@@ -13,7 +15,7 @@ public class CardView extends ImageView {
 
     public CardView(Image image) {
         super(image);
-        if (image == null) this.setImage(ImageFetcher.getNullCardImage());
+        if (image == null) this.setImage(imageFetcher.getNullCardImage());
         this.setPreserveRatio(true);
         this.setSmooth(true);
         this.canBePicked = false;

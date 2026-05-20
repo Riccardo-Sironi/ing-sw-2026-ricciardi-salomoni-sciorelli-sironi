@@ -717,21 +717,11 @@ public class BoardController {
         deckText.setText(String.valueOf(smallModel.getTribeDeckSize()));
 
         if (smallModel.isEndgame()) {
-            deckImage.setImage(loadImage("/cards/backs/tribe_card_era_III_final_back.png"));
+            deckImage.setImage(imageFetcher.getFinalEventDeckImage());
             return;
         }
 
-        switch (smallModel.getEra()) {
-            case ERA_I:
-                deckImage.setImage(loadImage("/cards/backs/tribe_card_era_I_back.png"));
-                break;
-            case ERA_II:
-                deckImage.setImage(loadImage("/cards/backs/tribe_card_era_II_back.png"));
-                break;
-            case ERA_III:
-                deckImage.setImage(loadImage("/cards/backs/tribe_card_era_III_back.png"));
-                break;
-        }
+        deckImage.setImage(imageFetcher.getDeckBackImage(smallModel.getEra()));
     }
 
     private void drawTopRowCards() {
@@ -1044,7 +1034,6 @@ public class BoardController {
         skipButton.setOnMouseClicked(e -> {
             try {
                 client.getServerConnection().handleSkip(smallModel.getPlayer().getNickname());
-                System.out.println("FIred skip");
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
@@ -1052,7 +1041,7 @@ public class BoardController {
     }
 
     private void initTurnOrderTile() {
-        Image turnOrderImage = loadImage(imageFetcher.getTurnOrderTileUrl());
+        Image turnOrderImage = imageFetcher.getTurnOrderTileImage();
         turnOrderTile = new TurnOrderTileView(turnOrderImage);
         turnOrderTile.prefHeightProperty().bind(centerRowBox.heightProperty().multiply(0.85));
         turnOrderTile.maxHeightProperty().bind(centerRowBox.heightProperty().multiply(0.85));
@@ -1117,7 +1106,7 @@ public class BoardController {
     }
 
     private OfferTileView createOfferTile(TileSlotView tileSlotView) {
-        Image img = loadImage(imageFetcher.fetch(tileSlotView));
+        Image img = imageFetcher.fetch(tileSlotView);
         OfferTileView tile = new OfferTileView(img);
 
         tile.prefHeightProperty().bind(centerRowBox.heightProperty().multiply(0.85));

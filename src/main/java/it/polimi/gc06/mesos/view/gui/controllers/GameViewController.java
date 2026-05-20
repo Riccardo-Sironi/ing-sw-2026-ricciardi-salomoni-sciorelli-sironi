@@ -12,8 +12,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
 
-import static it.polimi.gc06.mesos.view.gui.GUI.guidtovisitor;
-import static it.polimi.gc06.mesos.view.gui.GUI.smallModel;
+import static it.polimi.gc06.mesos.view.gui.GUI.*;
 
 public class GameViewController {
 
@@ -122,31 +121,13 @@ public class GameViewController {
     public void showPhaseOverlay() {
         if (smallModel.getPhase() == null) return;
 
-        String path = "/imgs/overlay/" + smallModel.getPhase().toLowerCase() + "_phase_overlay.png";
-
-        java.io.InputStream imageStream = getClass().getResourceAsStream(path);
-        if (imageStream != null) {
-            playOverlay(new Image(imageStream));
-        } else {
-            System.err.println("ERROR: Phase overlay image not found at path: " + path);
-        }
+        playOverlay(imageFetcher.getPhaseOverlayImage(smallModel.getPhase()));
     }
 
     public void showEraOverlay() {
         if (smallModel.getEra() == null) return;
 
-        String path = "/imgs/overlay/" + smallModel.getEra().name().toLowerCase() + "_overlay.png";
-
-        java.io.InputStream imageStream = getClass().getResourceAsStream(path);
-        if (imageStream != null) {
-            playOverlay(new Image(imageStream));
-        } else {
-            System.err.println("ERROR: Era overlay image not found at path: " + path);
-        }
-    }
-
-    public void handleRoundChanged() {
-        showPhaseOverlay();
+        playOverlay(imageFetcher.getEraOverlayImage(smallModel.getEra()));
     }
 
     public void handlePhaseChanged() {

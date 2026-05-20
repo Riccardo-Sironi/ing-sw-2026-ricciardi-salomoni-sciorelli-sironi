@@ -3,8 +3,10 @@ package it.polimi.gc06.mesos.view.gui;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.polimi.gc06.mesos.model.Color;
+import it.polimi.gc06.mesos.model.Era;
 import it.polimi.gc06.mesos.model.cards.Card;
 import it.polimi.gc06.mesos.model.gameBoard.TileEffect;
+import it.polimi.gc06.mesos.model.gameTurnManager.*;
 import it.polimi.gc06.mesos.view.gui.helpers.Totem;
 import it.polimi.gc06.mesos.view.smallModel.TileSlotView;
 import javafx.scene.image.Image;
@@ -13,21 +15,33 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
+import static it.polimi.gc06.mesos.view.gui.GUI.smallModel;
+
 public class ImageFetcher {
 
     private static final String CARDS_URL = "/it/polimi/gc06/mesos/jsons/imageFetcherCards.json";
     private static final String TILES_URL = "/it/polimi/gc06/mesos/jsons/imageFetcherTiles.json";
 
     private final int numOfPlayers;
+
     private final Random randomizer;
+
     private final IdentityHashMap<Card, Image> cardMap;
-    private static final EnumMap<Color, Image> totemsMap = new EnumMap<>(Color.class);
-    private static Image noneTotemImage = null;
+    private final IdentityHashMap<TileEffect, Image> offerTileMap;
+    private final EnumMap<Color, Image> totemsMap = new EnumMap<>(Color.class);
+
+    private final HashMap<String, Image> phaseOverlayMap;
+    private final EnumMap<Era, Image> eraOverlayMap;
+
+    private final EnumMap<Era, Image> eraDeckImage;
+    private final Image finalEventDeckImage;
+
+    private final Image nullCardImage;
+    private final Image noneTotemImage;
+    private final Image turnOrderTileImage;
+
     private final ArrayList<CardImagesInfo> cardInfos;
-    private static Image nullCardImage = null;
-    private final IdentityHashMap<TileEffect, String> offerTileMap;
     private final ArrayList<OfferTileInfo> tileInfos;
-    private final String turnOrderTileUrl;
 
     public ImageFetcher(int numOfPlayers) throws IOException {
         Random r = new Random();
@@ -40,6 +54,9 @@ public class ImageFetcher {
         this.offerTileMap = new IdentityHashMap<>();
         this.tileInfos = new ArrayList<>();
         this.randomizer = new Random(seed);
+        this.phaseOverlayMap = new HashMap<>();
+        this.eraOverlayMap = new EnumMap<>(Era.class);
+        this.eraDeckImage = new EnumMap<>(Era.class);
 
         //fetches cards images
         ObjectMapper mapper = new ObjectMapper();
@@ -54,30 +71,33 @@ public class ImageFetcher {
         for (int i = 2; i <= numOfPlayers; i++) {
             tileInfos.addAll(map.get(i).offerTiles);
         }
+        turnOrderTileImage = loadImage(map.get(numOfPlayers).turnOrderTileUrl);
 
-        turnOrderTileUrl = map.get(numOfPlayers).turnOrderTileUrl;
-
+        // init totem map
         for (Color color : Color.values()) {
             String path = Totem.getTotem(color).getTotemStanding();
-
-            try {
-                Image img = new Image(Objects.requireNonNull(getClass().getResourceAsStream(path)));
-                totemsMap.put(color, img);
-            } catch (Exception e) {
-                System.err.println("ERRORE: Impossibile caricare il totem per il colore: " + color);
-            }
+            totemsMap.put(color, loadImage(path));
         }
 
-        String path = Totem.NONE.getTotemStanding();
+        // era deck background map init
+        eraDeckImage.put(Era.ERA_I, loadImage("/cards/backs/tribe_card_era_I_back.png"));
+        eraDeckImage.put(Era.ERA_II, loadImage("/cards/backs/tribe_card_era_II_back.png"));
+        eraDeckImage.put(Era.ERA_III, loadImage("/cards/backs/tribe_card_era_III_back.png"));
+        finalEventDeckImage = loadImage("/cards/backs/tribe_card_era_III_final_back.png");
 
-        try {
-            noneTotemImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream(path)));
-        } catch (Exception e) {
-            System.err.println("ERRORE: Impossibile caricare il totem per il colore: NONE ");
+        // era overlay map init
+        for (Era era : Era.values()) {
+            eraOverlayMap.put(era, loadImage("/imgs/overlay/" + smallModel.getEra().name().toLowerCase() + "_overlay.png"));
         }
 
-        String nulCardPath = "/cards/fronts/null_card.png";
-        nullCardImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream(nulCardPath)));
+        // phase overlay map init
+        phaseOverlayMap.put(new PlacingTotemPhase().toString(), loadImage("/imgs/overlay/" + new PlacingTotemPhase().toString().toLowerCase() + "_phase_overlay.png"));
+        phaseOverlayMap.put(new OfferResolutionPhase().toString(), loadImage("/imgs/overlay/" + new OfferResolutionPhase().toString().toLowerCase() + "_phase_overlay.png"));
+        phaseOverlayMap.put(new EventResolutionPhase().toString(), loadImage("/imgs/overlay/" + new EventResolutionPhase().toString().toLowerCase() + "_phase_overlay.png"));
+        phaseOverlayMap.put(new EndOfRoundPhase().toString(), loadImage("/imgs/overlay/" + new EndOfRoundPhase().toString().toLowerCase() + "_phase_overlay.png"));
+
+        nullCardImage = loadImage("/cards/fronts/null_card.png");
+        noneTotemImage = loadImage(Totem.NONE.getTotemStanding());
     }
 
     /**
@@ -97,15 +117,7 @@ public class ImageFetcher {
 
         String path = info.validImagesUrls.get(randomizer.nextInt(0, info.validImagesUrls.size()));
 
-        Image img;
-        try {
-            if (!path.startsWith("/")) path = "/" + path;
-            img = new Image(Objects.requireNonNull(getClass().getResourceAsStream(path)));
-        } catch (Exception e) {
-            System.err.println("image not found: " + path);
-            img = null;
-        }
-        cardMap.put(card, img);
+        cardMap.put(card, loadImage(path));
 
         return cardMap.get(card);
     }
@@ -117,32 +129,65 @@ public class ImageFetcher {
      * @return the image
      * @throws NoSuchElementException if the fetching logic fails to find a valid image
      */
-    public String fetch(TileSlotView tile) throws NoSuchElementException {
+    public Image fetch(TileSlotView tile) throws NoSuchElementException {
         TileEffect effect = tile.getTileEffect();
         if (offerTileMap.containsKey(effect)) return offerTileMap.get(effect);
 
         //fetching logic
         OfferTileInfo info = tileInfos.stream().filter(i -> i.tileEffect.equals(effect)).findFirst()
                 .orElseThrow(NoSuchElementException::new);
-        offerTileMap.put(effect, info.offerTileUrl);
+
+        offerTileMap.put(effect, loadImage(info.offerTileUrl));
 
         return offerTileMap.get(effect);
     }
 
-    public static Image getTotemImage(Color color) {
+    public Image getDeckBackImage(Era era) {
+        if (eraDeckImage.containsKey(era)) return eraDeckImage.get(era);
+        System.err.println("couldn't find deck back image for era " + era);
+        return null;
+    }
+
+    public Image getEraOverlayImage(Era era) {
+        if (eraOverlayMap.containsKey(era)) return eraOverlayMap.get(era);
+        System.err.println("couldn't find overlay image for era " + era);
+        return null;
+    }
+
+    public Image getPhaseOverlayImage(String phase) {
+        if (phaseOverlayMap.containsKey(phase)) return phaseOverlayMap.get(phase);
+        System.err.println("couldn't find overlay image for phase " + phase);
+        return null;
+    }
+
+    public Image getTotemImage(Color color) {
         return totemsMap.get(color);
     }
 
-    public static Image getTotemImage() {
+    public Image getTotemImage() {
         return noneTotemImage;
     }
 
-    public static Image getNullCardImage() {
+    public Image getNullCardImage() {
         return nullCardImage;
     }
 
-    public String getTurnOrderTileUrl() {
-        return turnOrderTileUrl;
+    public Image getTurnOrderTileImage() {
+        return turnOrderTileImage;
+    }
+
+    public Image getFinalEventDeckImage() {
+        return finalEventDeckImage;
+    }
+
+    private Image loadImage(String path) {
+        try {
+            if (!path.startsWith("/")) path = "/" + path;
+            return new Image(Objects.requireNonNull(getClass().getResourceAsStream(path)));
+        } catch (Exception e) {
+            System.err.println("image not found: " + path);
+            return null;
+        }
     }
 
     public static class CardImagesInfo {
