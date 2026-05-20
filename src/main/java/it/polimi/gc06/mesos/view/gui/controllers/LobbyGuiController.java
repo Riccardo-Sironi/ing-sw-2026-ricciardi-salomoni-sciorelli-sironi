@@ -79,14 +79,12 @@ public class LobbyGuiController implements ModelListener {
     public void drawPlayers() {
         lobbyContainer.getChildren().clear();
 
-        // 1. Disegna te stesso se hai scelto un colore
         if (GUI.smallModel.getPlayer().getColor() != null) {
             Totem myTotem = mapColorToTotem(GUI.smallModel.getPlayer().getColor());
             LobbyPlayerView playerBox = initPlayerBox(GUI.smallModel.getPlayer().getNickname(), "Ready", myTotem);
             addPlayerWithAnimation(playerBox);
         }
 
-        // 2. Disegna gli avversari se hanno scelto un colore
         for (var opponent : GUI.smallModel.getOpponents()) {
             if (opponent.getColor() != null) {
                 Totem oppTotem = mapColorToTotem(opponent.getColor());
@@ -146,7 +144,6 @@ public class LobbyGuiController implements ModelListener {
             }
         }
 
-        // Se tu hai già scelto un totem, non devi più poter cliccare niente
         if (GUI.smallModel.getPlayer().getColor() != null) {
             return;
         }
@@ -188,9 +185,7 @@ public class LobbyGuiController implements ModelListener {
             totemBox.setOnMouseClicked(e -> {
                 totemSelectionBox.setDisable(true);
                 try {
-                    System.out.println("Inviando al server la scelta del totem: " + totem);
-                    // IMPORTANTE: assicurati che la chiamata di rete non blocchi il thread JavaFX.
-                    // Se questa chiamata impiega tempo, potresti metterla in un thread separato.
+                    System.out.println("Sending server the totem choice: " + totem);
                     GUI.client.getServerConnection().chooseTotemColor(LoginController.getNickname(), mapTotemToColor(totem));
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -222,11 +217,10 @@ public class LobbyGuiController implements ModelListener {
     }
 
     private it.polimi.gc06.mesos.model.Color mapTotemToColor(Totem totem) {
-        // totem.name() restituisce "ORANGE", non "ORANGE_TOTEM"
         return switch (totem.name().toUpperCase()) {
             case "ORANGE" -> it.polimi.gc06.mesos.model.Color.ORANGE;
             case "WHITE" -> it.polimi.gc06.mesos.model.Color.WHITE;
-            case "TURQUOISE" -> it.polimi.gc06.mesos.model.Color.TORQUISE; // Nota il typo TORQUISE del tuo enum Color
+            case "TURQUOISE" -> it.polimi.gc06.mesos.model.Color.TORQUISE;
             case "YELLOW" -> it.polimi.gc06.mesos.model.Color.YELLOW;
             default -> it.polimi.gc06.mesos.model.Color.PURPLE;
         };
@@ -245,47 +239,35 @@ public class LobbyGuiController implements ModelListener {
 
     @Override
     public void update(SmallModelEditor dto) {
-        // Aggiorna il modello locale
         dto.accept(guidtovisitor);
 
-        // Poiché i DTO arrivano da un thread di rete, qualsiasi modifica
-        // alla GUI deve essere fatta nel thread di JavaFX usando Platform.runLater
         Platform.runLater(() -> {
-            refreshLobbyUI();    // Disegna i nuovi giocatori "Ready"
-            checkAndStartGame(); // Controlla se possiamo iniziare la partita
+            refreshLobbyUI();
+            checkAndStartGame();
         });
     }
 
-    /**
-     * Controlla se tutti i giocatori (il client attuale + tutti gli avversari)
-     * hanno selezionato un colore. Se sì, passa alla scena di gioco.
-     */
+
     private void checkAndStartGame() {
-        // 1. Controlla se tu hai scelto
         if (GUI.smallModel.getPlayer().getColor() == null) {
             return;
         }
 
-        // 2. Controlla se tutti gli avversari hanno scelto
         for (var opponent : GUI.smallModel.getOpponents()) {
             if (opponent.getColor() == null) {
-                return; // Manca ancora qualcuno
+                return;
             }
         }
 
-        // 3. Se arriviamo qui, tutti i giocatori hanno un colore!
-        System.out.println("Tutti i giocatori sono pronti! Avvio della partita in corso...");
+        System.out.println("All players are in. Game is starting...");
 
         try {
-            // IMPORTANTISSIMO: Disiscriviamo la lobby per non interferire con la scena di gioco vera e propria
             GUI.client.getServerConnection().unsubscribe(this);
 
-            // Inizializza l'ImageFetcher (recuperato dal tuo codice)
             if (GUI.imageFetcher == null) {
                 GUI.imageFetcher = new ImageFetcher(GUI.smallModel.getOpponents().size() + 1);
             }
 
-            // Esegui il cambio di scena
             GUI.changeScene(GameScene.GAME.getPath());
 
         } catch (Exception e) {
