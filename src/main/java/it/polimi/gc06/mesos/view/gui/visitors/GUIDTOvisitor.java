@@ -44,7 +44,9 @@ public class GUIDTOvisitor extends DTOvisitor {
     public void visit(GameStartedDTO dto) {
         System.out.println("Game started!");
         Platform.runLater(() -> {
-            boardController.handleGameStarted();
+            if (boardController != null) {
+                boardController.handleGameStarted();
+            }
         });
     }
 
