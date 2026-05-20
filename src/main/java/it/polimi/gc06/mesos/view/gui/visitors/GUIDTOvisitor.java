@@ -50,6 +50,10 @@ public class GUIDTOvisitor extends DTOvisitor {
     @Override
     public void visit(LobbyInitializedDTO dto) {
         System.out.println("Lobby started!");
+        Platform.runLater(() -> {
+            lobbyGuiController.refreshLobbyUI();
+            lobbyGuiController.checkAndStartGame();
+        });
     }
 
     @Override
