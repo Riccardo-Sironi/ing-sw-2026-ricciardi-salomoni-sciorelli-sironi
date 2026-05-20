@@ -8,11 +8,8 @@ import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingsRegistry;
 import it.polimi.gc06.mesos.model.cards.events.*;
 import org.junit.jupiter.api.*;
 
-import java.util.EnumMap;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class DeckCardVisitorTest {
     Player player;
@@ -35,7 +32,7 @@ class DeckCardVisitorTest {
     @BeforeEach
     void setUp(TestInfo testInfo)  {
 
-        player = new Player("test", Color.RED, new ModifierBuildingsRegistry());
+        player = new Player("test", Color.ORANGE, new ModifierBuildingsRegistry());
 
         System.out.println("[START] " + testInfo.getDisplayName());
     }

@@ -2,8 +2,8 @@ package it.polimi.gc06.mesos.model;
 
 public enum Color {
     WHITE,
-    RED,
-    BLUE,
+    ORANGE,
+    TORQUISE,
     YELLOW,
     PURPLE
 }

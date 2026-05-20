@@ -11,11 +11,8 @@ import it.polimi.gc06.mesos.model.cards.events.*;
 import it.polimi.gc06.mesos.model.gameBoard.Board;
 import org.junit.jupiter.api.*;
 
-import java.util.EnumMap;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class InventorPairsVisitorTest {
     Player player;
@@ -40,7 +37,7 @@ class InventorPairsVisitorTest {
     void setUp(TestInfo testInfo)  {
 
         GameModel modelMock = mock(GameModel.class);
-        player = new Player("TestPlayer", Color.RED, new ModifierBuildingsRegistry());
+        player = new Player("TestPlayer", Color.ORANGE, new ModifierBuildingsRegistry());
         player.setEnvironment(mock(GameModel.class));
         visitor = new InventorPairsVisitor(player);
 

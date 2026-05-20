@@ -45,7 +45,7 @@ class PlayerTest {
         when(mockModifierRegistry.get(ModifierBuildingRegistryKey.RITUAL_THREE_STAR_CARD)).thenReturn(mockThreeStarCard);
 
         // 2. Player's Setup
-        player = new Player("TestUser", Color.RED, mockModifierRegistry);
+        player = new Player("TestUser", Color.ORANGE, mockModifierRegistry);
 
         System.out.println("[START] " + testInfo.getDisplayName());
     }
@@ -54,7 +54,7 @@ class PlayerTest {
     void testInitialValuesSuccess() {
 
         assertEquals("TestUser", player.getNickname(), "NICKNAME should be TestUser");
-        assertEquals(Color.RED, player.getPlayerColor(), "COLOR should be RED");
+        assertEquals(Color.ORANGE, player.getPlayerColor(), "COLOR should be RED");
 
         // tests for initial values of tokens and draw numbers equals to 0
         assertEquals(0, player.getFoodTokens(), "initial FOOD should be 0");

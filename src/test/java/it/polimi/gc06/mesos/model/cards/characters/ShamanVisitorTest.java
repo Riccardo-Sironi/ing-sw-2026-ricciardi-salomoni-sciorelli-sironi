@@ -10,7 +10,6 @@ import org.junit.jupiter.api.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class ShamanVisitorTest {
     Player player;
@@ -33,7 +32,7 @@ class ShamanVisitorTest {
     @BeforeEach
     void setUp(TestInfo testInfo)  {
 
-        player = new Player("TestPlayer", Color.RED, new ModifierBuildingsRegistry());
+        player = new Player("TestPlayer", Color.ORANGE, new ModifierBuildingsRegistry());
 
         System.out.println("[START] " + testInfo.getDisplayName());
     }
@@ -41,7 +40,7 @@ class ShamanVisitorTest {
 
     @Test
     void visitShamanCard() {
-        player = new Player("TestPlayer", Color.RED, new ModifierBuildingsRegistry());
+        player = new Player("TestPlayer", Color.ORANGE, new ModifierBuildingsRegistry());
         player.increaseShamanStars(5);
         ShamanCard card = new ShamanCard(Era.ERA_I, 5);
         ShamanVisitor visitor = new ShamanVisitor(player);

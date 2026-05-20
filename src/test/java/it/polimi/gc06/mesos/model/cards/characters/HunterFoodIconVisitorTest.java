@@ -32,7 +32,7 @@ class HunterFoodIconVisitorTest {
     @BeforeEach
     void setUp(TestInfo testInfo)  {
 
-        player = new Player("test", Color.RED, new ModifierBuildingsRegistry());
+        player = new Player("test", Color.ORANGE, new ModifierBuildingsRegistry());
 
         System.out.println("[START] " + testInfo.getDisplayName());
     }
