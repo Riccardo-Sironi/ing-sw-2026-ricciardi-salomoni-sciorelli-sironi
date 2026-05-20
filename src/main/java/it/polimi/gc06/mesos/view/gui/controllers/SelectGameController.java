@@ -148,19 +148,7 @@ public class SelectGameController {
 
         try {
             String matchesStr = "";
-
-            /*
-            if (MOCK_MODE) {
-                matchesStr = "Lobby 1 (ID: 1) - 2/4\n" +
-                        "Lobby 2 (ID: 2) - 5/5\n" +
-                        "Lobby 3 (ID: 3) - 1/3\n" +
-                        "Lobby 4 (ID: 4) - 3/5\n" +
-                        "Lobby 5 (ID: 5) - 4/4\n" +
-                        "Lobby 6 (ID: 5) - 4/5\n" +
-                        "Lobby 7 (ID: 5) - 1/2\n" +
-                        "Lobby 8 (ID: 5) - 2/2";
-            } else {
-            */
+            
             matchesStr = GUI.client.getServerConnection().getAvailableMatches();
             /* } */
 
@@ -218,13 +206,6 @@ public class SelectGameController {
         Button clickedBtn = (Button) event.getSource();
         int numPlayers = Integer.parseInt(clickedBtn.getUserData().toString());
 
-        /*
-        if (MOCK_MODE) {
-            System.out.println("MOCK: match creation " + numPlayers + " players.");
-            return;
-        }
-        */
-
         try {
             int currentMatchId = GUI.client.getServerConnection().createMatch(numPlayers, LoginController.getNickname());
             System.out.println("match " + (currentMatchId) + " created");
@@ -264,32 +245,6 @@ public class SelectGameController {
             e.printStackTrace();
         }
     }
-
-//    private void proceedToGame() {
-//        GUI.subscribeGUI();
-//
-//        // TODO : we need a waiting screen but for now we'll keep this
-//        while (GUI.smallModel.getPhase() == null) {
-//            try {
-//                Thread.sleep(500);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//
-//        try {
-//            // init the ImageFetcher
-//            GUI.imageFetcher = new ImageFetcher(GUI.smallModel.getOpponents().size() + 1);
-//        } catch (Exception e) {
-//        }
-//
-//        try {
-//            GUI.changeScene(GameScene.GAME.getPath());
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
 
     private void proceedToLobby() {
         GUI.subscribeGUI();

@@ -1,7 +1,6 @@
 package it.polimi.gc06.mesos.view.gui.controllers;
 
 import it.polimi.gc06.mesos.model.cards.Card;
-import it.polimi.gc06.mesos.model.gameTurnManager.OfferResolutionPhase;
 import it.polimi.gc06.mesos.model.gameTurnManager.PlacingTotemPhase;
 import it.polimi.gc06.mesos.view.gui.elements.*;
 import it.polimi.gc06.mesos.view.gui.helpers.EffectsManager;
@@ -190,7 +189,7 @@ public class BoardController {
 
         setupGameCommands();
 
-
+        drawEverything();
     }
 
     public void setupGameCommands() {

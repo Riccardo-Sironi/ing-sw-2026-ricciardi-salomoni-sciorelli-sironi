@@ -1,7 +1,5 @@
 package it.polimi.gc06.mesos.view.gui.controllers;
 
-import it.polimi.gc06.mesos.controller.ModelListener;
-import it.polimi.gc06.mesos.dtos.SmallModelEditor;
 import it.polimi.gc06.mesos.view.gui.GUI;
 import it.polimi.gc06.mesos.view.gui.GameScene;
 import it.polimi.gc06.mesos.view.gui.ImageFetcher;
@@ -20,25 +18,28 @@ import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static it.polimi.gc06.mesos.view.gui.GUI.guidtovisitor;
 
-public class LobbyGuiController implements ModelListener {
+public class LobbyGuiController {
 
-    @FXML public StackPane lobbyRoot;
-    @FXML public ImageView backgroundImage;
-    @FXML public VBox mainContent;
-    @FXML public HBox lobbyContainer;
-    @FXML public HBox totemSelectionBox;
+    @FXML
+    public StackPane lobbyRoot;
+    @FXML
+    public ImageView backgroundImage;
+    @FXML
+    public VBox mainContent;
+    @FXML
+    public HBox lobbyContainer;
+    @FXML
+    public HBox totemSelectionBox;
 
     @FXML
     public void initialize() {
@@ -46,17 +47,11 @@ public class LobbyGuiController implements ModelListener {
 
         guidtovisitor.setLobbyGuiController(this);
 
-        try {
-            GUI.client.getServerConnection().subscribe(this);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
         refreshLobbyUI();
     }
 
     private void setupArchitecturalLayout() {
-        backgroundImage.setImage(new Image(getClass().getResourceAsStream("/imgs/background/mesos.png")));
+        backgroundImage.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/imgs/background/mesos.png"))));
         backgroundImage.fitWidthProperty().bind(lobbyRoot.widthProperty());
         backgroundImage.fitHeightProperty().bind(lobbyRoot.heightProperty());
 
@@ -173,7 +168,10 @@ public class LobbyGuiController implements ModelListener {
             totemImage.setPreserveRatio(true);
 
             DropShadow shadow = new DropShadow();
-            shadow.setRadius(2.0); shadow.setOffsetX(-1.0); shadow.setSpread(0.2); shadow.setOffsetY(3);
+            shadow.setRadius(2.0);
+            shadow.setOffsetX(-1.0);
+            shadow.setSpread(0.2);
+            shadow.setOffsetY(3);
             shadow.setColor(Color.color(0, 0, 0, 0.5));
             totemImage.setEffect(shadow);
 
@@ -202,17 +200,23 @@ public class LobbyGuiController implements ModelListener {
         TranslateTransition translateOut = new TranslateTransition(Duration.seconds(0.15), totemBox);
 
         totemBox.setOnMouseEntered(e -> {
-            scaleOut.stop(); translateOut.stop();
+            scaleOut.stop();
+            translateOut.stop();
             translateIn.setToY(-20);
-            scaleIn.setToX(1.05); scaleIn.setToY(1.05);
-            translateIn.playFromStart(); scaleIn.playFromStart();
+            scaleIn.setToX(1.05);
+            scaleIn.setToY(1.05);
+            translateIn.playFromStart();
+            scaleIn.playFromStart();
         });
 
         totemBox.setOnMouseExited(e -> {
-            translateIn.stop(); scaleIn.stop();
+            translateIn.stop();
+            scaleIn.stop();
             translateOut.setToY(0);
-            scaleOut.setToX(1.0); scaleOut.setToY(1.0);
-            translateOut.playFromStart(); scaleOut.playFromStart();
+            scaleOut.setToX(1.0);
+            scaleOut.setToY(1.0);
+            translateOut.playFromStart();
+            scaleOut.playFromStart();
         });
     }
 
@@ -237,18 +241,7 @@ public class LobbyGuiController implements ModelListener {
         };
     }
 
-    @Override
-    public void update(SmallModelEditor dto) {
-        dto.accept(guidtovisitor);
-
-        Platform.runLater(() -> {
-            refreshLobbyUI();
-            checkAndStartGame();
-        });
-    }
-
-
-    private void checkAndStartGame() {
+    public void checkAndStartGame() {
         if (GUI.smallModel.getPlayer().getColor() == null) {
             return;
         }
@@ -262,13 +255,29 @@ public class LobbyGuiController implements ModelListener {
         System.out.println("All players are in. Game is starting...");
 
         try {
-            GUI.client.getServerConnection().unsubscribe(this);
-
             if (GUI.imageFetcher == null) {
                 GUI.imageFetcher = new ImageFetcher(GUI.smallModel.getOpponents().size() + 1);
             }
+            
+            Region blackOverlay = new Region();
+            blackOverlay.setStyle("-fx-background-color: black;");
+            blackOverlay.setOpacity(0.0);
+            blackOverlay.setMouseTransparent(true);
 
-            GUI.changeScene(GameScene.GAME.getPath());
+            blackOverlay.prefWidthProperty().bind(lobbyRoot.widthProperty());
+            blackOverlay.prefHeightProperty().bind(lobbyRoot.heightProperty());
+
+            lobbyRoot.getChildren().add(blackOverlay);
+
+            FadeTransition fadeToBlack = new FadeTransition(Duration.seconds(1.5), blackOverlay);
+            fadeToBlack.setFromValue(0.0);
+            fadeToBlack.setToValue(1.0);
+
+            fadeToBlack.setOnFinished(e -> {
+                GUI.changeScene(GameScene.GAME.getPath());
+            });
+
+            fadeToBlack.play();
 
         } catch (Exception e) {
             e.printStackTrace();

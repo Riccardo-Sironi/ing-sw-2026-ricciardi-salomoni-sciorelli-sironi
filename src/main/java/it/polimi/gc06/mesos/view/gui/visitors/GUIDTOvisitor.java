@@ -36,8 +36,14 @@ public class GUIDTOvisitor extends DTOvisitor {
     public void visit(MesosStartedDTO dto) {
         Platform.runLater(() -> {
             System.out.println("Game started!");
-            boardController.handleGameStarted();
-            gameViewController.showEraOverlay();
+        });
+    }
+
+    @Override
+    public void visit(ChooseTotemColorDTO dto) {
+        Platform.runLater(() -> {
+            lobbyGuiController.refreshLobbyUI();
+            lobbyGuiController.checkAndStartGame();
         });
     }
 
