@@ -16,8 +16,8 @@ public enum Totem {
 
     public static Totem getTotem(Color color) {
         return switch (color) {
-            case RED -> Totem.ORANGE;
-            case BLUE -> Totem.TURQUOISE;
+            case ORANGE -> Totem.ORANGE;
+            case TORQUISE -> Totem.TURQUOISE;
             case WHITE -> Totem.WHITE;
             case YELLOW -> Totem.YELLOW;
             case PURPLE -> Totem.PURPLE;

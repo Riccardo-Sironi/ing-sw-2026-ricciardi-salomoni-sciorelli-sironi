@@ -189,6 +189,8 @@ public class BoardController {
         setupArchitecturalLayout();
 
         setupGameCommands();
+
+        Platform.runLater(this::drawEverything);
     }
 
     public void setupGameCommands() {

@@ -3,23 +3,25 @@ package it.polimi.gc06.mesos.view.gui.controllers;
 import it.polimi.gc06.mesos.controller.ModelListener;
 import it.polimi.gc06.mesos.dtos.SmallModelEditor;
 import it.polimi.gc06.mesos.view.gui.GUI;
+import it.polimi.gc06.mesos.view.gui.GameScene;
+import it.polimi.gc06.mesos.view.gui.ImageFetcher;
 import it.polimi.gc06.mesos.view.gui.elements.LobbyPlayerView;
 import it.polimi.gc06.mesos.view.gui.helpers.Totem;
 import javafx.animation.FadeTransition;
 import javafx.animation.ParallelTransition;
 import javafx.animation.ScaleTransition;
 import javafx.animation.TranslateTransition;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
-import javafx.scene.Node;
+import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -29,7 +31,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static it.polimi.gc06.mesos.view.gui.GUI.guidtovisitor;
-import static it.polimi.gc06.mesos.view.gui.GUI.smallModel;
 
 public class LobbyGuiController implements ModelListener {
 
@@ -44,6 +45,12 @@ public class LobbyGuiController implements ModelListener {
         setupArchitecturalLayout();
 
         guidtovisitor.setLobbyGuiController(this);
+
+        try {
+            GUI.client.getServerConnection().subscribe(this);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         refreshLobbyUI();
     }
@@ -63,25 +70,30 @@ public class LobbyGuiController implements ModelListener {
     }
 
     public void refreshLobbyUI() {
-        drawPlayers();
-        drawTotemSelectionBox();
+        Platform.runLater(() -> {
+            drawPlayers();
+            drawTotemSelectionBox();
+        });
     }
 
     public void drawPlayers() {
         lobbyContainer.getChildren().clear();
 
-        // TODO: Adatta questa riga in base a come il tuo SmallModel memorizza i giocatori connessi.
-        // Esempio ipotetico: smallModel.getPlayers() restituisce una lista di oggetti PlayerView (o simili)
-        // che contengono il nickname, lo stato (Ready/Not Ready) e il Totem scelto.
+        // 1. Disegna te stesso se hai scelto un colore
+        if (GUI.smallModel.getPlayer().getColor() != null) {
+            Totem myTotem = mapColorToTotem(GUI.smallModel.getPlayer().getColor());
+            LobbyPlayerView playerBox = initPlayerBox(GUI.smallModel.getPlayer().getNickname(), "Ready", myTotem);
+            addPlayerWithAnimation(playerBox);
+        }
 
-        /* for (PlayerView p : smallModel.getPlayers()) {
-            // Se il giocatore ha già scelto un totem (quindi != Totem.NONE o null)
-            if (p.getTotem() != null && p.getTotem() != Totem.NONE) {
-                LobbyPlayerView playerBox = initPlayerBox(p.getNickname(), "Ready", p.getTotem());
-                addPlayerWithAnimation(playerBox);
+        // 2. Disegna gli avversari se hanno scelto un colore
+        for (var opponent : GUI.smallModel.getOpponents()) {
+            if (opponent.getColor() != null) {
+                Totem oppTotem = mapColorToTotem(opponent.getColor());
+                LobbyPlayerView oppBox = initPlayerBox(opponent.getNickname(), "Ready", oppTotem);
+                addPlayerWithAnimation(oppBox);
             }
         }
-        */
     }
 
     private LobbyPlayerView initPlayerBox(String playerNameLabel, String status, Totem totem) {
@@ -116,12 +128,28 @@ public class LobbyGuiController implements ModelListener {
     public void drawTotemSelectionBox() {
         totemSelectionBox.getChildren().clear();
 
-        List<Totem> occupiedTotems = new ArrayList<>();
-        /*
-        for (PlayerView p : smallModel.getPlayers()) {
-            if (p.getTotem() != null) occupiedTotems.add(p.getTotem());
+        if (GUI.smallModel == null || GUI.smallModel.getOpponents() == null || GUI.smallModel.getOpponents().isEmpty()) {
+            Label waitingLabel = new Label("In attesa degli altri giocatori...");
+            waitingLabel.setStyle("-fx-font-size: 24px; -fx-text-fill: white; -fx-font-weight: bold;");
+            totemSelectionBox.getChildren().add(waitingLabel);
+            return;
         }
-        */
+
+        List<Totem> occupiedTotems = new ArrayList<>();
+
+        if (GUI.smallModel.getPlayer().getColor() != null) {
+            occupiedTotems.add(mapColorToTotem(GUI.smallModel.getPlayer().getColor()));
+        }
+        for (var opponent : GUI.smallModel.getOpponents()) {
+            if (opponent.getColor() != null) {
+                occupiedTotems.add(mapColorToTotem(opponent.getColor()));
+            }
+        }
+
+        // Se tu hai già scelto un totem, non devi più poter cliccare niente
+        if (GUI.smallModel.getPlayer().getColor() != null) {
+            return;
+        }
 
         int availableCount = 0;
         for (Totem t : Totem.values()) {
@@ -137,10 +165,7 @@ public class LobbyGuiController implements ModelListener {
 
             HBox totemBox = new HBox();
             totemBox.setAlignment(Pos.CENTER);
-
-            totemBox.prefWidthProperty().bind(
-                    totemSelectionBox.widthProperty().divide(availableCount).multiply(0.6)
-            );
+            totemBox.prefWidthProperty().bind(totemSelectionBox.widthProperty().divide(availableCount).multiply(0.6));
             totemBox.prefHeightProperty().bind(totemSelectionBox.heightProperty());
             totemBox.setStyle("-fx-background-color: rgb(" + totem.getTotemColorRGBbrighter() + "); -fx-border-color: rgb( " + totem.getTotemColorRGB() + "); -fx-border-width: 2px; -fx-border-radius: 10px; -fx-background-radius: 10px;");
             totemBox.setPadding(new Insets(20));
@@ -162,14 +187,15 @@ public class LobbyGuiController implements ModelListener {
 
             totemBox.setOnMouseClicked(e -> {
                 totemSelectionBox.setDisable(true);
-
-//                try {
-//                    System.out.println("Inviando al server la scelta del totem: " + totem);
-//                    GUI.client.getServerConnection().chooseTotem(LoginController.getNickname(), totem.ordinal());
-//                } catch (Exception ex) {
-//                    ex.printStackTrace();
-//                    totemSelectionBox.setDisable(false);
-//                }
+                try {
+                    System.out.println("Inviando al server la scelta del totem: " + totem);
+                    // IMPORTANTE: assicurati che la chiamata di rete non blocchi il thread JavaFX.
+                    // Se questa chiamata impiega tempo, potresti metterla in un thread separato.
+                    GUI.client.getServerConnection().chooseTotemColor(LoginController.getNickname(), mapTotemToColor(totem));
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    totemSelectionBox.setDisable(false);
+                }
             });
         }
     }
@@ -195,8 +221,75 @@ public class LobbyGuiController implements ModelListener {
         });
     }
 
+    private it.polimi.gc06.mesos.model.Color mapTotemToColor(Totem totem) {
+        // totem.name() restituisce "ORANGE", non "ORANGE_TOTEM"
+        return switch (totem.name().toUpperCase()) {
+            case "ORANGE" -> it.polimi.gc06.mesos.model.Color.ORANGE;
+            case "WHITE" -> it.polimi.gc06.mesos.model.Color.WHITE;
+            case "TURQUOISE" -> it.polimi.gc06.mesos.model.Color.TORQUISE; // Nota il typo TORQUISE del tuo enum Color
+            case "YELLOW" -> it.polimi.gc06.mesos.model.Color.YELLOW;
+            default -> it.polimi.gc06.mesos.model.Color.PURPLE;
+        };
+    }
+
+    private Totem mapColorToTotem(it.polimi.gc06.mesos.model.Color color) {
+        if (color == null) return Totem.NONE;
+        return switch (color) {
+            case WHITE -> Totem.WHITE;
+            case ORANGE -> Totem.ORANGE;
+            case TORQUISE -> Totem.TURQUOISE;
+            case YELLOW -> Totem.YELLOW;
+            case PURPLE -> Totem.PURPLE;
+        };
+    }
+
     @Override
     public void update(SmallModelEditor dto) {
+        // Aggiorna il modello locale
         dto.accept(guidtovisitor);
+
+        // Poiché i DTO arrivano da un thread di rete, qualsiasi modifica
+        // alla GUI deve essere fatta nel thread di JavaFX usando Platform.runLater
+        Platform.runLater(() -> {
+            refreshLobbyUI();    // Disegna i nuovi giocatori "Ready"
+            checkAndStartGame(); // Controlla se possiamo iniziare la partita
+        });
+    }
+
+    /**
+     * Controlla se tutti i giocatori (il client attuale + tutti gli avversari)
+     * hanno selezionato un colore. Se sì, passa alla scena di gioco.
+     */
+    private void checkAndStartGame() {
+        // 1. Controlla se tu hai scelto
+        if (GUI.smallModel.getPlayer().getColor() == null) {
+            return;
+        }
+
+        // 2. Controlla se tutti gli avversari hanno scelto
+        for (var opponent : GUI.smallModel.getOpponents()) {
+            if (opponent.getColor() == null) {
+                return; // Manca ancora qualcuno
+            }
+        }
+
+        // 3. Se arriviamo qui, tutti i giocatori hanno un colore!
+        System.out.println("Tutti i giocatori sono pronti! Avvio della partita in corso...");
+
+        try {
+            // IMPORTANTISSIMO: Disiscriviamo la lobby per non interferire con la scena di gioco vera e propria
+            GUI.client.getServerConnection().unsubscribe(this);
+
+            // Inizializza l'ImageFetcher (recuperato dal tuo codice)
+            if (GUI.imageFetcher == null) {
+                GUI.imageFetcher = new ImageFetcher(GUI.smallModel.getOpponents().size() + 1);
+            }
+
+            // Esegui il cambio di scena
+            GUI.changeScene(GameScene.GAME.getPath());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

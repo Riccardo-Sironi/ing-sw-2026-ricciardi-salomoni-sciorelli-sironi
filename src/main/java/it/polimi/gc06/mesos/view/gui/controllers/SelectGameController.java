@@ -229,9 +229,9 @@ public class SelectGameController {
             int currentMatchId = GUI.client.getServerConnection().createMatch(numPlayers, LoginController.getNickname());
             System.out.println("match " + (currentMatchId) + " created");
 
-            proceedToGame();
+            //proceedToGame();
 
-            //proceedToLobby();
+            proceedToLobby();
         } catch (Exception e) {
             rootPane.setDisable(false);
             e.printStackTrace();
@@ -252,9 +252,9 @@ public class SelectGameController {
             boolean joined = GUI.client.getServerConnection().joinMatch(matchId, LoginController.getNickname());
             if (joined) {
 
-                proceedToGame();
+                //proceedToGame();
 
-                //proceedToLobby();
+                proceedToLobby();
             } else {
                 rootPane.setDisable(false);
                 handleRefresh();
@@ -265,31 +265,31 @@ public class SelectGameController {
         }
     }
 
-    private void proceedToGame() {
-        GUI.subscribeGUI();
-
-        // TODO : we need a waiting screen but for now we'll keep this
-        while (GUI.smallModel.getPhase() == null) {
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-
-        try {
-            // init the ImageFetcher
-            GUI.imageFetcher = new ImageFetcher(GUI.smallModel.getOpponents().size() + 1);
-        } catch (Exception e) {
-        }
-
-        try {
-            GUI.changeScene(GameScene.GAME.getPath());
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+//    private void proceedToGame() {
+//        GUI.subscribeGUI();
+//
+//        // TODO : we need a waiting screen but for now we'll keep this
+//        while (GUI.smallModel.getPhase() == null) {
+//            try {
+//                Thread.sleep(500);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//
+//        try {
+//            // init the ImageFetcher
+//            GUI.imageFetcher = new ImageFetcher(GUI.smallModel.getOpponents().size() + 1);
+//        } catch (Exception e) {
+//        }
+//
+//        try {
+//            GUI.changeScene(GameScene.GAME.getPath());
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     private void proceedToLobby() {
         GUI.subscribeGUI();
