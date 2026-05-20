@@ -1,5 +1,6 @@
 package it.polimi.gc06.mesos.network.rmi;
 
+import it.polimi.gc06.mesos.model.Color;
 import it.polimi.gc06.mesos.network.client.ServerConnection;
 
 import java.rmi.Remote;
@@ -31,4 +32,6 @@ public interface RMIServerInterface extends Remote {
     void handleBuildingPickTopRow(String nickname, int cardIndex) throws RemoteException;
 
     void handleSkip(String nickname) throws RemoteException;
+
+    void handleChooseTotemColor(String nickname, Color color) throws RemoteException;
 }

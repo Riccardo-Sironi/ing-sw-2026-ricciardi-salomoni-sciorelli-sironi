@@ -2,6 +2,7 @@ package it.polimi.gc06.mesos.network.client;
 
 import it.polimi.gc06.mesos.controller.ModelListener;
 import it.polimi.gc06.mesos.dtos.SmallModelEditor;
+import it.polimi.gc06.mesos.model.Color;
 import it.polimi.gc06.mesos.network.rmi.RMIServerInterface;
 
 import java.rmi.NotBoundException;
@@ -118,6 +119,11 @@ public class RMIServerConnection extends UnicastRemoteObject implements ServerCo
     @Override
     public void handleSkip(String nickname) throws Exception {
         serverStub.handleSkip(nickname);
+    }
+
+    @Override
+    public void chooseTotemColor(String nickname, Color color) throws Exception {
+        serverStub.handleChooseTotemColor(nickname, color);
     }
 
     @Override

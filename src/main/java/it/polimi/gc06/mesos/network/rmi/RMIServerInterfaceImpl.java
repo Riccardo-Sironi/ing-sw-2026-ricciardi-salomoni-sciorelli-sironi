@@ -1,6 +1,7 @@
 package it.polimi.gc06.mesos.network.rmi;
 
 import it.polimi.gc06.mesos.controller.GameController;
+import it.polimi.gc06.mesos.model.Color;
 import it.polimi.gc06.mesos.network.client.ServerConnection;
 import it.polimi.gc06.mesos.network.server.MatchManager;
 import it.polimi.gc06.mesos.network.server.RMIClientManager;
@@ -140,6 +141,16 @@ public class RMIServerInterfaceImpl extends UnicastRemoteObject implements RMISe
 
         ControllerCommand command = new ControllerCommand(nickname, 0, Request.SKIP_REQUEST);
 
+        manager.enqueueCommand(command);
+    }
+
+    @Override
+    public void handleChooseTotemColor(String nickname, Color color) throws RemoteException {
+        RMIClientManager manager = clientManagers.get(nickname);
+        if (manager == null) {
+            throw new RemoteException("User not found: " + nickname);
+        }
+        ControllerCommand command = new ControllerCommand(nickname, color.ordinal(), Request.CHOOSE_TOTEM_COLOR_REQUEST);
         manager.enqueueCommand(command);
     }
 }

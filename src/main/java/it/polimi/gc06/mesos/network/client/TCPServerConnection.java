@@ -6,6 +6,7 @@ import it.polimi.gc06.mesos.controller.commands.Request;
 import it.polimi.gc06.mesos.dtos.DTOvisitor;
 import it.polimi.gc06.mesos.dtos.GameStateChangeDTO;
 import it.polimi.gc06.mesos.dtos.SmallModelEditor;
+import it.polimi.gc06.mesos.model.Color;
 import it.polimi.gc06.mesos.network.socket.BlockingBox;
 
 import java.io.EOFException;
@@ -186,6 +187,12 @@ public class TCPServerConnection implements ServerConnection, Runnable {
     public void handleSkip(String nickname) throws Exception {
         if (!isInsideMatch) throw new IllegalStateException("Not inside a match yet.");
         commands.put(new ControllerCommand(nickname, 0, Request.SKIP_REQUEST));
+    }
+
+    @Override
+    public void chooseTotemColor(String nickname, Color color) throws Exception {
+        if (!isInsideMatch) throw new IllegalStateException("Not inside a match yet.");
+        commands.put(new ControllerCommand(nickname, color.ordinal(), Request.CHOOSE_TOTEM_COLOR_REQUEST));
     }
 
     @Override
