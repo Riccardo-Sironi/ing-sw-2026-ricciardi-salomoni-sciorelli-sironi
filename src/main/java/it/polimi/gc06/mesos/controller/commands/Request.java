@@ -1,6 +1,7 @@
 package it.polimi.gc06.mesos.controller.commands;
 
 import it.polimi.gc06.mesos.controller.GameController;
+import it.polimi.gc06.mesos.model.Color;
 
 public enum Request implements ControllerCaller {
 
@@ -34,6 +35,14 @@ public enum Request implements ControllerCaller {
             controller.handleBuildingPickBottomRow(nickname, index);
         }
     },
+    CHOOSE_TOTEM_COLOR_REQUEST {
+        @Override
+        public void call(GameController controller, String nickname, int index) {
+            Color color = Color.values()[index];
+            controller.handleChooseTotemColor(nickname, color);
+        }
+    },
+
     //in this case index is not used!
     SKIP_REQUEST {
         @Override

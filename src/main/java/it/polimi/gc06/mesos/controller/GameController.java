@@ -3,6 +3,7 @@ package it.polimi.gc06.mesos.controller;
 import it.polimi.gc06.mesos.dtos.*;
 import it.polimi.gc06.mesos.gameExceptions.IllegalGameActionException;
 import it.polimi.gc06.mesos.gameExceptions.IllegalPhaseActionException;
+import it.polimi.gc06.mesos.model.Color;
 import it.polimi.gc06.mesos.model.GameModel;
 import it.polimi.gc06.mesos.model.Player;
 import it.polimi.gc06.mesos.model.cards.TribeCard;
@@ -216,6 +217,29 @@ public class GameController {
     public void sendGameStartInfo() throws IllegalStateException {
         if (isGameFinished()) throw new IllegalStateException();
         listenerMap.forEach((s, l) -> l.update(model.getChangeHandler().getStartingStateAsDTO(s)));
+    }
+
+    /**
+     * this method is used to handle the request of totem color choice from the player,
+     * it updates the model and notifies all clients about the change.
+     *
+     * @param playerNickname the nickname of the player who is choosing the totem color.
+     * @param color the color chosen by the player for their totem.
+     */
+
+    public void handleChooseTotemColor(String playerNickname, Color color) {
+        Player p = model.getPlayers().stream()
+                .filter(player -> player.getNickname().equals(playerNickname))
+                .findFirst()
+                .orElse(null);
+
+        if (p != null) {
+            p.setPlayerColor(color);
+        }
+
+        ChooseTotemColorDTO dto = new ChooseTotemColorDTO(playerNickname, color);
+        listeners.forEach(l -> l.update(dto));
+
     }
 
     public boolean isGameFinished() {
