@@ -52,7 +52,6 @@ public class ChangesHandler {
 
         if (board.isEndGame()) {
             changes.add(new LeaderboardChangeDTO(model.getLeaderboard().getScores()));
-            //changes.add(new GameStateChangeDTO(model.getLeaderboard().getScores()));
             return changes;
         }
 
@@ -82,7 +81,6 @@ public class ChangesHandler {
         //check if the round has changed
         if (lastRound != turnManager.getRound()) {
             changes.add(new RoundChangeDTO(turnManager.getRound()));
-            // changes.add(new GameStateChangeDTO(turnManager.getRound()));
             changes.add(new TopRowRefillDTO(new ArrayList<>(board.getTopRow()), new ArrayList<>(board.getBottomRow())));
             changes.add(new BuildingsRefillDTO(new ArrayList<>(board.getTopBuildings()), new ArrayList<>(board.getBottomBuildings())));
         }
@@ -94,32 +92,37 @@ public class ChangesHandler {
         //checks last era
         if (lastEra == null || !lastEra.equals(board.getCurrentEra())) {
             changes.add(new EraChangeDTO(board.getCurrentEra()));
-            //changes.add(new GameStateChangeDTO(board.getCurrentEra()));
             changes.add(new TopRowRefillDTO(new ArrayList<>(board.getTopRow()), new ArrayList<>(board.getBottomRow())));
             changes.add(new BuildingsRefillDTO(new ArrayList<>(board.getTopBuildings()), new ArrayList<>(board.getBottomBuildings())));
         }
 
         //check last phase
         if (lastPhase == null || !lastPhase.equals(turnManager.getPhase().toString())) {
-            //changes.add(new GameStateChangeDTO(turnManager.getPhase().toString()));
             changes.add(new PhaseChangeDTO(turnManager.getPhase().toString()));
         }
 
-        //check active player change and right to skip of the new player
         if (getLastActivePlayer() == null || !getLastActivePlayer().getNickname().equals(turnManager.getActivePlayer().getNickname())) {
             PlayerStateChangeDTO dto = new PlayerStateChangeDTO(turnManager.getActivePlayer().getNickname());
             dto.setIsActive(true);
             changes.add(dto);
-            try {
-                if (turnManager.getPhase().checkForRightToSkip(
-                        turnManager.getActivePlayer(), board
-                )) {
-                    dto = new PlayerStateChangeDTO(turnManager.getActivePlayer().getNickname());
+        }
+        try {
+            if (turnManager.getPhase().checkForRightToSkip(turnManager.getActivePlayer(), board)) {
+
+                PlayerState ps = lastPlayersState.stream()
+                        .filter(s -> s.getPlayer().getNickname().equals(turnManager.getActivePlayer().getNickname()))
+                        .findFirst()
+                        .orElse(null);
+
+                if (ps != null && !ps.isCanSkip()) {
+                    PlayerStateChangeDTO dto = new PlayerStateChangeDTO(turnManager.getActivePlayer().getNickname());
                     dto.setCanSkip(true);
                     changes.add(dto);
+
+                    ps.setCanSkip(true);
                 }
-            } catch (IllegalPhaseActionException _) {
             }
+        } catch (IllegalPhaseActionException _) {
         }
         return changes;
     }

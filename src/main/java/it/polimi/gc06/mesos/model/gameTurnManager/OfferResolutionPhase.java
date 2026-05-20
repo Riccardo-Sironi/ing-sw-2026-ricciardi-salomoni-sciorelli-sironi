@@ -182,6 +182,8 @@ public class OfferResolutionPhase extends Phase {
         if (checkForRightToSkipTop(player, turnManager.getGameModel().getBoard()) && checkForRightToSkipBottom(player, turnManager.getGameModel().getBoard())) {
             player.setTopDrawNum(0);
             player.setBottomDrawNum(0);
+
+            checkIfPlayerIsFinished(turnManager, player, turnManager.getGameModel().getBoard());
         } else {
             throw new IllegalPhaseActionException("You can't skip the offer resolution phase!");
         }

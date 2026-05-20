@@ -853,10 +853,14 @@ public class BoardController {
     }
 
     private void drawSkipButton() {
-        if (!smallModel.getPhase().equals(new OfferResolutionPhase().toString())) {
+        boolean isSkippablePhase = smallModel.getPhase().equals("offer_resolution") ||
+                smallModel.getPhase().equals("end_of_round");
+
+        if (!isSkippablePhase) {
             skipButton.setVisible(false);
         } else {
             skipButton.setVisible(true);
+
             if (smallModel.isActive() && smallModel.isCanSkip()) {
                 skipButton.setDisable(false);
                 toggleSkipButton(true);
@@ -1037,7 +1041,12 @@ public class BoardController {
         });
 
         skipButton.setOnMouseClicked(e -> {
-            // TODO : skip turn request
+            try {
+                client.getServerConnection().handleSkip(smallModel.getPlayer().getNickname());
+                System.out.println("FIred skip");
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
         });
     }
 
