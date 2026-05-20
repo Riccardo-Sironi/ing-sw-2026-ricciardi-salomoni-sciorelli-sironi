@@ -295,7 +295,7 @@ public class SelectGameController {
         GUI.subscribeGUI();
         Platform.runLater(() -> {
             try {
-                GUI.changeScene("/it/polimi/gc06/mesos/fxml/Lobby.fxml");
+                GUI.changeScene(GameScene.LOBBY.getPath());
             } catch (Exception e) {
                 e.printStackTrace();
             }

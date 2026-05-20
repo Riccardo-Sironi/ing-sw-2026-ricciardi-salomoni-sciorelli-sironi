@@ -4,6 +4,7 @@ public enum GameScene {
     START("/it/polimi/gc06/mesos/fxml/Start.fxml"),
     LOGIN("/it/polimi/gc06/mesos/fxml/Login.fxml"),
     SELECT("/it/polimi/gc06/mesos/fxml/SelectGame.fxml"),
+    LOBBY("/it/polimi/gc06/mesos/fxml/Lobby.fxml"),
     GAME("/it/polimi/gc06/mesos/fxml/Mesos.fxml"),
     LEADERBOARD(""),
     END("");

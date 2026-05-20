@@ -45,9 +45,6 @@ public class GUIDTOvisitor extends DTOvisitor {
         System.out.println("Game started!");
         Platform.runLater(() -> {
             boardController.handleGameStarted();
-            // TODO : after drawing the board, show the era and phase overlays with a timer or something like that
-            //gameViewController.showEraOverlay();
-            gameViewController.showPhaseOverlay();
         });
     }
 
