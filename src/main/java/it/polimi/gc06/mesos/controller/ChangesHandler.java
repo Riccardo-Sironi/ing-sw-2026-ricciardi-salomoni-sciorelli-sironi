@@ -81,8 +81,11 @@ public class ChangesHandler {
         //check if the round has changed
         if (lastRound != turnManager.getRound()) {
             changes.add(new RoundChangeDTO(turnManager.getRound()));
-            changes.add(new TopRowRefillDTO(new ArrayList<>(board.getTopRow()), new ArrayList<>(board.getBottomRow())));
-            changes.add(new BuildingsRefillDTO(new ArrayList<>(board.getTopBuildings()), new ArrayList<>(board.getBottomBuildings())));
+            int deckSize = model.getTribeCardsDeck().get(Era.ERA_I).size()
+                    + model.getTribeCardsDeck().get(Era.ERA_II).size()
+                    + model.getTribeCardsDeck().get(Era.ERA_III).size();
+            changes.add(new TopRowRefillDTO(new ArrayList<>(board.getTopRow()), new ArrayList<>(board.getBottomRow()), deckSize));
+            changes.add(new BuildingsRefillDTO(new ArrayList<>(board.getTopBuildings()), new ArrayList<>(board.getBottomBuildings()), deckSize));
         }
 
         if (lastPhase != null && lastPhase.equals(new OfferResolutionPhase().toString()) && !lastPhase.equals(turnManager.getPhase().toString())) {
@@ -92,8 +95,11 @@ public class ChangesHandler {
         //checks last era
         if (lastEra == null || !lastEra.equals(board.getCurrentEra())) {
             changes.add(new EraChangeDTO(board.getCurrentEra()));
-            changes.add(new TopRowRefillDTO(new ArrayList<>(board.getTopRow()), new ArrayList<>(board.getBottomRow())));
-            changes.add(new BuildingsRefillDTO(new ArrayList<>(board.getTopBuildings()), new ArrayList<>(board.getBottomBuildings())));
+            int deckSize = model.getTribeCardsDeck().get(Era.ERA_I).size()
+                    + model.getTribeCardsDeck().get(Era.ERA_II).size()
+                    + model.getTribeCardsDeck().get(Era.ERA_III).size();
+            changes.add(new TopRowRefillDTO(new ArrayList<>(board.getTopRow()), new ArrayList<>(board.getBottomRow()), deckSize));
+            changes.add(new BuildingsRefillDTO(new ArrayList<>(board.getTopBuildings()), new ArrayList<>(board.getBottomBuildings()), deckSize));
         }
 
         //check last phase

@@ -11,19 +11,21 @@ public class TopRowRefillDTO implements SmallModelEditor, Serializable {
 
     private final ArrayList<Card> top; //we use an arraylist since collection might not be serializable
     private final ArrayList<Card> bottom;
+    private final int deckSize;
 
-    public TopRowRefillDTO(Collection<Card> top, Collection<Card> bottom) {
+    public TopRowRefillDTO(Collection<Card> top, Collection<Card> bottom, int deckSize) {
         this.top = new ArrayList<>(top);
         this.bottom = new ArrayList<>(bottom);
+        this.deckSize = deckSize;
     }
 
     @Override
     public void edit(SmallModel smallModel) {
-        // TODO : this is almost neve called (FIX)
         smallModel.getTopRow().clear();
         smallModel.getTopRow().addAll(top);
         smallModel.getBottomRow().clear();
         smallModel.getBottomRow().addAll(bottom);
+        smallModel.setTribeDeckSize(deckSize);
     }
 
     @Override
