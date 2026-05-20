@@ -65,7 +65,7 @@ public class TurnOrderTileView extends TileView {
         // TODO : we use the size of the array provided beacuse it should be the smallmodel list,
         //  so the smallmodel should always provide the correct number of pieces
         TurnOrderTileInfo slots = TurnOrderTileInfo.getInfo(totemPieces.size());
-        if (totemPieces != null && !totemPieces.isEmpty() && slots != null) {
+        if (!totemPieces.isEmpty() && slots != null) {
             List<Point2D> points = slots.getPoints();
 
             for (int i = 0; i < totemPieces.size(); i++) {

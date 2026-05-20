@@ -70,7 +70,7 @@ public class PlayerView {
 
     public int getNumShamanStar() {
 
-        CardTypifiedVisitor<Integer> shamanVisitor = new CardTypifiedVisitor<Integer>() {
+        CardTypifiedVisitor<Integer> shamanVisitor = new CardTypifiedVisitor<>() {
             @Override
             public void visit(ShamanCard card) {
                 setResult(getResult() + card.getStars());
@@ -83,7 +83,7 @@ public class PlayerView {
     }
 
     public int getNumGatherer() {
-        CardTypifiedVisitor<Integer> gatherVisitor = new CardTypifiedVisitor<Integer>() {
+        CardTypifiedVisitor<Integer> gatherVisitor = new CardTypifiedVisitor<>() {
             @Override
             public void visit(GathererCard card) {
                 setResult(getResult() + 1);
@@ -96,7 +96,7 @@ public class PlayerView {
     }
 
     public int getNumShaman() {
-        CardTypifiedVisitor<Integer> shamanVisitor = new CardTypifiedVisitor<Integer>() {
+        CardTypifiedVisitor<Integer> shamanVisitor = new CardTypifiedVisitor<>() {
             @Override
             public void visit(ShamanCard card) {
                 setResult(getResult() + 1);
@@ -109,7 +109,7 @@ public class PlayerView {
     }
 
     public int getNumInventor() {
-        CardTypifiedVisitor<Integer> shamanVisitor = new CardTypifiedVisitor<Integer>() {
+        CardTypifiedVisitor<Integer> shamanVisitor = new CardTypifiedVisitor<>() {
             @Override
             public void visit(InventorCard card) {
                 setResult(getResult() + 1);
@@ -122,7 +122,7 @@ public class PlayerView {
     }
 
     public int getNumHunter() {
-        CardTypifiedVisitor<Integer> hunterVisitor = new CardTypifiedVisitor<Integer>() {
+        CardTypifiedVisitor<Integer> hunterVisitor = new CardTypifiedVisitor<>() {
             @Override
             public void visit(HunterCard card) {
                 setResult(getResult() + 1);
@@ -135,7 +135,7 @@ public class PlayerView {
     }
 
     public int getNumArtist() {
-        CardTypifiedVisitor<Integer> artistVisitor = new CardTypifiedVisitor<Integer>() {
+        CardTypifiedVisitor<Integer> artistVisitor = new CardTypifiedVisitor<>() {
             @Override
             public void visit(ArtistCard card) {
                 setResult(getResult() + 1);
@@ -148,7 +148,7 @@ public class PlayerView {
     }
 
     public int getNumBuilders() {
-        CardTypifiedVisitor<Integer> builderVisitor = new CardTypifiedVisitor<Integer>() {
+        CardTypifiedVisitor<Integer> builderVisitor = new CardTypifiedVisitor<>() {
             @Override
             public void visit(BuilderCard card) {
                 setResult(getResult() + 1);
@@ -161,7 +161,7 @@ public class PlayerView {
     }
 
     public int getBuildersDiscount() {
-        CardTypifiedVisitor<Integer> builderVisitor = new CardTypifiedVisitor<Integer>() {
+        CardTypifiedVisitor<Integer> builderVisitor = new CardTypifiedVisitor<>() {
             @Override
             public void visit(BuilderCard card) {
                 setResult(getResult() + card.getFoodDiscount());
@@ -174,7 +174,7 @@ public class PlayerView {
     }
 
     public int getBuildersPrestige() {
-        CardTypifiedVisitor<Integer> builderVisitor = new CardTypifiedVisitor<Integer>() {
+        CardTypifiedVisitor<Integer> builderVisitor = new CardTypifiedVisitor<>() {
             @Override
             public void visit(BuilderCard card) {
                 setResult(getResult() + card.getPrestige());
@@ -187,7 +187,7 @@ public class PlayerView {
     }
 
     public Set<InventionIcon> getCollectedIcons() {
-        CardTypifiedVisitor<Set<InventionIcon>> inventorVisitor = new CardTypifiedVisitor<Set<InventionIcon>>() {
+        CardTypifiedVisitor<Set<InventionIcon>> inventorVisitor = new CardTypifiedVisitor<>() {
             @Override
             public void visit(InventorCard card) {
                 getResult().add(card.getIcon());

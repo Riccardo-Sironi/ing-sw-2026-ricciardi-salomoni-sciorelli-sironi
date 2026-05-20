@@ -2,18 +2,10 @@ package it.polimi.gc06.mesos.view.gui;
 
 import it.polimi.gc06.mesos.controller.ModelListener;
 import it.polimi.gc06.mesos.dtos.SmallModelEditor;
-import it.polimi.gc06.mesos.model.Era;
-import it.polimi.gc06.mesos.model.GameModel;
-import it.polimi.gc06.mesos.model.InstancesManager.ModelInstancesManager;
-import it.polimi.gc06.mesos.model.Player;
-import it.polimi.gc06.mesos.model.gameBoard.TileSlot;
 import it.polimi.gc06.mesos.network.client.Client;
 import it.polimi.gc06.mesos.view.View;
-import it.polimi.gc06.mesos.view.gui.controllers.*;
 import it.polimi.gc06.mesos.view.gui.visitors.GUIDTOvisitor;
-import it.polimi.gc06.mesos.view.smallModel.PlayerView;
 import it.polimi.gc06.mesos.view.smallModel.SmallModel;
-import it.polimi.gc06.mesos.view.smallModel.TileSlotView;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -22,8 +14,6 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Objects;
 
 public class GUI extends Application implements View, ModelListener {
@@ -48,7 +38,7 @@ public class GUI extends Application implements View, ModelListener {
         guidtovisitor = new GUIDTOvisitor();
 
         changeScene(GameScene.START.getPath());
-        
+
         primaryStage.show();
     }
 
@@ -99,9 +89,6 @@ public class GUI extends Application implements View, ModelListener {
 
     @Override
     public void update(SmallModelEditor dto) {
-        System.out.println("Received update request");
-        Platform.runLater(() -> {
-            dto.accept(guidtovisitor);
-        });
+        Platform.runLater(() -> dto.accept(guidtovisitor));
     }
 }

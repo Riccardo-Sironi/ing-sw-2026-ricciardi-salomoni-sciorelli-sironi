@@ -821,11 +821,7 @@ public class BoardController {
 
     private void drawBottomBuildingCards() {
         // Gestione layout visivo esistente
-        if (smallModel.getBottomBuildings().isEmpty()) {
-            updateBottomRowLayout(false);
-        } else {
-            updateBottomRowLayout(true);
-        }
+        updateBottomRowLayout(!smallModel.getBottomBuildings().isEmpty());
 
         if (bottomBuildingsContainer == null) return;
         bottomBuildingsContainer.getChildren().clear();
@@ -881,9 +877,7 @@ public class BoardController {
             nCards.setX(event.getScreenX() - 25);
             nCards.setY(event.getScreenY() - 50);
         }));
-        deckImage.setOnMouseExited((event -> {
-            nCards.hide();
-        }));
+        deckImage.setOnMouseExited((event -> nCards.hide()));
     }
 
     public Popup createDeckPopup() {
@@ -1155,9 +1149,7 @@ public class BoardController {
 
             helpOverlay.getChildren().addAll(helpImage1, helpImage2);
 
-            helpOverlay.setOnMouseClicked(event -> {
-                root.getChildren().remove(helpOverlay);
-            });
+            helpOverlay.setOnMouseClicked(event -> root.getChildren().remove(helpOverlay));
         }
 
         if (root.getChildren().contains(helpOverlay)) {

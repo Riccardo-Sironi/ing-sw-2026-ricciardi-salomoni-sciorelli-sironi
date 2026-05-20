@@ -27,7 +27,7 @@ public class EffectsManager {
 
     public static void playPopupIn(Popup popup) {
         if (popup.getContent().isEmpty()) return;
-        HBox content = (HBox) popup.getContent().get(0);
+        HBox content = (HBox) popup.getContent().getFirst();
         content.setOpacity(0);
         content.setTranslateY(6);
 
@@ -50,7 +50,7 @@ public class EffectsManager {
     public static void playPopupOut(Popup popup) {
         if (popup.getContent().isEmpty()) return;
         if (!popup.isShowing()) return;
-        HBox content = (HBox) popup.getContent().get(0);
+        HBox content = (HBox) popup.getContent().getFirst();
 
         FadeTransition fade = new FadeTransition(Duration.millis(100), content);
         fade.setFromValue(content.getOpacity());
@@ -142,7 +142,7 @@ public class EffectsManager {
         dropShadow.setColor(Color.color(0, 0, 0, 0.5));
         card.setEffect(dropShadow);
         card.setCursor(Cursor.DEFAULT);
-        
+
         card.setMouseTransparent(true);
         card.setCanBePicked(false);
     }

@@ -1,7 +1,5 @@
 package it.polimi.gc06.mesos.view.gui.controllers;
 
-import it.polimi.gc06.mesos.controller.ModelListener;
-import it.polimi.gc06.mesos.dtos.SmallModelEditor;
 import javafx.animation.FadeTransition;
 import javafx.animation.PauseTransition;
 import javafx.animation.ScaleTransition;

@@ -44,12 +44,12 @@ public class ImageFetcher {
         //fetches cards images
         ObjectMapper mapper = new ObjectMapper();
         InputStream input = getClass().getResourceAsStream(CARDS_URL);
-        this.cardInfos = mapper.readValue(input, new TypeReference<ArrayList<CardImagesInfo>>() {
+        this.cardInfos = mapper.readValue(input, new TypeReference<>() {
         });
 
         //fetches offer tiles & turn order tile images
         input = getClass().getResourceAsStream(TILES_URL);
-        Map<Integer, TileImagesInfo> map = mapper.readValue(input, new TypeReference<Map<Integer, TileImagesInfo>>() {
+        Map<Integer, TileImagesInfo> map = mapper.readValue(input, new TypeReference<>() {
         });
         for (int i = 2; i <= numOfPlayers; i++) {
             tileInfos.addAll(map.get(i).offerTiles);
@@ -71,8 +71,7 @@ public class ImageFetcher {
         String path = Totem.NONE.getTotemStanding();
 
         try {
-            Image img = new Image(Objects.requireNonNull(getClass().getResourceAsStream(path)));
-            noneTotemImage = img;
+            noneTotemImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream(path)));
         } catch (Exception e) {
             System.err.println("ERRORE: Impossibile caricare il totem per il colore: NONE ");
         }

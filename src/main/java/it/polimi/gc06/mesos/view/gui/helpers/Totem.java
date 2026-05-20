@@ -15,20 +15,14 @@ public enum Totem {
     }
 
     public static Totem getTotem(Color color) {
-        switch (color) {
-            case RED:
-                return Totem.ORANGE;
-            case BLUE:
-                return Totem.TURQUOISE;
-            case WHITE:
-                return Totem.WHITE;
-            case YELLOW:
-                return Totem.YELLOW;
-            case PURPLE:
-                return Totem.PURPLE;
-            default:
-                return Totem.NONE;
-        }
+        return switch (color) {
+            case RED -> Totem.ORANGE;
+            case BLUE -> Totem.TURQUOISE;
+            case WHITE -> Totem.WHITE;
+            case YELLOW -> Totem.YELLOW;
+            case PURPLE -> Totem.PURPLE;
+            default -> Totem.NONE;
+        };
     }
 
     public javafx.scene.paint.Color getTotemColor() {
