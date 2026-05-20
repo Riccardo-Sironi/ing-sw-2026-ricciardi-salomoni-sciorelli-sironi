@@ -30,7 +30,7 @@ public class Player {
     private final ShamanVisitor shamanVisitor;
     private final HunterFoodIconVisitor hunterFoodIconVisitor;
 
-    private final Color color;
+    private Color color;
 
     private int topDrawNum;
     private int bottomDrawNum;
@@ -259,6 +259,16 @@ public class Player {
      */
     public Color getPlayerColor() {
         return this.color;
+    }
+
+    /**
+     * this method is used to set the color of the player.
+     * It is called when the player picks the totem card, which allows the player to choose
+     *
+     * @param color the enum value of the color to be set for the player
+     */
+    public void setPlayerColor(Color color) {
+        this.color = color;
     }
 
     /**
