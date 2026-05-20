@@ -2,21 +2,10 @@ package it.polimi.gc06.mesos.view.tui;
 
 import it.polimi.gc06.mesos.controller.ModelListener;
 import it.polimi.gc06.mesos.dtos.SmallModelEditor;
-import it.polimi.gc06.mesos.model.Color;
-import it.polimi.gc06.mesos.model.Era;
-import it.polimi.gc06.mesos.model.cards.Card;
-import it.polimi.gc06.mesos.model.cards.characters.*;
-import it.polimi.gc06.mesos.model.cards.events.HuntEvent;
-import it.polimi.gc06.mesos.model.cards.events.PaintingsEvent;
-import it.polimi.gc06.mesos.model.cards.events.RitualEvent;
-import it.polimi.gc06.mesos.model.cards.events.SustenanceEvent;
-import it.polimi.gc06.mesos.model.gameBoard.ChooseCardTileEffect;
-import it.polimi.gc06.mesos.model.gameBoard.FoodTileEffect;
 import it.polimi.gc06.mesos.network.client.Client;
 import it.polimi.gc06.mesos.view.View;
 import it.polimi.gc06.mesos.view.smallModel.PlayerView;
 import it.polimi.gc06.mesos.view.smallModel.SmallModel;
-import it.polimi.gc06.mesos.view.smallModel.TileSlotView;
 import org.jline.reader.*;
 import org.jline.reader.impl.completer.AggregateCompleter;
 import org.jline.reader.impl.completer.ArgumentCompleter;
@@ -28,6 +17,7 @@ import org.jline.utils.InfoCmp;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class TUI implements View, ModelListener {
@@ -53,6 +43,10 @@ public class TUI implements View, ModelListener {
      */
     public void start() {
         try {
+            client.getServerConnection().subscribe(this);
+
+
+            // Initialize the terminal
             this.terminal = TerminalBuilder.builder()
                     .system(true)
                     .ffm(true)
@@ -60,82 +54,18 @@ public class TUI implements View, ModelListener {
 
             terminal.puts(InfoCmp.Capability.clear_screen);
 
+            // Initialize card completer
+            Completer completer = getCompleter();
 
-            Completer cardCompleter = (reader, line, candidates) -> {
-                List<String> words = line.words();
-                if (words.size() >= 2 && "/pick_card".equals(words.get(0))) {
-                    String row = words.get(1);
-                    if ("top".equals(row)) {
-                        for (int i = 0; i < smallModel.getTopRow().size(); i++) {
-                            candidates.add(new Candidate(String.valueOf(i), String.valueOf(i), null, smallModel.getTopRow().get(i).getClass().getSimpleName(), null, null, true));
-                        }
-                    } else if ("bottom".equals(row)) {
-                        for (int i = 0; i < smallModel.getBottomRow().size(); i++) {
-                            candidates.add(new Candidate(String.valueOf(i), String.valueOf(i), null, smallModel.getBottomRow().get(i).getClass().getSimpleName(), null, null, true));
-                        }
-                    }
-                }
-            };
-
-            Completer completer = new AggregateCompleter(
-                    new ArgumentCompleter(new StringsCompleter("/end_turn", "/help", "quit"), NullCompleter.INSTANCE),
-                    new ArgumentCompleter(new StringsCompleter("/place_totem"), new StringsCompleter("0", "1", "2", "3", "4"), NullCompleter.INSTANCE),
-                    new ArgumentCompleter(new StringsCompleter("/pick_card"), new StringsCompleter("top", "bottom"), cardCompleter, NullCompleter.INSTANCE)
-            );
-
+            // Initialize Line Reader
             this.lineReader = LineReaderBuilder.builder()
                     .terminal(terminal)
                     .completer(completer)
                     .build();
 
-            this.tuiBoardRenderer = new TuiBoardRenderer(terminal);
+            // Initialize Board Renderer
 
-
-            String[] titleAscii = {
-                    " ██████   ██████ ██████████  █████████     ███████     █████████ ",
-                    "░░██████ ██████ ░░███░░░░░█ ███░░░░░███  ███░░░░░███  ███░░░░░███",
-                    " ░███░█████░███  ░███  █ ░ ░███    ░░░  ███     ░░███░███    ░░░ ",
-                    " ░███░░███ ░███  ░██████   ░░█████████ ░███      ░███░░█████████ ",
-                    " ░███ ░░░  ░███  ░███░░█    ░░░░░░░░███░███      ░███ ░░░░░░░░███",
-                    " ░███      ░███  ░███ ░   █ ███    ░███░░███     ███  ███    ░███",
-                    " █████     █████ ██████████░░█████████  ░░░███████░  ░░█████████ ",
-                    "░░░░░     ░░░░░ ░░░░░░░░░░  ░░░░░░░░░     ░░░░░░░     ░░░░░░░░░  ",
-                    "                                                                 "
-            };
-
-            terminal.puts(InfoCmp.Capability.clear_screen);
-            terminal.puts(InfoCmp.Capability.cursor_home);
-
-            // Get terminal dimensions to compute vertical and horizontal centering
-            int terminalHeight = terminal.getHeight();
-
-            int bannerHeight = titleAscii.length;
-
-            // Calculate padding
-            int verticalPadding = Math.max(0, (terminalHeight - bannerHeight) / 2);
-
-            // Print top padding
-            for (int i = 0; i < verticalPadding; i++) {
-                terminal.writer().println();
-            }
-
-
-            String[] centeredTitle = centerOnScreen(titleAscii, terminal);
-
-            // Print the entire array with a color gradient from Red to Yellow, using ANSI escape codes for true color
-            for (int i = 0; i < bannerHeight; i++) {
-                float ratio = (float) i / (bannerHeight - 1);
-
-                // Interpolate from Red (255, 0, 0) to Yellow (255, 255, 0)
-                // The only value that changes is the green component, which goes from 0 to 255 as we go down the banner
-                // Thus, the index goes from 0 to 255 with a ration proportional to the banner height
-                int r = 255;
-                int g = (int) (ratio * 255);
-                int b = 0;
-
-                terminal.writer().println(Style.COLOR(r, g, b) + centeredTitle[i] + Style.RESET);
-            }
-            terminal.writer().flush();
+            showBanner();
 
             try {
                 // Wait for 1.5 seconds so the user can see the banner
@@ -143,6 +73,7 @@ public class TUI implements View, ModelListener {
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
+            this.tuiBoardRenderer = new TuiBoardRenderer(terminal);
 
             terminal.puts(InfoCmp.Capability.clear_screen);
             terminal.puts(InfoCmp.Capability.cursor_home);
@@ -153,9 +84,8 @@ public class TUI implements View, ModelListener {
                     needsRedraw = false; // Reset the flag after rendering
                 }
 
-                String input = null;
                 try {
-                    input = lineReader.readLine("\nmesos> ");
+                    String input = lineReader.readLine("mesos> ");
                     if (input == null || input.trim().isEmpty()) {
                         statusMessage = "";
                         continue;
@@ -173,14 +103,18 @@ public class TUI implements View, ModelListener {
                     // If the input wasn't empty, we're definitely gonna need to redraw the whole scene
                     needsRedraw = true;
 
-                    // TODO: The TuiView should eventually have a reference to the NetworkClient or Controller
                     switch (command) {
                         case "/place_totem":
                             if (tokens.length < 2) {
                                 statusMessage = "Usage: /place_totem <row_index>";
+
                             } else {
                                 String row = tokens[1];
-                                statusMessage = "Placing totem on row: " + row;
+                                try {
+                                    client.getServerConnection().placeTotem(smallModel.getPlayer().getNickname(), Integer.parseInt(row));
+                                } catch (Exception e) {
+                                    statusMessage = Style.RED + e.getMessage() + Style.RESET;
+                                }
                             }
                             break;
                         case "/pick_card":
@@ -189,10 +123,12 @@ public class TUI implements View, ModelListener {
                             } else {
                                 switch (tokens[1].toLowerCase()) {
                                     case "top":
+                                        client.getServerConnection().pickCardFromTop(smallModel.getPlayer().getNickname(), Integer.parseInt(tokens[2]));
+                                        statusMessage = "Picking card in slot " + tokens[2] + " from the top row";
+                                        break;
                                     case "bottom":
-                                        String rowType = tokens[1];
-                                        String cardId = tokens[2];
-                                        statusMessage = "Picking card " + cardId + " from " + rowType + " row";
+                                        client.getServerConnection().pickCardFromBottom(smallModel.getPlayer().getNickname(), Integer.parseInt(tokens[2]));
+                                        statusMessage = "Picking card in slot " + tokens[2] + " from the bottom row";
                                         break;
                                     default:
                                         statusMessage = Style.RED + "Invalid row type: " + tokens[1] + ". Use 'top' or 'bottom'." + Style.RESET;
@@ -200,6 +136,7 @@ public class TUI implements View, ModelListener {
                             }
                             break;
                         case "/end_turn":
+                            client.getServerConnection().handleSkip(smallModel.getPlayer().getNickname());
                             statusMessage = "Ending turn...";
                             break;
                         case "/help":
@@ -220,7 +157,7 @@ public class TUI implements View, ModelListener {
                                         statusMessage = "Clears the System output.";
                                         break;
                                     case "cards":
-                                        showCardHelp(terminal, lineReader);
+                                        showCardHelp();
                                     default:
                                         statusMessage = "Available commands: /place_totem, /pick_card, /end_turn, quit";
                                 }
@@ -248,7 +185,51 @@ public class TUI implements View, ModelListener {
         }
     }
 
-    private static void showCardHelp(Terminal terminal, LineReader lineReader) {
+    private Completer getCompleter() {
+        Completer cardCompleter = (reader, line, candidates) -> {
+            List<String> words = line.words();
+            if (words.size() >= 2 && "/pick_card".equals(words.get(0))) {
+                String row = words.get(1);
+                if ("top".equals(row)) {
+                    for (int i = 0; i < smallModel.getTopRow().size(); i++) {
+                        candidates.add(new Candidate(String.valueOf(i), String.valueOf(i), null, smallModel.getTopRow().get(i).getClass().getSimpleName(), null, null, true));
+                    }
+                } else if ("bottom".equals(row)) {
+                    for (int i = 0; i < smallModel.getBottomRow().size(); i++) {
+                        candidates.add(new Candidate(String.valueOf(i), String.valueOf(i), null, smallModel.getBottomRow().get(i).getClass().getSimpleName(), null, null, true));
+                    }
+                }
+            }
+        };
+
+        Completer totemCompleter = (reader, line, candidates) -> {
+            List<String> words = line.words();
+            if (!words.isEmpty() && "/place_totem".equals(words.getFirst())) {
+                for (int i = 0; i < smallModel.getOfferTrack().size(); i++) {
+                    var slot = smallModel.getOfferTrack().get(i);
+                    if (slot.isEmpty()) {
+                        candidates.add(new Candidate(
+                                String.valueOf(i),
+                                String.valueOf(i),
+                                null,
+                                null,
+                                null, null, true
+                        ));
+                    }
+                }
+            }
+        };
+
+        Completer completer = new AggregateCompleter(
+                new ArgumentCompleter(new StringsCompleter("/end_turn", "quit"), NullCompleter.INSTANCE),
+                new ArgumentCompleter(new StringsCompleter("/help"), new StringsCompleter("place_totem", "pick_card", "end_turn", "clear", "cards"), NullCompleter.INSTANCE),
+                new ArgumentCompleter(new StringsCompleter("/place_totem"), totemCompleter, NullCompleter.INSTANCE),
+                new ArgumentCompleter(new StringsCompleter("/pick_card"), new StringsCompleter("top", "bottom"), cardCompleter, NullCompleter.INSTANCE)
+        );
+        return completer;
+    }
+
+    private void showCardHelp() {
         terminal.writer().println("Available cards:");
         terminal.writer().println("- Hunter > [H]:  " +
                 "Whenever you add a Hunter without a \uD83C\uDF56 icon to your tribe, you get nothing. Whenever you add a Hunter with an icon to your tribe, immediately " +
@@ -303,53 +284,40 @@ public class TUI implements View, ModelListener {
     }
 
     public static String[] centerOnScreen(String[] text, Terminal terminal) {
+        if (text == null || text.length == 0) return new String[0];
+
         // Get terminal dimensions to compute vertical and horizontal centering
         int terminalWidth = terminal.getWidth();
-
         int textWidth = text[0].length();
-        int textHeight = text.length;
-
-        // Calculate padding
         int horizontalPadding = Math.max(0, (terminalWidth - textWidth) / 2);
-
-        String[] centeredText = new String[textHeight];
         String padString = " ".repeat(horizontalPadding);
-        for (int i = 0; i < textHeight; i++) {
-            centeredText[i] = padString + text[i];
-        }
-        return centeredText;
+
+        return Arrays.stream(text)
+                .map(line -> padString + line)
+                .toArray(String[]::new);
     }
 
     public static String[] centerOnScreen(StringBuilder[] text, Terminal terminal) {
 
+        if (text == null || text.length == 0) return new String[0];
+
         // Get terminal dimensions to compute vertical and horizontal centering
         int terminalWidth = terminal.getWidth();
-
         int textWidth = text[0].length();
-        int textHeight = text.length;
-
-        // Calculate padding
         int horizontalPadding = Math.max(0, (terminalWidth - textWidth) / 2);
-
-        String[] centeredText = new String[textHeight];
         String padString = " ".repeat(horizontalPadding);
-        for (int i = 0; i < textHeight; i++) {
-            // The method is exactly the same, we just need to make sure to convert the StringBuilder to a String before concatenating it with the padding
-            centeredText[i] = padString + text[i].toString();
-        }
-        return centeredText;
+
+        return Arrays.stream(text).map(StringBuilder::toString)
+                .map(line -> padString + line)
+                .toArray(String[]::new);
     }
 
     @Override
     public void update(SmallModelEditor dto) {
 
+        this.needsRedraw = true;
         // We've received an update. Let's redraw the board
         render();
-
-        lineReader.callWidget(LineReader.REDRAW_LINE);
-        lineReader.callWidget(LineReader.REDISPLAY);
-
-        terminal.writer().flush();
     }
 
     private synchronized void render() {
@@ -358,72 +326,78 @@ public class TUI implements View, ModelListener {
 
         terminal.puts(InfoCmp.Capability.clear_screen);
         terminal.puts(InfoCmp.Capability.cursor_home);
-        terminal.writer().flush();
-
-        List<Card> topCards = new ArrayList<>();
-        topCards.add(new HunterCard(Era.ERA_I, true));
-        topCards.add(new ShamanCard(Era.ERA_II, 3));
-        topCards.add(new BuilderCard(Era.ERA_III, 2, 3));
-        topCards.add(new InventorCard(Era.ERA_III, InventionIcon.BREAD));
-        topCards.add(new RitualEvent(Era.ERA_II, 2, 1));
-        topCards.add(new PaintingsEvent(Era.ERA_I, 3, 4, 2));
-
-        List<Card> bottomCards = new ArrayList<>();
-        bottomCards.add(new BuilderCard(Era.ERA_III, 2, 3));
-        bottomCards.add(new InventorCard(Era.ERA_III, InventionIcon.BREAD));
-        bottomCards.add(new GathererCard(Era.ERA_II));
-        bottomCards.add(new ArtistCard(Era.ERA_I));
-        bottomCards.add(new HuntEvent(Era.ERA_II, 2));
-        bottomCards.add(new SustenanceEvent(Era.ERA_I, 3));
-
 
         List<PlayerView> players = new ArrayList<>();
-
-        PlayerView playerview1 = new PlayerView("pippo", Color.BLUE);
-        PlayerView playerview2 = new PlayerView("player2", Color.RED);
-        PlayerView playerview3 = new PlayerView("player3", Color.WHITE);
-        PlayerView playerview4 = new PlayerView("player4", Color.YELLOW);
-        PlayerView playerview5 = new PlayerView("player5", Color.PURPLE);
-
-
-        List<TileSlotView> offerTrack = new ArrayList<>();
-        TileSlotView firstSlot = new TileSlotView();
-        firstSlot.setTileEffect(new FoodTileEffect(3));
-        firstSlot.setPlayer(playerview1);
-
-        TileSlotView secondSlot = new TileSlotView();
-        secondSlot.setTileEffect(new ChooseCardTileEffect(2, 1));
-        secondSlot.setPlayer(playerview2);
-
-        offerTrack.add(firstSlot);
-        offerTrack.add(secondSlot);
-
-
-        this.statusMessage = "";
-
         players.add(smallModel.getPlayer());
         players.addAll(smallModel.getOpponents());
 
-        // Player aggiuntivi per testare
-//        players.add(playerview3);
-//        players.add(playerview4);
-//        players.add(playerview5);
-
-
-        //tuiBoardRenderer.printCardRow(topCards);
         tuiBoardRenderer.printCardRow(smallModel.getTopRow());
-        //tuiBoardRenderer.printOfferTrack(offerTrack);
         tuiBoardRenderer.printOfferTrack(smallModel.getOfferTrack());
-        //tuiBoardRenderer.printCardRow(bottomCards);
         tuiBoardRenderer.printCardRow(smallModel.getBottomRow());
         tuiBoardRenderer.printPlayerInfo(players);
 
-        if (!statusMessage.isEmpty()) {
+        if (smallModel.isActive()) {
+            terminal.writer().println(Style.GREEN + "\nSystem> It's your Turn!" + Style.RESET);
+
+        } else if (!statusMessage.isEmpty()) {
             terminal.writer().println("\nSystem> " + statusMessage);
         } else {
+            terminal.writer().println("\n");
+        }
+
+        if (lineReader.isReading()) {
+            lineReader.callWidget(LineReader.REDRAW_LINE);
+            lineReader.callWidget(LineReader.REDISPLAY);
+        }
+
+        terminal.writer().flush();
+    }
+
+    private void showBanner() {
+        String[] titleAscii = {
+                " ██████   ██████ ██████████  █████████     ███████     █████████ ",
+                "░░██████ ██████ ░░███░░░░░█ ███░░░░░███  ███░░░░░███  ███░░░░░███",
+                " ░███░█████░███  ░███  █ ░ ░███    ░░░  ███     ░░███░███    ░░░ ",
+                " ░███░░███ ░███  ░██████   ░░█████████ ░███      ░███░░█████████ ",
+                " ░███ ░░░  ░███  ░███░░█    ░░░░░░░░███░███      ░███ ░░░░░░░░███",
+                " ░███      ░███  ░███ ░   █ ███    ░███░░███     ███  ███    ░███",
+                " █████     █████ ██████████░░█████████  ░░░███████░  ░░█████████ ",
+                "░░░░░     ░░░░░ ░░░░░░░░░░  ░░░░░░░░░     ░░░░░░░     ░░░░░░░░░  ",
+                "                                                                 "
+        };
+
+        terminal.puts(InfoCmp.Capability.clear_screen);
+        terminal.puts(InfoCmp.Capability.cursor_home);
+
+        // Get terminal dimensions to compute vertical and horizontal centering
+        int terminalHeight = terminal.getHeight();
+
+        int bannerHeight = titleAscii.length;
+
+        // Calculate padding
+        int verticalPadding = Math.max(0, (terminalHeight - bannerHeight) / 2);
+
+        // Print top padding
+        for (int i = 0; i < verticalPadding; i++) {
             terminal.writer().println();
         }
-        terminal.writer().flush();
 
+
+        String[] centeredTitle = centerOnScreen(titleAscii, terminal);
+
+        // Print the entire array with a color gradient from Red to Yellow, using ANSI escape codes for true color
+        for (int i = 0; i < bannerHeight; i++) {
+            float ratio = (float) i / (bannerHeight - 1);
+
+            // Interpolate from Red (255, 0, 0) to Yellow (255, 255, 0)
+            // The only value that changes is the green component, which goes from 0 to 255 as we go down the banner
+            // Thus, the index goes from 0 to 255 with a ration proportional to the banner height
+            int r = 255;
+            int g = (int) (ratio * 255);
+            int b = 0;
+
+            terminal.writer().println(Style.COLOR(r, g, b) + centeredTitle[i] + Style.RESET);
+        }
+        terminal.writer().flush();
     }
 }

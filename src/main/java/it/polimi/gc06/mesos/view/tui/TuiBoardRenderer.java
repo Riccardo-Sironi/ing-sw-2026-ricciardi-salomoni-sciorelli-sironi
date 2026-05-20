@@ -5,7 +5,10 @@ import it.polimi.gc06.mesos.view.smallModel.PlayerView;
 import it.polimi.gc06.mesos.view.smallModel.TileSlotView;
 import org.jline.terminal.Terminal;
 
+import java.util.Arrays;
 import java.util.List;
+
+import static it.polimi.gc06.mesos.view.tui.TUI.centerOnScreen;
 
 public class TuiBoardRenderer {
     private static final int CARD_HEIGHT = 7;
@@ -18,7 +21,8 @@ public class TuiBoardRenderer {
 
     public void printCardRow(List<Card> rowCards) {
         if (rowCards == null || rowCards.isEmpty()) {
-            terminal.writer().println("[Empty Row]");
+            String centeredEmpty = Arrays.toString(TUI.centerOnScreen(new String[]{"[Empty Row]"}, terminal));
+            terminal.writer().println(centeredEmpty);
             return;
         }
 
@@ -41,14 +45,13 @@ public class TuiBoardRenderer {
             }
         }
 
-        String[] centeredText = TUI.centerOnScreen(rowLines, terminal);
+        String[] centeredText = centerOnScreen(rowLines, terminal);
 
         for (String line : centeredText) {
             terminal.writer().println(line);
         }
 
 
-        terminal.writer().flush();
     }
 
     public void printOfferTrack(List<TileSlotView> tiles) {
@@ -76,13 +79,12 @@ public class TuiBoardRenderer {
         }
 
 
-        String[] centeredText = TUI.centerOnScreen(rowLines, terminal);
+        String[] centeredText = centerOnScreen(rowLines, terminal);
 
         for (String line : centeredText) {
             terminal.writer().println(line);
         }
 
-        terminal.writer().flush();
     }
 
     public void printPlayerInfo(List<PlayerView> players) {
@@ -110,13 +112,12 @@ public class TuiBoardRenderer {
         }
 
 
-        String[] centeredText = TUI.centerOnScreen(rowLines, terminal);
+        String[] centeredText = centerOnScreen(rowLines, terminal);
 
         for (String line : centeredText) {
             terminal.writer().println(line);
         }
 
-        terminal.writer().flush();
     }
 
 

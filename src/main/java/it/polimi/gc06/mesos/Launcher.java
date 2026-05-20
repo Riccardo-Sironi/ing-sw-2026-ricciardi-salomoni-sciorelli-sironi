@@ -90,11 +90,11 @@ public class Launcher {
             String[] frames = {".  ", ".. ", "..."}; // 3 frames
             int count = 0;
 
-            int matchID = client.getServerConnection().getPlayersMatchId(nickname);
+            //int matchID = client.getServerConnection().getPlayersMatchId(nickname);
 
             while (smallModel.getPhase() == null) {
                 try {
-                    System.out.print("\rThere are " + client.getServerConnection().getMatchInfo(matchID) + " players in Match " + matchID + frames[count % frames.length]);
+                    //System.out.print("\rThere are " + client.getServerConnection().getMatchInfo(matchID) + " players in Match " + matchID + frames[count % frames.length]);
                     count++;
 
                     Thread.sleep(1000);

@@ -26,7 +26,7 @@ public class LobbyTui implements LobbyView {
     public ConnectionDetails askConnectionDetails() {
         System.out.println("-- Connection Settings --");
 
-        System.out.print("Type 1 for SOCKET or 2 for RMI: ");
+        System.out.print("Type 1 for SOCKET or 2 for RMI - (Will default to Socket): ");
         String tech = scanner.nextLine().equals("2") ? "RMI" : "SOCKET";
 
         System.out.print("Server IP: ");
