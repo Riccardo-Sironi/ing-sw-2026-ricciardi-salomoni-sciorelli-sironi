@@ -37,5 +37,7 @@ public interface ServerConnection extends Remote, SmallModelNotifier {
     public void pickBuildingFromBottom(String nickname, int cardIndex) throws Exception;
 
     public void pickBuildingFromTop(String nickname, int cardIndex) throws Exception;
+
+    public void handleSkip(String nickname) throws Exception;
 }
 

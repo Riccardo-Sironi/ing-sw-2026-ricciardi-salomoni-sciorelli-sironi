@@ -116,6 +116,11 @@ public class RMIServerConnection extends UnicastRemoteObject implements ServerCo
     }
 
     @Override
+    public void handleSkip(String nickname) throws Exception {
+        serverStub.handleSkip(nickname);
+    }
+
+    @Override
     public void subscribe(ModelListener listener) {
         listeners.add(listener);
     }

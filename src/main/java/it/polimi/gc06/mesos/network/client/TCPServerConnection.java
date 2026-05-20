@@ -237,6 +237,9 @@ public class TCPServerConnection implements ServerConnection, Runnable {
         }
     }
 
+    public void handleSkip(String nickname) {
+    }
+
     @Override
     public void subscribe(ModelListener listener) {
         listeners.add(listener);
