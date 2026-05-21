@@ -40,6 +40,9 @@ public class ImageFetcher {
     private final Image noneTotemImage;
     private final Image turnOrderTileImage;
 
+    private final Image positivePrestigeTokenImage;
+    private final Image negativePrestigeTokenImage;
+
     private final ArrayList<CardImagesInfo> cardInfos;
     private final ArrayList<OfferTileInfo> tileInfos;
 
@@ -98,6 +101,9 @@ public class ImageFetcher {
 
         nullCardImage = loadImage("/cards/fronts/null_card.png");
         noneTotemImage = loadImage(Totem.NONE.getTotemStanding());
+
+        positivePrestigeTokenImage = loadImage("imgs/tokens/prestige_token.png");
+        negativePrestigeTokenImage = loadImage("imgs/tokens/negative_prestige_token.png");
     }
 
     /**
@@ -178,6 +184,14 @@ public class ImageFetcher {
 
     public Image getFinalEventDeckImage() {
         return finalEventDeckImage;
+    }
+
+    public Image getPositivePrestigeTokenImage() {
+        return positivePrestigeTokenImage;
+    }
+
+    public Image getNegativePrestigeTokenImage() {
+        return negativePrestigeTokenImage;
     }
 
     private Image loadImage(String path) {

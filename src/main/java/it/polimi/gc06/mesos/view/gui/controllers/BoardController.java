@@ -323,7 +323,7 @@ public class BoardController {
         tokensBox.setAlignment(Pos.CENTER);
         tokensBox.setSpacing(5);
 
-        configureTokensContainer(prestigeTokensBox, prestigeTokensImage, loadImage("imgs/tokens/prestige_token.png"), prestigeTokensText);
+        configureTokensContainer(prestigeTokensBox, prestigeTokensImage, imageFetcher.getPositivePrestigeTokenImage(), prestigeTokensText);
         configureTokensContainer(foodTokensBox, foodTokensImage, loadImage("imgs/tokens/food_token.png"), foodTokensText);
 
         playerStatsBox.setAlignment(Pos.CENTER);
@@ -683,6 +683,15 @@ public class BoardController {
         PlayerView p = smallModel.getPlayer();
 
         prestigeTokensText.setText(String.valueOf(p.getNumPrestige()));
+
+        if (p.getNumPrestige() < 0) {
+            prestigeTokensImage.setImage(imageFetcher.getNegativePrestigeTokenImage());
+        } else {
+            if (prestigeTokensImage.getImage().equals(imageFetcher.getNegativePrestigeTokenImage())) {
+                prestigeTokensImage.setImage(imageFetcher.getPositivePrestigeTokenImage());
+            }
+        }
+
         foodTokensText.setText(String.valueOf(p.getNumFood()));
         shamanStarsText.setText(String.valueOf(p.getNumShamanStar()));
         gathererQuantityText.setText(String.valueOf(p.getNumGatherer()));
