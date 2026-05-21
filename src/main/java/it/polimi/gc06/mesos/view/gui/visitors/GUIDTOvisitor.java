@@ -85,8 +85,9 @@ public class GUIDTOvisitor extends DTOvisitor {
         System.out.println("Pick top row!");
         Platform.runLater(() -> {
             guiEventsManager.enqueueEvent(() -> {
-                boardController.handleTopRowPick(dto);
-                guiEventsManager.onAnimationFinished();
+                boardController.handleTopRowPick(dto, () -> {
+                    guiEventsManager.onAnimationFinished();
+                });
             });
         });
     }
@@ -96,8 +97,9 @@ public class GUIDTOvisitor extends DTOvisitor {
         System.out.println("Pick bottom row!");
         Platform.runLater(() -> {
             guiEventsManager.enqueueEvent(() -> {
-                boardController.handleBottomRowPick(dto);
-                guiEventsManager.onAnimationFinished();
+                boardController.handleBottomRowPick(dto, () -> {
+                    guiEventsManager.onAnimationFinished();
+                });
             });
         });
     }
@@ -107,8 +109,9 @@ public class GUIDTOvisitor extends DTOvisitor {
         System.out.println("Pick top buildings!");
         Platform.runLater(() -> {
             guiEventsManager.enqueueEvent(() -> {
-                boardController.handleTopBuildingsPick(dto);
-                guiEventsManager.onAnimationFinished();
+                boardController.handleTopBuildingsPick(dto, () -> {
+                    guiEventsManager.onAnimationFinished();
+                });
             });
         });
     }
@@ -118,8 +121,9 @@ public class GUIDTOvisitor extends DTOvisitor {
         System.out.println("Pick bottom buildings!");
         Platform.runLater(() -> {
             guiEventsManager.enqueueEvent(() -> {
-                boardController.handleBottomBuildingsPick(dto);
-                guiEventsManager.onAnimationFinished();
+                boardController.handleBottomBuildingsPick(dto, () -> {
+                    guiEventsManager.onAnimationFinished();
+                });
             });
         });
     }

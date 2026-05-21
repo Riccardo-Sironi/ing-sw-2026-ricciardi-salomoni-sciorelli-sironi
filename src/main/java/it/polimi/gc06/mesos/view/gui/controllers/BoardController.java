@@ -771,13 +771,11 @@ public class BoardController {
             cardView.setCard(card);
 
             cardView.setOnMouseClicked(e -> {
-                AnimationsManager.cardPickAnimation(cardView, playerCardsContainer, mainRoot, () -> {
-                    try {
-                        client.getServerConnection().pickCardFromTop(smallModel.getPlayer().getNickname(), cardIndex);
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
-                });
+                try {
+                    client.getServerConnection().pickCardFromTop(smallModel.getPlayer().getNickname(), cardIndex);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
             });
 
             CardEffectVisitor visitor = new CardEffectVisitor(cardView, smallModel.getTopDrawNum());
@@ -1169,6 +1167,38 @@ public class BoardController {
         inventoryBox.setMaxHeight(Region.USE_COMPUTED_SIZE);
     }
 
+    private void processCardPickAnimation(String playerNickname, HBox sourceContainer, int cardIndex, Runnable boardUpdatesAndUnlock) {
+        CardView card = null;
+
+        try {
+            if (cardIndex >= 0 && cardIndex < sourceContainer.getChildren().size()) {
+                card = (CardView) sourceContainer.getChildren().get(cardIndex);
+            }
+        } catch (Exception e) {
+            card = null;
+            System.err.println("Error during card pick animation. card ut of bound :" + cardIndex);
+        }
+
+        if (card != null) {
+            if (playerNickname.equals(smallModel.getPlayer().getNickname())) {
+                AnimationsManager.cardPickAnimation(card, playerCardsContainer, mainRoot, () -> {
+                    drawPlayerCards();
+                    if (boardUpdatesAndUnlock != null) boardUpdatesAndUnlock.run();
+                });
+            } else {
+                HBox opponentTarget = opponentsBoxes.get(playerNickname) != null ?
+                        opponentsBoxes.get(playerNickname).getCardsContainer() : playerCardsContainer;
+
+                AnimationsManager.cardPickAnimation(card, opponentTarget, mainRoot, () -> {
+                    drawOpponentsCards();
+                    if (boardUpdatesAndUnlock != null) boardUpdatesAndUnlock.run();
+                });
+            }
+        } else {
+            if (boardUpdatesAndUnlock != null) boardUpdatesAndUnlock.run();
+        }
+    }
+
     public void handleTopRowRefill() {
         drawTopRowCards();
         drawBottomRowCards();
@@ -1181,49 +1211,40 @@ public class BoardController {
         drawDeck();
     }
 
-    public void handleTopRowPick(PickTopRowDTO dto) {
-        drawTopRowCards();
-        applyEffectToContainerCardViews(buildingsContainer, smallModel.getTopDrawNum());
-        drawSkipButton();
-
-        if (dto.getPlayer().equals(smallModel.getPlayer().getNickname())) {
-            drawPlayerCards();
-        } else {
-            drawOpponentsCards();
-        }
+    public void handleTopRowPick(PickTopRowDTO dto, Runnable onEndActions) {
+        processCardPickAnimation(dto.getPlayer(), topCharactersContainer, dto.getCardIndex(), () -> {
+            drawTopRowCards();
+            applyEffectToContainerCardViews(buildingsContainer, smallModel.getTopDrawNum());
+            drawSkipButton();
+            if (onEndActions != null) onEndActions.run();
+        });
     }
 
-    public void handleBottomRowPick(PickBottomRowDTO dto) {
-        drawBottomRowCards();
-        applyEffectToContainerCardViews(bottomBuildingsContainer, smallModel.getBottomDrawNum());
-        drawSkipButton();
-        if (dto.getPlayer().equals(smallModel.getPlayer().getNickname())) {
-            drawPlayerCards();
-        } else {
-            drawOpponentsCards();
-        }
+    public void handleBottomRowPick(PickBottomRowDTO dto, Runnable onEndActions) {
+        processCardPickAnimation(dto.getPlayer(), bottomCharactersContainer, dto.getCardIndex(), () -> {
+            drawBottomRowCards();
+            applyEffectToContainerCardViews(bottomBuildingsContainer, smallModel.getBottomDrawNum());
+            drawSkipButton();
+            if (onEndActions != null) onEndActions.run();
+        });
     }
 
-    public void handleTopBuildingsPick(PickTopBuildingsDTO dto) {
-        drawTopBuildingsCards();
-        applyEffectToContainerCardViews(topCharactersContainer, smallModel.getTopDrawNum());
-        drawSkipButton();
-        if (dto.getPlayer().equals(smallModel.getPlayer().getNickname())) {
-            drawPlayerCards();
-        } else {
-            drawOpponentsCards();
-        }
+    public void handleTopBuildingsPick(PickTopBuildingsDTO dto, Runnable onEndActions) {
+        processCardPickAnimation(dto.getPlayer(), buildingsContainer, dto.getCardIndex(), () -> {
+            drawTopBuildingsCards();
+            applyEffectToContainerCardViews(topCharactersContainer, smallModel.getTopDrawNum());
+            drawSkipButton();
+            if (onEndActions != null) onEndActions.run();
+        });
     }
 
-    public void handleBottomBuildingsPick(PickBottomBuildingsDTO dto) {
-        drawBottomBuildingCards();
-        applyEffectToContainerCardViews(bottomCharactersContainer, smallModel.getBottomDrawNum());
-        drawSkipButton();
-        if (dto.getPlayer().equals(smallModel.getPlayer().getNickname())) {
-            drawPlayerCards();
-        } else {
-            drawOpponentsCards();
-        }
+    public void handleBottomBuildingsPick(PickBottomBuildingsDTO dto, Runnable onEndActions) {
+        processCardPickAnimation(dto.getPlayer(), bottomBuildingsContainer, dto.getCardIndex(), () -> {
+            drawBottomBuildingCards();
+            applyEffectToContainerCardViews(bottomCharactersContainer, smallModel.getBottomDrawNum());
+            drawSkipButton();
+            if (onEndActions != null) onEndActions.run();
+        });
     }
 
     public void handleTotemMoved(TotemOfferMoveDTO dto, Runnable endOfAnimation) {
