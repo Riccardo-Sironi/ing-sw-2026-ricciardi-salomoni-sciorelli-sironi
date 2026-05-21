@@ -119,10 +119,12 @@ public class GameViewController {
         overlaySequence.playFromStart();
     }
 
-    public void showPhaseOverlay(Runnable endOfAnimation) {
+    public void showPhaseOverlay(String phase, Runnable endOfAnimation) {
         if (smallModel.getPhase() == null) return;
 
-        playOverlay(imageFetcher.getPhaseOverlayImage(smallModel.getPhase()), endOfAnimation);
+        System.out.println("smallModel.getPhase(): " + smallModel.getPhase());
+
+        playOverlay(imageFetcher.getPhaseOverlayImage(phase), endOfAnimation);
     }
 
     public void showEraOverlay(Runnable endOfAnimation) {

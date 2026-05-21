@@ -18,4 +18,8 @@ public class PhaseChangeDTO implements SmallModelEditor {
     public void accept(DTOvisitor visitor) {
         visitor.visit(this);
     }
+
+    public String getPhase() {
+        return phase;
+    }
 }

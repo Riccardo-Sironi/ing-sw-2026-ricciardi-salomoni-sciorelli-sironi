@@ -172,9 +172,10 @@ public class GUIDTOvisitor extends DTOvisitor {
 
     @Override
     public void visit(PhaseChangeDTO dto) {
+        System.out.println("Phase change!" + dto.getPhase());
         Platform.runLater(() -> {
             guiEventsManager.enqueueEvent(() -> {
-                gameViewController.showPhaseOverlay(() -> {
+                gameViewController.showPhaseOverlay(dto.getPhase(), () -> {
                     boardController.handlePhaseChanged();
                     guiEventsManager.onAnimationFinished();
                 });

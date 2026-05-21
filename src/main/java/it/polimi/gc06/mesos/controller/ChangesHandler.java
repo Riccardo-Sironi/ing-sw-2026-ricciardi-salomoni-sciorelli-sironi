@@ -9,8 +9,7 @@ import it.polimi.gc06.mesos.model.Player;
 import it.polimi.gc06.mesos.model.gameBoard.Board;
 import it.polimi.gc06.mesos.model.gameBoard.TileEffect;
 import it.polimi.gc06.mesos.model.gameBoard.TileSlot;
-import it.polimi.gc06.mesos.model.gameTurnManager.OfferResolutionPhase;
-import it.polimi.gc06.mesos.model.gameTurnManager.TurnManager;
+import it.polimi.gc06.mesos.model.gameTurnManager.*;
 
 import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
@@ -104,6 +103,11 @@ public class ChangesHandler {
 
         //check last phase
         if (lastPhase == null || !lastPhase.equals(turnManager.getPhase().toString())) {
+            // TODO : for now its hard coded this way, we'll do a a refactor in the future to better handle this
+            if (turnManager.getPhase().toString().equals(new PlacingTotemPhase().toString())) {
+                changes.add(new PhaseChangeDTO(new EventResolutionPhase().toString()));
+                changes.add(new PhaseChangeDTO(new EndOfRoundPhase().toString()));
+            }
             changes.add(new PhaseChangeDTO(turnManager.getPhase().toString()));
         }
 
