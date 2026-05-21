@@ -37,4 +37,8 @@ public class PlayerStateChangeDTO implements SmallModelEditor {
     public void accept(DTOvisitor visitor) {
         visitor.visit(this);
     }
+
+    public String getPlayer() {
+        return player;
+    }
 }

@@ -62,8 +62,8 @@ public class TurnOrderTileView extends TileView {
 
         this.getChildren().add(layer);
 
-        // TODO : we use the size of the array provided beacuse it should be the smallmodel list,
-        //  so the smallmodel should always provide the correct number of pieces
+        // TODO : we use the size of the array provided because it should be the small model list,
+        //  so the small model should always provide the correct number of pieces
         TurnOrderTileInfo slots = TurnOrderTileInfo.getInfo(totemPieces.size());
         if (!totemPieces.isEmpty() && slots != null) {
             List<Point2D> points = slots.getPoints();
@@ -85,6 +85,8 @@ public class TurnOrderTileView extends TileView {
 
                 t.layoutXProperty().bind(trueW.multiply(p.getX()).subtract(halfWidth));
                 t.layoutYProperty().bind(trueH.multiply(p.getY()).subtract(halfHeight));
+
+                t.applyTotemEffect();
 
                 layer.getChildren().add(t);
             }

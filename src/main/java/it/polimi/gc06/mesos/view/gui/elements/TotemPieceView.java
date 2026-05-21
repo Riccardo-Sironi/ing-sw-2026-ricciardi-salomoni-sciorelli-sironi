@@ -28,7 +28,7 @@ public class TotemPieceView extends ImageView {
         applyTotemEffect();
     }
 
-    private void applyTotemEffect() {
+    public void applyTotemEffect() {
         DropShadow shadow = new DropShadow();
         shadow.setRadius(2.0);
         shadow.setOffsetX(-3.0);

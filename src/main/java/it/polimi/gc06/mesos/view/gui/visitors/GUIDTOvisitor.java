@@ -145,6 +145,7 @@ public class GUIDTOvisitor extends DTOvisitor {
         Platform.runLater(() -> {
             guiEventsManager.enqueueEvent(() -> {
                 boardController.handleActivePlayerChanged();
+                boardController.setActivePlayerEffect(dto.getPlayer());
                 guiEventsManager.onAnimationFinished();
             });
         });

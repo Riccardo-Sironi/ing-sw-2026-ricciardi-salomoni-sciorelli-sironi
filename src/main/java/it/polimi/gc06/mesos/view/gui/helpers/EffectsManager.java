@@ -277,6 +277,7 @@ public class EffectsManager {
                         "-fx-border-radius: 8px;" +
                         "-fx-padding: 8px 15px;"
         );
+        
         popupContent.setAlignment(Pos.CENTER);
         popupContent.setMouseTransparent(true);
 
@@ -292,5 +293,14 @@ public class EffectsManager {
         popup.getContent().add(popupContent);
 
         return popup;
+    }
+
+    public static Effect createGlowEffect() {
+        DropShadow glow = new DropShadow();
+        glow.setColor(Color.web("#348ceb", 0.7));
+        glow.setRadius(18);
+        glow.setSpread(0.7);
+        glow.setBlurType(BlurType.GAUSSIAN);
+        return glow;
     }
 }

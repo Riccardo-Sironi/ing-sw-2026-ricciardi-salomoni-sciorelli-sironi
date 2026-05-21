@@ -82,7 +82,7 @@ public class ChangesHandler {
         if (lastRound != turnManager.getRound()) {
             changes.add(new RoundChangeDTO(turnManager.getRound()));
             int deckSize = model.getTribeCardsDeck().values().stream().mapToInt(ArrayList::size).sum();
-            
+
             changes.add(new TopRowRefillDTO(new ArrayList<>(board.getTopRow()), new ArrayList<>(board.getBottomRow()), deckSize));
             changes.add(new BuildingsRefillDTO(new ArrayList<>(board.getTopBuildings()), new ArrayList<>(board.getBottomBuildings()), deckSize));
         }
@@ -111,7 +111,12 @@ public class ChangesHandler {
             changes.add(new PhaseChangeDTO(turnManager.getPhase().toString()));
         }
 
-        if (getLastActivePlayer() == null || !getLastActivePlayer().getNickname().equals(turnManager.getActivePlayer().getNickname())) {
+        // we set an effect in the board controller (GUI) for the active player, it uses the PlayerStateChangeDTO to get
+        // the active player, but if the active player remains the same between phases this DTO does not get sent, so we force it
+        boolean activePlayerDoesNotChangeBetweenPhases = getLastActivePlayer() != null && getLastActivePlayer().equals(turnManager.getActivePlayer())
+                && lastPhase != null && !lastPhase.equals(turnManager.getPhase().toString()); // awful name i'm aware
+
+        if (getLastActivePlayer() == null || !getLastActivePlayer().getNickname().equals(turnManager.getActivePlayer().getNickname()) || activePlayerDoesNotChangeBetweenPhases) {
             PlayerStateChangeDTO dto = new PlayerStateChangeDTO(turnManager.getActivePlayer().getNickname());
             dto.setIsActive(true);
             changes.add(dto);

@@ -288,6 +288,7 @@ public class BoardController {
         drawOpponentsCards();
         drawOpponentsStats();
         drawOpponentsTheme();
+        setActivePlayerEffect(turnOrderTile.getTotemPieces().getFirst().getPlayer().getNickname());
     }
 
     private void setupArchitecturalLayout() {
@@ -506,6 +507,9 @@ public class BoardController {
     public void drawOpponentsStats() {
         for (PlayerView opponent : smallModel.getOpponents()) {
             OpponentBox opp = opponentsBoxes.get(opponent.getNickname());
+
+            // we need this to reset the glow effect that tells who is the active player
+            opp.getNicknameText().setEffect(null);
 
             opp.getPrestigeTokensText().setText(String.valueOf(opponent.getNumPrestige()));
             opp.getFoodTokensText().setText(String.valueOf(opponent.getNumFood()));
@@ -1075,6 +1079,27 @@ public class BoardController {
 
         tile.setCenterPercentage(0.5, 0.2);
         return tile;
+    }
+
+    public void setActivePlayerEffect(String activePlayer) {
+        turnOrderTile.getTotemPieces().stream()
+                .filter(tp -> tp.getPlayer() != null && tp.getPlayer().getNickname().equals(activePlayer))
+                .findFirst()
+                .ifPresent(tp -> {
+                    tp.setEffect(EffectsManager.createGlowEffect());
+                    tp.setTranslateY(-3);
+                });
+
+        offerTrackTiles.stream()
+                .filter(tile -> tile.getTotem() != null && tile.getTotem().getPlayer() != null && tile.getTotem().getPlayer().getNickname().equals(activePlayer))
+                .findFirst()
+                .ifPresent(tile -> {
+                    tile.getTotem().setEffect(EffectsManager.createGlowEffect());
+                });
+
+        if (!activePlayer.equals(smallModel.getPlayer().getNickname())) {
+            opponentsBoxes.get(activePlayer).getNicknameText().setEffect(EffectsManager.createGlowEffect());
+        }
     }
 
     private void toggleSkipButton(boolean canSkip) {
