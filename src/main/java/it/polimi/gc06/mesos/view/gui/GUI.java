@@ -31,11 +31,14 @@ public class GUI extends Application implements View, ModelListener {
 
     private static GUI gui;
 
+    public static GuiEventsManager guiEventsManager;
+
     @Override
     public void start(Stage stage) throws IOException {
         primaryStage = stage;
         gui = this;
         guidtovisitor = new GUIDTOvisitor();
+        guiEventsManager = new GuiEventsManager();
 
         changeScene(GameScene.START.getPath());
 
