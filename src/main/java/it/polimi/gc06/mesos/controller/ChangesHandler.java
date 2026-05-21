@@ -49,10 +49,11 @@ public class ChangesHandler {
 
         ArrayList<SmallModelEditor> changes = new ArrayList<>();
 
-        if (board.isEndGame()) {
-            changes.add(new LeaderboardChangeDTO(model.getLeaderboard().getScores()));
-            return changes;
-        }
+        // TODO : handle this (FILLIPPO LOOK HERE)
+//        if (board.isEndGame()) {
+//            changes.add(new LeaderboardChangeDTO(model.getLeaderboard().getScores()));
+//            return changes;
+//        }
 
         //check resources & prestige diff
         for (Player p : model.getPlayers()) {
@@ -80,9 +81,8 @@ public class ChangesHandler {
         //check if the round has changed
         if (lastRound != turnManager.getRound()) {
             changes.add(new RoundChangeDTO(turnManager.getRound()));
-            int deckSize = model.getTribeCardsDeck().get(Era.ERA_I).size()
-                    + model.getTribeCardsDeck().get(Era.ERA_II).size()
-                    + model.getTribeCardsDeck().get(Era.ERA_III).size();
+            int deckSize = model.getTribeCardsDeck().values().stream().mapToInt(ArrayList::size).sum();
+            
             changes.add(new TopRowRefillDTO(new ArrayList<>(board.getTopRow()), new ArrayList<>(board.getBottomRow()), deckSize));
             changes.add(new BuildingsRefillDTO(new ArrayList<>(board.getTopBuildings()), new ArrayList<>(board.getBottomBuildings()), deckSize));
         }
