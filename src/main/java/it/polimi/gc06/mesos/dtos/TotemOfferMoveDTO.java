@@ -36,4 +36,12 @@ public class TotemOfferMoveDTO implements SmallModelEditor {
     public void accept(DTOvisitor visitor) {
         visitor.visit(this);
     }
+
+    public int getIndex() {
+        return index;
+    }
+
+    public String getPlayer() {
+        return player;
+    }
 }

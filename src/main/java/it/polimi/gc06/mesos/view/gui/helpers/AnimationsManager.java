@@ -101,13 +101,13 @@ public class AnimationsManager {
      * @param mainRoot
      * @param onEndAction
      */
-    public static void totemSetAnimation(OfferTileView tile, TurnOrderTileView turnOrderTile, ArrayList<OfferTileView> offerTrackTiles, HBox mainRoot, Runnable onEndAction) {
-        TotemPieceView totemPiece = turnOrderTile.getTotemPieces().stream()
-                .filter(tp -> tp.getPlayer() != null && tp.getPlayer().getNickname().equals(smallModel.getPlayer().getNickname()))
+    public static void totemSetAnimation(OfferTileView tile, String owner, TurnOrderTileView turnOrderTile, ArrayList<OfferTileView> offerTrackTiles, HBox mainRoot, Runnable onEndAction) {
+        TotemPieceView totemMoved = turnOrderTile.getTotemPieces().stream()
+                .filter(tp -> tp.getPlayer() != null && tp.getPlayer().getNickname().equals(owner))
                 .findFirst()
                 .orElse(null);
 
-        if (totemPiece != null) {
+        if (totemMoved != null) {
             // prevent the player from click others tiles during animation
             for (OfferTileView t : offerTrackTiles) {
                 t.setOnMouseClicked(null);
@@ -115,17 +115,13 @@ public class AnimationsManager {
             }
             tile.setOnMouseClicked(null);
 
-            Bounds totemScreen = totemPiece.localToScreen(totemPiece.getBoundsInLocal());
+            Bounds totemScreen = totemMoved.localToScreen(totemMoved.getBoundsInLocal());
             Bounds tileScreen = tile.localToScreen(tile.getBoundsInLocal());
 
             // if the bounds are null, it means that the node is not currently rendered on the screen,
             // so we skip the animation and directly send the network request
             if (totemScreen == null || tileScreen == null) {
-                try {
-                    client.getServerConnection().placeTotem(smallModel.getPlayer().getNickname(), offerTrackTiles.indexOf(tile));
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
+                if (onEndAction != null) onEndAction.run();
                 return;
             }
 
@@ -152,7 +148,7 @@ public class AnimationsManager {
             double targetY = targetCenterY - (totemHeight / 2);
 
             // create ghost totem
-            ImageView ghostTotem = new ImageView(imageFetcher.getTotemImage(smallModel.getPlayer().getColor()));
+            ImageView ghostTotem = new ImageView(totemMoved.getImage());
             ghostTotem.setFitWidth(totemWidth);
             ghostTotem.setFitHeight(totemHeight);
             ghostTotem.setPreserveRatio(true);
@@ -161,7 +157,7 @@ public class AnimationsManager {
             overlayPane.getChildren().add(ghostTotem);
 
             // hide the totem piece in the turn order tile during the animation
-            totemPiece.setVisible(false);
+            totemMoved.setVisible(false);
 
             double deltaX = targetX - startX;
             double deltaY = targetY - startY;
@@ -177,11 +173,12 @@ public class AnimationsManager {
 
             transition.setOnFinished(ev -> {
                 root.getChildren().remove(overlayPane);
-
                 if (onEndAction != null) onEndAction.run();
             });
 
             transition.play();
+        } else {
+            if (onEndAction != null) onEndAction.run();
         }
     }
 }

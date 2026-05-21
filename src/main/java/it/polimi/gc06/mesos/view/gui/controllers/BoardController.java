@@ -1025,35 +1025,32 @@ public class BoardController {
     }
 
     private void drawOfferTrack() {
-
         if (offerTrackTiles == null) {
             initOfferTrack();
         }
 
         for (int i = 0; i < smallModel.getOfferTrack().size(); i++) {
+            OfferTileView tile = offerTrackTiles.get(i);
+
+            tile.setOnMouseClicked(null);
+
             if (smallModel.getOfferTrack().get(i).getPlayer() != null) {
-                offerTrackTiles.get(i).setTotem(new TotemPieceView(smallModel.getOfferTrack().get(i).getPlayer()));
+                tile.setTotem(new TotemPieceView(smallModel.getOfferTrack().get(i).getPlayer()));
             } else {
-                OfferTileView tile = offerTrackTiles.get(i);
                 tile.setTotem(new TotemPieceView());
 
                 if (smallModel.isActive() && smallModel.getPhase().equals(new PlacingTotemPhase().toString())) {
-                    // TODO : this should work but keep an eye on it
                     int finalI = i;
-
                     tile.setOnMouseClicked(ev -> {
-                        AnimationsManager.totemSetAnimation(tile, turnOrderTile, offerTrackTiles, mainRoot, () -> {
-                            try {
-                                client.getServerConnection().placeTotem(smallModel.getPlayer().getNickname(), finalI);
-                            } catch (Exception e) {
-                                throw new RuntimeException(e);
-                            }
-                        });
+                        try {
+                            client.getServerConnection().placeTotem(smallModel.getPlayer().getNickname(), finalI);
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
                     });
                 }
             }
-
-            EffectsManager.setTileEffect(offerTrackTiles.get(i));
+            EffectsManager.setTileEffect(tile);
         }
     }
 
@@ -1220,9 +1217,12 @@ public class BoardController {
         }
     }
 
-    public void handleTotemMoved() {
-        drawTurnOrderTile();
-        drawOfferTrack();
+    public void handleTotemMoved(TotemOfferMoveDTO dto, Runnable endOfAnimation) {
+        AnimationsManager.totemSetAnimation(offerTrackTiles.get(dto.getIndex()), dto.getPlayer(), turnOrderTile, offerTrackTiles, mainRoot, () -> {
+            drawOfferTrack();
+            drawTurnOrderTile();
+            endOfAnimation.run();
+        });
     }
 
     public void handleRoundChanged() {

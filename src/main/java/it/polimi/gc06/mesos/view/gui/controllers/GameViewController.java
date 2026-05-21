@@ -93,15 +93,9 @@ public class GameViewController {
         fadeOut.setToValue(0.0);
 
         overlaySequence = new SequentialTransition(initialStay, fadeIn, scaleIn, scaleOut, fadeOut);
-
-        overlaySequence.setOnFinished(e -> {
-            overlay.setVisible(false);
-            overlaysBox.setVisible(false);
-            overlaysBox.setMouseTransparent(true);
-        });
     }
 
-    private void playOverlay(Image image) {
+    private void playOverlay(Image image, Runnable endOfAnimation) {
         if (overlay == null || image == null) return;
 
         overlaySequence.stop();
@@ -115,22 +109,25 @@ public class GameViewController {
         overlaysBox.setVisible(true);
         overlaysBox.setMouseTransparent(false);
 
+        overlaySequence.setOnFinished(e -> {
+            overlay.setVisible(false);
+            overlaysBox.setVisible(false);
+            overlaysBox.setMouseTransparent(true);
+            if (endOfAnimation != null) endOfAnimation.run();
+        });
+
         overlaySequence.playFromStart();
     }
 
-    public void showPhaseOverlay() {
+    public void showPhaseOverlay(Runnable endOfAnimation) {
         if (smallModel.getPhase() == null) return;
 
-        playOverlay(imageFetcher.getPhaseOverlayImage(smallModel.getPhase()));
+        playOverlay(imageFetcher.getPhaseOverlayImage(smallModel.getPhase()), endOfAnimation);
     }
 
-    public void showEraOverlay() {
+    public void showEraOverlay(Runnable endOfAnimation) {
         if (smallModel.getEra() == null) return;
 
-        playOverlay(imageFetcher.getEraOverlayImage(smallModel.getEra()));
-    }
-
-    public void handlePhaseChanged() {
-        showPhaseOverlay();
+        playOverlay(imageFetcher.getEraOverlayImage(smallModel.getEra()), endOfAnimation);
     }
 }

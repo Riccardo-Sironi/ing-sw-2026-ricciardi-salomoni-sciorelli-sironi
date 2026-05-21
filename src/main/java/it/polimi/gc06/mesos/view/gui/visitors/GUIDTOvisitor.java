@@ -152,8 +152,9 @@ public class GUIDTOvisitor extends DTOvisitor {
         System.out.println("Totem moved!");
         Platform.runLater(() -> {
             guiEventsManager.enqueueEvent(() -> {
-                boardController.handleTotemMoved();
-                guiEventsManager.onAnimationFinished();
+                boardController.handleTotemMoved(dto, () -> {
+                    guiEventsManager.onAnimationFinished();
+                });
             });
         });
     }
@@ -171,13 +172,12 @@ public class GUIDTOvisitor extends DTOvisitor {
 
     @Override
     public void visit(PhaseChangeDTO dto) {
-        System.out.println("Phase change!");
-
         Platform.runLater(() -> {
             guiEventsManager.enqueueEvent(() -> {
-                boardController.handlePhaseChanged();
-                gameViewController.handlePhaseChanged();
-                guiEventsManager.onAnimationFinished();
+                gameViewController.showPhaseOverlay(() -> {
+                    boardController.handlePhaseChanged();
+                    guiEventsManager.onAnimationFinished();
+                });
             });
         });
     }
@@ -187,9 +187,10 @@ public class GUIDTOvisitor extends DTOvisitor {
         System.out.println("Era change!");
         Platform.runLater(() -> {
             guiEventsManager.enqueueEvent(() -> {
-                boardController.handleEraChanged();
-                gameViewController.showEraOverlay();
-                guiEventsManager.onAnimationFinished();
+                gameViewController.showEraOverlay(() -> {
+                    boardController.handleEraChanged();
+                    guiEventsManager.onAnimationFinished();
+                });
             });
         });
     }
