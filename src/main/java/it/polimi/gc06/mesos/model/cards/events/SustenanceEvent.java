@@ -5,6 +5,7 @@ import it.polimi.gc06.mesos.model.Player;
 import it.polimi.gc06.mesos.model.cards.CardVisitor;
 import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingRegistryKey;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class SustenanceEvent extends EventCard {
@@ -92,7 +93,9 @@ public class SustenanceEvent extends EventCard {
     }
 
     private int getRequiredFood(Player player) {
-        int totalCharacterCards = player.getCharacterDeck().size();
+        int totalCharacterCards = player.getCharacterDeck().values().stream()
+                .mapToInt(ArrayList::size)
+                .sum();
 
         // initialization gatherers count
         int gatherersCount = player.getGatherersCounter();
