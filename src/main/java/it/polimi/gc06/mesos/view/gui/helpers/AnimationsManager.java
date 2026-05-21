@@ -14,10 +14,6 @@ import javafx.util.Duration;
 
 import java.util.ArrayList;
 
-import static it.polimi.gc06.mesos.view.gui.GUI.*;
-import static it.polimi.gc06.mesos.view.gui.GUI.client;
-import static it.polimi.gc06.mesos.view.gui.GUI.smallModel;
-
 public class AnimationsManager {
     /**
      * This method applies a smooth animation to a card when it's picked from the top/bottom rows or the buildings rows and moved to the player's inventory.
@@ -32,6 +28,7 @@ public class AnimationsManager {
     public static void cardPickAnimation(CardView card, HBox targetContainer, HBox mainRoot, Runnable onEndAction) {
         card.setOnMouseClicked(null);
 
+        // TODO : this does not working properly when the opponent box is "closed", but it lands perfectly when open
         Bounds cardScreen = card.localToScreen(card.getBoundsInLocal());
         Bounds targetScreen = targetContainer.localToScreen(targetContainer.getBoundsInLocal());
         if (cardScreen == null || targetScreen == null) return;
@@ -52,7 +49,7 @@ public class AnimationsManager {
         double targetY = targetScreen.getMinY() - rootScreen.getMinY();
 
         Pane originalParent = (Pane) card.getParent();
-        originalParent.getChildren().remove(card); // TODO : we could do this and then redraw the original container
+        originalParent.getChildren().remove(card);
 
         card.relocate(cardX, cardY);
         card.setTranslateX(0);
@@ -82,7 +79,7 @@ public class AnimationsManager {
             card.fitHeightProperty().bind(targetContainer.heightProperty().multiply(1));
             EffectsManager.normalCard(card);
             card.setOnMouseEntered(null);
-            targetContainer.getChildren().add(card); // TODO : we could do this and then redraw the original container
+            targetContainer.getChildren().add(card);
 
             if (onEndAction != null) onEndAction.run();
         });
@@ -148,6 +145,7 @@ public class AnimationsManager {
             double targetY = targetCenterY - (totemHeight / 2);
 
             // create ghost totem
+            // TODO : this is bigger than the ones in the tile
             ImageView ghostTotem = new ImageView(totemMoved.getImage());
             ghostTotem.setFitWidth(totemWidth);
             ghostTotem.setFitHeight(totemHeight);

@@ -852,7 +852,6 @@ public class BoardController {
     }
 
     private void drawBottomBuildingCards() {
-        // Gestione layout visivo esistente
         updateBottomRowLayout(!smallModel.getBottomBuildings().isEmpty());
 
         if (bottomBuildingsContainer == null) return;
