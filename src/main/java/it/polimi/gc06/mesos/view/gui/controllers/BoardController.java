@@ -1246,7 +1246,7 @@ public class BoardController {
 
     public void handleTopRowPick(PickTopRowDTO dto, Runnable onEndActions) {
         playCardPickAnimation(dto.getPlayer(), topCharactersContainer, dto.getCardIndex(), () -> {
-            drawTopRowCards();
+            if (!smallModel.getPhase().equals(new PlacingTotemPhase().toString())) drawTopRowCards();
             applyEffectToContainerCardViews(buildingsContainer, smallModel.getTopDrawNum());
             drawSkipButton();
             if (onEndActions != null) onEndActions.run();
@@ -1255,7 +1255,7 @@ public class BoardController {
 
     public void handleBottomRowPick(PickBottomRowDTO dto, Runnable onEndActions) {
         playCardPickAnimation(dto.getPlayer(), bottomCharactersContainer, dto.getCardIndex(), () -> {
-            drawBottomRowCards();
+            if (!smallModel.getPhase().equals(new PlacingTotemPhase().toString())) drawBottomRowCards();
             applyEffectToContainerCardViews(bottomBuildingsContainer, smallModel.getBottomDrawNum());
             drawSkipButton();
             if (onEndActions != null) onEndActions.run();
@@ -1264,7 +1264,7 @@ public class BoardController {
 
     public void handleTopBuildingsPick(PickTopBuildingsDTO dto, Runnable onEndActions) {
         playCardPickAnimation(dto.getPlayer(), buildingsContainer, dto.getCardIndex(), () -> {
-            drawTopBuildingsCards();
+            if (!smallModel.getPhase().equals(new PlacingTotemPhase().toString())) drawTopBuildingsCards();
             applyEffectToContainerCardViews(topCharactersContainer, smallModel.getTopDrawNum());
             drawSkipButton();
             if (onEndActions != null) onEndActions.run();
@@ -1273,7 +1273,7 @@ public class BoardController {
 
     public void handleBottomBuildingsPick(PickBottomBuildingsDTO dto, Runnable onEndActions) {
         playCardPickAnimation(dto.getPlayer(), bottomBuildingsContainer, dto.getCardIndex(), () -> {
-            drawBottomBuildingCards();
+            if (!smallModel.getPhase().equals(new PlacingTotemPhase().toString())) drawBottomBuildingCards();
             applyEffectToContainerCardViews(bottomCharactersContainer, smallModel.getBottomDrawNum());
             drawSkipButton();
             if (onEndActions != null) onEndActions.run();
