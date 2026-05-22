@@ -131,25 +131,28 @@ public class AnimationsManager {
             overlayPane.setMouseTransparent(true);
             root.getChildren().add(overlayPane);
 
-            double totemWidth = totemScreen.getWidth();
-            double totemHeight = totemScreen.getHeight();
+            // we correctly scale the ghost totem to the dimension of real totems
+            double tileTrueHeight = tileScreen.getHeight();
 
-            double startX = totemScreen.getMinX() - rootScreen.getMinX();
-            double startY = totemScreen.getMinY() - rootScreen.getMinY();
+            double targetTotemHeight = tileTrueHeight * 0.25;
 
-            // we use exact location of the totem after redraw
-            double targetCenterX = tileScreen.getMinX() + (tile.getWidth() * 0.5) - rootScreen.getMinX();
-            double targetCenterY = tileScreen.getMinY() + (tile.getHeight() * 0.2) - rootScreen.getMinY();
-
-            double targetX = targetCenterX - (totemWidth / 2);
-            double targetY = targetCenterY - (totemHeight / 2);
-
-            // create ghost totem
-            // TODO : this is bigger than the ones in the tile
             ImageView ghostTotem = new ImageView(totemMoved.getImage());
-            ghostTotem.setFitWidth(totemWidth);
-            ghostTotem.setFitHeight(totemHeight);
             ghostTotem.setPreserveRatio(true);
+            ghostTotem.setFitHeight(targetTotemHeight);
+
+
+            double imageRatio = totemMoved.getImage().getWidth() / totemMoved.getImage().getHeight();
+            double targetTotemWidth = targetTotemHeight * imageRatio;
+
+
+            double startX = totemScreen.getMinX() - rootScreen.getMinX() + (totemScreen.getWidth() - targetTotemWidth) / 2;
+            double startY = totemScreen.getMinY() - rootScreen.getMinY() + (totemScreen.getHeight() - targetTotemHeight) / 2;
+
+            double targetCenterX = tileScreen.getMinX() + (tileScreen.getWidth() * 0.5) - rootScreen.getMinX();
+            double targetCenterY = tileScreen.getMinY() + (tileScreen.getHeight() * 0.2) - rootScreen.getMinY();
+
+            double targetX = targetCenterX - (targetTotemWidth / 2);
+            double targetY = targetCenterY - (targetTotemHeight / 2);
 
             ghostTotem.relocate(startX, startY);
             overlayPane.getChildren().add(ghostTotem);
