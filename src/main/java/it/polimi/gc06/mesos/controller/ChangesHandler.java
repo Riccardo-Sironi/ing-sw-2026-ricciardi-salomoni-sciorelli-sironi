@@ -49,11 +49,25 @@ public class ChangesHandler {
 
         ArrayList<SmallModelEditor> changes = new ArrayList<>();
 
-        // TODO : handle this (FILLIPPO LOOK HERE)
-//        if (board.isEndGame()) {
-//            changes.add(new LeaderboardChangeDTO(model.getLeaderboard().getScores()));
-//            return changes;
-//        }
+        //checks last era
+        if (lastEra == null || !lastEra.equals(board.getCurrentEra())) {
+            changes.add(new EraChangeDTO(board.getCurrentEra()));
+            int deckSize = model.getTribeCardsDeck().get(Era.ERA_I).size()
+                    + model.getTribeCardsDeck().get(Era.ERA_II).size()
+                    + model.getTribeCardsDeck().get(Era.ERA_III).size();
+            changes.add(new TopRowRefillDTO(new ArrayList<>(board.getTopRow()), new ArrayList<>(board.getBottomRow()), deckSize));
+            changes.add(new BuildingsRefillDTO(new ArrayList<>(board.getTopBuildings()), new ArrayList<>(board.getBottomBuildings()), deckSize));
+        }
+
+        //check last phase
+        if (lastPhase == null || !lastPhase.equals(turnManager.getPhase().toString())) {
+            // TODO : for now its hard coded this way, we'll do a a refactor in the future to better handle this
+            if (turnManager.getPhase().toString().equals(new PlacingTotemPhase().toString())) {
+                changes.add(new PhaseChangeDTO(new EventResolutionPhase().toString()));
+                changes.add(new PhaseChangeDTO(new EndOfRoundPhase().toString()));
+            }
+            changes.add(new PhaseChangeDTO(turnManager.getPhase().toString()));
+        }
 
         //check resources & prestige diff
         for (Player p : model.getPlayers()) {
@@ -78,49 +92,10 @@ public class ChangesHandler {
             changes.add(dto);
         }
 
-        //check if the round has changed
-        if (lastRound != turnManager.getRound()) {
-            changes.add(new RoundChangeDTO(turnManager.getRound()));
-            int deckSize = model.getTribeCardsDeck().values().stream().mapToInt(ArrayList::size).sum();
-
-            changes.add(new TopRowRefillDTO(new ArrayList<>(board.getTopRow()), new ArrayList<>(board.getBottomRow()), deckSize));
-            changes.add(new BuildingsRefillDTO(new ArrayList<>(board.getTopBuildings()), new ArrayList<>(board.getBottomBuildings()), deckSize));
-        }
-
         if (lastPhase != null && lastPhase.equals(new OfferResolutionPhase().toString()) && !lastPhase.equals(turnManager.getPhase().toString())) {
             changes.add(new TotemTurnMoveDTO());
         }
 
-        //checks last era
-        if (lastEra == null || !lastEra.equals(board.getCurrentEra())) {
-            changes.add(new EraChangeDTO(board.getCurrentEra()));
-            int deckSize = model.getTribeCardsDeck().get(Era.ERA_I).size()
-                    + model.getTribeCardsDeck().get(Era.ERA_II).size()
-                    + model.getTribeCardsDeck().get(Era.ERA_III).size();
-            changes.add(new TopRowRefillDTO(new ArrayList<>(board.getTopRow()), new ArrayList<>(board.getBottomRow()), deckSize));
-            changes.add(new BuildingsRefillDTO(new ArrayList<>(board.getTopBuildings()), new ArrayList<>(board.getBottomBuildings()), deckSize));
-        }
-
-        //check last phase
-        if (lastPhase == null || !lastPhase.equals(turnManager.getPhase().toString())) {
-            // TODO : for now its hard coded this way, we'll do a a refactor in the future to better handle this
-            if (turnManager.getPhase().toString().equals(new PlacingTotemPhase().toString())) {
-                changes.add(new PhaseChangeDTO(new EventResolutionPhase().toString()));
-                changes.add(new PhaseChangeDTO(new EndOfRoundPhase().toString()));
-            }
-            changes.add(new PhaseChangeDTO(turnManager.getPhase().toString()));
-        }
-
-        // we set an effect in the board controller (GUI) for the active player, it uses the PlayerStateChangeDTO to get
-        // the active player, but if the active player remains the same between phases this DTO does not get sent, so we force it
-        boolean activePlayerDoesNotChangeBetweenPhases = getLastActivePlayer() != null && getLastActivePlayer().equals(turnManager.getActivePlayer())
-                && lastPhase != null && !lastPhase.equals(turnManager.getPhase().toString()); // awful name i'm aware
-
-        if (getLastActivePlayer() == null || !getLastActivePlayer().getNickname().equals(turnManager.getActivePlayer().getNickname()) || activePlayerDoesNotChangeBetweenPhases) {
-            PlayerStateChangeDTO dto = new PlayerStateChangeDTO(turnManager.getActivePlayer().getNickname());
-            dto.setIsActive(true);
-            changes.add(dto);
-        }
         try {
             if (turnManager.getPhase().checkForRightToSkip(turnManager.getActivePlayer(), board)) {
 
@@ -139,6 +114,27 @@ public class ChangesHandler {
             }
         } catch (IllegalPhaseActionException _) {
         }
+
+        // TODO : handle this (FILLIPPO LOOK HERE)
+//        if (board.isEndGame()) {
+//            changes.add(new LeaderboardChangeDTO(model.getLeaderboard().getScores()));
+//            return changes;
+//        }
+
+        //check if the round has changed
+        if (lastRound != turnManager.getRound()) {
+            changes.add(new RoundChangeDTO(turnManager.getRound()));
+            int deckSize = model.getTribeCardsDeck().values().stream().mapToInt(ArrayList::size).sum();
+
+            changes.add(new TopRowRefillDTO(new ArrayList<>(board.getTopRow()), new ArrayList<>(board.getBottomRow()), deckSize));
+            changes.add(new BuildingsRefillDTO(new ArrayList<>(board.getTopBuildings()), new ArrayList<>(board.getBottomBuildings()), deckSize));
+        }
+
+        // we always send the active player, not just when it changes, we constantly need this information
+        PlayerStateChangeDTO activePlayerDTO = new PlayerStateChangeDTO(turnManager.getActivePlayer().getNickname());
+        activePlayerDTO.setIsActive(true);
+        changes.add(activePlayerDTO);
+
         return changes;
     }
 

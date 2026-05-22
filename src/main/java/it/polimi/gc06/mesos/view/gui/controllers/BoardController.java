@@ -1312,10 +1312,6 @@ public class BoardController {
         updateAllBoardEffects();
         drawOfferTrack();
         drawTurnOrderTile();
-        drawTopRowCards();
-        drawTopBuildingsCards();
-        drawBottomRowCards();
-        drawBottomBuildingCards();
         drawSkipButton();
         drawDeck();
     }
