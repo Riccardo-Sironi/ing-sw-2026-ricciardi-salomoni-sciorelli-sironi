@@ -1,12 +1,10 @@
 package it.polimi.gc06.mesos.view.gui.helpers;
 
-import it.polimi.gc06.mesos.view.gui.elements.CardView;
-import it.polimi.gc06.mesos.view.gui.elements.OfferTileView;
-import it.polimi.gc06.mesos.view.gui.elements.TotemPieceView;
-import it.polimi.gc06.mesos.view.gui.elements.TurnOrderTileView;
+import it.polimi.gc06.mesos.view.gui.elements.*;
 import javafx.animation.Interpolator;
 import javafx.animation.TranslateTransition;
 import javafx.geometry.Bounds;
+import javafx.scene.Node;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -28,12 +26,40 @@ public class AnimationsManager {
     public static void cardPickAnimation(CardView card, HBox targetContainer, HBox mainRoot, Runnable onEndAction) {
         card.setOnMouseClicked(null);
 
-        // TODO : this does not working properly when the opponent box is "closed", but it lands perfectly when open
         Bounds cardScreen = card.localToScreen(card.getBoundsInLocal());
-        Bounds targetScreen = targetContainer.localToScreen(targetContainer.getBoundsInLocal());
-        if (cardScreen == null || targetScreen == null) return;
+        if (cardScreen == null) return;
 
-        // we need this overlay pane to make the card appear above all other elements during the animation
+        OpponentBox parentOpponentBox = null;
+        Node current = targetContainer;
+
+        // we look for the parent opponent box of the target container, if it exists, to adjust the animation accordingly
+        // in case the opponent box is closed
+        while (current != null) {
+            boolean isOpponentBox = current.getProperties().get("isOpponentBox") != null;
+
+            if (isOpponentBox) {
+                parentOpponentBox = (OpponentBox) current;
+                break;
+            }
+            current = current.getParent();
+        }
+
+        Bounds targetScreen = null;
+        boolean isOpponentBoxClosed = false;
+
+        if (parentOpponentBox != null) {
+            if (!parentOpponentBox.getDetailsContainer().isVisible() || parentOpponentBox.getDetailsContainer().getHeight() <= 0) {
+                isOpponentBoxClosed = true;
+                targetScreen = parentOpponentBox.localToScreen(parentOpponentBox.getBoundsInLocal());
+            }
+        }
+
+        if (targetScreen == null) {
+            targetScreen = targetContainer.localToScreen(targetContainer.getBoundsInLocal());
+        }
+
+        if (targetScreen == null) return;
+
         Pane overlayPane = new Pane();
         Pane root = (Pane) mainRoot.getScene().getRoot();
         Bounds rootScreen = root.localToScreen(root.getBoundsInLocal());
@@ -48,8 +74,15 @@ public class AnimationsManager {
         double targetX = targetScreen.getMinX() - rootScreen.getMinX();
         double targetY = targetScreen.getMinY() - rootScreen.getMinY();
 
+        if (isOpponentBoxClosed) {
+            targetX += (targetScreen.getWidth() - cardScreen.getWidth()) / 2;
+            targetY += (targetScreen.getHeight() - cardScreen.getHeight()) / 2;
+        }
+
         Pane originalParent = (Pane) card.getParent();
-        originalParent.getChildren().remove(card);
+        if (originalParent != null) {
+            originalParent.getChildren().remove(card);
+        }
 
         card.relocate(cardX, cardY);
         card.setTranslateX(0);
@@ -63,10 +96,9 @@ public class AnimationsManager {
 
         double speed = 0.9;
         long durationMs = (long) (distance / speed);
-
         durationMs = Math.clamp(durationMs, 300, 600);
 
-        TranslateTransition transition = EffectsManager.createCardMoveTransition(card, targetX - cardX, targetY - cardY, durationMs);
+        TranslateTransition transition = EffectsManager.createCardMoveTransition(card, deltaX, deltaY, durationMs);
         transition.setInterpolator(Interpolator.EASE_OUT);
 
         transition.setOnFinished(e -> {
@@ -79,7 +111,6 @@ public class AnimationsManager {
             card.fitHeightProperty().bind(targetContainer.heightProperty().multiply(1));
             EffectsManager.normalCard(card);
             card.setOnMouseEntered(null);
-            targetContainer.getChildren().add(card);
 
             if (onEndAction != null) onEndAction.run();
         });
