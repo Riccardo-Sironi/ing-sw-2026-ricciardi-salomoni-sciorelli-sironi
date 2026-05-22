@@ -63,7 +63,7 @@ public class TuiTileSlotRendererVisitor implements TuiRenderer<TileSlotView>, Ti
         return switch (color) {
             case Color.WHITE -> Style.WHITE;
             case Color.ORANGE -> Style.RED;
-            case Color.TORQUISE -> Style.BLUE;
+            case Color.TURQUOISE -> Style.BLUE;
             case Color.YELLOW -> Style.YELLOW;
             case Color.PURPLE -> Style.PURPLE;
         };

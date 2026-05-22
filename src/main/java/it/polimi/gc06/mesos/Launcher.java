@@ -1,5 +1,6 @@
 package it.polimi.gc06.mesos;
 
+import it.polimi.gc06.mesos.model.Color;
 import it.polimi.gc06.mesos.network.ConnectionDetails;
 import it.polimi.gc06.mesos.network.client.Client;
 import it.polimi.gc06.mesos.view.gui.GUI;
@@ -8,17 +9,21 @@ import it.polimi.gc06.mesos.view.tui.LobbyTui;
 import it.polimi.gc06.mesos.view.tui.Style;
 import it.polimi.gc06.mesos.view.tui.TUI;
 import javafx.application.Application;
-import org.jline.reader.Candidate;
-import org.jline.reader.Completer;
-import org.jline.reader.LineReader;
-import org.jline.reader.LineReaderBuilder;
+import org.jline.reader.*;
+import org.jline.reader.impl.completer.AggregateCompleter;
+import org.jline.reader.impl.completer.ArgumentCompleter;
+import org.jline.reader.impl.completer.NullCompleter;
+import org.jline.reader.impl.completer.StringsCompleter;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
 import org.jline.utils.InfoCmp;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Main entry point for the Mesos Client application.
@@ -120,18 +125,18 @@ public class Launcher {
 
                 terminal.puts(InfoCmp.Capability.clear_screen);
 
-                Completer completer = (reader, line, candidates) -> {
+                Completer colorCompleter = (reader, line, candidates) -> {
                     List<String> words = line.words();
                     if (!words.isEmpty() && "/set_color".equals(words.get(0))) {
                         if (words.size() == 2) {
-                            List<String> allColors = java.util.Arrays.stream(it.polimi.gc06.mesos.model.Color.values())
+                            List<String> allColors = Arrays.stream(Color.values())
                                     .map(Enum::toString)
                                     .toList();
 
-                            java.util.Set<String> takenColors = smallModel.getOpponents().stream()
+                            Set<String> takenColors = smallModel.getOpponents().stream()
                                     .filter(o -> o.getColor() != null)
                                     .map(o -> o.getColor().toString())
-                                    .collect(java.util.stream.Collectors.toSet());
+                                    .collect(Collectors.toSet());
 
                             for (String color : allColors) {
                                 if (!takenColors.contains(color)) {
@@ -141,6 +146,10 @@ public class Launcher {
                         }
                     }
                 };
+
+                Completer completer = new AggregateCompleter(
+                        new ArgumentCompleter(new StringsCompleter("/set_color"), colorCompleter, NullCompleter.INSTANCE)
+                );
 
                 LineReader lineReader = LineReaderBuilder.builder()
                         .terminal(terminal)
@@ -164,12 +173,12 @@ public class Launcher {
                         if (tokens.length < 2) {
                             terminal.writer().println("Usage: /set_color <color> - Available colors: ORANGE, WHITE, TURQUOISE, YELLOW, PURPLE");
                         } else {
-                            String color = tokens[1];
+                            String color = tokens[1].trim().toUpperCase();
                             try {
                                 client.getServerConnection().chooseTotemColor(smallModel.getPlayer().getNickname(), mapTotemToColor(color));
                                 break;
                             } catch (Exception e) {
-                                terminal.writer().println(Style.RED + "The color you chose is already in use: " + e.getMessage() + Style.RESET);
+                                terminal.writer().println(Style.RED + "The color you chose is already in use or is not valid: " + e.getMessage() + Style.RESET);
                             }
                         }
                     }
@@ -187,9 +196,12 @@ public class Launcher {
 
             } catch (IOException e) {
                 System.out.println("Sorry, we encountered an error while setting up the terminal");
+            } catch (UserInterruptException | EndOfFileException e) {
+                System.exit(0);
             }
             TUI tui = new TUI(smallModel, client);
             tui.start();
+
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -198,13 +210,14 @@ public class Launcher {
 
     }
 
-    private static it.polimi.gc06.mesos.model.Color mapTotemToColor(String totem) {
+    private static Color mapTotemToColor(String totem) {
         return switch (totem.toUpperCase()) {
-            case "ORANGE" -> it.polimi.gc06.mesos.model.Color.ORANGE;
-            case "WHITE" -> it.polimi.gc06.mesos.model.Color.WHITE;
-            case "TURQUOISE" -> it.polimi.gc06.mesos.model.Color.TORQUISE;
-            case "YELLOW" -> it.polimi.gc06.mesos.model.Color.YELLOW;
-            default -> it.polimi.gc06.mesos.model.Color.PURPLE;
+            case "ORANGE" -> Color.ORANGE;
+            case "WHITE" -> Color.WHITE;
+            case "TURQUOISE" -> Color.TURQUOISE;
+            case "YELLOW" -> Color.YELLOW;
+            case "PURPLE" -> Color.PURPLE;
+            default -> throw new IllegalStateException("Unexpected value: " + totem.toUpperCase());
         };
     }
 

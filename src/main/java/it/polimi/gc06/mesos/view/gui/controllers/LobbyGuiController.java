@@ -224,7 +224,7 @@ public class LobbyGuiController {
         return switch (totem.name().toUpperCase()) {
             case "ORANGE" -> it.polimi.gc06.mesos.model.Color.ORANGE;
             case "WHITE" -> it.polimi.gc06.mesos.model.Color.WHITE;
-            case "TURQUOISE" -> it.polimi.gc06.mesos.model.Color.TORQUISE;
+            case "TURQUOISE" -> it.polimi.gc06.mesos.model.Color.TURQUOISE;
             case "YELLOW" -> it.polimi.gc06.mesos.model.Color.YELLOW;
             default -> it.polimi.gc06.mesos.model.Color.PURPLE;
         };
@@ -235,7 +235,7 @@ public class LobbyGuiController {
         return switch (color) {
             case WHITE -> Totem.WHITE;
             case ORANGE -> Totem.ORANGE;
-            case TORQUISE -> Totem.TURQUOISE;
+            case TURQUOISE -> Totem.TURQUOISE;
             case YELLOW -> Totem.YELLOW;
             case PURPLE -> Totem.PURPLE;
         };
@@ -258,7 +258,7 @@ public class LobbyGuiController {
             if (GUI.imageFetcher == null) {
                 GUI.imageFetcher = new ImageFetcher(GUI.smallModel.getOpponents().size() + 1);
             }
-            
+
             Region blackOverlay = new Region();
             blackOverlay.setStyle("-fx-background-color: black;");
             blackOverlay.setOpacity(0.0);
