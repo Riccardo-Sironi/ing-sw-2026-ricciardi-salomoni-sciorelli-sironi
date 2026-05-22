@@ -90,7 +90,7 @@ public class ImageFetcher {
 
         // era overlay map init
         for (Era era : Era.values()) {
-            eraOverlayMap.put(era, loadImage("/imgs/overlay/" + smallModel.getEra().name().toLowerCase() + "_overlay.png"));
+            eraOverlayMap.put(era, loadImage("/imgs/overlay/" + era.name().toLowerCase() + "_overlay.png"));
         }
 
         // phase overlay map init
