@@ -1,5 +1,6 @@
 package it.polimi.gc06.mesos.view.gui.controllers;
 
+import it.polimi.gc06.mesos.model.Era;
 import javafx.animation.FadeTransition;
 import javafx.animation.PauseTransition;
 import javafx.animation.ScaleTransition;
@@ -25,13 +26,6 @@ public class GameViewController {
     @FXML
     private HBox overlaysBox;
 
-    @FXML
-    private BoardController boardController;
-
-    public BoardController getBoardController() {
-        return boardController;
-    }
-
     private ImageView overlay;
     private SequentialTransition overlaySequence;
 
@@ -48,6 +42,8 @@ public class GameViewController {
         if (overlaysBox != null) {
             initOverlays();
         }
+
+        showEraOverlay(smallModel.getEra(), () -> showPhaseOverlay(smallModel.getPhase(), null));
     }
 
     private void initOverlays() {
@@ -70,9 +66,7 @@ public class GameViewController {
 
         overlaysBox.getChildren().add(overlay);
 
-        PauseTransition initialStay = new PauseTransition(Duration.millis(500));
-
-        FadeTransition fadeIn = new FadeTransition(Duration.millis(200), overlay);
+        FadeTransition fadeIn = new FadeTransition(Duration.millis(250), overlay);
         fadeIn.setFromValue(0.0);
         fadeIn.setToValue(1.0);
 
@@ -88,11 +82,11 @@ public class GameViewController {
         scaleOut.setToX(1.08);
         scaleOut.setToY(1.08);
 
-        FadeTransition fadeOut = new FadeTransition(Duration.millis(200), overlay);
+        FadeTransition fadeOut = new FadeTransition(Duration.millis(250), overlay);
         fadeOut.setFromValue(1.0);
         fadeOut.setToValue(0.0);
 
-        overlaySequence = new SequentialTransition(initialStay, fadeIn, scaleIn, scaleOut, fadeOut);
+        overlaySequence = new SequentialTransition(fadeIn, scaleIn, scaleOut, fadeOut);
     }
 
     private void playOverlay(Image image, Runnable endOfAnimation) {
@@ -122,14 +116,12 @@ public class GameViewController {
     public void showPhaseOverlay(String phase, Runnable endOfAnimation) {
         if (smallModel.getPhase() == null) return;
 
-        System.out.println("smallModel.getPhase(): " + smallModel.getPhase());
-
         playOverlay(imageFetcher.getPhaseOverlayImage(phase), endOfAnimation);
     }
 
-    public void showEraOverlay(Runnable endOfAnimation) {
+    public void showEraOverlay(Era era, Runnable endOfAnimation) {
         if (smallModel.getEra() == null) return;
 
-        playOverlay(imageFetcher.getEraOverlayImage(smallModel.getEra()), endOfAnimation);
+        playOverlay(imageFetcher.getEraOverlayImage(era), endOfAnimation);
     }
 }

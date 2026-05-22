@@ -32,4 +32,12 @@ public class TopRowRefillDTO implements SmallModelEditor, Serializable {
     public void accept(DTOvisitor visitor) {
         visitor.visit(this);
     }
+
+    public ArrayList<Card> getTop() {
+        return top;
+    }
+
+    public ArrayList<Card> getBottom() {
+        return bottom;
+    }
 }

@@ -1,8 +1,8 @@
 package it.polimi.gc06.mesos.view.gui.helpers;
 
+import it.polimi.gc06.mesos.model.cards.Card;
 import it.polimi.gc06.mesos.view.gui.elements.*;
-import javafx.animation.Interpolator;
-import javafx.animation.TranslateTransition;
+import javafx.animation.*;
 import javafx.geometry.Bounds;
 import javafx.scene.Node;
 import javafx.scene.image.ImageView;
@@ -11,6 +11,9 @@ import javafx.scene.layout.Pane;
 import javafx.util.Duration;
 
 import java.util.ArrayList;
+import java.util.List;
+
+import static it.polimi.gc06.mesos.view.gui.GUI.imageFetcher;
 
 public class AnimationsManager {
     /**
@@ -212,5 +215,51 @@ public class AnimationsManager {
         } else {
             if (onEndAction != null) onEndAction.run();
         }
+    }
+
+    public static void refillCardsRowAnimation(List<Card> top, List<Card> bottom, HBox topTarget, HBox bottomTarget, Runnable onEndAction) {
+        topTarget.getChildren().clear();
+        bottomTarget.getChildren().clear();
+
+        animateCardList(0, top, topTarget, () -> {
+            animateCardList(0, bottom, bottomTarget, () -> {
+                if (onEndAction != null) onEndAction.run();
+            });
+        });
+    }
+
+    private static void animateCardList(int index, List<Card> cards, HBox targetBox, Runnable onListEnd) {
+        if (index >= cards.size()) {
+            if (onListEnd != null) onListEnd.run();
+            return;
+        }
+
+        Card card = cards.get(index);
+        if (card == null) {
+            animateCardList(index + 1, cards, targetBox, onListEnd);
+            return;
+        }
+
+        CardView cv = new CardView(imageFetcher.fetch(card));
+        cv.setPreserveRatio(true);
+        cv.fitHeightProperty().bind(targetBox.heightProperty().multiply(0.85));
+
+        cv.setOpacity(0);
+        cv.setTranslateY(-50);
+        targetBox.getChildren().add(cv);
+
+        FadeTransition fadeIn = new FadeTransition(Duration.millis(250), cv);
+        fadeIn.setFromValue(0);
+        fadeIn.setToValue(1);
+
+        TranslateTransition land = new TranslateTransition(Duration.millis(250), cv);
+        land.setFromY(-50);
+        land.setToY(0);
+        land.setInterpolator(Interpolator.EASE_BOTH);
+
+        ParallelTransition parallel = new ParallelTransition(fadeIn, land);
+        parallel.setOnFinished(ev -> animateCardList(index + 1, cards, targetBox, onListEnd));
+        
+        parallel.play();
     }
 }

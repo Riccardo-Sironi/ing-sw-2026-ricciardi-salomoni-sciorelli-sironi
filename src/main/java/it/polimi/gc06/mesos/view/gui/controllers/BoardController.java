@@ -17,7 +17,6 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
 import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
-import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
@@ -1191,7 +1190,7 @@ public class BoardController {
         inventoryBox.setMaxHeight(Region.USE_COMPUTED_SIZE);
     }
 
-    private void processCardPickAnimation(String playerNickname, HBox sourceContainer, int cardIndex, Runnable boardUpdatesAndUnlock) {
+    private void playCardPickAnimation(String playerNickname, HBox sourceContainer, int cardIndex, Runnable boardUpdatesAndUnlock) {
         CardView card = null;
 
         try {
@@ -1223,10 +1222,20 @@ public class BoardController {
         }
     }
 
-    public void handleTopRowRefill() {
-        drawTopRowCards();
-        drawBottomRowCards();
-        drawDeck();
+    public void playRefillAnimation() {
+        AnimationsManager.refillCardsRowAnimation(smallModel.getTopRow(), smallModel.getBottomRow(), topCharactersContainer, bottomCharactersContainer, () -> {
+            drawTopRowCards();
+            drawBottomRowCards();
+        });
+    }
+
+    public void handleTopRowRefill(TopRowRefillDTO dto, Runnable onEndActions) {
+        AnimationsManager.refillCardsRowAnimation(dto.getTop(), dto.getBottom(), topCharactersContainer, bottomCharactersContainer, () -> {
+            drawTopRowCards();
+            drawBottomRowCards();
+            drawDeck();
+            if (onEndActions != null) onEndActions.run();
+        });
     }
 
     public void handleTopBuildingsRefill() {
@@ -1236,7 +1245,7 @@ public class BoardController {
     }
 
     public void handleTopRowPick(PickTopRowDTO dto, Runnable onEndActions) {
-        processCardPickAnimation(dto.getPlayer(), topCharactersContainer, dto.getCardIndex(), () -> {
+        playCardPickAnimation(dto.getPlayer(), topCharactersContainer, dto.getCardIndex(), () -> {
             drawTopRowCards();
             applyEffectToContainerCardViews(buildingsContainer, smallModel.getTopDrawNum());
             drawSkipButton();
@@ -1245,7 +1254,7 @@ public class BoardController {
     }
 
     public void handleBottomRowPick(PickBottomRowDTO dto, Runnable onEndActions) {
-        processCardPickAnimation(dto.getPlayer(), bottomCharactersContainer, dto.getCardIndex(), () -> {
+        playCardPickAnimation(dto.getPlayer(), bottomCharactersContainer, dto.getCardIndex(), () -> {
             drawBottomRowCards();
             applyEffectToContainerCardViews(bottomBuildingsContainer, smallModel.getBottomDrawNum());
             drawSkipButton();
@@ -1254,7 +1263,7 @@ public class BoardController {
     }
 
     public void handleTopBuildingsPick(PickTopBuildingsDTO dto, Runnable onEndActions) {
-        processCardPickAnimation(dto.getPlayer(), buildingsContainer, dto.getCardIndex(), () -> {
+        playCardPickAnimation(dto.getPlayer(), buildingsContainer, dto.getCardIndex(), () -> {
             drawTopBuildingsCards();
             applyEffectToContainerCardViews(topCharactersContainer, smallModel.getTopDrawNum());
             drawSkipButton();
@@ -1263,7 +1272,7 @@ public class BoardController {
     }
 
     public void handleBottomBuildingsPick(PickBottomBuildingsDTO dto, Runnable onEndActions) {
-        processCardPickAnimation(dto.getPlayer(), bottomBuildingsContainer, dto.getCardIndex(), () -> {
+        playCardPickAnimation(dto.getPlayer(), bottomBuildingsContainer, dto.getCardIndex(), () -> {
             drawBottomBuildingCards();
             applyEffectToContainerCardViews(bottomCharactersContainer, smallModel.getBottomDrawNum());
             drawSkipButton();

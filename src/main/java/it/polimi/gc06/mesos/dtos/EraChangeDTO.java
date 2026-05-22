@@ -20,4 +20,8 @@ public class EraChangeDTO implements SmallModelEditor {
     public void accept(DTOvisitor visitor) {
         visitor.visit(this);
     }
+
+    public Era getEra() {
+        return era;
+    }
 }
