@@ -1,17 +1,16 @@
 package it.polimi.gc06.mesos.network.server;
 
 import it.polimi.gc06.mesos.controller.GameController;
-import it.polimi.gc06.mesos.controller.ModelListener;
+import it.polimi.gc06.mesos.controller.commands.ControllerCommand;
 import it.polimi.gc06.mesos.dtos.ErrorDTO;
 import it.polimi.gc06.mesos.dtos.SmallModelEditor;
 import it.polimi.gc06.mesos.network.client.ServerConnection;
-import it.polimi.gc06.mesos.controller.commands.ControllerCommand;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-public class RMIClientManager implements VirtualClient{
+public class RMIClientManager implements VirtualClient {
     private final String nickname;
     private final ServerConnection rmiClient;
     private final MatchManager sharedManager;
@@ -77,6 +76,7 @@ public class RMIClientManager implements VirtualClient{
                     rmiClient.receiveDTO(notice);
                 } else {
                     // Ping to make sure the client is still alive
+                    // This method will throw an exception if the client is not reachable, which will be caught and handled in the catch block below
                     rmiClient.ping();
                 }
             } catch (InterruptedException e) {

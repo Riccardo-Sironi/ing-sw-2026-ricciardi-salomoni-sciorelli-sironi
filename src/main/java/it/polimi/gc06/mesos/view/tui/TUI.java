@@ -43,8 +43,6 @@ public class TUI implements View, ModelListener {
      */
     public void start() {
         try {
-            client.getServerConnection().subscribe(this);
-
 
             // Initialize the terminal
             this.terminal = TerminalBuilder.builder()
@@ -63,16 +61,13 @@ public class TUI implements View, ModelListener {
                     .completer(completer)
                     .build();
 
-            // Initialize Board Renderer
 
-            showBanner();
+            // Start listening to the model updates, so we can redraw the board every time something changes
+            client.getServerConnection().subscribe(this);
 
-            try {
-                // Wait for 1.5 seconds so the user can see the banner
-                Thread.sleep(1500);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
+            // Show startup banner for 1.5 seconds
+            showBanner(1500);
+
             this.tuiBoardRenderer = new TuiBoardRenderer(terminal);
 
             terminal.puts(InfoCmp.Capability.clear_screen);
@@ -103,7 +98,7 @@ public class TUI implements View, ModelListener {
                     // If the input wasn't empty, we're definitely gonna need to redraw the whole scene
                     needsRedraw = true;
 
-                    switch (command) {
+                    switch (command.toLowerCase()) {
                         case "/place_totem":
                             if (tokens.length < 2) {
                                 statusMessage = "Usage: /place_totem <row_index>";
@@ -173,15 +168,19 @@ public class TUI implements View, ModelListener {
                     terminal.writer().println("Quitting...");
                     terminal.writer().println("Bye bye!");
                     System.exit(0);
+
                     // Handle unexpected error
                 } catch (Exception e) {
-                    terminal.writer().println(e.getMessage());
+                    statusMessage = e.getMessage();
+                    needsRedraw = true;
                     break;
                 }
             }
 
+            // Critical Error whilst initializing the terminal. Close the application as we cannot proceed any further.
         } catch (IOException e) {
             System.err.println("Error initializing the terminal: " + e.getMessage());
+            System.exit(0);
         }
     }
 
@@ -353,7 +352,7 @@ public class TUI implements View, ModelListener {
         terminal.writer().flush();
     }
 
-    private void showBanner() {
+    private void showBanner(long duration) {
         String[] titleAscii = {
                 " ██████   ██████ ██████████  █████████     ███████     █████████ ",
                 "░░██████ ██████ ░░███░░░░░█ ███░░░░░███  ███░░░░░███  ███░░░░░███",
@@ -399,5 +398,11 @@ public class TUI implements View, ModelListener {
             terminal.writer().println(Style.COLOR(r, g, b) + centeredTitle[i] + Style.RESET);
         }
         terminal.writer().flush();
+        try {
+            // Wait for 1.5 seconds so the user can see the banner
+            Thread.sleep(duration);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 }

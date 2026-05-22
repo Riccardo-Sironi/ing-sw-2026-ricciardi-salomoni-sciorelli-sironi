@@ -49,22 +49,20 @@ public class TCPClientReceiver implements Runnable {
 
                 } else {
                     String message = (String) input;
-                    System.out.println("Received a message: " + message);
+                    System.out.println("Received a TCP message: " + message);
 
                     if (message == null) {
                         synchronized (out) {
                             out.writeObject("KO");
                             out.flush();
                         }
-                    }
-                    else if (message.startsWith("LOGIN") && nickname == null && sharedManager.login(message.substring(5))) {
+                    } else if (message.startsWith("LOGIN") && nickname == null && sharedManager.login(message.substring(5))) {
                         nickname = message.substring(5);
                         synchronized (out) {
                             out.writeObject("OK");
                             out.flush();
                         }
-                    }
-                    else if (message.startsWith("CREATE") && virtualClient == null && nickname != null && isNumeric(message.substring(6))
+                    } else if (message.startsWith("CREATE") && virtualClient == null && nickname != null && isNumeric(message.substring(6))
                             && Integer.parseInt(message.substring(6)) > 1 && Integer.parseInt(message.substring(6)) < 6) {
                         int matchId = sharedManager.createMatch(Integer.parseInt(message.substring(6))).getMatchId();
 
@@ -75,8 +73,7 @@ public class TCPClientReceiver implements Runnable {
                             out.writeObject(String.valueOf(matchId));
                             out.flush();
                         }
-                    }
-                    else if (message.startsWith("JOIN") && virtualClient == null && nickname != null && isNumeric(message.substring(4))) {
+                    } else if (message.startsWith("JOIN") && virtualClient == null && nickname != null && isNumeric(message.substring(4))) {
                         virtualClient = new TCPClientManager(nickname, out);
                         if (sharedManager.joinMatch(Integer.parseInt(message.substring(4)), virtualClient)) {
                             synchronized (out) {
@@ -90,8 +87,7 @@ public class TCPClientReceiver implements Runnable {
                             }
                             virtualClient = null;
                         }
-                    }
-                    else if (message.equals("LOGOUT") && nickname != null) {
+                    } else if (message.equals("LOGOUT") && nickname != null) {
                         int matchId = sharedManager.getPlayersMatchId(nickname);
                         if ((matchId == -1 || !sharedManager.isMatchRunning(matchId)) && sharedManager.logout(nickname)) {
                             nickname = null;
@@ -105,20 +101,17 @@ public class TCPClientReceiver implements Runnable {
                                 out.flush();
                             }
                         }
-                    }
-                    else if (message.equals("MATCH_ID")) {
+                    } else if (message.equals("MATCH_ID")) {
                         synchronized (out) {
                             out.writeObject(sharedManager.getPlayersMatchId(nickname));
                             out.flush();
                         }
-                    }
-                    else if (message.startsWith("MATCH_STATUS") && isNumeric(message.substring(12))) {
+                    } else if (message.startsWith("MATCH_STATUS") && isNumeric(message.substring(12))) {
                         synchronized (out) {
                             out.writeObject(sharedManager.getMatchInfo(Integer.parseInt(message.substring(12))));
                             out.flush();
                         }
-                    }
-                    else if (message.equals("AVAILABLE")) {
+                    } else if (message.equals("AVAILABLE")) {
                         synchronized (out) {
                             out.writeObject(sharedManager.getAvailableMatchesString());
                             out.flush();
@@ -130,7 +123,7 @@ public class TCPClientReceiver implements Runnable {
                         }
                     }
                 }
-            } catch (EOFException | SocketException _ ) {
+            } catch (EOFException | SocketException _) {
                 System.out.println("Client ['" + (nickname != null ? nickname : "Unknown") + "'] disconnected, terminating TCP receiver...");
                 break;
             } catch (ClassNotFoundException | ClassCastException | IOException e) {
