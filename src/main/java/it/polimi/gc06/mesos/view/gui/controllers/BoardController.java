@@ -1223,14 +1223,14 @@ public class BoardController {
     }
 
     public void playRefillAnimation() {
-        AnimationsManager.refillCardsRowAnimation(smallModel.getTopRow(), smallModel.getBottomRow(), topCharactersContainer, bottomCharactersContainer, () -> {
+        AnimationsManager.refillCardsRowAnimation(smallModel.getTopRow(), smallModel.getBottomRow(), deckContainer, topCharactersContainer, bottomCharactersContainer, () -> {
             drawTopRowCards();
             drawBottomRowCards();
         });
     }
 
     public void handleTopRowRefill(TopRowRefillDTO dto, Runnable onEndActions) {
-        AnimationsManager.refillCardsRowAnimation(dto.getTop(), dto.getBottom(), topCharactersContainer, bottomCharactersContainer, () -> {
+        AnimationsManager.refillCardsRowAnimation(dto.getTop(), dto.getBottom(), deckContainer, topCharactersContainer, bottomCharactersContainer, () -> {
             drawTopRowCards();
             drawBottomRowCards();
             drawDeck();
@@ -1239,7 +1239,7 @@ public class BoardController {
     }
 
     public void handleTopBuildingsRefill(BuildingsRefillDTO dto, Runnable onEndActions) {
-        AnimationsManager.refillCardsRowAnimation(dto.getTop(), dto.getBottom(), topBuildingsContainer, bottomBuildingsContainer, () -> {
+        AnimationsManager.refillCardsRowAnimation(dto.getTop(), dto.getBottom(), deckContainer, topBuildingsContainer, bottomBuildingsContainer, () -> {
             drawTopBuildingsCards();
             drawBottomBuildingCards();
             drawDeck();

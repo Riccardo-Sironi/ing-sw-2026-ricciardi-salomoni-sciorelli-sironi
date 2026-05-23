@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static it.polimi.gc06.mesos.view.gui.GUI.imageFetcher;
+import static it.polimi.gc06.mesos.view.gui.GUI.smallModel;
 
 public class AnimationsManager {
     /**
@@ -217,15 +218,57 @@ public class AnimationsManager {
         }
     }
 
-    public static void refillCardsRowAnimation(List<Card> top, List<Card> bottom, HBox topTarget, HBox bottomTarget, Runnable onEndAction) {
+    public static void refillCardsRowAnimation(List<Card> top, List<Card> bottom, HBox deckContainer, HBox topTarget, HBox bottomTarget, Runnable onEndAction) {
         topTarget.getChildren().clear();
         bottomTarget.getChildren().clear();
 
-        animateCardList(0, top, topTarget, () -> {
-            animateCardList(0, bottom, bottomTarget, () -> {
-                if (onEndAction != null) onEndAction.run();
+        drawFromDeckAnimation(deckContainer, top.size(), () -> {
+            animateCardList(0, top, topTarget, () -> {
+                animateCardList(0, bottom, bottomTarget, () -> {
+                    if (onEndAction != null) onEndAction.run();
+                });
             });
         });
+
+    }
+
+    public static void drawFromDeckAnimation(HBox deckContainer, int n, Runnable onEndAction) {
+        if (n <= 0) {
+            if (onEndAction != null) onEndAction.run();
+            return;
+        }
+
+        CardView fakeCard = new CardView(imageFetcher.getDeckBackImage(smallModel.getEra()));
+        fakeCard.setPreserveRatio(true);
+        fakeCard.fitHeightProperty().bind(deckContainer.heightProperty().multiply(0.85));
+
+        fakeCard.setManaged(false);
+        fakeCard.setLayoutX((deckContainer.getWidth() - fakeCard.getBoundsInLocal().getWidth()) / 2);
+        fakeCard.setLayoutY(deckContainer.getHeight() - fakeCard.getBoundsInLocal().getHeight());
+
+        deckContainer.getChildren().add(fakeCard);
+
+        ScaleTransition scaleUp = new ScaleTransition(Duration.millis(250), fakeCard);
+        scaleUp.setFromX(1);
+        scaleUp.setFromY(1);
+        scaleUp.setToX(1.8);
+        scaleUp.setToY(1.8);
+        scaleUp.setInterpolator(Interpolator.EASE_OUT);
+
+        FadeTransition fadeOut = new FadeTransition(Duration.millis(250), fakeCard);
+        fadeOut.setFromValue(1.0);
+        fadeOut.setToValue(0.0);
+        fadeOut.setInterpolator(Interpolator.EASE_BOTH);
+
+        ParallelTransition popAndFade = new ParallelTransition(scaleUp, fadeOut);
+
+        popAndFade.setOnFinished(ev -> {
+            deckContainer.getChildren().remove(fakeCard);
+
+            drawFromDeckAnimation(deckContainer, n - 1, onEndAction);
+        });
+
+        popAndFade.play();
     }
 
     private static void animateCardList(int index, List<Card> cards, HBox targetBox, Runnable onListEnd) {
@@ -259,7 +302,7 @@ public class AnimationsManager {
 
         ParallelTransition parallel = new ParallelTransition(fadeIn, land);
         parallel.setOnFinished(ev -> animateCardList(index + 1, cards, targetBox, onListEnd));
-        
+
         parallel.play();
     }
 }
