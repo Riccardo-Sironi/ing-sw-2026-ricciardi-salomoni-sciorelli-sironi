@@ -126,9 +126,9 @@ public class BoardController {
     @FXML
     private HBox topCharactersContainer;
     @FXML
-    private ScrollPane buildingsScroll;
+    private ScrollPane topBuildingsScroll;
     @FXML
-    private HBox buildingsContainer;
+    private HBox topBuildingsContainer;
 
     @FXML
     private HBox centerRowBox;
@@ -363,7 +363,7 @@ public class BoardController {
         topRowBox.setSpacing(20);
         DoubleBinding topWidth = leftZone.widthProperty().multiply(0.80).subtract(40);
         configureScrollPane(topCharactersScroll, topCharactersContainer, topWidth.multiply(0.7).subtract(20));
-        configureScrollPane(buildingsScroll, buildingsContainer, topWidth.multiply(0.3).subtract(20));
+        configureScrollPane(topBuildingsScroll, topBuildingsContainer, topWidth.multiply(0.3).subtract(20));
 
         centerRowBox.setAlignment(Pos.CENTER);
         centerRowBox.setSpacing(30);
@@ -789,7 +789,7 @@ public class BoardController {
     }
 
     private void drawTopBuildingsCards() {
-        buildingsContainer.getChildren().clear();
+        topBuildingsContainer.getChildren().clear();
         if (smallModel == null) return;
 
         for (int i = 0; i < smallModel.getTopBuildings().size(); i++) {
@@ -815,7 +815,7 @@ public class BoardController {
             CardEffectVisitor visitor = new CardEffectVisitor(cardView, smallModel.getTopDrawNum());
             cardView.getCard().accept(visitor);
 
-            buildingsContainer.getChildren().add(cardView);
+            topBuildingsContainer.getChildren().add(cardView);
         }
     }
 
@@ -1238,16 +1238,19 @@ public class BoardController {
         });
     }
 
-    public void handleTopBuildingsRefill() {
-        drawTopBuildingsCards();
-        drawBottomBuildingCards();
-        drawDeck();
+    public void handleTopBuildingsRefill(BuildingsRefillDTO dto, Runnable onEndActions) {
+        AnimationsManager.refillCardsRowAnimation(dto.getTop(), dto.getBottom(), topBuildingsContainer, bottomBuildingsContainer, () -> {
+            drawTopBuildingsCards();
+            drawBottomBuildingCards();
+            drawDeck();
+            if (onEndActions != null) onEndActions.run();
+        });
     }
 
     public void handleTopRowPick(PickTopRowDTO dto, Runnable onEndActions) {
         playCardPickAnimation(dto.getPlayer(), topCharactersContainer, dto.getCardIndex(), () -> {
             if (!smallModel.getPhase().equals(new PlacingTotemPhase().toString())) drawTopRowCards();
-            applyEffectToContainerCardViews(buildingsContainer, smallModel.getTopDrawNum());
+            applyEffectToContainerCardViews(topBuildingsContainer, smallModel.getTopDrawNum());
             drawSkipButton();
             if (onEndActions != null) onEndActions.run();
         });
@@ -1263,7 +1266,7 @@ public class BoardController {
     }
 
     public void handleTopBuildingsPick(PickTopBuildingsDTO dto, Runnable onEndActions) {
-        playCardPickAnimation(dto.getPlayer(), buildingsContainer, dto.getCardIndex(), () -> {
+        playCardPickAnimation(dto.getPlayer(), topBuildingsContainer, dto.getCardIndex(), () -> {
             if (!smallModel.getPhase().equals(new PlacingTotemPhase().toString())) drawTopBuildingsCards();
             applyEffectToContainerCardViews(topCharactersContainer, smallModel.getTopDrawNum());
             drawSkipButton();
@@ -1322,7 +1325,7 @@ public class BoardController {
 
     public void updateAllBoardEffects() {
         applyEffectToContainerCardViews(topCharactersContainer, smallModel.getTopDrawNum());
-        applyEffectToContainerCardViews(buildingsContainer, smallModel.getTopDrawNum());
+        applyEffectToContainerCardViews(topBuildingsContainer, smallModel.getTopDrawNum());
         applyEffectToContainerCardViews(bottomCharactersContainer, smallModel.getBottomDrawNum());
         applyEffectToContainerCardViews(bottomBuildingsContainer, smallModel.getBottomDrawNum());
     }

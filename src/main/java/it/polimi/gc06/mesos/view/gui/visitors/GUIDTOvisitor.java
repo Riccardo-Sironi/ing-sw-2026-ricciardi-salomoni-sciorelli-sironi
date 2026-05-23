@@ -77,8 +77,9 @@ public class GUIDTOvisitor extends DTOvisitor {
         System.out.println("Building refill!");
         Platform.runLater(() -> {
             guiEventsManager.enqueueEvent(() -> {
-                boardController.handleTopBuildingsRefill();
-                guiEventsManager.onAnimationFinished();
+                boardController.handleTopBuildingsRefill(dto, () -> {
+                    guiEventsManager.onAnimationFinished();
+                });
             });
         });
     }

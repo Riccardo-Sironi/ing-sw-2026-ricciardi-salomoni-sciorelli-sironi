@@ -34,4 +34,11 @@ public class BuildingsRefillDTO implements SmallModelEditor, Serializable {
         visitor.visit(this);
     }
 
+    public ArrayList<Card> getTop() {
+        return top;
+    }
+
+    public ArrayList<Card> getBottom() {
+        return bottom;
+    }
 }

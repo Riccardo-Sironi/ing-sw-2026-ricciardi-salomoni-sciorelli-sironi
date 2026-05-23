@@ -52,11 +52,6 @@ public class ChangesHandler {
         //checks last era
         if (lastEra == null || !lastEra.equals(board.getCurrentEra())) {
             changes.add(new EraChangeDTO(board.getCurrentEra()));
-            int deckSize = model.getTribeCardsDeck().get(Era.ERA_I).size()
-                    + model.getTribeCardsDeck().get(Era.ERA_II).size()
-                    + model.getTribeCardsDeck().get(Era.ERA_III).size();
-            changes.add(new TopRowRefillDTO(new ArrayList<>(board.getTopRow()), new ArrayList<>(board.getBottomRow()), deckSize));
-            changes.add(new BuildingsRefillDTO(new ArrayList<>(board.getTopBuildings()), new ArrayList<>(board.getBottomBuildings()), deckSize));
         }
 
         //check last phase
@@ -127,8 +122,14 @@ public class ChangesHandler {
             int deckSize = model.getTribeCardsDeck().values().stream().mapToInt(ArrayList::size).sum();
 
             changes.add(new TopRowRefillDTO(new ArrayList<>(board.getTopRow()), new ArrayList<>(board.getBottomRow()), deckSize));
+        }
+
+        // dto for building refill (new era)
+        if (lastEra == null || !lastEra.equals(board.getCurrentEra())) {
+            int deckSize = model.getTribeCardsDeck().values().stream().mapToInt(ArrayList::size).sum();
             changes.add(new BuildingsRefillDTO(new ArrayList<>(board.getTopBuildings()), new ArrayList<>(board.getBottomBuildings()), deckSize));
         }
+
 
         // we always send the active player, not just when it changes, we constantly need this information
         PlayerStateChangeDTO activePlayerDTO = new PlayerStateChangeDTO(turnManager.getActivePlayer().getNickname());

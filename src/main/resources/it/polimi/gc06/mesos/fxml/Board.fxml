@@ -20,8 +20,8 @@
                 <ScrollPane fx:id="topCharactersScroll" fitToHeight="true">
                     <HBox fx:id="topCharactersContainer" alignment="CENTER"/>
                 </ScrollPane>
-                <ScrollPane fx:id="buildingsScroll" fitToHeight="true">
-                    <HBox fx:id="buildingsContainer" alignment="CENTER"/>
+                <ScrollPane fx:id="topBuildingsScroll" fitToHeight="true">
+                    <HBox fx:id="topBuildingsContainer" alignment="CENTER"/>
                 </ScrollPane>
             </HBox>
 
