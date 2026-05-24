@@ -6,7 +6,7 @@ public enum GameScene {
     SELECT("/it/polimi/gc06/mesos/fxml/SelectGame.fxml"),
     LOBBY("/it/polimi/gc06/mesos/fxml/Lobby.fxml"),
     GAME("/it/polimi/gc06/mesos/fxml/Mesos.fxml"),
-    LEADERBOARD(""),
+    LEADERBOARD("/it/polimi/gc06/mesos/fxml/Leaderboard.fxml"),
     END("");
 
     private final String path;
