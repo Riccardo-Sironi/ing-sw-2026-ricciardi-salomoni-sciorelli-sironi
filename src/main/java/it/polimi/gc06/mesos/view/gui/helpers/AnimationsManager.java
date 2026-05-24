@@ -8,6 +8,7 @@ import javafx.scene.Node;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.transform.Rotate;
 import javafx.util.Duration;
 
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ import static it.polimi.gc06.mesos.view.gui.GUI.imageFetcher;
 import static it.polimi.gc06.mesos.view.gui.GUI.smallModel;
 
 public class AnimationsManager {
+
     /**
      * This method applies a smooth animation to a card when it's picked from the top/bottom rows or the buildings rows and moved to the player's inventory.
      * * The card will visually move from its original position to the player's inventory area, creating a more engaging user experience.
@@ -175,10 +177,9 @@ public class AnimationsManager {
             ghostTotem.setPreserveRatio(true);
             ghostTotem.setFitHeight(targetTotemHeight);
 
-
+            // scale the ghost to the correct dimension (so 25% of the tile target)
             double imageRatio = totemMoved.getImage().getWidth() / totemMoved.getImage().getHeight();
             double targetTotemWidth = targetTotemHeight * imageRatio;
-
 
             double startX = totemScreen.getMinX() - rootScreen.getMinX() + (totemScreen.getWidth() - targetTotemWidth) / 2;
             double startY = totemScreen.getMinY() - rootScreen.getMinY() + (totemScreen.getHeight() - targetTotemHeight) / 2;
@@ -222,56 +223,17 @@ public class AnimationsManager {
         topTarget.getChildren().clear();
         bottomTarget.getChildren().clear();
 
-        drawFromDeckAnimation(deckContainer, top.size(), () -> {
-            animateCardList(0, top, topTarget, () -> {
-                animateCardList(0, bottom, bottomTarget, () -> {
-                    if (onEndAction != null) onEndAction.run();
-                });
+        animateCardListWithFly(0, top, deckContainer, topTarget, () -> {
+            // TODO : the cards from the bottom row are not actually drawn from the deck, they're moved from top to bottom,
+            //  we could do an animation for that action, but for now we keep the same of the top
+
+            animateCardListWithFly(0, bottom, deckContainer, bottomTarget, () -> {
+                if (onEndAction != null) onEndAction.run();
             });
         });
-
     }
 
-    public static void drawFromDeckAnimation(HBox deckContainer, int n, Runnable onEndAction) {
-        if (n <= 0) {
-            if (onEndAction != null) onEndAction.run();
-            return;
-        }
-
-        CardView fakeCard = new CardView(imageFetcher.getDeckBackImage(smallModel.getEra()));
-        fakeCard.setPreserveRatio(true);
-        fakeCard.fitHeightProperty().bind(deckContainer.heightProperty().multiply(0.85));
-
-        fakeCard.setManaged(false);
-        fakeCard.setLayoutX((deckContainer.getWidth() - fakeCard.getBoundsInLocal().getWidth()) / 2);
-        fakeCard.setLayoutY(deckContainer.getHeight() - fakeCard.getBoundsInLocal().getHeight());
-
-        deckContainer.getChildren().add(fakeCard);
-
-        ScaleTransition scaleUp = new ScaleTransition(Duration.millis(250), fakeCard);
-        scaleUp.setFromX(1);
-        scaleUp.setFromY(1);
-        scaleUp.setToX(1.8);
-        scaleUp.setToY(1.8);
-        scaleUp.setInterpolator(Interpolator.EASE_OUT);
-
-        FadeTransition fadeOut = new FadeTransition(Duration.millis(250), fakeCard);
-        fadeOut.setFromValue(1.0);
-        fadeOut.setToValue(0.0);
-        fadeOut.setInterpolator(Interpolator.EASE_BOTH);
-
-        ParallelTransition popAndFade = new ParallelTransition(scaleUp, fadeOut);
-
-        popAndFade.setOnFinished(ev -> {
-            deckContainer.getChildren().remove(fakeCard);
-
-            drawFromDeckAnimation(deckContainer, n - 1, onEndAction);
-        });
-
-        popAndFade.play();
-    }
-
-    private static void animateCardList(int index, List<Card> cards, HBox targetBox, Runnable onListEnd) {
+    private static void animateCardListWithFly(int index, List<Card> cards, HBox deckContainer, HBox targetBox, Runnable onListEnd) {
         if (index >= cards.size()) {
             if (onListEnd != null) onListEnd.run();
             return;
@@ -279,7 +241,113 @@ public class AnimationsManager {
 
         Card card = cards.get(index);
         if (card == null) {
-            animateCardList(index + 1, cards, targetBox, onListEnd);
+            animateCardListWithFly(index + 1, cards, deckContainer, targetBox, onListEnd);
+            return;
+        }
+
+        animateCardFlyFromDeck(card, deckContainer, targetBox, () -> {
+            animateCardListWithFly(index + 1, cards, deckContainer, targetBox, onListEnd);
+        });
+    }
+
+    private static void animateCardFlyFromDeck(Card cardToDraw, HBox deckContainer, HBox targetBox, Runnable onEndAction) {
+        Pane root = (Pane) deckContainer.getScene().getRoot();
+        Pane overlayPane = new Pane();
+
+        overlayPane.setMouseTransparent(true);
+
+        overlayPane.prefWidthProperty().bind(root.widthProperty());
+        overlayPane.prefHeightProperty().bind(root.heightProperty());
+
+        root.getChildren().add(overlayPane);
+
+        CardView flyingCard = new CardView(imageFetcher.getDeckBackImage(smallModel.getEra()));
+        flyingCard.setPreserveRatio(true);
+        flyingCard.fitHeightProperty().bind(targetBox.heightProperty().multiply(0.85));
+
+        Bounds deckScreen = deckContainer.localToScreen(deckContainer.getBoundsInLocal());
+        Bounds targetScreen = targetBox.localToScreen(targetBox.getBoundsInLocal());
+        Bounds rootScreen = root.localToScreen(root.getBoundsInLocal());
+
+        if (deckScreen == null || targetScreen == null || rootScreen == null) {
+            root.getChildren().remove(overlayPane);
+            if (onEndAction != null) onEndAction.run();
+            return;
+        }
+
+        double startX = deckScreen.getMinX() - rootScreen.getMinX() + (deckScreen.getWidth() / 2);
+        double startY = deckScreen.getMinY() - rootScreen.getMinY();
+
+        double cardHeightEstim = targetScreen.getHeight() * 0.85;
+        double imageRatio = flyingCard.getImage().getWidth() / flyingCard.getImage().getHeight();
+        double cardWidthEstim = cardHeightEstim * imageRatio;
+
+        // we let the card fly to the center of the container
+        double targetX = targetScreen.getMinX() - rootScreen.getMinX() + (targetScreen.getWidth() / 2) - (cardWidthEstim / 2);
+        double targetY = targetScreen.getMinY() - rootScreen.getMinY() + (targetScreen.getHeight() / 2) - (cardHeightEstim / 2);
+
+        flyingCard.relocate(startX, startY);
+        overlayPane.getChildren().add(flyingCard);
+
+        double deltaX = targetX - startX;
+        double deltaY = targetY - startY;
+
+        TranslateTransition moveTransition = new TranslateTransition(Duration.millis(500), flyingCard);
+        moveTransition.setByX(deltaX);
+        moveTransition.setByY(deltaY);
+        moveTransition.setInterpolator(Interpolator.EASE_OUT);
+
+        // we make the card flip from the back to the front
+        RotateTransition flipTransition = new RotateTransition(Duration.millis(500), flyingCard);
+        flipTransition.setAxis(Rotate.Y_AXIS);
+        flipTransition.setFromAngle(0);
+        flipTransition.setToAngle(180);
+
+        // when the card is 50% through the flip we set the image to the card which has been drawn to create the illusion of a flip
+        flipTransition.currentTimeProperty().addListener((obs, oldTime, newTime) -> {
+            if (newTime.toMillis() >= 250 && flyingCard.getScaleX() > 0) {
+                flyingCard.setImage(imageFetcher.fetch(cardToDraw));
+                flyingCard.setScaleX(-1);
+            }
+        });
+
+        ParallelTransition flyAndFlip = new ParallelTransition(moveTransition, flipTransition);
+
+        flyAndFlip.setOnFinished(ev -> {
+            overlayPane.getChildren().remove(flyingCard);
+            flyingCard.setTranslateX(0);
+            flyingCard.setTranslateY(0);
+            root.getChildren().remove(overlayPane);
+
+            targetBox.getChildren().add(flyingCard);
+
+            if (onEndAction != null) onEndAction.run();
+        });
+
+        flyAndFlip.play();
+    }
+
+
+    public static void refillBuildingsRowAnimation(List<Card> top, List<Card> bottom, HBox topTarget, HBox bottomTarget, Runnable onEndAction) {
+        topTarget.getChildren().clear();
+        bottomTarget.getChildren().clear();
+
+        animateBuildingsList(0, top, topTarget, () -> {
+            animateBuildingsList(0, bottom, bottomTarget, () -> {
+                if (onEndAction != null) onEndAction.run();
+            });
+        });
+    }
+
+    private static void animateBuildingsList(int index, List<Card> cards, HBox targetBox, Runnable onListEnd) {
+        if (index >= cards.size()) {
+            if (onListEnd != null) onListEnd.run();
+            return;
+        }
+
+        Card card = cards.get(index);
+        if (card == null) {
+            animateBuildingsList(index + 1, cards, targetBox, onListEnd);
             return;
         }
 
@@ -301,7 +369,7 @@ public class AnimationsManager {
         land.setInterpolator(Interpolator.EASE_BOTH);
 
         ParallelTransition parallel = new ParallelTransition(fadeIn, land);
-        parallel.setOnFinished(ev -> animateCardList(index + 1, cards, targetBox, onListEnd));
+        parallel.setOnFinished(ev -> animateBuildingsList(index + 1, cards, targetBox, onListEnd));
 
         parallel.play();
     }

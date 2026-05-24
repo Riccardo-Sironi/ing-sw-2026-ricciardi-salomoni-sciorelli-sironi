@@ -803,13 +803,11 @@ public class BoardController {
             cardView.setCard(building);
 
             cardView.setOnMouseClicked(e -> {
-                AnimationsManager.cardPickAnimation(cardView, playerCardsContainer, mainRoot, () -> {
-                    try {
-                        client.getServerConnection().pickBuildingFromTop(smallModel.getPlayer().getNickname(), cardIndex);
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
-                });
+                try {
+                    client.getServerConnection().pickBuildingFromTop(smallModel.getPlayer().getNickname(), cardIndex);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
             });
 
             CardEffectVisitor visitor = new CardEffectVisitor(cardView, smallModel.getTopDrawNum());
@@ -834,13 +832,11 @@ public class BoardController {
             cardView.setCard(card);
 
             cardView.setOnMouseClicked(e -> {
-                AnimationsManager.cardPickAnimation(cardView, playerCardsContainer, mainRoot, () -> {
-                    try {
-                        client.getServerConnection().pickCardFromBottom(smallModel.getPlayer().getNickname(), cardIndex);
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
-                });
+                try {
+                    client.getServerConnection().pickCardFromBottom(smallModel.getPlayer().getNickname(), cardIndex);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
             });
 
             CardEffectVisitor visitor = new CardEffectVisitor(cardView, smallModel.getBottomDrawNum());
@@ -868,13 +864,11 @@ public class BoardController {
             cardView.setCard(building);
 
             cardView.setOnMouseClicked(e -> {
-                AnimationsManager.cardPickAnimation(cardView, playerCardsContainer, mainRoot, () -> {
-                    try {
-                        client.getServerConnection().pickBuildingFromBottom(smallModel.getPlayer().getNickname(), cardIndex);
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
-                });
+                try {
+                    client.getServerConnection().pickBuildingFromBottom(smallModel.getPlayer().getNickname(), cardIndex);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
             });
 
             CardEffectVisitor visitor = new CardEffectVisitor(cardView, smallModel.getBottomDrawNum());
@@ -1239,7 +1233,8 @@ public class BoardController {
     }
 
     public void handleTopBuildingsRefill(BuildingsRefillDTO dto, Runnable onEndActions) {
-        AnimationsManager.refillCardsRowAnimation(dto.getTop(), dto.getBottom(), deckContainer, topBuildingsContainer, bottomBuildingsContainer, () -> {
+        updateBottomRowLayout(!smallModel.getBottomBuildings().isEmpty());
+        AnimationsManager.refillBuildingsRowAnimation(dto.getTop(), dto.getBottom(), topBuildingsContainer, bottomBuildingsContainer, () -> {
             drawTopBuildingsCards();
             drawBottomBuildingCards();
             drawDeck();
