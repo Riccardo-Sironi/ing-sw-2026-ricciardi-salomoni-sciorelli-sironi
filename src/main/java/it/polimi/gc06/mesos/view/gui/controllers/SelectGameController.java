@@ -206,6 +206,8 @@ public class SelectGameController {
         Button clickedBtn = (Button) event.getSource();
         int numPlayers = Integer.parseInt(clickedBtn.getUserData().toString());
 
+        if (GUI.smallModel != null) GUI.smallModel.setMaxPlayers(numPlayers);
+
         try {
             int currentMatchId = GUI.client.getServerConnection().createMatch(numPlayers, LoginController.getNickname());
             System.out.println("match " + (currentMatchId) + " created");
@@ -219,21 +221,14 @@ public class SelectGameController {
         }
     }
 
-    private void handleJoin(int matchId) {
+    private void handleJoin(int matchId, int maxPlayers) {
         rootPane.setDisable(true);
-
-        /*
-        if (MOCK_MODE) {
-            System.out.println("MOCK: Joining match ID " + matchId);
-            return;
-        }
-        */
 
         try {
             boolean joined = GUI.client.getServerConnection().joinMatch(matchId, LoginController.getNickname());
             if (joined) {
 
-                //proceedToGame();
+                if (GUI.smallModel != null) GUI.smallModel.setMaxPlayers(maxPlayers);
 
                 proceedToLobby();
             } else {
@@ -282,7 +277,7 @@ public class SelectGameController {
             joinBtn.setStyle("-fx-background-color: transparent; -fx-border-color: #8a0303; -fx-border-width: 3; -fx-text-fill: #8a0303; -fx-background-radius: 10; -fx-border-radius: 10;");
         } else {
             styleButton(joinBtn);
-            joinBtn.setOnAction(e -> handleJoin(matchId));
+            joinBtn.setOnAction(e -> handleJoin(matchId, maxPlayers));
         }
 
         row.getChildren().addAll(nameLabel, spacer, playersLabel, joinBtn);

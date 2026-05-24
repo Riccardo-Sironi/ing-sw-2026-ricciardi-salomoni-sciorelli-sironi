@@ -36,6 +36,8 @@ public class SmallModel {
     private final List<PlayerView> opponents; //is immutable
     private final ArrayList<Score> leaderboard;
 
+    private int maxPlayers;
+
     private ModelListener listener;
 
     public SmallModel(String nickname) {
@@ -57,6 +59,7 @@ public class SmallModel {
         this.canSkip = false;
         this.leaderboard = new ArrayList<>();
         this.listener = null;
+        this.maxPlayers = -1;
     }
 
     public boolean isActive() {
@@ -183,5 +186,13 @@ public class SmallModel {
         if (this.listener != null) {
             this.listener.update(dto);
         }
+    }
+
+    public int getMaxPlayers() {
+        return maxPlayers;
+    }
+
+    public void setMaxPlayers(int maxPlayers) {
+        this.maxPlayers = maxPlayers;
     }
 }
