@@ -42,7 +42,7 @@ public class GUI extends Application implements View, ModelListener {
 
         changeScene(GameScene.START.getPath());
 
-        primaryStage.show();
+        //primaryStage.show();
     }
 
     public static void changeScene(String fxmlPath) {
@@ -59,6 +59,8 @@ public class GUI extends Application implements View, ModelListener {
                     primaryStage.setTitle("Mesos");
                     primaryStage.setScene(scene);
                     primaryStage.setMaximized(true);
+
+                    primaryStage.show();
                 } else {
                     Scene scene = primaryStage.getScene();
 

@@ -50,7 +50,7 @@
     </ImageView>
 
     <Label fx:id="pressKeyLabel"
-           text="Click or Press Any Key to Play"
+           text="CLICK OR PRESS ANY KEY TO START"
            textFill="ghostwhite"
            StackPane.alignment="CENTER">
     </Label>

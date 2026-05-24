@@ -63,12 +63,11 @@ public class StartController {
         setupDynamicLayout();
         setupPulseAnimations();
 
-        Platform.runLater(() -> {
-            rootPane.requestFocus();
-            Scene currentScene = rootPane.getScene();
-            if (currentScene != null) {
-                currentScene.setOnMouseClicked(this::handleStart);
-                currentScene.setOnKeyPressed(this::handleStart);
+        rootPane.sceneProperty().addListener((observable, oldScene, newScene) -> {
+            if (newScene != null) {
+                newScene.setOnMouseClicked(this::handleStart);
+                newScene.setOnKeyPressed(this::handleStart);
+                rootPane.requestFocus();
             }
         });
     }
@@ -100,7 +99,7 @@ public class StartController {
     }
 
     private void setupPulseAnimations() {
-        createPulse(pressKeyLabel, 1.5, 0.8, 0.0);
+        createPulse(pressKeyLabel, 2.0, 0.7, 0.0);
         glowPulse = createPulse(bottomGlow, 0.25, 0.3, 0.9);
         createPulse(topVignette, 0.4, 0.9, 0.6);
         createPulse(leftVignette, 0.7, 0.9, 0.75);
@@ -126,7 +125,7 @@ public class StartController {
     private void loadFonts() {
         try {
             Font titleFont = Font.loadFont(getClass().getResourceAsStream("/it/polimi/gc06/mesos/fonts/Cave-Stone.ttf"), 200);
-            Font subtitleFont = Font.loadFont(getClass().getResourceAsStream("/it/polimi/gc06/mesos/fonts/KidKnowledge.otf"), 45);
+            Font subtitleFont = Font.loadFont(getClass().getResourceAsStream("/it/polimi/gc06/mesos/fonts/ArcadianG.ttf"), 35);
 
             if (titleFont != null) titleLabel.setFont(titleFont);
             if (subtitleFont != null) pressKeyLabel.setFont(subtitleFont);
