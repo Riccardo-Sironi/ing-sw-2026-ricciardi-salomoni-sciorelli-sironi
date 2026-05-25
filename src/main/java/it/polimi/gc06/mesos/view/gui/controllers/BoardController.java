@@ -765,11 +765,10 @@ public class BoardController {
         if (smallModel == null) return;
         for (int i = 0; i < smallModel.getTopRow().size(); i++) {
             Card card = smallModel.getTopRow().get(i);
-            if (card == null) continue;
 
             final int cardIndex = i;
 
-            CardView cardView = new CardView(imageFetcher.fetch(card));
+            CardView cardView = card != null ? new CardView(imageFetcher.fetch(card)) : new CardView(imageFetcher.getNullCardImage());
             cardView.fitHeightProperty().bind(topRowBox.heightProperty().multiply(RESIZE_CARD_FACTOR));
             cardView.setCard(card);
 
@@ -794,11 +793,10 @@ public class BoardController {
 
         for (int i = 0; i < smallModel.getTopBuildings().size(); i++) {
             Card building = smallModel.getTopBuildings().get(i);
-            if (building == null) continue;
 
             final int cardIndex = i;
 
-            CardView cardView = new CardView(imageFetcher.fetch(building));
+            CardView cardView = building != null ? new CardView(imageFetcher.fetch(building)) : new CardView(imageFetcher.getNullCardImage());
             cardView.fitHeightProperty().bind(topRowBox.heightProperty().multiply(RESIZE_CARD_FACTOR));
             cardView.setCard(building);
 
@@ -823,11 +821,10 @@ public class BoardController {
 
         for (int i = 0; i < smallModel.getBottomRow().size(); i++) {
             Card card = smallModel.getBottomRow().get(i);
-            if (card == null) continue;
 
             final int cardIndex = i;
 
-            CardView cardView = new CardView(imageFetcher.fetch(card));
+            CardView cardView = card != null ? new CardView(imageFetcher.fetch(card)) : new CardView(imageFetcher.getNullCardImage());
             cardView.fitHeightProperty().bind(bottomRowBox.heightProperty().multiply(RESIZE_CARD_FACTOR));
             cardView.setCard(card);
 
@@ -851,15 +848,13 @@ public class BoardController {
 
         if (bottomBuildingsContainer == null) return;
         bottomBuildingsContainer.getChildren().clear();
-        if (smallModel == null) return;
 
         for (int i = 0; i < smallModel.getBottomBuildings().size(); i++) {
             Card building = smallModel.getBottomBuildings().get(i);
-            if (building == null) continue;
 
             final int cardIndex = i;
 
-            CardView cardView = new CardView(imageFetcher.fetch(building));
+            CardView cardView = building != null ? new CardView(imageFetcher.fetch(building)) : new CardView(imageFetcher.getNullCardImage());
             cardView.fitHeightProperty().bind(bottomRowBox.heightProperty().multiply(RESIZE_CARD_FACTOR));
             cardView.setCard(building);
 
