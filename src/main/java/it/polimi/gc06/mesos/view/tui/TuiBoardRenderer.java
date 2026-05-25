@@ -20,11 +20,17 @@ public class TuiBoardRenderer {
     }
 
     public void printCardRow(List<Card> rowCards) {
+        printCardRow(rowCards, null);
+    }
+    
+    // We use Integer instead of int, in order to allow null values, which indicate that we don't want to render the deck card
+    public void printCardRow(List<Card> rowCards, Integer deckSize) {
         if (rowCards == null || rowCards.isEmpty()) {
             String centeredEmpty = Arrays.toString(TUI.centerOnScreen(new String[]{"[Empty Row]"}, terminal));
             terminal.writer().println(centeredEmpty);
             return;
         }
+
 
         // StringBuilder is a mutable sequence of characters
         // This allows us to append the cards one after another without creating a new string every time.
@@ -32,6 +38,23 @@ public class TuiBoardRenderer {
         for (int i = 0; i < CARD_HEIGHT; i++) {
             rowLines[i] = new StringBuilder();
         }
+
+        if (deckSize != null && deckSize >= 0) {
+            String[] dCard = new String[CARD_HEIGHT];
+            dCard[0] = "┌─────────┐";
+            dCard[1] = "│ DECK    │";
+            dCard[2] = "│         │";
+            dCard[3] = "│   " + String.format("%2d", deckSize) + "    │";
+            dCard[4] = "│         │";
+            dCard[5] = "│         │";
+            dCard[6] = "└─────────┘";
+
+            String extraSpace = "   ";
+            for (int i = 0; i < CARD_HEIGHT; i++) {
+                rowLines[i].append(extraSpace).append(dCard[i]);
+            }
+        }
+
         // We only need one visitor, and call visit every time we want to render a new card
         TuiCardRendererVisitor renderer = new TuiCardRendererVisitor();
 
@@ -44,6 +67,7 @@ public class TuiBoardRenderer {
                 rowLines[i].append(renderedCard[i]).append(GAP_SEPARATOR);
             }
         }
+
 
         String[] centeredText = centerOnScreen(rowLines, terminal);
 

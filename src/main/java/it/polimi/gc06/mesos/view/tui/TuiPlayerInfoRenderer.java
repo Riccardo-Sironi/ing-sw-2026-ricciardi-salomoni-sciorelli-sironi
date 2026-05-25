@@ -2,8 +2,20 @@ package it.polimi.gc06.mesos.view.tui;
 
 import it.polimi.gc06.mesos.view.smallModel.PlayerView;
 
+/**
+ * A renderer responsible for transforming a player's state (infos such as the number of tokens, food, icons, characters etc.)
+ * into a structured ASCII box to be rendered in the Text-based User Interface.
+ */
 public class TuiPlayerInfoRenderer implements TuiRenderer<PlayerView> {
 
+    /**
+     * Renders a player's information into an array of string rows forming an ASCII box.
+     * It displays the nickname, food, prestige, and the counts of the player's
+     * various characters, items, and discounts.
+     *
+     * @param player the PlayerView object capturing the state of a player
+     * @return an array of strings representing the formatted player state
+     */
     @Override
     public String[] render(PlayerView player) {
         String[] card = new String[7];

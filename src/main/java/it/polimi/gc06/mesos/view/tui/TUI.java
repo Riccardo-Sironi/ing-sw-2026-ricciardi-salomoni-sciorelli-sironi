@@ -20,10 +20,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Text-Based User Interface implementation for the Mesos game.
+ * It manages the rendering of the board and takes input from the user through the terminal
+ */
 public class TUI implements View, ModelListener {
 
-    private SmallModel smallModel;
-    private Client client;
+    private final SmallModel smallModel;
+    private final Client client;
     boolean needsRedraw = true;
     String statusMessage = "";
 
@@ -31,6 +35,12 @@ public class TUI implements View, ModelListener {
     private Terminal terminal;
     private TuiBoardRenderer tuiBoardRenderer;
 
+    /**
+     * Constructs a new TUI.
+     *
+     * @param smallModel the local state of the game
+     * @param client     the client instance handling network communication
+     */
     public TUI(SmallModel smallModel, Client client) {
         this.smallModel = smallModel;
         this.client = client;
@@ -90,8 +100,9 @@ public class TUI implements View, ModelListener {
                     String[] tokens = input.trim().split("\\s+");
                     String command = tokens[0].toLowerCase();
 
-                    if (command.equals("exit") || command.equals("quit")) {
-                        terminal.writer().println("Closing...");
+                    // Based off of most UNIX systems
+                    // "exit" is the standard "command" to quit the application
+                    if (command.equals("exit")) {
                         System.exit(0);
                     }
 
@@ -160,12 +171,17 @@ public class TUI implements View, ModelListener {
                             break;
                         case "/clear":
                             statusMessage = "";
+                            break;
+                        case "/quit":
+                            terminal.writer().println("Closing...");
+                            terminal.writer().println("Bye bye!");
+                            System.exit(0);
                         default:
                             statusMessage = Style.RED + "Unknown command: " + command + ". Type /help for a list of commands." + Style.RESET;
                     }
                     // Handle Ctrl + C and Ctrl + D shutdown
                 } catch (UserInterruptException | EndOfFileException e) {
-                    terminal.writer().println("Quitting...");
+                    terminal.writer().println("Closing...");
                     terminal.writer().println("Bye bye!");
                     System.exit(0);
 
@@ -184,18 +200,35 @@ public class TUI implements View, ModelListener {
         }
     }
 
+    /**
+     * Generates the autocompletion rules for the JLine terminal.
+     *
+     * @return the Completer configuring terminal autocompletion
+     */
     private Completer getCompleter() {
         Completer cardCompleter = (reader, line, candidates) -> {
             List<String> words = line.words();
-            if (words.size() >= 2 && "/pick_card".equals(words.get(0))) {
-                String row = words.get(1);
-                if ("top".equals(row)) {
-                    for (int i = 0; i < smallModel.getTopRow().size(); i++) {
-                        candidates.add(new Candidate(String.valueOf(i), String.valueOf(i), null, smallModel.getTopRow().get(i).getClass().getSimpleName(), null, null, true));
+            int wordIndex = line.wordIndex();
+            if (!words.isEmpty() && "/pick_card".equals(words.get(0))) {
+
+                if (wordIndex == 1) {
+                    if (smallModel.getTopDrawNum() > 0) {
+                        candidates.add(new Candidate("top"));
                     }
-                } else if ("bottom".equals(row)) {
-                    for (int i = 0; i < smallModel.getBottomRow().size(); i++) {
-                        candidates.add(new Candidate(String.valueOf(i), String.valueOf(i), null, smallModel.getBottomRow().get(i).getClass().getSimpleName(), null, null, true));
+                    if (smallModel.getBottomDrawNum() > 0) {
+                        candidates.add(new Candidate("bottom"));
+                    }
+                    // The user might have already typed in bottom/top, or it could've just been autocompleted
+                } else if (wordIndex == 2 && words.size() >= 2) {
+                    String row = words.get(1);
+                    if ("top".equals(row)) {
+                        for (int i = 0; i < smallModel.getTopRow().size(); i++) {
+                            candidates.add(new Candidate(String.valueOf(i), String.valueOf(i), null, smallModel.getTopRow().get(i).getClass().getSimpleName(), null, null, true));
+                        }
+                    } else if ("bottom".equals(row)) {
+                        for (int i = 0; i < smallModel.getBottomRow().size(); i++) {
+                            candidates.add(new Candidate(String.valueOf(i), String.valueOf(i), null, smallModel.getBottomRow().get(i).getClass().getSimpleName(), null, null, true));
+                        }
                     }
                 }
             }
@@ -208,26 +241,26 @@ public class TUI implements View, ModelListener {
                     var slot = smallModel.getOfferTrack().get(i);
                     if (slot.isEmpty()) {
                         candidates.add(new Candidate(
-                                String.valueOf(i),
-                                String.valueOf(i),
-                                null,
-                                null,
-                                null, null, true
+                                String.valueOf(i)
                         ));
                     }
                 }
             }
         };
 
-        Completer completer = new AggregateCompleter(
-                new ArgumentCompleter(new StringsCompleter("/end_turn", "quit"), NullCompleter.INSTANCE),
+        return new AggregateCompleter(
+                new ArgumentCompleter(new StringsCompleter("/pick_card", "/end_turn", "/quit", "/clear"), NullCompleter.INSTANCE),
                 new ArgumentCompleter(new StringsCompleter("/help"), new StringsCompleter("place_totem", "pick_card", "end_turn", "clear", "cards"), NullCompleter.INSTANCE),
                 new ArgumentCompleter(new StringsCompleter("/place_totem"), totemCompleter, NullCompleter.INSTANCE),
-                new ArgumentCompleter(new StringsCompleter("/pick_card"), new StringsCompleter("top", "bottom"), cardCompleter, NullCompleter.INSTANCE)
+                cardCompleter
         );
-        return completer;
     }
 
+    // TODO Finire descrizione di tutte le carte, e anche di altro
+
+    /**
+     * Displays an interactive help screen containing character cards effects and explanations.
+     */
     private void showCardHelp() {
         terminal.writer().println("Available cards:");
         terminal.writer().println("- Hunter > [H]:  " +
@@ -282,6 +315,13 @@ public class TUI implements View, ModelListener {
         }
     }
 
+    /**
+     * Centers lines of text on the terminal screen horizontally.
+     *
+     * @param text     the array of strings to be centered
+     * @param terminal the current terminal instance to measure width
+     * @return an array of strings padded to center alignment
+     */
     public static String[] centerOnScreen(String[] text, Terminal terminal) {
         if (text == null || text.length == 0) return new String[0];
 
@@ -296,6 +336,13 @@ public class TUI implements View, ModelListener {
                 .toArray(String[]::new);
     }
 
+    /**
+     * Centers lines of text represented as StringBuilders on the terminal screen horizontally.
+     *
+     * @param text     the array of StringBuilders to be centered
+     * @param terminal the current terminal instance to measure width
+     * @return an array of strings padded to center alignment
+     */
     public static String[] centerOnScreen(StringBuilder[] text, Terminal terminal) {
 
         if (text == null || text.length == 0) return new String[0];
@@ -311,6 +358,12 @@ public class TUI implements View, ModelListener {
                 .toArray(String[]::new);
     }
 
+    /**
+     * Called whenever the model updates from the server.
+     * Flags the interface to be redrawn.
+     *
+     * @param dto the object containing the delta or the entire current state of the small model
+     */
     @Override
     public void update(SmallModelEditor dto) {
 
@@ -319,6 +372,9 @@ public class TUI implements View, ModelListener {
         render();
     }
 
+    /**
+     * Renders the current state of the board in the terminal.
+     */
     private synchronized void render() {
         // The TUI MUST be started before trying to render
         if (this.terminal == null || this.lineReader == null) return;
@@ -330,15 +386,16 @@ public class TUI implements View, ModelListener {
         players.add(smallModel.getPlayer());
         players.addAll(smallModel.getOpponents());
 
-        tuiBoardRenderer.printCardRow(smallModel.getTopRow());
+        tuiBoardRenderer.printCardRow(smallModel.getTopRow(), smallModel.getTribeDeckSize());
         tuiBoardRenderer.printOfferTrack(smallModel.getOfferTrack());
         tuiBoardRenderer.printCardRow(smallModel.getBottomRow());
         tuiBoardRenderer.printPlayerInfo(players);
 
         if (smallModel.isActive()) {
             terminal.writer().println(Style.GREEN + "\nSystem> It's your Turn!" + Style.RESET);
+        }
 
-        } else if (!statusMessage.isEmpty()) {
+        if (!statusMessage.isEmpty()) {
             terminal.writer().println("\nSystem> " + statusMessage);
         } else {
             terminal.writer().println("\n");
@@ -352,6 +409,11 @@ public class TUI implements View, ModelListener {
         terminal.writer().flush();
     }
 
+    /**
+     * Displays a colored ASCII banner for the game when starting the TUI.
+     *
+     * @param duration the time in milliseconds to wait before proceeding with the rest of the program
+     */
     private void showBanner(long duration) {
         String[] titleAscii = {
                 " ██████   ██████ ██████████  █████████     ███████     █████████ ",

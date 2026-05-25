@@ -14,14 +14,31 @@ import org.jline.terminal.TerminalBuilder;
 import java.io.IOException;
 import java.util.Scanner;
 
+/**
+ * Text-based User Interface for the game lobby phase.
+ * It handles gathering connection credentials from the user and allows
+ * creating or joining a match through an interactive terminal session.
+ */
 public class LobbyTui implements LobbyView {
 
     private final Scanner scanner;
 
+
+    // TODO Forse switchare con Terminal di Jline?
+
+    /**
+     * Constructs a new LobbyTui instance
+     */
     public LobbyTui() {
         this.scanner = new Scanner(System.in);
     }
 
+    /**
+     * Prompts the user interactively via standard output and input to enter connection details
+     * such as network technology (RMI/SOCKET), IP address, port, and nickname.
+     *
+     * @return the structured {@link ConnectionDetails connection details} provided by the user
+     */
     @Override
     public ConnectionDetails askConnectionDetails() {
         System.out.println("-- Connection Settings --");
@@ -50,16 +67,35 @@ public class LobbyTui implements LobbyView {
 
     }
 
+    /**
+     * Displays a success message upon successful connection to the server.
+     *
+     * @param message the success message to be shown
+     */
     @Override
     public void showConnectionSuccess(String message) {
         System.out.println("[SUCCESS] " + message);
     }
 
+    /**
+     * Displays an error message when the connection to the server fails.
+     *
+     * @param errorMessage the error message to be shown
+     */
     @Override
     public void showConnectionError(String errorMessage) {
         System.out.println("[ERROR] " + errorMessage);
     }
 
+    /**
+     * Starts the interactive lobby terminal shell.
+     * It allows the user to refresh the list of available matches, create a new match,
+     * or join an existing one using an auto-completing command-line interface.
+     *
+     * @param client   the client instance handling network communication
+     * @param nickname the chosen nickname for the player
+     * @throws IOException if there is an issue initializing or interacting with the terminal
+     */
     public void start(Client client, String nickname) throws IOException {
         try {
 
