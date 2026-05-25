@@ -60,7 +60,7 @@ public class SelectGameController {
     private Font itemFont;
     private Font buttonFont;
 
-    private static final String FONT_PATH = "/it/polimi/gc06/mesos/fonts/ArcadianG.ttf";
+    private static final String FONT_PATH = "/it/polimi/gc06/mesos/fonts/KidKnowledge.otf";
     private static final String BTN_STYLE = "-fx-background-color: transparent; -fx-border-color: #2B2B2B; -fx-border-width: 3; -fx-text-fill: #2B2B2B; -fx-background-radius: 10; -fx-border-radius: 10; -fx-cursor: hand;";
     private static final String HOVER_STYLE = "-fx-background-color: rgba(0,0,0,0.1); -fx-border-color: #2B2B2B; -fx-border-width: 3; -fx-text-fill: #2B2B2B; -fx-background-radius: 10; -fx-border-radius: 10; -fx-cursor: hand;";
 
@@ -68,7 +68,7 @@ public class SelectGameController {
 
     @FXML
     public void initialize() {
-        loadImage(backgroundImageView, "/imgs/background/login_background.png");
+        loadImage(backgroundImageView, "/imgs/background/selectgame_background.png");
         loadImage(particlesImageView, "/imgs/effect/fire_particles.gif");
 
         loadFonts();
