@@ -6,7 +6,10 @@ import it.polimi.gc06.mesos.model.Color;
 import it.polimi.gc06.mesos.model.Era;
 import it.polimi.gc06.mesos.model.cards.Card;
 import it.polimi.gc06.mesos.model.gameBoard.TileEffect;
-import it.polimi.gc06.mesos.model.gameTurnManager.*;
+import it.polimi.gc06.mesos.model.gameTurnManager.EndOfRoundPhase;
+import it.polimi.gc06.mesos.model.gameTurnManager.EventResolutionPhase;
+import it.polimi.gc06.mesos.model.gameTurnManager.OfferResolutionPhase;
+import it.polimi.gc06.mesos.model.gameTurnManager.PlacingTotemPhase;
 import it.polimi.gc06.mesos.view.gui.helpers.Totem;
 import it.polimi.gc06.mesos.view.smallModel.TileSlotView;
 import javafx.scene.image.Image;
@@ -14,8 +17,6 @@ import javafx.scene.image.Image;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
-
-import static it.polimi.gc06.mesos.view.gui.GUI.smallModel;
 
 public class ImageFetcher {
 
@@ -32,6 +33,8 @@ public class ImageFetcher {
 
     private final HashMap<String, Image> phaseOverlayMap;
     private final EnumMap<Era, Image> eraOverlayMap;
+
+    private final EnumMap<Era, String> eraBackgroundsMap;
 
     private final EnumMap<Era, Image> eraDeckImage;
     private final Image finalEventDeckImage;
@@ -60,6 +63,7 @@ public class ImageFetcher {
         this.phaseOverlayMap = new HashMap<>();
         this.eraOverlayMap = new EnumMap<>(Era.class);
         this.eraDeckImage = new EnumMap<>(Era.class);
+        this.eraBackgroundsMap = new EnumMap<>(Era.class);
 
         //fetches cards images
         ObjectMapper mapper = new ObjectMapper();
@@ -88,9 +92,19 @@ public class ImageFetcher {
         eraDeckImage.put(Era.ERA_III, loadImage("/cards/backs/tribe_card_era_III_back.png"));
         finalEventDeckImage = loadImage("/cards/backs/tribe_card_era_III_final_back.png");
 
-        // era overlay map init
         for (Era era : Era.values()) {
+            // era overlay map init
             eraOverlayMap.put(era, loadImage("/imgs/overlay/" + era.name().toLowerCase() + "_overlay.png"));
+
+            // era background map init
+            String bgPath = "/imgs/background/board_background_" + era.name().toLowerCase() + ".png";
+            java.net.URL bgUrl = getClass().getResource(bgPath);
+
+            if (bgUrl != null) {
+                eraBackgroundsMap.put(era, bgUrl.toExternalForm());
+            } else {
+                System.err.println("Immagine di background non trovata: " + bgPath);
+            }
         }
 
         // phase overlay map init
@@ -163,6 +177,12 @@ public class ImageFetcher {
     public Image getPhaseOverlayImage(String phase) {
         if (phaseOverlayMap.containsKey(phase)) return phaseOverlayMap.get(phase);
         System.err.println("couldn't find overlay image for phase " + phase);
+        return null;
+    }
+
+    public String getEraBackgroundsImage(Era era) {
+        if (eraBackgroundsMap.containsKey(era)) return eraBackgroundsMap.get(era);
+        System.err.println("couldn't find background image for era " + era);
         return null;
     }
 

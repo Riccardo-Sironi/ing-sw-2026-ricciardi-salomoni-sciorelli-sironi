@@ -2,7 +2,6 @@ package it.polimi.gc06.mesos.view.gui.controllers;
 
 import it.polimi.gc06.mesos.model.Era;
 import javafx.animation.FadeTransition;
-import javafx.animation.PauseTransition;
 import javafx.animation.ScaleTransition;
 import javafx.animation.SequentialTransition;
 import javafx.fxml.FXML;
@@ -42,6 +41,8 @@ public class GameViewController {
         if (overlaysBox != null) {
             initOverlays();
         }
+
+        drawEraBackground();
 
         showEraOverlay(smallModel.getEra(), () -> showPhaseOverlay(smallModel.getPhase(), null));
     }
@@ -123,5 +124,22 @@ public class GameViewController {
         if (smallModel.getEra() == null) return;
 
         playOverlay(imageFetcher.getEraOverlayImage(era), endOfAnimation);
+    }
+
+    public void drawEraBackground() {
+        String backgroundUrl = imageFetcher.getEraBackgroundsImage(smallModel.getEra());
+
+        if (backgroundUrl == null) {
+            System.err.println("Impossibile caricare il background per l'era: " + smallModel.getEra());
+            return;
+        }
+
+        String style = "-fx-padding: 0px;" +
+                "-fx-background-image: url('" + backgroundUrl + "');" +
+                "-fx-background-size: cover;" +
+                "-fx-background-position: center;" +
+                "-fx-background-repeat: no-repeat;";
+        
+        root.setStyle(style);
     }
 }

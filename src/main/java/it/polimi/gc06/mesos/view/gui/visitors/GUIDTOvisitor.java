@@ -1,14 +1,12 @@
 package it.polimi.gc06.mesos.view.gui.visitors;
 
 import it.polimi.gc06.mesos.dtos.*;
-import it.polimi.gc06.mesos.model.gameTurnManager.PlacingTotemPhase;
 import it.polimi.gc06.mesos.view.gui.controllers.BoardController;
 import it.polimi.gc06.mesos.view.gui.controllers.GameViewController;
 import it.polimi.gc06.mesos.view.gui.controllers.LobbyGuiController;
 import javafx.application.Platform;
 
 import static it.polimi.gc06.mesos.view.gui.GUI.guiEventsManager;
-import static it.polimi.gc06.mesos.view.gui.GUI.smallModel;
 
 public class GUIDTOvisitor extends DTOvisitor {
 
@@ -198,6 +196,7 @@ public class GUIDTOvisitor extends DTOvisitor {
         Platform.runLater(() -> {
             guiEventsManager.enqueueEvent(() -> {
                 gameViewController.showEraOverlay(dto.getEra(), () -> {
+                    gameViewController.drawEraBackground();
                     boardController.handleEraChanged();
                     guiEventsManager.onAnimationFinished();
                 });

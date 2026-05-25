@@ -1,16 +1,3 @@
-#root {
-    -fx-background-color: #ffffff;
-    -fx-padding: 0px;
-    -fx-background-image: url('../../../../../imgs/background/board_background_era_I.png');
-    -fx-background-size: cover;
-    -fx-background-position: center;
-    -fx-background-repeat: no-repeat;
-}
-
-#boardRoot {
-
-}
-
 .scroll-pane {
     -fx-background-color: transparent;
     -fx-background-insets: 0;
