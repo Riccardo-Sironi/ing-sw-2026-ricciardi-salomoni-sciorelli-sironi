@@ -1,9 +1,7 @@
 package it.polimi.gc06.mesos.model.cards.characters;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import it.polimi.gc06.mesos.model.cards.CardVisitor;
 import it.polimi.gc06.mesos.model.Era;
+import it.polimi.gc06.mesos.model.cards.CardVisitor;
 
 
 public class ArtistCard extends CharacterCard {
@@ -40,7 +38,8 @@ public class ArtistCard extends CharacterCard {
      * @return true if the given object is exactly of the same class.
      */
     @Override
-    public boolean equals(Object o){
+    public boolean equals(Object o) {
+        if (o == null) return false;
         return getClass() == o.getClass();
     }
 }
