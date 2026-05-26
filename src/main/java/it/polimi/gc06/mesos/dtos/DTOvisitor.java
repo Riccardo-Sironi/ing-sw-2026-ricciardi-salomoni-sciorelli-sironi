@@ -8,17 +8,19 @@ public abstract class DTOvisitor {
 
     /**
      * Overridable hook for generic DTO patches.
+     *
      * @param dto the patch getting visited.
      */
     public void visit(SmallModelEditor dto) {
     }
 
-    public void visit(LeaderboardChangeDTO dto){
+    public void visit(LeaderboardChangeDTO dto) {
         visit((SmallModelEditor) dto);
     }
 
     /**
      * Overridable hook for generic DTO patches.
+     *
      * @param dto the patch getting visited.
      */
     public void visit(GameStateChangeDTO dto) {
@@ -27,6 +29,7 @@ public abstract class DTOvisitor {
 
     /**
      * Overridable hook for generic DTO patches.
+     *
      * @param dto the patch getting visited.
      */
     public void visit(BuildingsRefillDTO dto) {
@@ -35,6 +38,7 @@ public abstract class DTOvisitor {
 
     /**
      * Overridable hook for generic DTO patches.
+     *
      * @param dto the patch getting visited.
      */
     public void visit(LobbyInitializedDTO dto) {
@@ -43,6 +47,7 @@ public abstract class DTOvisitor {
 
     /**
      * Overridable hook for generic DTO patches.
+     *
      * @param dto the patch getting visited.
      */
     public void visit(PickBottomRowDTO dto) {
@@ -51,6 +56,7 @@ public abstract class DTOvisitor {
 
     /**
      * Overridable hook for generic DTO patches.
+     *
      * @param dto the patch getting visited.
      */
     public void visit(PickBottomBuildingsDTO dto) {
@@ -59,6 +65,7 @@ public abstract class DTOvisitor {
 
     /**
      * Overridable hook for generic DTO patches.
+     *
      * @param dto the patch getting visited.
      */
     public void visit(PickTopRowDTO dto) {
@@ -67,6 +74,7 @@ public abstract class DTOvisitor {
 
     /**
      * Overridable hook for generic DTO patches.
+     *
      * @param dto the patch getting visited.
      */
     public void visit(PickTopBuildingsDTO dto) {
@@ -75,6 +83,7 @@ public abstract class DTOvisitor {
 
     /**
      * Overridable hook for generic DTO patches.
+     *
      * @param dto the patch getting visited.
      */
     public void visit(PlayerResourcesChangeDTO dto) {
@@ -83,6 +92,7 @@ public abstract class DTOvisitor {
 
     /**
      * Overridable hook for generic DTO patches.
+     *
      * @param dto the patch getting visited.
      */
     public void visit(PlayerStateChangeDTO dto) {
@@ -91,6 +101,7 @@ public abstract class DTOvisitor {
 
     /**
      * Overridable hook for generic DTO patches.
+     *
      * @param dto the patch getting visited.
      */
     public void visit(TopRowRefillDTO dto) {
@@ -99,6 +110,7 @@ public abstract class DTOvisitor {
 
     /**
      * Overridable hook for generic DTO patches.
+     *
      * @param dto the patch getting visited.
      */
     public void visit(TotemOfferMoveDTO dto) {
@@ -107,6 +119,7 @@ public abstract class DTOvisitor {
 
     /**
      * Overridable hook for generic DTO patches.
+     *
      * @param dto the patch getting visited.
      */
     public void visit(PhaseChangeDTO dto) {
@@ -115,6 +128,7 @@ public abstract class DTOvisitor {
 
     /**
      * Overridable hook for generic DTO patches.
+     *
      * @param dto the patch getting visited.
      */
     public void visit(EraChangeDTO dto) {
@@ -123,6 +137,7 @@ public abstract class DTOvisitor {
 
     /**
      * Overridable hook for generic DTO patches.
+     *
      * @param dto the patch getting visited.
      */
     public void visit(RoundChangeDTO dto) {
@@ -131,6 +146,7 @@ public abstract class DTOvisitor {
 
     /**
      * Overridable hook for generic DTO patches.
+     *
      * @param dto the patch getting visited.
      */
     public void visit(TotemTurnMoveDTO dto) {
@@ -139,6 +155,16 @@ public abstract class DTOvisitor {
 
     /**
      * Overridable hook for generic DTO patches.
+     *
+     * @param dto the patch getting visited.
+     */
+    public void visit(EventResolvedDTO dto) {
+        visit((SmallModelEditor) dto);
+    }
+
+    /**
+     * Overridable hook for generic DTO patches.
+     *
      * @param dto the patch getting visited.
      */
     public void visit(ChooseTotemColorDTO dto) {
@@ -147,6 +173,7 @@ public abstract class DTOvisitor {
 
     /**
      * Overridable hook for generic DTO patches.
+     *
      * @param dto the patch getting visited.
      */
     public void visit(MesosStartedDTO dto) {

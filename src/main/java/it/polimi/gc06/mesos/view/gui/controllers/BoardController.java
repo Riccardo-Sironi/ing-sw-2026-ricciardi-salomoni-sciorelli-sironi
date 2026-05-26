@@ -1324,4 +1324,10 @@ public class BoardController {
         drawTurnOrderTile();
         drawOfferTrack();
     }
+
+    public void handleEventResolved(EventResolvedDTO dto, Runnable onEndActions) {
+        AnimationsManager.eventResolutionAnimation(dto.getEventCard(), mainRoot, () -> {
+            if (onEndActions != null) onEndActions.run();
+        });
+    }
 }

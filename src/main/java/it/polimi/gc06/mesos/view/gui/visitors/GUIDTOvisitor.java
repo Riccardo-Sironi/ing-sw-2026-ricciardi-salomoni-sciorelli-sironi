@@ -60,7 +60,7 @@ public class GUIDTOvisitor extends DTOvisitor {
 
     @Override
     public void visit(TopRowRefillDTO dto) {
-        if(boardController == null) return;
+        if (boardController == null) return;
         System.out.println("Top row refill!");
         Platform.runLater(() -> {
             guiEventsManager.enqueueEvent(() -> {
@@ -73,7 +73,7 @@ public class GUIDTOvisitor extends DTOvisitor {
 
     @Override
     public void visit(BuildingsRefillDTO dto) {
-        if(boardController == null) return;
+        if (boardController == null) return;
         System.out.println("Building refill!");
         Platform.runLater(() -> {
             guiEventsManager.enqueueEvent(() -> {
@@ -134,7 +134,7 @@ public class GUIDTOvisitor extends DTOvisitor {
 
     @Override
     public void visit(PlayerResourcesChangeDTO dto) {
-        if(boardController == null) return;
+        if (boardController == null) return;
         System.out.println("Player resources change!");
         Platform.runLater(() -> {
             guiEventsManager.enqueueEvent(() -> {
@@ -146,7 +146,7 @@ public class GUIDTOvisitor extends DTOvisitor {
 
     @Override
     public void visit(PlayerStateChangeDTO dto) {
-        if(boardController == null) return;
+        if (boardController == null) return;
         System.out.println("Player state change!");
         Platform.runLater(() -> {
             guiEventsManager.enqueueEvent(() -> {
@@ -183,8 +183,8 @@ public class GUIDTOvisitor extends DTOvisitor {
 
     @Override
     public void visit(PhaseChangeDTO dto) {
-        if(boardController == null) return;
-        if(gameViewController == null) return;
+        if (boardController == null) return;
+        if (gameViewController == null) return;
         System.out.println("Phase change!" + dto.getPhase());
         Platform.runLater(() -> {
             guiEventsManager.enqueueEvent(() -> {
@@ -198,8 +198,8 @@ public class GUIDTOvisitor extends DTOvisitor {
 
     @Override
     public void visit(EraChangeDTO dto) {
-        if(boardController == null) return;
-        if(gameViewController == null) return;
+        if (boardController == null) return;
+        if (gameViewController == null) return;
         System.out.println("Era change!");
         Platform.runLater(() -> {
             guiEventsManager.enqueueEvent(() -> {
@@ -214,11 +214,36 @@ public class GUIDTOvisitor extends DTOvisitor {
 
     @Override
     public void visit(RoundChangeDTO dto) {
-        if(boardController == null) return;
+        if (boardController == null) return;
         System.out.println("Round change!");
         Platform.runLater(() -> {
             guiEventsManager.enqueueEvent(() -> {
                 boardController.handleRoundChanged();
+                guiEventsManager.onAnimationFinished();
+            });
+        });
+    }
+
+    @Override
+    public void visit(EventResolvedDTO dto) {
+        if (boardController == null) return;
+        System.out.println("Event resolved!");
+        Platform.runLater(() -> {
+            guiEventsManager.enqueueEvent(() -> {
+                boardController.handleEventResolved(dto, () -> {
+                    guiEventsManager.onAnimationFinished();
+                });
+            });
+        });
+    }
+
+    @Override
+    public void visit(LeaderboardChangeDTO dto) {
+        if (gameViewController == null) return;
+        System.out.println("Leaderboard change!");
+        Platform.runLater(() -> {
+            guiEventsManager.enqueueEvent(() -> {
+                gameViewController.handleLeaderboardChange(dto);
                 guiEventsManager.onAnimationFinished();
             });
         });

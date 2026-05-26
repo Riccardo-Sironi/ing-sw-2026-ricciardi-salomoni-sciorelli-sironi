@@ -1,5 +1,6 @@
 package it.polimi.gc06.mesos.model.gameTurnManager;
 
+import it.polimi.gc06.mesos.dtos.EventResolvedDTO;
 import it.polimi.gc06.mesos.dtos.PhaseChangeDTO;
 import it.polimi.gc06.mesos.gameExceptions.IllegalPhaseActionException;
 import it.polimi.gc06.mesos.model.cards.events.EventCard;
@@ -24,7 +25,7 @@ public class EventResolutionPhase extends Phase {
      * the end-of-round routine.
      *
      * @param turnManager the turn manager controlling the flow of the game and the players' turn order.
-     * @param board the game board from which the event cards are retrieved and removed.
+     * @param board       the game board from which the event cards are retrieved and removed.
      * @throws IllegalPhaseActionException if an invalid action occurs during the phase transition or the end-of-round execution.
      */
     @Override
@@ -32,9 +33,11 @@ public class EventResolutionPhase extends Phase {
 
         ArrayList<EventCard> events = board.cleanBottomRow();
 
-        events.forEach(card -> {
-            turnManager.getPlayersOrder().forEach(card::resolveEvent);
-        });
+        for (EventCard event : events) {
+            turnManager.getPlayersOrder().forEach(event::resolveEvent);
+            EventResolvedDTO eventResolvedDTO = new EventResolvedDTO(event);
+            turnManager.getNotifier().notifyChange(eventResolvedDTO);
+        }
 
         turnManager.getNotifier().notifyChange(new PhaseChangeDTO(new EndOfRoundPhase().toString()));
         turnManager.setPhase(new EndOfRoundPhase());

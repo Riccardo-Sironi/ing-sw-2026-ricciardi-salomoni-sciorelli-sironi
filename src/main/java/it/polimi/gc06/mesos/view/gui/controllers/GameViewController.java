@@ -1,6 +1,8 @@
 package it.polimi.gc06.mesos.view.gui.controllers;
 
+import it.polimi.gc06.mesos.dtos.LeaderboardChangeDTO;
 import it.polimi.gc06.mesos.model.Era;
+import it.polimi.gc06.mesos.view.gui.GameScene;
 import javafx.animation.FadeTransition;
 import javafx.animation.ScaleTransition;
 import javafx.animation.SequentialTransition;
@@ -139,7 +141,11 @@ public class GameViewController {
                 "-fx-background-size: cover;" +
                 "-fx-background-position: center;" +
                 "-fx-background-repeat: no-repeat;";
-        
+
         root.setStyle(style);
+    }
+
+    public void handleLeaderboardChange(LeaderboardChangeDTO dto) {
+        changeScene(GameScene.LEADERBOARD.getPath());
     }
 }

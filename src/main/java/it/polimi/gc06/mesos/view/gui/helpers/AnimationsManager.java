@@ -8,6 +8,7 @@ import javafx.scene.Node;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.transform.Rotate;
 import javafx.util.Duration;
 
@@ -372,5 +373,57 @@ public class AnimationsManager {
         parallel.setOnFinished(ev -> animateBuildingsList(index + 1, cards, targetBox, onListEnd));
 
         parallel.play();
+    }
+
+    public static void eventResolutionAnimation(Card eventCard, HBox eventContainer, Runnable onEndAction) {
+        Pane root = (Pane) eventContainer.getScene().getRoot();
+
+        StackPane overlayPane = new StackPane();
+
+        overlayPane.setMouseTransparent(false);
+
+        overlayPane.prefWidthProperty().bind(root.widthProperty());
+        overlayPane.prefHeightProperty().bind(root.heightProperty());
+
+        overlayPane.setStyle("-fx-background-color: rgba(0, 0, 0, 0.5);");
+
+        root.getChildren().add(overlayPane);
+
+        CardView cv = new CardView(imageFetcher.fetch(eventCard));
+        cv.fitHeightProperty().bind(overlayPane.heightProperty().multiply(0.5));
+        cv.setPreserveRatio(true);
+        cv.setOpacity(0);
+
+        overlayPane.getChildren().add(cv);
+
+        FadeTransition fadeIn = new FadeTransition(Duration.millis(700), cv);
+        fadeIn.setToValue(1);
+        ScaleTransition scaleIn = new ScaleTransition(Duration.millis(1000), cv);
+        scaleIn.setToX(1.25);
+        scaleIn.setToY(1.25);
+        scaleIn.setInterpolator(Interpolator.EASE_BOTH);
+
+        ParallelTransition parallelIn = new ParallelTransition(fadeIn, scaleIn);
+
+        ScaleTransition scaleOut = new ScaleTransition(Duration.millis(1000), cv);
+        scaleOut.setToX(1.1);
+        scaleOut.setToY(1.1);
+        scaleOut.setInterpolator(Interpolator.EASE_BOTH);
+
+        PauseTransition pause1 = new PauseTransition(Duration.millis(250));
+        PauseTransition pause2 = new PauseTransition(Duration.millis(350));
+
+        pause1.setOnFinished(ev -> {
+            root.getChildren().remove(overlayPane);
+            overlayPane.getChildren().remove(cv);
+        });
+
+        SequentialTransition sequential = new SequentialTransition(parallelIn, scaleOut, pause1, pause2);
+
+        sequential.setOnFinished(ev -> {
+            if (onEndAction != null) onEndAction.run();
+        });
+
+        sequential.play();
     }
 }
