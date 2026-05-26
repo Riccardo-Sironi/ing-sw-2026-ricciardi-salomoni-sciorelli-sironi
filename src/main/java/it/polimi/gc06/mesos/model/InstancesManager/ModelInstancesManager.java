@@ -23,6 +23,16 @@ public class ModelInstancesManager {
 
     private static final String JSON_PATH = "/it/polimi/gc06/mesos/jsons/";
 
+    /**
+     * This method creates and initializes a complete GameModel instance by parsing JSON configurations
+     * for cards, modifier buildings, turn order tiles, and offer tracks.
+     * It also sets up players, the game board, and the turn manager based on the provided list of nicknames.
+     *
+     * @param nicknames the list of player nicknames to join the game.
+     * @return a fully initialized GameModel ready to be played.
+     * @throws IOException if there is an error reading the JSON configuration files.
+     * @throws IllegalArgumentException if the nicknames list is null, empty, or has an invalid size.
+     */
     public GameModel createGame(List<String> nicknames) throws IOException, IllegalArgumentException {
 
         if (nicknames == null) throw new IllegalArgumentException("Nicknames list is null");
