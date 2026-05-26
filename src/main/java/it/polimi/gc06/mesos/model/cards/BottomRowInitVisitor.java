@@ -19,6 +19,12 @@ public class BottomRowInitVisitor extends CardVisitor {
         this.maxTopRowSize = maxTopRowSize;
     }
 
+    /**
+     * This method visits a RitualEvent card and adds it to the top row.
+     *
+     * @param ritual the RitualEvent card to be visited.
+     * @throws IllegalStateException if the top row exceeds its maximum allowed size during initialization.
+     */
     @Override
     public void visit(RitualEvent ritual) throws IllegalStateException {
         if (topRow.size() >= maxTopRowSize) {
@@ -28,6 +34,12 @@ public class BottomRowInitVisitor extends CardVisitor {
         topRow.addLast(ritual);
     }
 
+    /**
+     * This method visits a SustenanceEvent card and adds it to the top row.
+     *
+     * @param sustenance the SustenanceEvent card to be visited.
+     * @throws IllegalStateException if the top row exceeds its maximum allowed size during initialization.
+     */
     @Override
     public void visit(SustenanceEvent sustenance) throws IllegalStateException {
         if (topRow.size() >= maxTopRowSize) {
@@ -37,6 +49,12 @@ public class BottomRowInitVisitor extends CardVisitor {
         topRow.addLast(sustenance);
     }
 
+    /**
+     * This method visits a HuntEvent card and adds it to the top row.
+     *
+     * @param hunt the HuntEvent card to be visited.
+     * @throws IllegalStateException if the top row exceeds its maximum allowed size during initialization.
+     */
     @Override
     public void visit(HuntEvent hunt) throws IllegalStateException {
         if (topRow.size() >= maxTopRowSize) {
@@ -46,6 +64,12 @@ public class BottomRowInitVisitor extends CardVisitor {
         topRow.addLast(hunt);
     }
 
+    /**
+     * This method visits a PaintingsEvent card and adds it to the top row.
+     *
+     * @param paintings the PaintingsEvent card to be visited.
+     * @throws IllegalStateException if the top row exceeds its maximum allowed size during initialization.
+     */
     @Override
     public void visit(PaintingsEvent paintings) throws IllegalStateException {
         if (topRow.size() >= maxTopRowSize) {
@@ -55,31 +79,61 @@ public class BottomRowInitVisitor extends CardVisitor {
         topRow.addLast(paintings);
     }
 
+    /**
+     * This method visits a HunterCard and adds it to the bottom row.
+     *
+     * @param card the HunterCard to be visited.
+     */
     @Override
     public void visit(HunterCard card) {
         bottomRow.addLast(card);
     }
 
+    /**
+     * This method visits a ShamanCard and adds it to the bottom row.
+     *
+     * @param card the ShamanCard to be visited.
+     */
     @Override
     public void visit(ShamanCard card) {
         bottomRow.addLast(card);
     }
 
+    /**
+     * This method visits a ArtistCard and adds it to the bottom row.
+     *
+     * @param card the ArtistCard to be visited.
+     */
     @Override
     public void visit(ArtistCard card) {
         bottomRow.addLast(card);
     }
 
+    /**
+     * This method visits a BuilderCard and adds it to the bottom row.
+     *
+     * @param card the BuilderCard to be visited.
+     */
     @Override
     public void visit(BuilderCard card) {
         bottomRow.addLast(card);
     }
 
+    /**
+     * This method visits a InventorCard and adds it to the bottom row.
+     *
+     * @param card the InventorCard to be visited.
+     */
     @Override
     public void visit(InventorCard card) {
         bottomRow.addLast(card);
     }
 
+    /**
+     * This method visits a GathererCard and adds it to the bottom row.
+     *
+     * @param card the GathererCard to be visited.
+     */
     @Override
     public void visit(GathererCard card) {
         bottomRow.addLast(card);
