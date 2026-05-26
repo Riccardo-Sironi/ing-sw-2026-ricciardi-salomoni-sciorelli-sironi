@@ -4,6 +4,7 @@ import it.polimi.gc06.mesos.controller.GameController;
 import it.polimi.gc06.mesos.controller.commands.ControllerCommand;
 import it.polimi.gc06.mesos.dtos.ErrorDTO;
 import it.polimi.gc06.mesos.dtos.SmallModelEditor;
+import it.polimi.gc06.mesos.model.DTONotifier;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -55,7 +56,6 @@ public class TCPClientManager implements VirtualClient{
      */
     @Override
     public void setController(GameController controller) {
-        controller.addListener(this, nickname);
         this.controller = controller;
     }
 
@@ -65,14 +65,18 @@ public class TCPClientManager implements VirtualClient{
      */
     @Override
     public void closeConnection() {
-        controller.removeListener(this, nickname);
         Thread.currentThread().interrupt();
     }
 
     /**
      * Sets where the controller commands from this client should queue up.
-     * @param queue The queue ready to take incoming player actions.
+     * @param notifier The queue ready to take incoming player actions.
      */
+    @Override
+    public void subscribeToNotifier(DTONotifier notifier) {
+        notifier.addListener(this, nickname);
+    }
+
     @Override
     public void setActionQueue(BlockingQueue<ControllerCommand> queue) {
         this.actionQueue = queue;

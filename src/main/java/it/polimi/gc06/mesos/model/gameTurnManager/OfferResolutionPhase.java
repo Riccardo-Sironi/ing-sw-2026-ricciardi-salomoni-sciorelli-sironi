@@ -1,5 +1,8 @@
 package it.polimi.gc06.mesos.model.gameTurnManager;
 
+import it.polimi.gc06.mesos.dtos.PhaseChangeDTO;
+import it.polimi.gc06.mesos.dtos.PlayerStateChangeDTO;
+import it.polimi.gc06.mesos.dtos.TotemTurnMoveDTO;
 import it.polimi.gc06.mesos.gameExceptions.IllegalGameActionException;
 import it.polimi.gc06.mesos.gameExceptions.IllegalPhaseActionException;
 import it.polimi.gc06.mesos.model.Player;
@@ -37,6 +40,10 @@ public class OfferResolutionPhase extends Phase {
         tileSlot.applyEffect();
 
         isStarted = true;
+
+        PlayerStateChangeDTO dto = new PlayerStateChangeDTO(player.getNickname());
+        dto.setIsActive(true);
+        turnManager.getNotifier().notifyChange(dto);
 
         checkIfPlayerIsFinished(turnManager, player, turnManager.getGameModel().getBoard());
     }
@@ -169,6 +176,12 @@ public class OfferResolutionPhase extends Phase {
 
             turnManager.getPlayersOrder().remove(player);
 
+            if (!turnManager.getPlayersOrder().isEmpty()){
+                PlayerStateChangeDTO dto = new PlayerStateChangeDTO(turnManager.getActivePlayer().getNickname());
+                dto.setIsActive(true);
+                turnManager.getNotifier().notifyChange(dto);
+            }
+
             for (TileSlot orderTile : board.getTurnOrderTile().slots()) {
                 if (orderTile.getPlayer() == null) {
                     orderTile.setPlayer(player);
@@ -190,10 +203,22 @@ public class OfferResolutionPhase extends Phase {
                 turnManager.getPhase().startPlayerOfferResolution(turnManager, nextPlayer, board.getOfferTrackPlayerSlot(nextPlayer));
             }
         }
+        else{
+            //if he has not finished we send the notification to the player via gateway
+            PlayerStateChangeDTO dto = new PlayerStateChangeDTO(player.getNickname());
+            dto.setIsActive(true);
+            dto.setCanSkip(checkForRightToSkip(player,board));
+            turnManager.getNotifier().notifyChange(dto);
+        }
 
 
         // if the offer track is empty then we can move on with the next phase
         if (board.isOfferTrackEmpty()) {
+            turnManager.getNotifier().notifyChange(new TotemTurnMoveDTO());
+
+            PhaseChangeDTO dto = new PhaseChangeDTO(new EventResolutionPhase().toString());
+            turnManager.getNotifier().notifyChange(dto);
+
             turnManager.setPhase(new EventResolutionPhase());
 
             turnManager.getPlayersOrder().clear();
@@ -204,6 +229,11 @@ public class OfferResolutionPhase extends Phase {
                     turnManager.getPlayersOrder().addLast(orderTile.getPlayer());
                 }
             }
+
+            PlayerStateChangeDTO dto2 = new PlayerStateChangeDTO(turnManager.getActivePlayer().getNickname());
+            dto2.setIsActive(true);
+            turnManager.getNotifier().notifyChange(dto2);
+
 
             // we call the method, we don't wait for no request from no client
             turnManager.getPhase().resolveEvent(turnManager, board);

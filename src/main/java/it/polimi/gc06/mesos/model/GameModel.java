@@ -1,19 +1,19 @@
 package it.polimi.gc06.mesos.model;
 
-import it.polimi.gc06.mesos.controller.ChangesHandler;
+import it.polimi.gc06.mesos.dtos.LobbyInitializedDTO;
+import it.polimi.gc06.mesos.dtos.SmallModelEditor;
 import it.polimi.gc06.mesos.model.cards.TribeCard;
 import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
 import it.polimi.gc06.mesos.model.cards.events.EventCard;
 import it.polimi.gc06.mesos.model.gameBoard.Board;
+import it.polimi.gc06.mesos.model.gameBoard.TileEffect;
+import it.polimi.gc06.mesos.model.gameBoard.TileSlot;
 import it.polimi.gc06.mesos.model.gameTurnManager.DrawObserver;
 import it.polimi.gc06.mesos.model.gameTurnManager.TurnManager;
 import it.polimi.gc06.mesos.network.leaderboard.Leaderboard;
 import it.polimi.gc06.mesos.network.leaderboard.Score;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.EnumMap;
+import java.util.*;
 
 public class GameModel implements GameInfo {
 
@@ -23,16 +23,18 @@ public class GameModel implements GameInfo {
     private final EventCard[] finalEventCards;
     private final ArrayList<Player> players;
     private final TurnManager turnManager;
-    private final ChangesHandler changesHandler;
+    private final DTONotifier notifier;
 
-    public GameModel(Board board, EnumMap<Era, ArrayList<BuildingCard>> buildingCardsDecks, EnumMap<Era, ArrayList<TribeCard>> tribeCardsDeck, EventCard[] finalEventCards, ArrayList<Player> players, TurnManager turnManager) {
+    public GameModel(Board board, EnumMap<Era, ArrayList<BuildingCard>> buildingCardsDecks,
+                     EnumMap<Era, ArrayList<TribeCard>> tribeCardsDeck, EventCard[] finalEventCards,
+                     ArrayList<Player> players, TurnManager turnManager, DTONotifier notifier) {
         this.board = board;
         this.buildingCardsDecks = buildingCardsDecks;
         this.tribeCardsDeck = tribeCardsDeck;
         this.finalEventCards = finalEventCards;
         this.players = players;
         this.turnManager = turnManager;
-        this.changesHandler = new ChangesHandler(this);
+        this.notifier = notifier;
     }
 
     /**
@@ -76,6 +78,90 @@ public class GameModel implements GameInfo {
                 p.addFoodTokens(4);
             }
         }
+
+        //prepares notification for all player
+        for(Player p : players){
+            notifier.notifyChangeToPlayer(p.getNickname(),getStartingStateAsDTO(p.getNickname()));
+        }
+    }
+
+    /*private SmallModelEditor getStartingStateAsDTO(String nickname) {
+
+        Map<String, Color> colorMap = new HashMap<>();
+
+        boolean isActive = turnManager.getActivePlayer().getNickname().equals(nickname);
+
+        ArrayList<TileEffect> effects = new ArrayList<>(
+                board.getOfferTrack().stream().map(TileSlot::getTileEffect).toList()
+        );
+
+        int currentDeckSize = 0;
+        if (getTribeCardsDeck() != null) {
+            currentDeckSize = tribeCardsDeck.get(Era.ERA_I).size()
+                    + tribeCardsDeck.get(Era.ERA_II).size()
+                    + tribeCardsDeck.get(Era.ERA_III).size();
+        }
+
+        return new LobbyInitializedDTO(
+                nickname,
+                new ArrayList<>(turnManager.getPlayersOrder().stream().map(Player::getNickname).toList()),
+                colorMap,
+                new ArrayList<>(board.getTopRow()),
+                new ArrayList<>(board.getTopBuildings()),
+                new ArrayList<>(board.getBottomRow()),
+                new ArrayList<>(board.getBottomBuildings()),
+                isActive,
+                effects,
+                currentDeckSize
+        );
+    }*/
+
+    public SmallModelEditor getStartingStateAsDTO(String nickname) {
+
+        Map<String, Integer> foodMap = new HashMap<>();
+        Map<String, Color> colorMap = new HashMap<>();
+
+        int topDrawNum = 0;
+        int bottomDrawNum = 0;
+
+        for (Player p : getPlayers()) {
+            foodMap.put(p.getNickname(), p.getFoodTokens());
+            colorMap.put(p.getNickname(), p.getPlayerColor());
+
+            if (p.getNickname().equals(nickname)) {
+                topDrawNum = p.getTopDrawNum();
+                bottomDrawNum = p.getBottomDrawNum();
+            }
+        }
+
+        boolean isActive = turnManager.getActivePlayer().getNickname().equals(nickname);
+
+        ArrayList<TileEffect> effects = new ArrayList<>(
+                board.getOfferTrack().stream().map(TileSlot::getTileEffect).toList()
+        );
+
+        int currentDeckSize = 0;
+        if (getTribeCardsDeck() != null) {
+            currentDeckSize = getTribeCardsDeck().get(Era.ERA_I).size()
+                    + getTribeCardsDeck().get(Era.ERA_II).size()
+                    + getTribeCardsDeck().get(Era.ERA_III).size();
+        }
+
+        return new LobbyInitializedDTO(
+                nickname,
+                new ArrayList<>(turnManager.getPlayersOrder().stream().map(Player::getNickname).toList()),
+                colorMap,
+                foodMap,
+                new ArrayList<>(board.getTopRow()),
+                new ArrayList<>(board.getTopBuildings()),
+                new ArrayList<>(board.getBottomRow()),
+                new ArrayList<>(board.getBottomBuildings()),
+                isActive,
+                effects,
+                topDrawNum,
+                bottomDrawNum,
+                currentDeckSize
+        );
     }
 
     /**
@@ -199,15 +285,6 @@ public class GameModel implements GameInfo {
      */
     public TurnManager getTurnManager() {
         return turnManager;
-    }
-
-    /**
-     * this method returns the change handler.
-     *
-     * @return the current {@link ChangesHandler}
-     */
-    public ChangesHandler getChangeHandler(){
-        return changesHandler;
     }
 
     /**

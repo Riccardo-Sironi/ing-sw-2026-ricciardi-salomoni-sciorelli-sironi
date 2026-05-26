@@ -20,7 +20,6 @@ public class LobbyInitializedDTO implements SmallModelEditor {
     private final ArrayList<String> playersOrder;
     private final Map<String, Color> colorMap;
     private final Map<String, Integer> foodMap;
-    private final Map<String, Integer> prestigeMap;
     private final ArrayList<Card> topRow;
     private final ArrayList<Card> topBuildings;
     private final ArrayList<Card> bottomRow;
@@ -29,7 +28,6 @@ public class LobbyInitializedDTO implements SmallModelEditor {
     private final boolean isActive;
     private final ArrayList<TileEffect> tileEffects;
 
-    // Variabili di stato dello SmallModel
     private final int topDrawNum;
     private final int bottomDrawNum;
     private final int tribeDeckSize;
@@ -38,7 +36,7 @@ public class LobbyInitializedDTO implements SmallModelEditor {
      * Stuffs everything needed for the first round into one giant container
      */
     public LobbyInitializedDTO(String nickname, ArrayList<String> playersOrder, Map<String, Color> colorMap,
-                               Map<String, Integer> foodMap, Map<String, Integer> prestigeMap,
+                               Map<String, Integer> foodMap,
                                ArrayList<Card> topRow, ArrayList<Card> topBuildings,
                                ArrayList<Card> bottomRow, ArrayList<Card> bottomBuildings,
                                boolean isActive, ArrayList<TileEffect> tileEffects,
@@ -46,7 +44,6 @@ public class LobbyInitializedDTO implements SmallModelEditor {
         this.playersOrder = playersOrder;
         this.colorMap = colorMap;
         this.foodMap = foodMap;
-        this.prestigeMap = prestigeMap;
         this.topRow = topRow;
         this.topBuildings = topBuildings;
         this.bottomRow = bottomRow;
@@ -75,9 +72,13 @@ public class LobbyInitializedDTO implements SmallModelEditor {
         smallModel.setBottomDrawNum(bottomDrawNum);
         smallModel.setCanSkip(false);
 
+        smallModel.getTopRow().clear();
         smallModel.getTopRow().addAll(topRow);
+        smallModel.getTopBuildings().clear();
         smallModel.getTopBuildings().addAll(topBuildings);
+        smallModel.getBottomRow().clear();
         smallModel.getBottomRow().addAll(bottomRow);
+        smallModel.getBottomBuildings().clear();
         smallModel.getBottomBuildings().addAll(bottomBuildings);
 
         tileEffects.forEach(e -> smallModel.getOfferTrack().add(new TileSlotView(e)));
@@ -87,7 +88,7 @@ public class LobbyInitializedDTO implements SmallModelEditor {
 
         PlayerView localPlayerInstance = smallModel.getPlayer();
         localPlayerInstance.setNumFood(foodMap.get(nickname));
-        localPlayerInstance.setNumPrestige(prestigeMap.getOrDefault(nickname, 0));
+        localPlayerInstance.setNumPrestige(0);
 
         for (String pName : playersOrder) {
             if (pName.equals(nickname)) {
@@ -95,7 +96,7 @@ public class LobbyInitializedDTO implements SmallModelEditor {
             } else {
                 PlayerView opponent = new PlayerView(pName, colorMap.get(pName));
                 opponent.setNumFood(foodMap.get(pName));
-                opponent.setNumPrestige(prestigeMap.getOrDefault(pName, 0));
+                opponent.setNumPrestige(0);
 
                 smallModel.getTurnOrderTile().add(opponent);
                 smallModel.addOpponent(opponent);

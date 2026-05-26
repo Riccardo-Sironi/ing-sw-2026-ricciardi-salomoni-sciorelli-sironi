@@ -1,5 +1,7 @@
 package it.polimi.gc06.mesos.model.gameTurnManager;
 
+import it.polimi.gc06.mesos.dtos.PhaseChangeDTO;
+import it.polimi.gc06.mesos.dtos.PlayerStateChangeDTO;
 import it.polimi.gc06.mesos.gameExceptions.IllegalGameActionException;
 import it.polimi.gc06.mesos.gameExceptions.IllegalPhaseActionException;
 import it.polimi.gc06.mesos.model.GameModel;
@@ -38,6 +40,12 @@ public class EndOfRoundPhase extends Phase {
             if (player.getBuildingCards().contains(turnManager.getPickFromTopCard())) {
                 player.setTopDrawNum(1);
                 isEndOfRoundPickPlayerPresent = true;
+
+
+                PlayerStateChangeDTO dto = new PlayerStateChangeDTO(player.getNickname());
+                dto.setIsActive(true);
+                dto.setCanSkip(checkForRightToSkip(player, turnManager.getGameModel().getBoard()));
+                turnManager.getNotifier().notifyChange(dto);
 
                 if (players.getFirst() != player) {
                     endOfRoundPickPlayerIndex = players.indexOf(player);
@@ -195,6 +203,12 @@ public class EndOfRoundPhase extends Phase {
             }
 
             // if the game is not over we move on with the next round
+            // we also notify the first player of the next round via gateway
+            Player active = turnManager.getActivePlayer();
+            PlayerStateChangeDTO dto = new PlayerStateChangeDTO(active.getNickname());
+            dto.setIsActive(true);
+            turnManager.getNotifier().notifyChange(dto);
+            turnManager.getNotifier().notifyChange(new PhaseChangeDTO(new PlacingTotemPhase().toString()));
             turnManager.setPhase(new PlacingTotemPhase());
         }
     }

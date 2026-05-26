@@ -14,17 +14,14 @@ public class BuildingsRefillDTO implements SmallModelEditor, Serializable {
 
     private final ArrayList<Card> top;
     private final ArrayList<Card> bottom;
-    private final int deckSize;
 
     /**
      * @param top The full top row of building cards.
      * @param bottom The full bottom row of building cards.
-     * @param deckSize How many cards roughly remain hidden.
      */
-    public BuildingsRefillDTO(Collection<Card> top, Collection<Card> bottom, int deckSize) {
+    public BuildingsRefillDTO(Collection<Card> top, Collection<Card> bottom) {
         this.top = new ArrayList<>(top);
         this.bottom = new ArrayList<>(bottom);
-        this.deckSize = deckSize;
     }
 
     /**
@@ -33,12 +30,10 @@ public class BuildingsRefillDTO implements SmallModelEditor, Serializable {
      */
     @Override
     public void edit(SmallModel smallModel) {
-        // TODO : this is almost neve called (FIX)
         smallModel.getTopBuildings().clear();
         smallModel.getTopBuildings().addAll(top);
         smallModel.getBottomBuildings().clear();
         smallModel.getBottomBuildings().addAll(bottom);
-        smallModel.setTribeDeckSize(deckSize);
     }
 
     /**

@@ -1,5 +1,8 @@
 package it.polimi.gc06.mesos.model.gameTurnManager;
 
+import it.polimi.gc06.mesos.dtos.PhaseChangeDTO;
+import it.polimi.gc06.mesos.dtos.PlayerStateChangeDTO;
+import it.polimi.gc06.mesos.dtos.TotemOfferMoveDTO;
 import it.polimi.gc06.mesos.gameExceptions.IllegalPhaseActionException;
 import it.polimi.gc06.mesos.model.Player;
 import it.polimi.gc06.mesos.model.gameBoard.Board;
@@ -23,6 +26,14 @@ public class PlacingTotemPhase extends Phase {
 
         turnManager.getPlayersOrder().removeFirst();
 
+        if (!turnManager.getPlayersOrder().isEmpty()) {
+            //Notifies next player only if the list is not empty
+            Player active = turnManager.getActivePlayer();
+            PlayerStateChangeDTO dto3 = new PlayerStateChangeDTO(active.getNickname());
+            dto3.setIsActive(true);
+            turnManager.getNotifier().notifyChange(dto3);
+        }
+
         for (TileSlot s : board.getTurnOrderTile().slots()) {
             if (s.getPlayer() != null && s.getPlayer().equals(player)) {
                 s.removePlayer();
@@ -32,13 +43,14 @@ public class PlacingTotemPhase extends Phase {
 
         slot.setPlayer(player);
 
-        // if there are no player left on the turnOrderTile we move on with the next phase
-        // TODO : we are duplicating the list of players (basically the playersOrder list is the turnOrderTile list)
+        turnManager.getNotifier().notifyChange(new TotemOfferMoveDTO(player.getNickname(),
+                board.getOfferTrack().indexOf(slot)));
+
+        //If there are no more player we pass to the next phase
         if (turnManager.getPlayersOrder().isEmpty()) {
+            turnManager.getNotifier().notifyChange(new PhaseChangeDTO(new OfferResolutionPhase().toString()));
             turnManager.setPhase(new OfferResolutionPhase());
 
-            // once we move the players from turn order tile we refill the players order list with the new order of
-            // the players based on the offer track
             for (TileSlot s : board.getOfferTrack()) {
                 if (s.getPlayer() != null) {
                     turnManager.getPlayersOrder().addLast(s.getPlayer());

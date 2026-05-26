@@ -67,4 +67,18 @@ public class ControllerCommand implements Serializable {
     public void execute(GameController controller) throws Exception {
         request.call(controller, this.nickname, this.index);
     }
+
+    /**
+     * Debug only.
+     */
+    public Request getRequest() {
+        return request;
+    }
+
+    /**
+     * Debug only.
+     */
+    public int getIndex() {
+        return index;
+    }
 }

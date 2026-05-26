@@ -1,5 +1,8 @@
 package it.polimi.gc06.mesos.model.gameTurnManager;
 
+import it.polimi.gc06.mesos.dtos.PhaseChangeDTO;
+import it.polimi.gc06.mesos.dtos.RoundChangeDTO;
+import it.polimi.gc06.mesos.model.DTONotifier;
 import it.polimi.gc06.mesos.model.GameModel;
 import it.polimi.gc06.mesos.model.Player;
 import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingCard;
@@ -16,14 +19,16 @@ public class TurnManager {
     private int activePlayerIndex;
     private final ModifierBuildingCard pickFromTopCard;
     private GameModel gameModel;
+    private final DTONotifier notifier;
 
-    public TurnManager(List<Player> playersOrder, ModifierBuildingsRegistry registry) {
+    public TurnManager(List<Player> playersOrder, ModifierBuildingsRegistry registry, DTONotifier notifier) {
         this.playersOrder = playersOrder;
         this.pickFromTopCard = registry.get(ModifierBuildingRegistryKey.PICK_FROM_TOP);
         this.phase = new PlacingTotemPhase();
         this.activePlayerIndex = 0; // this is normally set to 0, it could change in the endOfRoundPhase
         this.round = 0;
         this.gameModel = null;
+        this.notifier = notifier;
     }
 
     /**
@@ -41,9 +46,13 @@ public class TurnManager {
      * Sets the current round of the game.
      */
     public void setRound(int round) {
+        notifier.notifyChange(new RoundChangeDTO(round));
         this.round = round;
     }
 
+    public DTONotifier getNotifier() {
+        return notifier;
+    }
 
     /**
      * set the active player index

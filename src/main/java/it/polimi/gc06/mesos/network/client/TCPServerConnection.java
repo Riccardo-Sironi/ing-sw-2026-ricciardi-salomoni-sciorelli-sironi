@@ -4,7 +4,7 @@ import it.polimi.gc06.mesos.controller.ModelListener;
 import it.polimi.gc06.mesos.controller.commands.ControllerCommand;
 import it.polimi.gc06.mesos.controller.commands.Request;
 import it.polimi.gc06.mesos.dtos.DTOvisitor;
-import it.polimi.gc06.mesos.dtos.GameStateChangeDTO;
+import it.polimi.gc06.mesos.dtos.LeaderboardChangeDTO;
 import it.polimi.gc06.mesos.dtos.SmallModelEditor;
 import it.polimi.gc06.mesos.model.Color;
 import it.polimi.gc06.mesos.network.socket.BlockingBox;
@@ -289,8 +289,8 @@ public class TCPServerConnection implements ServerConnection, Runnable {
                     AtomicBoolean isEndgame = new AtomicBoolean();
                     DTOvisitor visitor = new DTOvisitor() {
                         @Override
-                        public void visit(GameStateChangeDTO dto) {
-                            isEndgame.set(dto.isEndgame());
+                        public void visit(LeaderboardChangeDTO dto) {
+                            isEndgame.set(true);
                         }
                     };
                     visitor.visit(dto);

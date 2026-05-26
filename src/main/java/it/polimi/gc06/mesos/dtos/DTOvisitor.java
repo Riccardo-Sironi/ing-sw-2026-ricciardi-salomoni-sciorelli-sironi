@@ -13,6 +13,10 @@ public abstract class DTOvisitor {
     public void visit(SmallModelEditor dto) {
     }
 
+    public void visit(LeaderboardChangeDTO dto){
+        visit((SmallModelEditor) dto);
+    }
+
     /**
      * Overridable hook for generic DTO patches.
      * @param dto the patch getting visited.

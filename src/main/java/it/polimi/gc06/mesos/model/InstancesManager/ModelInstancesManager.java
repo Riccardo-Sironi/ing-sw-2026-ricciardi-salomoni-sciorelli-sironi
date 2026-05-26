@@ -2,7 +2,7 @@ package it.polimi.gc06.mesos.model.InstancesManager;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.polimi.gc06.mesos.model.Color;
+import it.polimi.gc06.mesos.model.DTONotifier;
 import it.polimi.gc06.mesos.model.GameModel;
 import it.polimi.gc06.mesos.model.Player;
 import it.polimi.gc06.mesos.model.cards.Card;
@@ -17,11 +17,15 @@ import it.polimi.gc06.mesos.model.gameTurnManager.TurnManager;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class ModelInstancesManager {
 
     private static final String JSON_PATH = "/it/polimi/gc06/mesos/jsons/";
+    private final DTONotifier notifier;
+
+    public ModelInstancesManager(DTONotifier notifier){
+        this.notifier = notifier;
+    }
 
     /**
      * This method creates and initializes a complete GameModel instance by parsing JSON configurations
@@ -70,7 +74,7 @@ public class ModelInstancesManager {
         //creates players
         ArrayList<Player> players = new ArrayList<Player>();
         for (int i = 0; i < numOfPlayers; i++) {
-            players.add(new Player(nicknames.removeFirst(), null, registry));
+            players.add(new Player(nicknames.removeFirst(), null, registry, notifier));
         }
 
         //loads turn order tile
@@ -97,16 +101,16 @@ public class ModelInstancesManager {
         });
 
         //set up Board & GameModel & TurnManager
-        TurnManager turnManager = new TurnManager(new ArrayList<>(players), registry);
+        TurnManager turnManager = new TurnManager(new ArrayList<>(players), registry, notifier);
 
-        Board board = new Board(turnOrderTile, offerTrack);
+        Board board = new Board(turnOrderTile, offerTrack, notifier);
 
         GameModel model = new GameModel(board,
                 sorter.getBuildingCards(),
                 sorter.getTribeCards(),
                 sorter.getFinalEvents(),
                 players,
-                turnManager);
+                turnManager, notifier);
 
         turnManager.setGameModel(model);
 

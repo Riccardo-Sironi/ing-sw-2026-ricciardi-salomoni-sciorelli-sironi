@@ -1,5 +1,6 @@
 package it.polimi.gc06.mesos.model;
 
+import it.polimi.gc06.mesos.dtos.PlayerResourcesChangeDTO;
 import it.polimi.gc06.mesos.gameExceptions.GameObjectNotFoundException;
 import it.polimi.gc06.mesos.model.cards.buildings.*;
 import it.polimi.gc06.mesos.model.cards.characters.*;
@@ -15,6 +16,7 @@ public class Player {
     private int shamanStars;
 
     private transient GameInfo gameInfo; // GameInfo must be transient in order to avoid serialization issues.
+    private final transient DTONotifier notifier;
 
     private final EnumMap<CharacterType, ArrayList<CharacterCard>> characterDeck;
     private final ArrayList<BuildingCard> buildingDeck;
@@ -35,7 +37,7 @@ public class Player {
     private int topDrawNum;
     private int bottomDrawNum;
 
-    public Player(String nickname, Color color, ModifierBuildingsRegistry registry) {
+    public Player(String nickname, Color color, ModifierBuildingsRegistry registry, DTONotifier notifier) {
         this.nickname = nickname;
         this.threeStarCard = registry.get(ModifierBuildingRegistryKey.RITUAL_THREE_STAR_CARD);
 
@@ -56,6 +58,8 @@ public class Player {
 
         this.topDrawNum = 0;
         this.bottomDrawNum = 0;
+
+        this.notifier = notifier;
 
         deckCardVisitor = new DeckCardVisitor(this);
         charactersSetsVisitor = new CharactersSetsVisitor(this);
@@ -204,6 +208,9 @@ public class Player {
     public void addFoodTokens(int amount) throws IllegalArgumentException {
         if (amount < 0) throw new IllegalArgumentException("Amount must be non-negative");
         this.foodTokens += amount;
+        notifier.notifyChange(new PlayerResourcesChangeDTO(
+                nickname,null,null,foodTokens,null
+        ));
     }
 
     /**
@@ -217,6 +224,9 @@ public class Player {
         if (amount < 0) throw new IllegalArgumentException("Amount must be non-negative");
         if ((this.foodTokens - amount) < 0) throw new IllegalStateException("Not enough food tokens to remove");
         this.foodTokens -= amount;
+        notifier.notifyChange(new PlayerResourcesChangeDTO(
+                nickname,null,null,foodTokens,null
+        ));
     }
 
 
@@ -238,6 +248,9 @@ public class Player {
     public void addPrestigeTokens(int amount) throws IllegalArgumentException {
         if (amount < 0) throw new IllegalArgumentException("Amount must be non-negative");
         this.prestigeTokens += amount;
+        notifier.notifyChange(new PlayerResourcesChangeDTO(
+                nickname,null,null,null,prestigeTokens
+        ));
     }
 
     /**
@@ -250,6 +263,9 @@ public class Player {
     public void removePrestigeTokens(int amount) throws IllegalArgumentException {
         if (amount < 0) throw new IllegalArgumentException("Amount must be non-negative");
         this.prestigeTokens -= amount;
+        notifier.notifyChange(new PlayerResourcesChangeDTO(
+                nickname,null,null,null,prestigeTokens
+        ));
     }
 
     /**
@@ -336,6 +352,9 @@ public class Player {
     public void setTopDrawNum(int topDrawNum) throws IllegalArgumentException {
         if (topDrawNum < 0) throw new IllegalArgumentException("Amount must be non-negative");
         this.topDrawNum = topDrawNum;
+        notifier.notifyChange(new PlayerResourcesChangeDTO(
+                nickname,topDrawNum,null,null,null
+        ));
     }
 
     public int getBottomDrawNum() {
@@ -345,6 +364,9 @@ public class Player {
     public void setBottomDrawNum(int bottomDrawNum) throws IllegalArgumentException {
         if (bottomDrawNum < 0) throw new IllegalArgumentException("Amount must be non-negative");
         this.bottomDrawNum = bottomDrawNum;
+        notifier.notifyChange(new PlayerResourcesChangeDTO(
+                nickname,null,bottomDrawNum,null,null
+        ));
     }
 
     public void setEnvironment(GameInfo gameInfo) {

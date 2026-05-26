@@ -1,5 +1,6 @@
 package it.polimi.gc06.mesos.model.gameTurnManager;
 
+import it.polimi.gc06.mesos.dtos.PhaseChangeDTO;
 import it.polimi.gc06.mesos.gameExceptions.IllegalPhaseActionException;
 import it.polimi.gc06.mesos.model.cards.events.EventCard;
 import it.polimi.gc06.mesos.model.gameBoard.Board;
@@ -35,6 +36,7 @@ public class EventResolutionPhase extends Phase {
             turnManager.getPlayersOrder().forEach(card::resolveEvent);
         });
 
+        turnManager.getNotifier().notifyChange(new PhaseChangeDTO(new EndOfRoundPhase().toString()));
         turnManager.setPhase(new EndOfRoundPhase());
         turnManager.getPhase().endOfRound(turnManager, board, turnManager.getGameModel());
     }

@@ -29,7 +29,7 @@ public record TurnOrderTile(ArrayList<TileSlot> slots) {
      * @return the player on the nth position
      * @throws IllegalArgumentException {@inheritDoc}
      */
-    protected Player getPlayerOnNthTile(int n) throws IllegalArgumentException {
+    public Player getPlayerOnNthTile(int n) throws IllegalArgumentException {
         if (n < 0 || n >= slots.size()) throw new IllegalArgumentException();
         return slots.get(n).getPlayer();
     }
@@ -41,7 +41,7 @@ public record TurnOrderTile(ArrayList<TileSlot> slots) {
      * @param n      index of the element to return.
      * @throws IllegalArgumentException {@inheritDoc}
      */
-    protected void setPlayerOnNthTile(Player player, int n) throws IllegalArgumentException {
+    public void setPlayerOnNthTile(Player player, int n) throws IllegalArgumentException {
         if (n < 0 || n >= slots.size() || player == null) throw new IllegalArgumentException();
         slots.get(n).setPlayer(player);
     }

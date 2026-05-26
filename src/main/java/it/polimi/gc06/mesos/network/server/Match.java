@@ -2,6 +2,7 @@ package it.polimi.gc06.mesos.network.server;
 
 import it.polimi.gc06.mesos.controller.GameController;
 import it.polimi.gc06.mesos.gameExceptions.IllegalGameActionException;
+import it.polimi.gc06.mesos.model.DTONotifier;
 import it.polimi.gc06.mesos.model.GameModel;
 import it.polimi.gc06.mesos.model.InstancesManager.ModelInstancesManager;
 import it.polimi.gc06.mesos.network.leaderboard.LeaderboardDAO;
@@ -61,17 +62,18 @@ public class Match {
      */
     private synchronized void start() throws IOException {
         ArrayList<String> playerNames = new ArrayList<>(players.stream().map(VirtualClient::getNickname).collect(Collectors.toCollection(ArrayList::new)));
-        GameModel model = new ModelInstancesManager().createGame(playerNames);
+        DTONotifier notifier = new DTONotifier();
+        GameModel model = new ModelInstancesManager(notifier).createGame(playerNames);
 
+        players.forEach(c -> c.subscribeToNotifier(notifier)); //adds all listeners
         model.startGame();
-        controller = new GameController(model);
+
+        controller = new GameController(model, notifier);
         hasStarted = true;
         players.forEach(c -> c.setController(controller));
         players.forEach(c -> c.setActionQueue(actionQueue));
         players.forEach(c -> playersThreads.add(new Thread(c, c.getNickname())));
         playersThreads.forEach(Thread::start);
-
-        controller.sendGameStartInfo();
 
         matchExecutorThread = new Thread(this::matchLoop, "MatchExecutorThread-" + matchId);
         matchExecutorThread.start();
@@ -103,14 +105,16 @@ public class Match {
                     action.execute(controller);
 
                 } catch (IllegalGameActionException | IndexOutOfBoundsException e) {
-                    System.err.println("An error occurred while trying to perform " + action.getNickname() + " action: " + e.getMessage());
+                    System.err.println("An error occurred while trying to perform " + action.getNickname() + " action: ");
+                    e.printStackTrace();
+                    System.err.println("Faulty action: "+action.getRequest()+", index: "+action.getIndex());
 
                     players.stream()
                             .filter(c -> c.getNickname().equals(action.getNickname()))
                             .findFirst().ifPresent(offender -> offender.sendErrorMessage(e.getMessage()));
 
                 } catch (Exception e) {
-                    System.err.println("Critical error stemming from: " + action.getNickname() + " action");
+                    System.err.println("Critical error stemming from: " + action.getNickname() + " action: ");
                     e.printStackTrace();
                 }
 

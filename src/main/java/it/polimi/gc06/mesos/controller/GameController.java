@@ -4,6 +4,7 @@ import it.polimi.gc06.mesos.dtos.*;
 import it.polimi.gc06.mesos.gameExceptions.IllegalGameActionException;
 import it.polimi.gc06.mesos.gameExceptions.IllegalPhaseActionException;
 import it.polimi.gc06.mesos.model.Color;
+import it.polimi.gc06.mesos.model.DTONotifier;
 import it.polimi.gc06.mesos.model.GameModel;
 import it.polimi.gc06.mesos.model.Player;
 import it.polimi.gc06.mesos.model.cards.TribeCard;
@@ -16,16 +17,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class GameController {
+public class GameController{
 
     private final GameModel model;
-    private final ArrayList<ModelListener> listeners;
-    private final Map<String, ModelListener> listenerMap;
+    private final DTONotifier notifier;
 
-    public GameController(GameModel model) {
+    public GameController(GameModel model, DTONotifier notifier) {
         this.model = model;
-        this.listeners = new ArrayList<>();
-        this.listenerMap = new HashMap<>();
+        this.notifier = notifier;
     }
 
     /**
@@ -62,13 +61,7 @@ public class GameController {
             throw new IllegalPhaseActionException("The tile is already occupied !");
         }
 
-        model.getChangeHandler().registerState();
         turnManager.getPhase().placeTotem(turnManager, activePlayer, tile, model.getBoard());
-
-        TotemOfferMoveDTO dto = new TotemOfferMoveDTO(playerNickname, tileIndex);
-        listeners.forEach(l -> l.update(dto));
-        model.getChangeHandler().getChanges().forEach(c ->
-                listeners.forEach(l -> l.update(c)));
     }
 
     /**
@@ -88,17 +81,9 @@ public class GameController {
         }
 
         TribeCard card = model.getBoard().getBottomCardFromIndex(cardIndex);
-        PickBottomRowDTO dto = new PickBottomRowDTO(playerNickname, cardIndex); //prepares the dto if needed
 
-        model.getChangeHandler().registerState();
         CardBottomRowControllerVisitor cardPickerVisitor = new CardBottomRowControllerVisitor(turnManager, activePlayer, model);
-
         card.accept(cardPickerVisitor);
-
-        //if the operation was not successful the notice won't be sent
-        listeners.forEach(l -> l.update(dto));
-        model.getChangeHandler().getChanges().forEach(c ->
-                listeners.forEach(l -> l.update(c)));
     }
 
     /**
@@ -119,17 +104,9 @@ public class GameController {
         }
 
         TribeCard card = model.getBoard().getTopCardFromIndex(cardIndex);
-        PickTopRowDTO dto = new PickTopRowDTO(playerNickname, cardIndex); //prepares the dto if needed
 
-        model.getChangeHandler().registerState();
         CardTopRowControllerVisitor cardPickerVisitor = new CardTopRowControllerVisitor(turnManager, activePlayer, model);
-
         card.accept(cardPickerVisitor);
-
-        //if the operation was not successful the notice won't be sent
-        listeners.forEach(l -> l.update(dto));
-        model.getChangeHandler().getChanges().forEach(c ->
-                listeners.forEach(l -> l.update(c)));
     }
 
     /**
@@ -152,15 +129,7 @@ public class GameController {
         }
 
         BuildingCard card = model.getBoard().getBottomBuildingFromIndex(cardIndex);
-        PickBottomBuildingsDTO dto = new PickBottomBuildingsDTO(playerNickname, cardIndex); //prepares the dto if needed
-
-        model.getChangeHandler().registerState();
         turnManager.getPhase().pickCardFromBottom(turnManager, activePlayer, card, model.getBoard());
-
-        //if the operation was not successful the notice won't be sent
-        listeners.forEach(l -> l.update(dto));
-        model.getChangeHandler().getChanges().forEach(c ->
-                listeners.forEach(l -> l.update(c)));
     }
 
     /**
@@ -181,15 +150,7 @@ public class GameController {
         }
 
         BuildingCard card = model.getBoard().getTopBuildingFromIndex(cardIndex);
-        PickTopBuildingsDTO dto = new PickTopBuildingsDTO(playerNickname, cardIndex); //prepares the dto if needed
-
-        model.getChangeHandler().registerState();
         turnManager.getPhase().pickCardFromTop(turnManager, activePlayer, card, model.getBoard());
-
-        //if the operation was not successful the notice won't be sent
-        listeners.forEach(l -> l.update(dto));
-        model.getChangeHandler().getChanges().forEach(c ->
-                listeners.forEach(l -> l.update(c)));
     }
 
     /**
@@ -206,22 +167,7 @@ public class GameController {
         if (!activePlayer.getNickname().equals(playerNickname)) {
             throw new IllegalPhaseActionException("It's not " + playerNickname + " turn !");
         }
-
-        model.getChangeHandler().registerState();
         turnManager.getPhase().skipPick(turnManager, activePlayer);
-
-        model.getChangeHandler().getChanges().forEach(c ->
-                listeners.forEach(l -> l.update(c)));
-    }
-
-    /**
-     * Sends to the clients the info for the initial game state as a SmallModelEditor.
-     *
-     * @throws IllegalStateException if the game has already ended.
-     */
-    public void sendGameStartInfo() throws IllegalStateException {
-        if (isGameFinished()) throw new IllegalStateException();
-        listenerMap.forEach((s, l) -> l.update(model.getChangeHandler().getStartingStateAsDTO(s)));
     }
 
     /**
@@ -233,24 +179,19 @@ public class GameController {
      */
 
     public void handleChooseTotemColor(String playerNickname, Color color) {
-        Player p = model.getPlayers().stream()
+        model.getPlayers().stream()
                 .filter(player -> player.getNickname().equals(playerNickname))
-                .findFirst()
-                .orElse(null);
-
-        if (p != null) {
-            p.setPlayerColor(color);
-        }
+                .findFirst().ifPresent(p -> p.setPlayerColor(color));
 
         ChooseTotemColorDTO dto = new ChooseTotemColorDTO(playerNickname, color);
-        listeners.forEach(l -> l.update(dto));
+        notifier.notifyChange(dto);
 
         boolean areAllPlayersReady = model.getPlayers().stream().allMatch(player -> player.getPlayerColor() != null);
 
         // if all the players have selected di color we send the DTO to start the game
         if (areAllPlayersReady) {
             MesosStartedDTO dto2 = new MesosStartedDTO();
-            listeners.forEach(l -> l.update(dto2));
+            notifier.notifyChange(dto2);
         }
 
     }
@@ -263,27 +204,4 @@ public class GameController {
     public boolean isGameFinished() {
         return model.getBoard().isEndGame();
     }
-
-    /**
-     * Subscribes a listener to the game controller updates.
-     *
-     * @param listener the ModelListener to be added.
-     * @param nickname the nickname associated with the listener.
-     */
-    public void addListener(ModelListener listener, String nickname) {
-        listeners.add(listener);
-        listenerMap.put(nickname, listener);
-    }
-
-    /**
-     * Unsubscribes a listener from the game controller updates.
-     *
-     * @param listener the ModelListener to be removed.
-     * @param nickname the nickname associated with the listener.
-     */
-    public void removeListener(ModelListener listener, String nickname) {
-        listeners.remove(listener);
-        listenerMap.remove(nickname);
-    }
-
 }

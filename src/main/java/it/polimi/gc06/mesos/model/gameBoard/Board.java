@@ -1,6 +1,8 @@
 package it.polimi.gc06.mesos.model.gameBoard;
 
+import it.polimi.gc06.mesos.dtos.*;
 import it.polimi.gc06.mesos.gameExceptions.IllegalGameActionException;
+import it.polimi.gc06.mesos.model.DTONotifier;
 import it.polimi.gc06.mesos.model.Era;
 import it.polimi.gc06.mesos.model.GameModel;
 import it.polimi.gc06.mesos.model.Player;
@@ -37,7 +39,9 @@ public class Board implements DrawSubject {
 
     private final ArrayList<DrawObserver> observers;
 
-    public Board(TurnOrderTile turnOrderTile, List<TileSlot> offerTrack) {
+    private final DTONotifier notifier;
+
+    public Board(TurnOrderTile turnOrderTile, List<TileSlot> offerTrack, DTONotifier notifier) {
 
         this.turnOrderTile = turnOrderTile;
         this.offerTrack = offerTrack;
@@ -58,6 +62,8 @@ public class Board implements DrawSubject {
         currentEra = Era.ERA_I;
         isEndGame = false;
         endMatchTimestamp = null;
+
+        this.notifier = notifier;
     }
 
 
@@ -298,6 +304,10 @@ public class Board implements DrawSubject {
             if (model.getTribeCardsDeck().get(currentEra).isEmpty()) {
                 newEraHasCome = true;
                 currentEra = currentEra.nextEra();
+
+                //notify players of new era via gateway
+                notifier.notifyChange(new EraChangeDTO(currentEra));
+
                 if (model.getTribeCardsDeck().get(currentEra) == null || model.getTribeCardsDeck().get(currentEra).isEmpty()) {
                     throw new IllegalStateException("Tribe cards deck for new current era cannot be null or empty during top row population (after new era has come)");
                 }
@@ -313,7 +323,11 @@ public class Board implements DrawSubject {
             moveBuildingsFromTopToBottom();
             // populate the top building cards space with the cards from deck of the new current era
             populateTopBuildings();
+
         }
+
+        notifier.notifyChange(new TopRowRefillDTO(new ArrayList<>(topRow),
+                new ArrayList<>(bottomRow),model.getTribeCardsDeck().values().stream().mapToInt(ArrayList::size).sum()));
     }
 
     /**
@@ -416,6 +430,9 @@ public class Board implements DrawSubject {
         topBuildings.clear();
         topBuildings.addAll(buildingsDecks.get(currentEra));
         buildingsDecks.get(currentEra).clear();
+
+        //sends notification
+        notifier.notifyChange(new BuildingsRefillDTO(new ArrayList<>(topBuildings),new ArrayList<>(bottomBuildings)));
     }
 
     /**
@@ -499,9 +516,14 @@ public class Board implements DrawSubject {
             throw new IllegalArgumentException("Card not found in the top row");
         }
 
+        int cardIndex = topRow.indexOf(card);
+
         notifyObserverBuildings(player);
         topRow.remove(card);
         player.addCharacterCards(card);
+
+        //notify clients via gateway
+        notifier.notifyChange(new PickTopRowDTO(player.getNickname(), cardIndex));
     }
 
     public void pickCardFromTopRow(Player player, EventCard card) throws IllegalArgumentException {
@@ -532,9 +554,14 @@ public class Board implements DrawSubject {
             throw new IllegalArgumentException("Card not found in the bottom row");
         }
 
+        int cardIndex = bottomRow.indexOf(card);
+
         notifyObserverBuildings(player);
         bottomRow.remove(card);
         player.addCharacterCards(card);
+
+        //notify clients via gateway
+        notifier.notifyChange(new PickBottomRowDTO(player.getNickname(), cardIndex));
     }
 
     public void pickCardFromBottomRow(Player player, EventCard card) throws IllegalArgumentException {
@@ -578,9 +605,14 @@ public class Board implements DrawSubject {
          * topBuildings but not added to the player, leaving the game state inconsistent. Consider implementing
          * proper transaction semantics or rollback mechanisms to ensure atomicity of this operation.*/
 
+        int cardIndex = topBuildings.indexOf(building);
+
         player.removeFoodTokens(finalCost);
         topBuildings.remove(building);
         building.accept(new AddToBuildingsVisitor(player));
+
+        //notify clients via gateway
+        notifier.notifyChange(new PickTopBuildingsDTO(player.getNickname(), cardIndex));
     }
 
 
@@ -613,9 +645,14 @@ public class Board implements DrawSubject {
             throw new IllegalGameActionException("Player does not have enough food tokens to buy this building");
         }
 
+        int cardIndex = bottomBuildings.indexOf(building);
+
         player.removeFoodTokens(finalCost);
         bottomBuildings.remove(building);
         building.accept(new AddToBuildingsVisitor(player));
+
+        //notify clients via gateway
+        notifier.notifyChange(new PickBottomBuildingsDTO(player.getNickname(), cardIndex));
     }
 
     public boolean isEndGame() {

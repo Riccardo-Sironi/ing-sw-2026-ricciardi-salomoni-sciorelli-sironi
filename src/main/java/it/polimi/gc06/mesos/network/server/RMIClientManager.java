@@ -4,6 +4,7 @@ import it.polimi.gc06.mesos.controller.GameController;
 import it.polimi.gc06.mesos.controller.commands.ControllerCommand;
 import it.polimi.gc06.mesos.dtos.ErrorDTO;
 import it.polimi.gc06.mesos.dtos.SmallModelEditor;
+import it.polimi.gc06.mesos.model.DTONotifier;
 import it.polimi.gc06.mesos.network.client.ServerConnection;
 
 import java.util.concurrent.BlockingQueue;
@@ -59,7 +60,11 @@ public class RMIClientManager implements VirtualClient {
     @Override
     public void setController(GameController controller) {
         this.controller = controller;
-        controller.addListener(this, nickname);
+    }
+
+    @Override
+    public void subscribeToNotifier(DTONotifier notifier) {
+        notifier.addListener(this, nickname);
     }
 
     /**
@@ -142,7 +147,6 @@ public class RMIClientManager implements VirtualClient {
         if (closed) return;
         closed = true;
         if (nickname != null) sharedManager.logout(nickname);
-        if (controller != null) controller.removeListener(this, nickname);
     }
 
     /**
