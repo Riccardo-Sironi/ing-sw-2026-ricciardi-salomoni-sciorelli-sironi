@@ -24,6 +24,13 @@ public class EndOfRoundPhase extends Phase {
         this.endOfRoundPickPlayerIndex = 0;
     }
 
+    /**
+     * This method is used to check if any player has the specific building card that grants
+     * an extra card pick from the top at the EndOfRound Phase.
+     *
+     * @param turnManager the turn manager controlling the flow of the game.
+     * @throws IllegalPhaseActionException if this action cannot be performed in the current context.
+     */
     public void checkForEndOfRoundPick(TurnManager turnManager) throws IllegalPhaseActionException {
         ArrayList<Player> players = (ArrayList<Player>) turnManager.getPlayersOrder();
 
@@ -44,6 +51,17 @@ public class EndOfRoundPhase extends Phase {
         justStarted = false;
     }
 
+    /**
+     * This method is used to allow the player to pick a CharacterCard from the top row during the end-of-round phase.
+     * After picking, the player's top draw count is reset, the active player index is reset,
+     * and the standard end-of-round routine resumes.
+     *
+     * @param turnManager the turn manager controlling the flow of the game.
+     * @param player the player performing the action.
+     * @param card the CharacterCard being picked.
+     * @param board the game board.
+     * @throws IllegalPhaseActionException if the phase hasn't started or the player has no top draws left.
+     */
     @Override
     public void pickCardFromTop(TurnManager turnManager, Player player, CharacterCard card, Board board) throws IllegalPhaseActionException {
 
@@ -62,6 +80,18 @@ public class EndOfRoundPhase extends Phase {
         endOfRound(turnManager, board, turnManager.getGameModel());
     }
 
+
+    /**
+     * This method is used to allow the player to pick a BuildingCard from the top row during the end-of-round phase.
+     * After picking, the player's top draw count is reset, the active player index is reset,
+     * and the standard end-of-round routine resumes.
+     *
+     * @param turnManager the turn manager controlling the flow of the game.
+     * @param player the player performing the action.
+     * @param card the CharacterCard being picked.
+     * @param board the game board.
+     * @throws IllegalPhaseActionException if the phase hasn't started or the player has no top draws left.
+     */
     @Override
     public void pickCardFromTop(TurnManager turnManager, Player player, BuildingCard card, Board board) throws IllegalPhaseActionException, IllegalArgumentException, IllegalGameActionException {
 
@@ -102,6 +132,17 @@ public class EndOfRoundPhase extends Phase {
         }
     }
 
+
+    /**
+     * This method checks if a player has the right to skip picking a card from the top row.
+     * During this phase, a player with remaining draws can only skip if there are
+     * no CharacterCards available in the top row.
+     *
+     * @param player the player requesting to skip.
+     * @param board  the game board containing the top row cards.
+     * @return {@code true} if the player is allowed to skip, {@code false} otherwise.
+     * @throws IllegalPhaseActionException if this check cannot be performed in the current context.
+     */
     @Override
     public boolean checkForRightToSkip(Player player, Board board) throws IllegalPhaseActionException {
         if (player.getTopDrawNum() > 0) {
@@ -115,7 +156,7 @@ public class EndOfRoundPhase extends Phase {
     }
 
     /**
-     * this method executes the end of round actions:
+     * This method executes the end of round actions:
      * resolves all event cards left in the bottom row for every player,
      * moves the top row cards to the bottom row and repopulate the top row
      *
@@ -158,6 +199,11 @@ public class EndOfRoundPhase extends Phase {
         }
     }
 
+    /**
+     * This method returns the string representation of this phase.
+     *
+     * @return the string "end_of_round".
+     */
     @Override
     public String toString() {
         return "end_of_round";

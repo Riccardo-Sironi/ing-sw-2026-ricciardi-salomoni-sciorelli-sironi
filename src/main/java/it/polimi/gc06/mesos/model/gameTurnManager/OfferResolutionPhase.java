@@ -13,6 +13,18 @@ public class OfferResolutionPhase extends Phase {
 
     private boolean isStarted = false;
 
+
+    /**
+     * This method starts the offer resolution phase for the specified player.
+     * Verifies that the player is the active one, applies the effects of the chosen tile slot,
+     * and checks whether the player has immediately finished their resolution.
+     *
+     * @param turnManager the turn manager controlling the flow of the game.
+     * @param player the player starting their offer resolution.
+     * @param tileSlot the tile slot chosen by the player on the offer track.
+     * @throws IllegalPhaseActionException if it is not the specified player's turn.
+     * @throws IllegalArgumentException if the provided tile slot is null.
+     */
     @Override
     public void startPlayerOfferResolution(TurnManager turnManager, Player player, TileSlot tileSlot) throws IllegalPhaseActionException {
         if (turnManager.getActivePlayer() != player) {
@@ -29,6 +41,16 @@ public class OfferResolutionPhase extends Phase {
         checkIfPlayerIsFinished(turnManager, player, turnManager.getGameModel().getBoard());
     }
 
+    /**
+     * This method allows the active player to pick a CharacterCard from the top row.
+     * Decrements the player's available top draws and checks if their turn is finished.
+     *
+     * @param turnManager the turn manager controlling the flow of the game.
+     * @param player the player performing the action.
+     * @param card the CharacterCard being picked.
+     * @param board the game board containing the cards.
+     * @throws IllegalPhaseActionException if the phase hasn't started or the player has no top draws left.
+     */
     @Override
     public void pickCardFromTop(TurnManager turnManager, Player player, CharacterCard card, Board board) throws IllegalPhaseActionException {
 
@@ -45,6 +67,16 @@ public class OfferResolutionPhase extends Phase {
         checkIfPlayerIsFinished(turnManager, player, board);
     }
 
+    /**
+     * This method allows the active player to pick a CharacterCard from the bottom row.
+     * Decrements the player's available bottom draws and checks if their turn is finished.
+     *
+     * @param turnManager the turn manager controlling the flow of the game.
+     * @param player the player performing the action.
+     * @param card the CharacterCard being picked.
+     * @param board the game board containing the cards.
+     * @throws IllegalPhaseActionException if the phase hasn't started or the player has no bottom draws left.
+     */
     @Override
     public void pickCardFromBottom(TurnManager turnManager, Player player, CharacterCard card, Board board) throws IllegalPhaseActionException, IllegalArgumentException {
 
@@ -61,6 +93,16 @@ public class OfferResolutionPhase extends Phase {
         checkIfPlayerIsFinished(turnManager, player, board);
     }
 
+    /**
+     * This method allows the active player to pick a BuildingCard from the top row.
+     * Decrements the player's available top draws and checks if their turn is finished.
+     *
+     * @param turnManager the turn manager controlling the flow of the game.
+     * @param player the player performing the action.
+     * @param card the BuildingCard being picked.
+     * @param board the game board containing the cards.
+     * @throws IllegalPhaseActionException if the phase hasn't started or the player has no top draws left.
+     */
     @Override
     public void pickCardFromTop(TurnManager turnManager, Player player, BuildingCard card, Board board) throws IllegalPhaseActionException, IllegalArgumentException, IllegalGameActionException {
 
@@ -77,6 +119,16 @@ public class OfferResolutionPhase extends Phase {
         checkIfPlayerIsFinished(turnManager, player, board);
     }
 
+    /**
+     * This method allows the active player to pick a BuildingCard from the bottom row.
+     * Decrements the player's available bottom draws and checks if their turn is finished.
+     *
+     * @param turnManager the turn manager controlling the flow of the game.
+     * @param player the player performing the action.
+     * @param card the BuildingCard being picked.
+     * @param board the game board containing the cards.
+     * @throws IllegalPhaseActionException if the phase hasn't started or the player has no bottom draws left.
+     */
     @Override
     public void pickCardFromBottom(TurnManager turnManager, Player player, BuildingCard card, Board board) throws IllegalPhaseActionException, IllegalArgumentException, IllegalGameActionException {
 
@@ -93,6 +145,18 @@ public class OfferResolutionPhase extends Phase {
         checkIfPlayerIsFinished(turnManager, player, board);
     }
 
+    /**
+     * This method evaluates whether the active player has completed their offer resolution phase.
+     * If the player has no remaining draws (top or bottom), they are moved from the offer track
+     * to the turn order tile, and the next player on the offer track begins their resolution.
+     * If the offer track is completely empty, the game transitions to the {@link EventResolutionPhase}
+     * and automatically triggers the event resolution.
+     *
+     * @param turnManager the turn manager controlling the flow of the game.
+     * @param player the player currently resolving their offer.
+     * @param board the game board.
+     * @throws IllegalPhaseActionException if the offer resolution phase has not been started.
+     */
     public void checkIfPlayerIsFinished(TurnManager turnManager, Player player, Board board) throws IllegalPhaseActionException {
 
         if (!isStarted) {
@@ -146,6 +210,15 @@ public class OfferResolutionPhase extends Phase {
         }
     }
 
+    /**
+     * This method checks if the player has the right to skip picking from the top row.
+     * A player can only skip if there are no CharacterCards remaining in the top row.
+     *
+     * @param player the player requesting to skip.
+     * @param board  the game board containing the top row cards.
+     * @return {@code true} if the player is allowed to skip, {@code false} otherwise.
+     * @throws IllegalPhaseActionException if an invalid state occurs during the check.
+     */
     private boolean checkForRightToSkipTop(Player player, Board board) throws IllegalPhaseActionException {
         if (player.getTopDrawNum() > 0) {
             CharactersPresenceVisitor charactersPresenceVisitor = new CharactersPresenceVisitor();
@@ -156,6 +229,15 @@ public class OfferResolutionPhase extends Phase {
         }
     }
 
+    /**
+     * This method checks if the player has the right to skip picking from the bottom row.
+     * A player can only skip if there are no CharacterCards remaining in the bottom row.
+     *
+     * @param player the player requesting to skip.
+     * @param board  the game board containing the top row cards.
+     * @return {@code true} if the player is allowed to skip, {@code false} otherwise.
+     * @throws IllegalPhaseActionException if an invalid state occurs during the check.
+     */
     private boolean checkForRightToSkipBottom(Player player, Board board) throws IllegalPhaseActionException {
         if (player.getBottomDrawNum() > 0) {
             CharactersPresenceVisitor charactersPresenceVisitor = new CharactersPresenceVisitor();
@@ -189,11 +271,24 @@ public class OfferResolutionPhase extends Phase {
         }
     }
 
+    /**
+     * This method validates if the specified player has the right to skip their picks entirely.
+     * Combines the checks for both the top and bottom rows.
+     *
+     * @param player the player requesting to skip.
+     * @param board the game board.
+     * @return {@code true} if the player can skip their remaining picks, {@code false} otherwise.
+     */
     @Override
     public boolean checkForRightToSkip(Player player, Board board) {
         return checkForRightToSkipTop(player, board) && checkForRightToSkipBottom(player, board);
     }
 
+    /**
+     * This method returns the string representation of this phase.
+     *
+     * @return the string "offer_resolution".
+     */
     @Override
     public String toString() {
         return "offer_resolution";
