@@ -40,28 +40,48 @@ public class TCPClientManager implements VirtualClient{
         actionQueue.put(command);
     }
 
+    /**
+     * Gives you the nickname of the player.
+     * @return The player's current nickname.
+     */
     @Override
     public String getNickname() {
         return nickname;
     }
 
+    /**
+     * Hooks this client up to the game controller, allowing it to listen about game updates.
+     * @param controller The active game controller.
+     */
     @Override
     public void setController(GameController controller) {
         controller.addListener(this, nickname);
         this.controller = controller;
     }
 
+    /**
+     * Cuts the connection logic loose and unregisters event listeners.
+     * Basically hangs up the phone on the game.
+     */
     @Override
     public void closeConnection() {
         controller.removeListener(this, nickname);
         Thread.currentThread().interrupt();
     }
 
+    /**
+     * Sets where the controller commands from this client should queue up.
+     * @param queue The queue ready to take incoming player actions.
+     */
     @Override
     public void setActionQueue(BlockingQueue<ControllerCommand> queue) {
         this.actionQueue = queue;
     }
 
+    /**
+     * Shoots an error message text as a DTO notice directly to the client screen.
+     * @param message The alert text to show.
+     */
     @Override
     public void sendErrorMessage(String message) {
         try {
@@ -72,6 +92,10 @@ public class TCPClientManager implements VirtualClient{
         }
     }
 
+    /**
+     * Keeps the wheels turning, constantly taking new updates and tossing them
+     * over the live TCP output stream down to the client. Stops if things break.
+     */
     @Override
     public void run() {
         while (!Thread.currentThread().isInterrupted()) {
@@ -90,6 +114,10 @@ public class TCPClientManager implements VirtualClient{
         }
     }
 
+    /**
+     * Drops a newly created small model patch onto the outgoing notice queue.
+     * @param dto the update object.
+     */
     @Override
     public void update(SmallModelEditor dto) {
         try {

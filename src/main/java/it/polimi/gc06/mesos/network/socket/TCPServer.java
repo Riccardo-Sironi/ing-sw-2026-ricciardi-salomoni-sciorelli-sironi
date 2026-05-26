@@ -7,12 +7,21 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+/**
+ * Spins up the big TCP listener on the server side.
+ * Catches incoming players knocking on the specified port.
+ */
 public class TCPServer implements Runnable {
     private final int port;
     private final MatchManager sharedManager;
     private boolean running;
     private ServerSocket serverSocket;
 
+    /**
+     * Builds the listener logic, ready to be tossed into a thread.
+     * @param port the TCP port to hog.
+     * @param sharedManager the core MatchManager tracking all rooms.
+     */
     public TCPServer(int port, MatchManager sharedManager) {
         this.port = port;
         this.sharedManager = sharedManager;
@@ -20,6 +29,10 @@ public class TCPServer implements Runnable {
         serverSocket = null;
     }
 
+    /**
+     * Sits and spins, waiting for sockets. Each new connection
+     * gets thrown to a fresh TCPClientReceiver to handle its business.
+     */
     @Override
     public void run() {
         try {

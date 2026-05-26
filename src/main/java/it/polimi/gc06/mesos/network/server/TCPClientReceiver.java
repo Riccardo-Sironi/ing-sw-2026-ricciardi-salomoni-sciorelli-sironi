@@ -9,6 +9,10 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.SocketException;
 
+/**
+ * Handles incoming traffic from a single TCP client connection on the server.
+ * This runs in its own thread, reading objects and dispatching them down to the MatchManager or GameController.
+ */
 public class TCPClientReceiver implements Runnable {
 
     private final MatchManager sharedManager;
@@ -17,6 +21,11 @@ public class TCPClientReceiver implements Runnable {
     private String nickname;
     private TCPClientManager virtualClient;
 
+    /**
+     * Wires up the receiver to a fresh socket from the listener.
+     * @param socket The direct pipe to the client.
+     * @param sharedManager The match manager dictating game rooms.
+     */
     public TCPClientReceiver(Socket socket, MatchManager sharedManager) throws IOException {
         this.sharedManager = sharedManager;
         out = new ObjectOutputStream(socket.getOutputStream());
@@ -25,6 +34,10 @@ public class TCPClientReceiver implements Runnable {
         virtualClient = null;
     }
 
+    /**
+     * The main loop to accept new commands or string requests coming from the input stream.
+     * Routes everything to the right logic and pushes back "OK"/"KO" answers.
+     */
     @Override
     public void run() {
 
@@ -136,6 +149,11 @@ public class TCPClientReceiver implements Runnable {
         }
     }
 
+    /**
+     * Quick helper to check if a string is actually just a number hiding in disguise.
+     * @param s The string to test.
+     * @return True if it's purely digits.
+     */
     private boolean isNumeric(String s) {
         try {
             Integer.parseInt(s);

@@ -65,11 +65,18 @@ public class TCPServerConnection implements ServerConnection, Runnable {
         isInsideMatch = false;
     }
 
+    /**
+     * Kicks off the parallel connection loop threads so the client starts listening and chatting.
+     */
     @Override
     public void startConnection() throws Exception {
         new Thread(this).start();
     }
 
+    /**
+     * Drops a model update straight to the listeners so the UI knows what happened.
+     * @param dto the newest game patch.
+     */
     @Override
     public void receiveDTO(SmallModelEditor dto) {
         System.out.println("'"+Thread.currentThread().getName()+"' client received a dto: "+dto.getClass().getSimpleName());
@@ -77,11 +84,19 @@ public class TCPServerConnection implements ServerConnection, Runnable {
         listeners.forEach(l -> l.update(dto));
     }
 
+    /**
+     * Ghost ping just because the interface asks for it. Only RMI cares about this!
+     */
     @Override
     public void ping() {
         //Does nothing (only valid in RMI)
     }
 
+    /**
+     * Try to send your nickname over to see if the server lets you in.
+     * @param nickname Your chosen username.
+     * @return True if you're good to go, false otherwise.
+     */
     @Override
     public boolean login(String nickname) throws Exception {
         //if the action was already performed before with success, exit
@@ -95,6 +110,10 @@ public class TCPServerConnection implements ServerConnection, Runnable {
         return false;
     }
 
+    /**
+     * Tell the server you're heading out.
+     * @param nickname The name to logout from.
+     */
     @Override
     public void logout(String nickname) throws Exception {
         if (!nicknameSent || isInsideMatch)
@@ -102,12 +121,21 @@ public class TCPServerConnection implements ServerConnection, Runnable {
         if (!request.store("LOGOUT")) throw new IllegalStateException("An action is already getting performed");
     }
 
+    /**
+     * Ask the server which match lobby you currently belong to.
+     * @return The ID of your current match setup.
+     */
     @Override
     public int getPlayersMatchId(String nickname) throws Exception {
         if (!request.store("MATCH_ID")) throw new IllegalStateException("An action is already getting performed");
         return (Integer) this.result.take();
     }
 
+    /**
+     * Pulls the detailed status info mapping roughly how many are inside the given ID.
+     * @param matchId Target match footprint.
+     * @return A status description line.
+     */
     @Override
     public String getMatchInfo(int matchId) throws Exception {
         if (!request.store("MATCH_STATUS" + matchId))
@@ -115,6 +143,10 @@ public class TCPServerConnection implements ServerConnection, Runnable {
         return (String) result.take();
     }
 
+    /**
+     * Grabs a printable text dump of any match that still has open seats.
+     * @return String representation of available match IDs and player counts.
+     */
     @Override
     public String getAvailableMatches() throws Exception {
         if (isInsideMatch) throw new IllegalStateException("Match already started");
@@ -122,6 +154,12 @@ public class TCPServerConnection implements ServerConnection, Runnable {
         return (String) result.take();
     }
 
+    /**
+     * Creates up a brand-new game lobby.
+     * @param numOfPlayers Target max seats (2, 3, 4, 5).
+     * @param nickname Who is booking the place.
+     * @return The resulting Match ID so you know where you landed.
+     */
     @Override
     public int createMatch(int numOfPlayers, String nickname) throws Exception {
         if (!nicknameSent)
@@ -137,6 +175,12 @@ public class TCPServerConnection implements ServerConnection, Runnable {
         return Integer.parseInt(r);
     }
 
+    /**
+     * Tries joining an already created game.
+     * @param matchId The room you want in.
+     * @param nickname Your alias.
+     * @return True if you slid in successfully.
+     */
     @Override
     public boolean joinMatch(int matchId, String nickname) throws Exception {
         if (!nicknameSent)
@@ -153,48 +197,77 @@ public class TCPServerConnection implements ServerConnection, Runnable {
         return false;
     }
 
+    /**
+     * Let the server know exactly where you are slamming your totem piece.
+     * @param nickname Who you are.
+     * @param tileIndex The track slot code (0-based).
+     */
     @Override
     public void placeTotem(String nickname, int tileIndex) throws Exception {
         if (!isInsideMatch) throw new IllegalStateException("Not inside a match yet.");
         commands.put(new ControllerCommand(nickname, tileIndex, Request.OFFER_TRACK_REQUEST));
     }
 
+    /**
+     * Ask the server to grab a card from the bottom display row.
+     * @param nickname The acting player nickname.
+     * @param cardIndex The column location requested.
+     */
     @Override
     public void pickCardFromBottom(String nickname, int cardIndex) throws Exception {
         if (!isInsideMatch) throw new IllegalStateException("Not inside a match yet.");
         commands.put(new ControllerCommand(nickname, cardIndex, Request.BOTTOM_CARD_REQUEST));
     }
 
+    /**
+     * Ask the server to snatch a card off the top display row instead.
+     */
     @Override
     public void pickCardFromTop(String nickname, int cardIndex) throws Exception {
         if (!isInsideMatch) throw new IllegalStateException("Not inside a match yet.");
         commands.put(new ControllerCommand(nickname, cardIndex, Request.TOP_CARD_REQUEST));
     }
 
+    /**
+     * Asks the server to grab a specialized building piece from the bottom queue.
+     */
     @Override
     public void pickBuildingFromBottom(String nickname, int cardIndex) throws Exception {
         if (!isInsideMatch) throw new IllegalStateException("Not inside a match yet.");
         commands.put(new ControllerCommand(nickname, cardIndex, Request.BOTTOM_BUILDING_REQUEST));
     }
 
+    /**
+     * Asks the server if you can secure a building directly from the top menu.
+     */
     @Override
     public void pickBuildingFromTop(String nickname, int cardIndex) throws Exception {
         if (!isInsideMatch) throw new IllegalStateException("Not inside a match yet.");
         commands.put(new ControllerCommand(nickname, cardIndex, Request.TOP_BUILDING_REQUEST));
     }
 
+    /**
+     * Asks the server if you can skip your turn and let the next player go instead.
+     */
     @Override
     public void handleSkip(String nickname) throws Exception {
         if (!isInsideMatch) throw new IllegalStateException("Not inside a match yet.");
         commands.put(new ControllerCommand(nickname, 0, Request.SKIP_REQUEST));
     }
 
+    /**
+     * Sends your preferred totem color over to server.
+     */
     @Override
     public void chooseTotemColor(String nickname, Color color) throws Exception {
         if (!isInsideMatch) throw new IllegalStateException("Not inside a match yet.");
         commands.put(new ControllerCommand(nickname, color.ordinal(), Request.CHOOSE_TOTEM_COLOR_REQUEST));
     }
 
+    /**
+     * The main loop keeping the TCP engine alive.
+     * Manages input socket streams and routes them back or sets endgame statuses.
+     */
     @Override
     public void run() {
 
@@ -244,6 +317,9 @@ public class TCPServerConnection implements ServerConnection, Runnable {
         }
     }
 
+    /**
+     * Sits running forever to dump synchronous state requests (like login) onto the out queue.
+     */
     private void requestHandlerLoop(){
         while (true) try{
             String req = request.look();
@@ -258,6 +334,9 @@ public class TCPServerConnection implements ServerConnection, Runnable {
         }
     }
 
+    /**
+     * Polling mechanism that drains your controller actions and shoves them to the output stream.
+     */
     private void commandHandlerLoop(){
         while(true) try{
             ControllerCommand cmd = commands.poll(5,TimeUnit.MILLISECONDS);
@@ -270,17 +349,26 @@ public class TCPServerConnection implements ServerConnection, Runnable {
         } catch(IOException | InterruptedException _){}
     }
 
+    /**
+     * Register a new component waiting for incoming network updates.
+     */
     @Override
     public void subscribe(ModelListener listener) {
         listeners.add(listener);
     }
 
+    /**
+     * Pulls the plug on an active listener when it's done rendering frames.
+     */
     @Override
     public void unsubscribe(ModelListener listener) {
         listeners.remove(listener);
         if (listener.equals(prioritizedListener)) prioritizedListener = null;
     }
 
+    /**
+     * Register a new prioritized component waiting for incoming network updates.
+     */
     @Override
     public void prioritizedSubscribe(Client listener) {
         prioritizedListener = listener;
