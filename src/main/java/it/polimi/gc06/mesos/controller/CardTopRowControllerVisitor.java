@@ -20,11 +20,23 @@ public class CardTopRowControllerVisitor extends CardVisitor {
         this.model = model;
     }
 
+    /**
+     * This method visits a CharacterCard and triggers the logic to pick it from the top row.
+     *
+     * @param card the CharacterCard being visited.
+     */
     @Override
     public void visit(CharacterCard card) {
         turnManager.getPhase().pickCardFromTop(turnManager, activePlayer, card, model.getBoard());
     }
 
+    /**
+     * This method visits an EventCard.
+     * Since EventCards cannot be directly picked by players, this method throws an exception.
+     *
+     * @param card the EventCard being visited.
+     * @throws IllegalGameActionException ALWAYS, as event cards cannot be picked.
+     */
     @Override
     public void visit(EventCard card) {
         throw new IllegalGameActionException("Event cards cannot be picked!");

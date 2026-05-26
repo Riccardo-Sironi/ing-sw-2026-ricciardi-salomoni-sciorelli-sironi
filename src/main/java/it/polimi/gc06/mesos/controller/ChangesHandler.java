@@ -42,8 +42,10 @@ public class ChangesHandler {
 
     /**
      * Returns all changes from last state registration.
+     * It compares the current model state with the previously registered one and produces a list of
+     * SmallModelEditor updates that represent the deltas.
      *
-     * @return all the {@link PropertyChangeEvent} reassuming the changes.
+     * @return all the {@link SmallModelEditor} DTOs summarizing the changes.
      */
     public ArrayList<SmallModelEditor> getChanges() {
 
@@ -140,7 +142,8 @@ public class ChangesHandler {
     }
 
     /**
-     * Internally saves the state to prepare next getChanges()
+     * Internally saves the current game state to prepare for the next getChanges() call.
+     * This snapshot is used to compute deltas.
      */
     public void registerState() {
         lastRound = turnManager.getRound();
@@ -175,17 +178,27 @@ public class ChangesHandler {
         ps.setActive(true);
     }
 
+    /**
+     * Retrieves the first player who had the right to skip during the last registered state.
+     *
+     * @return the Player who could skip, or null if none was found.
+     */
     private Player getPlayerWhoCouldSkip() {
         return lastPlayersState.stream().filter(PlayerState::canSkip).map(PlayerState::getPlayer).findFirst().orElse(null);
     }
 
+    /**
+     * Retrieves the player who was active during the last registered state.
+     *
+     * @return the last active Player, or null if none was found.
+     */
     private Player getLastActivePlayer() {
         return lastPlayersState.stream().filter(PlayerState::isActive).map(PlayerState::getPlayer).findFirst().orElse(null);
     }
 
     /**
-     * Returns the current game state expressed in {@link SmallModelEditor}
-     * Should be used only when the game is just started.
+     * Returns the current game state expressed as a {@link SmallModelEditor}.
+     * Should be used only when the game has just started to provide the full initial setup to a client.
      *
      * @param nickname the nickname of the player that will receive this DTO.
      * @return a {@link SmallModelEditor} containing the full initial setup.
@@ -262,58 +275,128 @@ public class ChangesHandler {
             this.bottomDraw = 0;
         }
 
+        /**
+         * Checks if the player could skip an action.
+         *
+         * @return true if they can skip, false otherwise.
+         */
         public boolean canSkip() {
             return canSkip;
         }
 
+        /**
+         * Checks if the player is currently active.
+         *
+         * @return true if active, false otherwise.
+         */
         public boolean isActive() {
             return isActive;
         }
 
+        /**
+         * Retrieves the player entity associated with this state.
+         *
+         * @return the player object.
+         */
         public Player getPlayer() {
             return player;
         }
 
+        /**
+         * Another getter for checking if the player can skip an action.
+         *
+         * @return true if they can skip, false otherwise.
+         */
         public boolean isCanSkip() {
             return canSkip;
         }
 
+        /**
+         * Sets whether the player can skip an action.
+         *
+         * @param canSkip true to allow skipping, false to deny.
+         */
         public void setCanSkip(boolean canSkip) {
             this.canSkip = canSkip;
         }
 
+        /**
+         * Sets whether the player is currently active.
+         *
+         * @param active true if the player becomes active, false otherwise.
+         */
         public void setActive(boolean active) {
             isActive = active;
         }
 
+        /**
+         * Retrieves the player's food tokens in this state.
+         *
+         * @return the number of food tokens.
+         */
         public int getFood() {
             return food;
         }
 
+        /**
+         * Sets the player's food tokens in this state.
+         *
+         * @param food the number of food tokens.
+         */
         public void setFood(int food) {
             this.food = food;
         }
 
+        /**
+         * Retrieves the player's prestige tokens in this state.
+         *
+         * @return the number of prestige tokens.
+         */
         public int getPrestige() {
             return prestige;
         }
 
+        /**
+         * Sets the player's prestige tokens in this state.
+         *
+         * @param prestige the number of prestige tokens.
+         */
         public void setPrestige(int prestige) {
             this.prestige = prestige;
         }
 
+        /**
+         * Retrieves the number of available top draws for the player.
+         *
+         * @return the top draw count.
+         */
         public int getTopDraw() {
             return topDraw;
         }
 
+        /**
+         * Sets the number of available top draws for the player.
+         *
+         * @param topDraw the top draw count to set.
+         */
         public void setTopDraw(int topDraw) {
             this.topDraw = topDraw;
         }
 
+        /**
+         * Retrieves the number of available bottom draws for the player.
+         *
+         * @return the bottom draw count.
+         */
         public int getBottomDraw() {
             return bottomDraw;
         }
 
+        /**
+         * Sets the number of available bottom draws for the player.
+         *
+         * @param bottomDraw the bottom draw count to set.
+         */
         public void setBottomDraw(int bottomDraw) {
             this.bottomDraw = bottomDraw;
         }

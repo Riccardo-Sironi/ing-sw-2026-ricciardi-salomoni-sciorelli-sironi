@@ -28,12 +28,17 @@ public class GameController {
         this.listenerMap = new HashMap<>();
     }
 
+    /**
+     * Retrieves the main game model associated with this controller.
+     *
+     * @return the GameModel instance.
+     */
     public GameModel getModel() {
         return model;
     }
 
     /**
-     * Handles the request of tile placement
+     * Handles the request of tile placement.
      *
      * @param playerNickname the player performing the action.
      * @param tileIndex      the index of the tile where the player wants to be placed.
@@ -72,7 +77,7 @@ public class GameController {
      * @param playerNickname the player performing the action.
      * @param cardIndex      the index of the card that the player wants to pick.
      * @throws IllegalPhaseActionException if the player is trying to perform an action that is not his turn.
-     * @throws IllegalGameActionException  if the action is not allowed in the current phase
+     * @throws IllegalGameActionException  if the action is not allowed in the current phase.
      * @throws IndexOutOfBoundsException   if the card index is out of bounds.
      */
     public void handleCardPickBottomRow(String playerNickname, int cardIndex) throws IllegalGameActionException, IndexOutOfBoundsException {
@@ -192,7 +197,7 @@ public class GameController {
      *
      * @param playerNickname the player performing the action.
      * @throws IllegalGameActionException if the action is not allowed in the current phase or if the player is trying
-     *                                    to perform an action that is not his turn.
+     * to perform an action that is not his turn.
      */
     public void handlePickSkip(String playerNickname) throws IllegalGameActionException {
         TurnManager turnManager = model.getTurnManager();
@@ -210,7 +215,7 @@ public class GameController {
     }
 
     /**
-     * Sends to the clients the info for the initial game state as @link {SmallModelEditor}.
+     * Sends to the clients the info for the initial game state as a SmallModelEditor.
      *
      * @throws IllegalStateException if the game has already ended.
      */
@@ -220,7 +225,7 @@ public class GameController {
     }
 
     /**
-     * this method is used to handle the request of totem color choice from the player,
+     * This method is used to handle the request of totem color choice from the player,
      * it updates the model and notifies all clients about the change.
      *
      * @param playerNickname the nickname of the player who is choosing the totem color.
@@ -250,15 +255,32 @@ public class GameController {
 
     }
 
+    /**
+     * Checks whether the game has reached the end state.
+     *
+     * @return true if the game is finished, false otherwise.
+     */
     public boolean isGameFinished() {
         return model.getBoard().isEndGame();
     }
 
+    /**
+     * Subscribes a listener to the game controller updates.
+     *
+     * @param listener the ModelListener to be added.
+     * @param nickname the nickname associated with the listener.
+     */
     public void addListener(ModelListener listener, String nickname) {
         listeners.add(listener);
         listenerMap.put(nickname, listener);
     }
 
+    /**
+     * Unsubscribes a listener from the game controller updates.
+     *
+     * @param listener the ModelListener to be removed.
+     * @param nickname the nickname associated with the listener.
+     */
     public void removeListener(ModelListener listener, String nickname) {
         listeners.remove(listener);
         listenerMap.remove(nickname);
