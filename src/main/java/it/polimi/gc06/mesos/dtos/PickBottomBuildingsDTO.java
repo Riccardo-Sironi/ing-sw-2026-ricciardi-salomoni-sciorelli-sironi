@@ -3,16 +3,28 @@ package it.polimi.gc06.mesos.dtos;
 import it.polimi.gc06.mesos.model.cards.Card;
 import it.polimi.gc06.mesos.view.smallModel.SmallModel;
 
+/**
+ * Lets the UI know someone picked up a building card from the bottom row.
+ */
 public class PickBottomBuildingsDTO implements SmallModelEditor {
 
     private final String player;
     private final int cardIndex;
 
+    /**
+     * @param player Who picked it.
+     * @param cardIndex Which slot they picked the card from.
+     */
     public PickBottomBuildingsDTO(String player, int cardIndex) {
         this.player = player;
         this.cardIndex = cardIndex;
     }
 
+    /**
+     * {@inheritDoc}
+     * @param smallModel the client's small model.
+     * @throws IllegalStateException if the target player is not found.
+     */
     @Override
     public void edit(SmallModel smallModel) {
         Card card = smallModel.getBottomBuildings().remove(cardIndex);
@@ -25,14 +37,24 @@ public class PickBottomBuildingsDTO implements SmallModelEditor {
         }
     }
 
+    /**
+     * @return the nickname of the drafting player.
+     */
     public String getPlayer() {
         return player;
     }
 
+    /**
+     * @return the index from where the card was drafted.
+     */
     public int getCardIndex() {
         return cardIndex;
     }
 
+    /**
+     * {@inheritDoc}
+     * @param visitor
+     */
     @Override
     public void accept(DTOvisitor visitor) {
         visitor.visit(this);

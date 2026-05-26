@@ -3,16 +3,29 @@ package it.polimi.gc06.mesos.dtos;
 import it.polimi.gc06.mesos.view.smallModel.PlayerView;
 import it.polimi.gc06.mesos.view.smallModel.SmallModel;
 
+/**
+ * Tells the UI that a player successfully locked their totem into a slot on the offer track.
+ */
 public class TotemOfferMoveDTO implements SmallModelEditor {
 
     private final String player;
     private final int index;
 
+    /**
+     * @param player The active player setting their totem down.
+     * @param index  Which exact index slot they stole on the track.
+     */
     public TotemOfferMoveDTO(String player, int index) {
         this.player = player;
         this.index = index;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param smallModel the client's small model.
+     * @throws IllegalStateException if the player performing the placing doesn't exist.
+     */
     @Override
     public void edit(SmallModel smallModel) {
         PlayerView view;
@@ -32,15 +45,26 @@ public class TotemOfferMoveDTO implements SmallModelEditor {
         smallModel.getOfferTrack().get(index).setPlayer(view);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param visitor
+     */
     @Override
     public void accept(DTOvisitor visitor) {
         visitor.visit(this);
     }
 
+    /**
+     * @return which slot the track was pinned on.
+     */
     public int getIndex() {
         return index;
     }
 
+    /**
+     * @return the player that acted.
+     */
     public String getPlayer() {
         return player;
     }

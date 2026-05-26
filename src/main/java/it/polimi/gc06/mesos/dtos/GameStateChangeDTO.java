@@ -9,6 +9,9 @@ import it.polimi.gc06.mesos.view.smallModel.TileSlotView;
 import java.util.ArrayList;
 import java.util.Collection;
 
+/**
+ * Bundles the major structural transitions: new era, new round, new phase, or game over rankings.
+ */
 public class GameStateChangeDTO implements SmallModelEditor {
 
     private final Era era;
@@ -16,6 +19,9 @@ public class GameStateChangeDTO implements SmallModelEditor {
     private final String phase;
     private final ArrayList<Score> leaderboard;
 
+    /**
+     * Build for an Era change.
+     */
     public GameStateChangeDTO(Era era) {
         this.era = era;
         this.round = -1;
@@ -23,6 +29,9 @@ public class GameStateChangeDTO implements SmallModelEditor {
         leaderboard = null;
     }
 
+    /**
+     * Build for moving to the next Phase.
+     */
     public GameStateChangeDTO(String phase) {
         this.era = null;
         this.round = -1;
@@ -30,6 +39,9 @@ public class GameStateChangeDTO implements SmallModelEditor {
         leaderboard = null;
     }
 
+    /**
+     * Build for shifting the Round tracker up.
+     */
     public GameStateChangeDTO(int round) {
         this.era = null;
         this.round = round;
@@ -37,6 +49,9 @@ public class GameStateChangeDTO implements SmallModelEditor {
         leaderboard = null;
     }
 
+    /**
+     * Build for notifying the final leaderboard when the game has ended
+     */
     public GameStateChangeDTO(Collection<Score> scores) {
         this.era = null;
         this.round = -1;
@@ -44,6 +59,11 @@ public class GameStateChangeDTO implements SmallModelEditor {
         leaderboard = new ArrayList<>(scores);
     }
 
+    /**
+     * {@inheritDoc}
+     * @param smallModel the client's small model.
+     * @throws IllegalStateException if game state updates clash with existing limits.
+     */
     @Override
     public void edit(SmallModel smallModel) throws IllegalStateException {
         // TODO : should separate the events
@@ -78,11 +98,19 @@ public class GameStateChangeDTO implements SmallModelEditor {
         if (leaderboard != null) smallModel.setLeaderboard(leaderboard);
     }
 
+    /**
+     * {@inheritDoc}
+     * @param visitor
+     */
     @Override
     public void accept(DTOvisitor visitor) {
         visitor.visit(this);
     }
 
+    /**
+     * Quick check to see if this represents the end of the game rankings.
+     * @return true if the leaderboard is included.
+     */
     public boolean isEndgame() {
         return leaderboard != null;
     }

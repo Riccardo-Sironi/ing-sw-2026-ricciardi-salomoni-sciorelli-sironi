@@ -12,6 +12,9 @@ import it.polimi.gc06.mesos.view.smallModel.TileSlotView;
 import java.util.ArrayList;
 import java.util.Map;
 
+/**
+ * The "kickoff" DTO. Gives the client the full initial state of the world to build the view from scratch.
+ */
 public class LobbyInitializedDTO implements SmallModelEditor {
 
     private final ArrayList<String> playersOrder;
@@ -31,6 +34,9 @@ public class LobbyInitializedDTO implements SmallModelEditor {
     private final int bottomDrawNum;
     private final int tribeDeckSize;
 
+    /**
+     * Stuffs everything needed for the first round into one giant container
+     */
     public LobbyInitializedDTO(String nickname, ArrayList<String> playersOrder, Map<String, Color> colorMap,
                                Map<String, Integer> foodMap, Map<String, Integer> prestigeMap,
                                ArrayList<Card> topRow, ArrayList<Card> topBuildings,
@@ -53,6 +59,11 @@ public class LobbyInitializedDTO implements SmallModelEditor {
         this.tribeDeckSize = tribeDeckSize;
     }
 
+    /**
+     * {@inheritDoc}
+     * @param smallModel the client's small model.
+     * @throws IllegalStateException if the board hasn't been set up correctly yet or blocks the setup.
+     */
     @Override
     public void edit(SmallModel smallModel) throws IllegalStateException {
 
@@ -92,6 +103,10 @@ public class LobbyInitializedDTO implements SmallModelEditor {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * @param visitor
+     */
     @Override
     public void accept(DTOvisitor visitor) {
         visitor.visit(this);
