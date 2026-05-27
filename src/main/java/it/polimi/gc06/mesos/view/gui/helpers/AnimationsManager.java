@@ -221,17 +221,92 @@ public class AnimationsManager {
     }
 
     public static void refillCardsRowAnimation(List<Card> top, List<Card> bottom, HBox deckContainer, HBox topTarget, HBox bottomTarget, Runnable onEndAction) {
-        topTarget.getChildren().clear();
         bottomTarget.getChildren().clear();
 
-        animateCardListWithFly(0, top, deckContainer, topTarget, () -> {
-            // TODO : the cards from the bottom row are not actually drawn from the deck, they're moved from top to bottom,
-            //  we could do an animation for that action, but for now we keep the same of the top
+        // first we drop move the top cards in the bottom row (after discarding the old bottom cards)
+        animateCardListMove(0, bottom, topTarget, bottomTarget, () -> {
+            topTarget.getChildren().clear();
 
-            animateCardListWithFly(0, bottom, deckContainer, bottomTarget, () -> {
+            // then we draw the new cards from deck and put them in the top row
+            animateCardListWithFly(0, top, deckContainer, topTarget, () -> {
                 if (onEndAction != null) onEndAction.run();
             });
         });
+    }
+
+    private static void animateCardListMove(int index, List<Card> cards, HBox sourceBox, HBox targetBox, Runnable onListEnd) {
+        if (index >= cards.size()) {
+            if (onListEnd != null) onListEnd.run();
+            return;
+        }
+
+        Card card = cards.get(index);
+        if (card == null) {
+            animateCardListMove(index + 1, cards, sourceBox, targetBox, onListEnd);
+            return;
+        }
+
+        animateCardMove(card, index, sourceBox, targetBox, () -> {
+            animateCardListMove(index + 1, cards, sourceBox, targetBox, onListEnd);
+        });
+    }
+
+    private static void animateCardMove(Card card, int index, HBox sourceBox, HBox targetBox, Runnable onEndAction) {
+        Pane root = (Pane) sourceBox.getScene().getRoot();
+        Pane overlayPane = new Pane();
+        overlayPane.setMouseTransparent(true);
+        overlayPane.prefWidthProperty().bind(root.widthProperty());
+        overlayPane.prefHeightProperty().bind(root.heightProperty());
+        root.getChildren().add(overlayPane);
+
+        CardView droppingCard = new CardView(imageFetcher.fetch(card));
+        droppingCard.setPreserveRatio(true);
+        droppingCard.fitHeightProperty().bind(targetBox.heightProperty().multiply(0.85));
+
+        Bounds sourceScreen = sourceBox.localToScreen(sourceBox.getBoundsInLocal());
+        Bounds targetScreen = targetBox.localToScreen(targetBox.getBoundsInLocal());
+        Bounds rootScreen = root.localToScreen(root.getBoundsInLocal());
+
+        if (sourceScreen == null || targetScreen == null || rootScreen == null) {
+            root.getChildren().remove(overlayPane);
+            targetBox.getChildren().add(droppingCard);
+            if (onEndAction != null) onEndAction.run();
+            return;
+        }
+
+        double startX = sourceScreen.getMinX() - rootScreen.getMinX() + (sourceScreen.getWidth() / 2);
+        double startY = sourceScreen.getMinY() - rootScreen.getMinY();
+
+        double cardHeightEstim = targetScreen.getHeight() * 0.85;
+        double imageRatio = droppingCard.getImage().getWidth() / droppingCard.getImage().getHeight();
+        double cardWidthEstim = cardHeightEstim * imageRatio;
+
+        double targetX = targetScreen.getMinX() - rootScreen.getMinX() + (targetScreen.getWidth() / 2) - (cardWidthEstim / 2);
+        double targetY = targetScreen.getMinY() - rootScreen.getMinY() + (targetScreen.getHeight() / 2) - (cardHeightEstim / 2);
+
+        droppingCard.relocate(startX, startY);
+        overlayPane.getChildren().add(droppingCard);
+
+        double deltaX = targetX - startX;
+        double deltaY = targetY - startY;
+
+        TranslateTransition moveTransition = new TranslateTransition(Duration.millis(400), droppingCard);
+        moveTransition.setByX(deltaX);
+        moveTransition.setByY(deltaY);
+        moveTransition.setInterpolator(Interpolator.EASE_OUT);
+
+        moveTransition.setOnFinished(ev -> {
+            overlayPane.getChildren().remove(droppingCard);
+            droppingCard.setTranslateX(0);
+            droppingCard.setTranslateY(0);
+            root.getChildren().remove(overlayPane);
+
+            targetBox.getChildren().add(droppingCard);
+
+            if (onEndAction != null) onEndAction.run();
+        });
+
+        moveTransition.play();
     }
 
     private static void animateCardListWithFly(int index, List<Card> cards, HBox deckContainer, HBox targetBox, Runnable onListEnd) {
