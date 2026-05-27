@@ -145,6 +145,8 @@ public class PlayerView {
         shamanVisitor.setResult(0);
         characters.forEach(c -> c.accept(shamanVisitor));
 
+        // TODO : if the player has the "Shaman" building, add 3 star
+
         return shamanVisitor.getResult();
     }
 
