@@ -34,9 +34,8 @@ public class EventResolutionPhase extends Phase {
         ArrayList<EventCard> events = board.cleanBottomRow();
 
         for (EventCard event : events) {
+            turnManager.getNotifier().notifyChange(new EventResolvedDTO(event));
             turnManager.getPlayersOrder().forEach(event::resolveEvent);
-            EventResolvedDTO eventResolvedDTO = new EventResolvedDTO(event);
-            turnManager.getNotifier().notifyChange(eventResolvedDTO);
         }
 
         turnManager.getNotifier().notifyChange(new PhaseChangeDTO(new EndOfRoundPhase().toString()));

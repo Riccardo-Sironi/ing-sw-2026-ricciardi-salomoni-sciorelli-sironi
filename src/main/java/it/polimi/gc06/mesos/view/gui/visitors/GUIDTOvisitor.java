@@ -150,13 +150,11 @@ public class GUIDTOvisitor extends DTOvisitor {
         System.out.println("Player state change!");
         Platform.runLater(() -> {
             guiEventsManager.enqueueEvent(() -> {
-                boardController.handleActivePlayerChanged();
-                boardController.setActivePlayerEffect(dto.getPlayer());
+                boardController.handleActivePlayerChanged(dto);
                 guiEventsManager.onAnimationFinished();
             });
         });
     }
-
 
     @Override
     public void visit(TotemOfferMoveDTO dto) {

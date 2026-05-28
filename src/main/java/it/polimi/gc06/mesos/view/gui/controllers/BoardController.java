@@ -179,6 +179,8 @@ public class BoardController {
 
     private static final double RESIZE_CARD_FACTOR = 0.85;
 
+    private String currentActivePlayer = null;
+
     private LayoutConfiguration currentLayout = LayoutConfiguration.CAVE_COLORS;
 
     @FXML
@@ -291,7 +293,7 @@ public class BoardController {
         drawOpponentsCards();
         drawOpponentsStats();
         drawOpponentsTheme();
-        setActivePlayerEffect(turnOrderTile.getTotemPieces().getFirst().getPlayer().getNickname());
+        setActivePlayerEffect();
     }
 
     private void setupArchitecturalLayout() {
@@ -1013,6 +1015,10 @@ public class BoardController {
         }
 
         turnOrderTile.setTotemPieces(totemPieces);
+
+        if (currentActivePlayer != null) {
+            setActivePlayerEffect();
+        }
     }
 
     private void initOfferTrack() {
@@ -1054,6 +1060,10 @@ public class BoardController {
             }
             EffectsManager.setTileEffect(tile);
         }
+
+        if (currentActivePlayer != null) {
+            setActivePlayerEffect();
+        }
     }
 
     private OfferTileView createOfferTile(TileSlotView tileSlotView) {
@@ -1072,9 +1082,36 @@ public class BoardController {
         return tile;
     }
 
-    public void setActivePlayerEffect(String activePlayer) {
+    public void setActivePlayerEffect() {
+        if (this.currentActivePlayer == null) {
+            this.currentActivePlayer = turnOrderTile.getTotemPieces().getFirst().getPlayer().getNickname();
+        }
+
+        if (turnOrderTile != null && turnOrderTile.getTotemPieces() != null) {
+            for (TotemPieceView tp : turnOrderTile.getTotemPieces()) {
+                if (tp.getPlayer() != null) {
+                    tp.applyTotemEffect();
+                    tp.setTranslateY(0);
+                }
+            }
+        }
+
+        if (offerTrackTiles != null) {
+            for (OfferTileView tile : offerTrackTiles) {
+                if (tile.getTotem() != null && tile.getTotem().getPlayer() != null) {
+                    tile.getTotem().applyTotemEffect();
+                }
+            }
+        }
+
+        if (opponentsBoxes != null) {
+            for (OpponentBox opp : opponentsBoxes.values()) {
+                opp.getNicknameText().setEffect(null);
+            }
+        }
+
         turnOrderTile.getTotemPieces().stream()
-                .filter(tp -> tp.getPlayer() != null && tp.getPlayer().getNickname().equals(activePlayer))
+                .filter(tp -> tp.getPlayer() != null && tp.getPlayer().getNickname().equals(currentActivePlayer))
                 .findFirst()
                 .ifPresent(tp -> {
                     tp.setEffect(EffectsManager.createGlowEffect());
@@ -1082,14 +1119,14 @@ public class BoardController {
                 });
 
         offerTrackTiles.stream()
-                .filter(tile -> tile.getTotem() != null && tile.getTotem().getPlayer() != null && tile.getTotem().getPlayer().getNickname().equals(activePlayer))
+                .filter(tile -> tile.getTotem() != null && tile.getTotem().getPlayer() != null && tile.getTotem().getPlayer().getNickname().equals(currentActivePlayer))
                 .findFirst()
                 .ifPresent(tile -> {
                     tile.getTotem().setEffect(EffectsManager.createGlowEffect());
                 });
 
-        if (!activePlayer.equals(smallModel.getPlayer().getNickname())) {
-            opponentsBoxes.get(activePlayer).getNicknameText().setEffect(EffectsManager.createGlowEffect());
+        if (!currentActivePlayer.equals(smallModel.getPlayer().getNickname()) && opponentsBoxes.containsKey(currentActivePlayer)) {
+            opponentsBoxes.get(currentActivePlayer).getNicknameText().setEffect(EffectsManager.createGlowEffect());
         }
     }
 
@@ -1215,6 +1252,13 @@ public class BoardController {
         }
     }
 
+    public void updateAllBoardEffects() {
+        applyEffectToContainerCardViews(topCharactersContainer, smallModel.getTopDrawNum());
+        applyEffectToContainerCardViews(topBuildingsContainer, smallModel.getTopDrawNum());
+        applyEffectToContainerCardViews(bottomCharactersContainer, smallModel.getBottomDrawNum());
+        applyEffectToContainerCardViews(bottomBuildingsContainer, smallModel.getBottomDrawNum());
+    }
+
     public void handleTopRowRefill(TopRowRefillDTO dto, Runnable onEndActions) {
         AnimationsManager.refillCardsRowAnimation(dto.getTop(), dto.getBottom(), deckContainer, topCharactersContainer, bottomCharactersContainer, () -> {
             drawTopRowCards();
@@ -1274,7 +1318,7 @@ public class BoardController {
         AnimationsManager.totemSetAnimation(offerTrackTiles.get(dto.getIndex()), dto.getPlayer(), turnOrderTile, offerTrackTiles, mainRoot, () -> {
             drawOfferTrack();
             drawTurnOrderTile();
-            endOfAnimation.run();
+            if (endOfAnimation != null) endOfAnimation.run();
         });
     }
 
@@ -1282,10 +1326,11 @@ public class BoardController {
         drawRoundText();
     }
 
-    public void handleActivePlayerChanged() {
+    public void handleActivePlayerChanged(PlayerStateChangeDTO dto) {
+        this.currentActivePlayer = dto.getPlayer();
+        setActivePlayerEffect();
         updateAllBoardEffects();
         drawSkipButton();
-        drawOfferTrack();
     }
 
     public void handlePlayerResourcesChange(PlayerResourcesChangeDTO dto) {
@@ -1299,22 +1344,10 @@ public class BoardController {
 
     public void handlePhaseChanged() {
         drawPhaseText();
-        updateAllBoardEffects();
-        drawOfferTrack();
-        drawTurnOrderTile();
-        drawSkipButton();
-        drawDeck();
     }
 
     public void handleEraChanged() {
         drawEraText();
-    }
-
-    public void updateAllBoardEffects() {
-        applyEffectToContainerCardViews(topCharactersContainer, smallModel.getTopDrawNum());
-        applyEffectToContainerCardViews(topBuildingsContainer, smallModel.getTopDrawNum());
-        applyEffectToContainerCardViews(bottomCharactersContainer, smallModel.getBottomDrawNum());
-        applyEffectToContainerCardViews(bottomBuildingsContainer, smallModel.getBottomDrawNum());
     }
 
     public void handleTotemTurnMove() {

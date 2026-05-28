@@ -273,6 +273,17 @@ public class AnimationsManager {
             if (onEndAction != null) onEndAction.run();
             return;
         }
+        
+        // we find the original card and we hide it
+        if (index < sourceBox.getChildren().size()) {
+
+            Node sourceNode = sourceBox.getChildren().get(index);
+            Bounds nodeScreen = sourceNode.localToScreen(sourceNode.getBoundsInLocal());
+
+            if (nodeScreen != null) {
+                sourceNode.setVisible(false);
+            }
+        }
 
         double startX = sourceScreen.getMinX() - rootScreen.getMinX() + (sourceScreen.getWidth() / 2);
         double startY = sourceScreen.getMinY() - rootScreen.getMinY();
