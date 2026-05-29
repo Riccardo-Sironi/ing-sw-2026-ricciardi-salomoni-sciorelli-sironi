@@ -13,6 +13,8 @@ import it.polimi.gc06.mesos.model.gameTurnManager.TurnManager;
 import it.polimi.gc06.mesos.network.leaderboard.Leaderboard;
 import it.polimi.gc06.mesos.network.leaderboard.Score;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.*;
 
 public class GameModel implements GameInfo {
@@ -24,6 +26,7 @@ public class GameModel implements GameInfo {
     private final ArrayList<Player> players;
     private final TurnManager turnManager;
     private final DTONotifier notifier;
+    private Timestamp endTimestamp;
 
     public GameModel(Board board, EnumMap<Era, ArrayList<BuildingCard>> buildingCardsDecks,
                      EnumMap<Era, ArrayList<TribeCard>> tribeCardsDeck, EventCard[] finalEventCards,
@@ -35,6 +38,7 @@ public class GameModel implements GameInfo {
         this.players = players;
         this.turnManager = turnManager;
         this.notifier = notifier;
+        this.endTimestamp = null;
     }
 
     /**
@@ -84,37 +88,6 @@ public class GameModel implements GameInfo {
             notifier.notifyChangeToPlayer(p.getNickname(),getStartingStateAsDTO(p.getNickname()));
         }
     }
-
-    /*private SmallModelEditor getStartingStateAsDTO(String nickname) {
-
-        Map<String, Color> colorMap = new HashMap<>();
-
-        boolean isActive = turnManager.getActivePlayer().getNickname().equals(nickname);
-
-        ArrayList<TileEffect> effects = new ArrayList<>(
-                board.getOfferTrack().stream().map(TileSlot::getTileEffect).toList()
-        );
-
-        int currentDeckSize = 0;
-        if (getTribeCardsDeck() != null) {
-            currentDeckSize = tribeCardsDeck.get(Era.ERA_I).size()
-                    + tribeCardsDeck.get(Era.ERA_II).size()
-                    + tribeCardsDeck.get(Era.ERA_III).size();
-        }
-
-        return new LobbyInitializedDTO(
-                nickname,
-                new ArrayList<>(turnManager.getPlayersOrder().stream().map(Player::getNickname).toList()),
-                colorMap,
-                new ArrayList<>(board.getTopRow()),
-                new ArrayList<>(board.getTopBuildings()),
-                new ArrayList<>(board.getBottomRow()),
-                new ArrayList<>(board.getBottomBuildings()),
-                isActive,
-                effects,
-                currentDeckSize
-        );
-    }*/
 
     public SmallModelEditor getStartingStateAsDTO(String nickname) {
 
@@ -182,6 +155,7 @@ public class GameModel implements GameInfo {
         players.sort(Comparator.comparing(Player::getPrestigeTokens)
                 .thenComparing(Player::getFoodTokens)
                 .reversed());
+        endTimestamp = Timestamp.from(Instant.now());
     }
 
     /**
@@ -294,13 +268,22 @@ public class GameModel implements GameInfo {
      * @throws IllegalStateException if the game is not finished yet.
      */
     public Leaderboard getLeaderboard() throws IllegalStateException{
-        if (!board.isEndGame()) throw new IllegalStateException("Game is not finished yet");
+        if (!isFinished()) throw new IllegalStateException("Game is not finished yet");
 
         Leaderboard leaderboard = new Leaderboard();
-        leaderboard.setTimestamp(board.getEndedMatchTimestamp());
+        leaderboard.setTimestamp(endTimestamp);
         for (Player p : players) {
             leaderboard.addScore(new Score(p.getNickname(), p.getPrestigeTokens(), p.getFoodTokens()));
         }
         return leaderboard;
+    }
+
+    /**
+     * Returns whether the game has ended.
+     *
+     * @return true if it has finished.
+     */
+    public boolean isFinished(){
+        return endTimestamp != null;
     }
 }

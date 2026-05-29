@@ -202,6 +202,6 @@ public class GameController{
      * @return true if the game is finished, false otherwise.
      */
     public boolean isGameFinished() {
-        return model.getBoard().isEndGame();
+        return model.isFinished();
     }
 }

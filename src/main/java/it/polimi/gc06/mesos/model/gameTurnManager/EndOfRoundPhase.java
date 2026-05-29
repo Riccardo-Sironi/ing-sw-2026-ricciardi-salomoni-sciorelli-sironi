@@ -185,7 +185,6 @@ public class EndOfRoundPhase extends Phase {
 
             turnManager.setRound(turnManager.getRound() + 1);
 
-            // TODO Check whether game is over
             if (board.isEndGame()) {
 
                 // end of game routine:
@@ -197,7 +196,6 @@ public class EndOfRoundPhase extends Phase {
                     turnManager.getPlayersOrder().forEach(card::resolveEvent);
                 });
 
-                // TODO Go to EndGame Phase
                 gameModel.endGame();
                 return;
             }

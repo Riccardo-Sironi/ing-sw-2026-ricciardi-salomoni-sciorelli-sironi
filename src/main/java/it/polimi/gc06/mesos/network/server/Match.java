@@ -26,9 +26,6 @@ public class Match {
     private final BlockingQueue<ControllerCommand> actionQueue;
     private Thread matchExecutorThread;
 
-
-    public static final int MAX_PLAYERS = 5;
-    public static final int MIN_PLAYERS = 2;
     private final int matchId;
     private final int matchMaxPlayers;
     private volatile boolean hasStarted;
