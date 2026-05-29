@@ -36,6 +36,7 @@ class GameModelTest {
     private EnumMap<Era, ArrayList<TribeCard>> tribeCardsDeck;
     private EventCard[] finalEventCards;
     private ArrayList<Player> players;
+    private DTONotifier notifier;
 
     @BeforeAll
     static void whichTest() {
@@ -62,6 +63,7 @@ class GameModelTest {
         }
         finalEventCards = new EventCard[2];
         players = new ArrayList<>();
+        notifier = new DTONotifier();
 
         System.out.println("[START] " + testInfo.getDisplayName() + " DONE");
     }
@@ -69,7 +71,7 @@ class GameModelTest {
     @Test
     void testStartGame_PlayersCountLessThanTwo() {
         players.add(mock(Player.class));
-        GameModel model = new GameModel(boardMock, buildingCardsDecks, tribeCardsDeck, finalEventCards, players, turnManagerMock);
+        GameModel model = new GameModel(boardMock, buildingCardsDecks, tribeCardsDeck, finalEventCards, players, turnManagerMock, notifier);
 
         assertThrows(IllegalStateException.class, model::startGame);
     }
@@ -79,7 +81,7 @@ class GameModelTest {
         for (int i = 0; i < 6; i++) {
             players.add(mock(Player.class));
         }
-        GameModel model = new GameModel(boardMock, buildingCardsDecks, tribeCardsDeck, finalEventCards, players, turnManagerMock);
+        GameModel model = new GameModel(boardMock, buildingCardsDecks, tribeCardsDeck, finalEventCards, players, turnManagerMock, notifier);
 
         assertThrows(IllegalStateException.class, model::startGame);
     }
@@ -88,7 +90,7 @@ class GameModelTest {
     void testStartGame_BoardInitThrowsIllegalStateException() {
         players.addAll(List.of(mock(Player.class), mock(Player.class)));
         doThrow(new IllegalStateException("Board Error")).when(boardMock).initBoard(any());
-        GameModel model = new GameModel(boardMock, buildingCardsDecks, tribeCardsDeck, finalEventCards, players, turnManagerMock);
+        GameModel model = new GameModel(boardMock, buildingCardsDecks, tribeCardsDeck, finalEventCards, players, turnManagerMock, notifier);
 
         assertThrows(IllegalStateException.class, model::startGame);
     }
@@ -97,7 +99,7 @@ class GameModelTest {
     void testStartGame_BoardInitThrowsIllegalArgumentException() {
         players.addAll(List.of(mock(Player.class), mock(Player.class)));
         doThrow(new IllegalArgumentException("Arg Error")).when(boardMock).initBoard(any());
-        GameModel model = new GameModel(boardMock, buildingCardsDecks, tribeCardsDeck, finalEventCards, players, turnManagerMock);
+        GameModel model = new GameModel(boardMock, buildingCardsDecks, tribeCardsDeck, finalEventCards, players, turnManagerMock, notifier);
 
         assertThrows(IllegalStateException.class, model::startGame);
     }
@@ -116,7 +118,7 @@ class GameModelTest {
         buildingCardsDecks.get(Era.ERA_I).add(mock(BuildingCard.class));
         tribeCardsDeck.get(Era.ERA_I).add(mock(TribeCard.class));
 
-        GameModel model = new GameModel(boardMock, buildingCardsDecks, tribeCardsDeck, finalEventCards, players, turnManagerMock);
+        GameModel model = new GameModel(boardMock, buildingCardsDecks, tribeCardsDeck, finalEventCards, players, turnManagerMock, notifier);
 
         when(turnManagerMock.getPlayersOrder()).thenReturn(playersOrder);
         when(boardMock.getTurnOrderTile()).thenReturn(turnOrderTileMock);
@@ -166,7 +168,7 @@ class GameModelTest {
         when(p3.getPrestigeTokens()).thenReturn(20);
         when(p3.getFoodTokens()).thenReturn(8);
 
-        GameModel model = new GameModel(boardMock, buildingCardsDecks, tribeCardsDeck, finalEventCards, players, turnManagerMock);
+        GameModel model = new GameModel(boardMock, buildingCardsDecks, tribeCardsDeck, finalEventCards, players, turnManagerMock, notifier);
         model.endGame();
 
         verify(p1).addPrestigeTokens(2);
@@ -189,7 +191,7 @@ class GameModelTest {
         when(p3.getShamanStars()).thenReturn(5);
 
         players.addAll(List.of(p1, p2, p3));
-        GameModel model = new GameModel(boardMock, buildingCardsDecks, tribeCardsDeck, finalEventCards, players, turnManagerMock);
+        GameModel model = new GameModel(boardMock, buildingCardsDecks, tribeCardsDeck, finalEventCards, players, turnManagerMock, notifier);
 
         assertEquals(5, model.getMaxStars());
         assertEquals(1, model.getMinStars());
@@ -198,7 +200,7 @@ class GameModelTest {
 
     @Test
     void testGetStars_EmptyPlayers() {
-        GameModel model = new GameModel(boardMock, buildingCardsDecks, tribeCardsDeck, finalEventCards, new ArrayList<>(), turnManagerMock);
+        GameModel model = new GameModel(boardMock, buildingCardsDecks, tribeCardsDeck, finalEventCards, new ArrayList<>(), turnManagerMock, notifier);
 
         assertEquals(0, model.getMaxStars());
         assertEquals(0, model.getMinStars());
@@ -208,7 +210,7 @@ class GameModelTest {
     @Test
     void testAddObserver() {
         DrawObserver observer = mock(DrawObserver.class);
-        GameModel model = new GameModel(boardMock, buildingCardsDecks, tribeCardsDeck, finalEventCards, players, turnManagerMock);
+        GameModel model = new GameModel(boardMock, buildingCardsDecks, tribeCardsDeck, finalEventCards, players, turnManagerMock, notifier);
 
         model.addObserver(observer);
 
@@ -217,7 +219,7 @@ class GameModelTest {
 
     @Test
     void testGetters() {
-        GameModel model = new GameModel(boardMock, buildingCardsDecks, tribeCardsDeck, finalEventCards, players, turnManagerMock);
+        GameModel model = new GameModel(boardMock, buildingCardsDecks, tribeCardsDeck, finalEventCards, players, turnManagerMock, notifier);
 
         assertEquals(boardMock, model.getBoard());
         assertEquals(buildingCardsDecks, model.getBuildingCardsDecks());
@@ -238,7 +240,7 @@ class GameModelTest {
 
         buildingCardsDecks.get(Era.ERA_I).add(mock(BuildingCard.class));
 
-        GameModel model = new GameModel(boardMock, buildingCardsDecks, tribeCardsDeck, finalEventCards, players, turnManagerMock);
+        GameModel model = new GameModel(boardMock, buildingCardsDecks, tribeCardsDeck, finalEventCards, players, turnManagerMock, notifier);
 
         when(turnManagerMock.getPlayersOrder()).thenReturn(players);
         when(boardMock.getTurnOrderTile()).thenReturn(turnOrderTileMock);

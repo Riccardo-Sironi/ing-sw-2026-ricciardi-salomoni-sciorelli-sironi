@@ -2,6 +2,7 @@ package it.polimi.gc06.mesos.model.gameTurnManager;
 
 import it.polimi.gc06.mesos.gameExceptions.IllegalPhaseActionException;
 import it.polimi.gc06.mesos.model.Color;
+import it.polimi.gc06.mesos.model.DTONotifier;
 import it.polimi.gc06.mesos.model.Player;
 import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
 import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingsRegistry;
@@ -65,7 +66,7 @@ class PlacingTotemPhaseTest {
         ArrayList<TileSlot> offerSlots = new ArrayList<>();
 
          for (int i = 0; i < numPlayers; i++) {
-            players.add(new Player("Player" + (i + 1), Color.values()[i], new ModifierBuildingsRegistry()));
+            players.add(new Player("Player" + (i + 1), Color.values()[i], new ModifierBuildingsRegistry(), new DTONotifier()));
 
             TileSlot orderSlot = new TileSlot();
             orderSlot.setPlayer(players.get(i));

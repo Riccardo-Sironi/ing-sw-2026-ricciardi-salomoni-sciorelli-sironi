@@ -2,6 +2,7 @@ package it.polimi.gc06.mesos.controller;
 
 import it.polimi.gc06.mesos.gameExceptions.IllegalGameActionException;
 import it.polimi.gc06.mesos.gameExceptions.IllegalPhaseActionException;
+import it.polimi.gc06.mesos.model.DTONotifier;
 import it.polimi.gc06.mesos.model.GameModel;
 import it.polimi.gc06.mesos.model.InstancesManager.ModelInstancesManager;
 import it.polimi.gc06.mesos.model.Player;
@@ -67,7 +68,7 @@ class GameControllerTest {
         when(turnManagerMock.getPhase()).thenReturn(phaseMock);
         when(activePlayerMock.getNickname()).thenReturn(activeNickname);
 
-        controller = new GameController(modelMock);
+        controller = new GameController(modelMock, new DTONotifier());
 
         System.out.println("[START] " + testInfo.getDisplayName() + " DONE");
     }

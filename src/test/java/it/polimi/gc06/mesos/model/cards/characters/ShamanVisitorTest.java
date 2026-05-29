@@ -1,6 +1,7 @@
 package it.polimi.gc06.mesos.model.cards.characters;
 
 import it.polimi.gc06.mesos.model.Color;
+import it.polimi.gc06.mesos.model.DTONotifier;
 import it.polimi.gc06.mesos.model.Era;
 import it.polimi.gc06.mesos.model.Player;
 import it.polimi.gc06.mesos.model.cards.TribeCard;
@@ -32,7 +33,7 @@ class ShamanVisitorTest {
     @BeforeEach
     void setUp(TestInfo testInfo)  {
 
-        player = new Player("TestPlayer", Color.ORANGE, new ModifierBuildingsRegistry());
+        player = new Player("TestPlayer", Color.ORANGE, new ModifierBuildingsRegistry(), new DTONotifier());
 
         System.out.println("[START] " + testInfo.getDisplayName());
     }
@@ -40,7 +41,7 @@ class ShamanVisitorTest {
 
     @Test
     void visitShamanCard() {
-        player = new Player("TestPlayer", Color.ORANGE, new ModifierBuildingsRegistry());
+        player = new Player("TestPlayer", Color.ORANGE, new ModifierBuildingsRegistry(), new DTONotifier());
         player.increaseShamanStars(5);
         ShamanCard card = new ShamanCard(Era.ERA_I, 5);
         ShamanVisitor visitor = new ShamanVisitor(player);

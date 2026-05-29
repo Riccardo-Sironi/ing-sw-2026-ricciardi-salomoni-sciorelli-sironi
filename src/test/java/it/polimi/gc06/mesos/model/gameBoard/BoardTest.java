@@ -50,7 +50,7 @@ class BoardTest {
 
     @BeforeEach
     void setUp(TestInfo testInfo)  {
-        board = new Board(null, null);
+        board = new Board(null, null, new DTONotifier());
         modelMock = mock(GameModel.class);
 
         // setup players (at least 2)
@@ -592,7 +592,7 @@ class BoardTest {
 
     @Test
     void testPickCardFromTopRowSuccess() {
-        Player p = new Player("TestPlayer", Color.ORANGE, mock(ModifierBuildingsRegistry.class));
+        Player p = new Player("TestPlayer", Color.ORANGE, mock(ModifierBuildingsRegistry.class), new DTONotifier());
 
         HunterCard card = new HunterCard(Era.ERA_I, true);
         board.getTopRow().addFirst(card);
@@ -639,7 +639,7 @@ class BoardTest {
 
     @Test
     void testPickCardBottomRowSuccess() {
-        Player p = new Player("TestPlayer", Color.ORANGE, mock(ModifierBuildingsRegistry.class));
+        Player p = new Player("TestPlayer", Color.ORANGE, mock(ModifierBuildingsRegistry.class), new DTONotifier());
 
         HunterCard card = new HunterCard(Era.ERA_I, true);
         board.getBottomRow().addFirst(card);
@@ -697,7 +697,7 @@ class BoardTest {
     void testByBuildingFromTopRowSuccess() {
         int foodTokensBeforePurchase = 20;
         int foodCost = 5;
-        Player p = new Player("TestPlayer", Color.ORANGE, mock(ModifierBuildingsRegistry.class));
+        Player p = new Player("TestPlayer", Color.ORANGE, mock(ModifierBuildingsRegistry.class), new DTONotifier());
         p.addFoodTokens(foodTokensBeforePurchase);
         ModifierBuildingCard card = new ModifierBuildingCard();
         card.setFoodCost(foodCost);
@@ -714,7 +714,7 @@ class BoardTest {
     void testByBuildingFromTopRowUnsuccess() {
         int foodTokensBeforePurchase = 3;
         int foodCost = 5;
-        Player p = new Player("TestPlayer", Color.ORANGE, mock(ModifierBuildingsRegistry.class));
+        Player p = new Player("TestPlayer", Color.ORANGE, mock(ModifierBuildingsRegistry.class), new DTONotifier());
         p.addFoodTokens(foodTokensBeforePurchase);
         ModifierBuildingCard card = new ModifierBuildingCard();
         card.setFoodCost(foodCost);
@@ -739,7 +739,7 @@ class BoardTest {
 
     @Test
     void testBuyBuildingFromTopRowThrowExceptionWhenCardNotInTopBuildings() {
-        Player p = new Player("TestPlayer", Color.ORANGE, mock(ModifierBuildingsRegistry.class));
+        Player p = new Player("TestPlayer", Color.ORANGE, mock(ModifierBuildingsRegistry.class), new DTONotifier());
         ModifierBuildingCard card = new ModifierBuildingCard();
 
         assertThrows(IllegalArgumentException.class, () -> board.buyBuildingFromTopRow(p, card));
@@ -749,7 +749,7 @@ class BoardTest {
     void testBuyBuildingFromBottomRowSuccess() {
         int foodTokensBeforePurchase = 20;
         int foodCost = 5;
-        Player p = new Player("TestPlayer", Color.ORANGE, mock(ModifierBuildingsRegistry.class));
+        Player p = new Player("TestPlayer", Color.ORANGE, mock(ModifierBuildingsRegistry.class), new DTONotifier());
         p.addFoodTokens(foodTokensBeforePurchase);
         ModifierBuildingCard card = new ModifierBuildingCard();
         card.setFoodCost(foodCost);
@@ -766,7 +766,7 @@ class BoardTest {
     void testBuyBuildingFromBottomRowUnsuccess() {
         int foodTokensBeforePurchase = 3;
         int foodCost = 5;
-        Player p = new Player("TestPlayer", Color.ORANGE, mock(ModifierBuildingsRegistry.class));
+        Player p = new Player("TestPlayer", Color.ORANGE, mock(ModifierBuildingsRegistry.class), new DTONotifier());
         p.addFoodTokens(foodTokensBeforePurchase);
         ModifierBuildingCard card = new ModifierBuildingCard();
         card.setFoodCost(foodCost);
@@ -791,7 +791,7 @@ class BoardTest {
 
     @Test
     void testBuyBuildingFromBottomRowThrowExceptionWhenCardNotInBottomBuildings() {
-        Player p = new Player("TestPlayer", Color.ORANGE, mock(ModifierBuildingsRegistry.class));
+        Player p = new Player("TestPlayer", Color.ORANGE, mock(ModifierBuildingsRegistry.class), new DTONotifier());
         ModifierBuildingCard card = new ModifierBuildingCard();
 
         assertThrows(IllegalArgumentException.class, () -> board.buyBuildingFromBottomRow(p, card));
@@ -873,7 +873,7 @@ class BoardTest {
         Player player1 = mock(Player.class);
         Player player2 = mock(Player.class);
 
-        Board trackBoard = new Board(mockTurnOrderTile, mockOfferTrack);
+        Board trackBoard = new Board(mockTurnOrderTile, mockOfferTrack, new DTONotifier());
 
         assertEquals(mockTurnOrderTile, trackBoard.getTurnOrderTile(), "Turn Order Tile should be the same");
         assertEquals(mockOfferTrack, trackBoard.getOfferTrack(), "Offer Track should be the same");

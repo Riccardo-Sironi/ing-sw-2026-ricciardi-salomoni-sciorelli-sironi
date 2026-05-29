@@ -1,9 +1,6 @@
 package it.polimi.gc06.mesos.model.cards.characters;
 
-import it.polimi.gc06.mesos.model.Color;
-import it.polimi.gc06.mesos.model.Era;
-import it.polimi.gc06.mesos.model.GameModel;
-import it.polimi.gc06.mesos.model.Player;
+import it.polimi.gc06.mesos.model.*;
 import it.polimi.gc06.mesos.model.cards.TribeCard;
 import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingsRegistry;
 import it.polimi.gc06.mesos.model.cards.buildings.ObserverPairBuildingCard;
@@ -37,7 +34,7 @@ class InventorPairsVisitorTest {
     void setUp(TestInfo testInfo)  {
 
         GameModel modelMock = mock(GameModel.class);
-        player = new Player("TestPlayer", Color.ORANGE, new ModifierBuildingsRegistry());
+        player = new Player("TestPlayer", Color.ORANGE, new ModifierBuildingsRegistry(), new DTONotifier());
         player.setEnvironment(mock(GameModel.class));
         visitor = new InventorPairsVisitor(player);
 
@@ -50,7 +47,7 @@ class InventorPairsVisitorTest {
         ObserverPairBuildingCard observerPairBuildingCard = new ObserverPairBuildingCard();
         observerPairBuildingCard.setFoodCost(0);
 
-        Board board = new Board(null, null);
+        Board board = new Board(null, null, new DTONotifier());
         board.getTopBuildings().add(observerPairBuildingCard);
         board.buyBuildingFromTopRow(player, observerPairBuildingCard);
 

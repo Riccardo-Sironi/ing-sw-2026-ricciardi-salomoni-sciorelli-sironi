@@ -45,7 +45,7 @@ class PlayerTest {
         when(mockModifierRegistry.get(ModifierBuildingRegistryKey.RITUAL_THREE_STAR_CARD)).thenReturn(mockThreeStarCard);
 
         // 2. Player's Setup
-        player = new Player("TestUser", Color.ORANGE, mockModifierRegistry);
+        player = new Player("TestUser", Color.ORANGE, mockModifierRegistry, new DTONotifier());
 
         System.out.println("[START] " + testInfo.getDisplayName());
     }

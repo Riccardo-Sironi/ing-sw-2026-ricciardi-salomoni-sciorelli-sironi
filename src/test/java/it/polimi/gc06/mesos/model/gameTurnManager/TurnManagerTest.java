@@ -1,5 +1,6 @@
 package it.polimi.gc06.mesos.model.gameTurnManager;
 
+import it.polimi.gc06.mesos.model.DTONotifier;
 import it.polimi.gc06.mesos.model.GameModel;
 import it.polimi.gc06.mesos.model.Player;
 import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingCard;
@@ -43,7 +44,7 @@ class TurnManagerTest {
         when(registryMock.get(ModifierBuildingRegistryKey.PICK_FROM_TOP)).thenReturn(modifierCardMock);
 
         List<Player> players = new ArrayList<>(List.of(player1, player2));
-        turnManager = new TurnManager(players, registryMock);
+        turnManager = new TurnManager(players, registryMock, new DTONotifier());
 
         System.out.println("[START] " + testInfo.getDisplayName() + " DONE");
     }

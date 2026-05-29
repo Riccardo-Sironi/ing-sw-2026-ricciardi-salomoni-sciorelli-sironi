@@ -1,6 +1,7 @@
 package it.polimi.gc06.mesos.model.cards.characters;
 
 import it.polimi.gc06.mesos.model.Color;
+import it.polimi.gc06.mesos.model.DTONotifier;
 import it.polimi.gc06.mesos.model.Era;
 import it.polimi.gc06.mesos.model.Player;
 import it.polimi.gc06.mesos.model.cards.TribeCard;
@@ -32,7 +33,7 @@ class DeckCardVisitorTest {
     @BeforeEach
     void setUp(TestInfo testInfo)  {
 
-        player = new Player("test", Color.ORANGE, new ModifierBuildingsRegistry());
+        player = new Player("test", Color.ORANGE, new ModifierBuildingsRegistry(), new DTONotifier());
 
         System.out.println("[START] " + testInfo.getDisplayName());
     }

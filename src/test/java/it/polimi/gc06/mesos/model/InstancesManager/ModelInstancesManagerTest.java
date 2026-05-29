@@ -1,5 +1,6 @@
 package it.polimi.gc06.mesos.model.InstancesManager;
 
+import it.polimi.gc06.mesos.model.DTONotifier;
 import it.polimi.gc06.mesos.model.GameModel;
 import it.polimi.gc06.mesos.model.gameBoard.Board;
 import it.polimi.gc06.mesos.model.gameBoard.TileEffect;
@@ -39,7 +40,7 @@ public class ModelInstancesManagerTest {
 
     @BeforeEach
     void setUp(TestInfo testInfo) {
-        manager = new ModelInstancesManager();
+        manager = new ModelInstancesManager(new DTONotifier());
         System.out.println("[START] " + testInfo.getDisplayName() + " DONE");
     }
 
