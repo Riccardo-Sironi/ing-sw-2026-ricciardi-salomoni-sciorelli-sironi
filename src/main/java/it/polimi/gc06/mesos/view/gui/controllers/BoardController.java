@@ -1342,6 +1342,15 @@ public class BoardController {
         updateAllBoardEffects();
     }
 
+    public void handlePlayerRecap(PlayerRecapDTO dto) {
+        if (dto.getPlayer().equals(smallModel.getPlayer().getNickname())) {
+            drawPlayerStats();
+        } else {
+            drawOpponentsStats();
+        }
+        updateAllBoardEffects();
+    }
+
     public void handlePhaseChanged() {
         drawPhaseText();
     }

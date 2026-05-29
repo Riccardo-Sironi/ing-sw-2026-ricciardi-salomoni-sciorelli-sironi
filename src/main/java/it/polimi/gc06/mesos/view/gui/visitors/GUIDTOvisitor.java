@@ -145,6 +145,18 @@ public class GUIDTOvisitor extends DTOvisitor {
     }
 
     @Override
+    public void visit(PlayerRecapDTO dto) {
+        if (boardController == null) return;
+        System.out.println("Player recap arrived!");
+        Platform.runLater(() -> {
+            guiEventsManager.enqueueEvent(() -> {
+                boardController.handlePlayerRecap(dto);
+                guiEventsManager.onAnimationFinished();
+            });
+        });
+    }
+
+    @Override
     public void visit(PlayerStateChangeDTO dto) {
         if (boardController == null) return;
         System.out.println("Player state change!");

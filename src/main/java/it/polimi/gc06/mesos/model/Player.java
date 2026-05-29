@@ -1,7 +1,9 @@
 package it.polimi.gc06.mesos.model;
 
+import it.polimi.gc06.mesos.dtos.PlayerRecapDTO;
 import it.polimi.gc06.mesos.dtos.PlayerResourcesChangeDTO;
 import it.polimi.gc06.mesos.gameExceptions.GameObjectNotFoundException;
+import it.polimi.gc06.mesos.model.cards.CardVisitor;
 import it.polimi.gc06.mesos.model.cards.buildings.*;
 import it.polimi.gc06.mesos.model.cards.characters.*;
 
@@ -114,6 +116,59 @@ public class Player {
         if (inventorPairs != null) {
             card.accept(inventorPairsVisitor);
         }
+
+        //creates a CardVisitor to send update to view
+        CardVisitor noticeVisitor = new CardVisitor() {
+            @Override
+            public void visit(ArtistCard card) {
+                notifier.notifyChange(new PlayerRecapDTO(
+                        nickname,null,null, null,
+                        null,null,getArtistsCounter()
+                ));
+            }
+
+            @Override
+            public void visit(BuilderCard card) {
+                notifier.notifyChange(new PlayerRecapDTO(
+                        nickname,getBuildersDiscount(),null,null,null, null,
+                        null,characterDeck.get(CharacterType.BUILDER).size(),null,null
+                ));
+            }
+
+            @Override
+            public void visit(ShamanCard card) {
+                notifier.notifyChange(new PlayerRecapDTO(
+                        nickname,null,getShamanStars(),null,null, null,
+                        null,null,characterDeck.get(CharacterType.SHAMAN).size(),null
+                ));
+            }
+
+            @Override
+            public void visit(HunterCard card) {
+                notifier.notifyChange(new PlayerRecapDTO(
+                        nickname,null,null, getHuntersCounter(),
+                        null,null,null
+                ));
+            }
+
+            @Override
+            public void visit(InventorCard card) {
+                notifier.notifyChange(new PlayerRecapDTO(
+                        nickname,getBuildersDiscount(),null,null,null,null,
+                        null,getInventorsCounter(),null,getInventorIcons()
+                ));
+            }
+
+            @Override
+            public void visit(GathererCard card) {
+                notifier.notifyChange(new PlayerRecapDTO(
+                        nickname,null,null, null,
+                        getGatherersCounter(),null,null
+                ));
+            }
+        };
+
+        card.accept(noticeVisitor);
     }
 
     /**
@@ -563,6 +618,15 @@ public class Player {
      * @return the number of different inventor icons.
      */
     public int getNumOfIcon() {
+        return getInventorIcons().size();
+    }
+
+    /**
+     * Get all the different inventor icons
+     *
+     * @return the {@link Set} containing all the collected inventor icons
+     */
+    public Set<InventionIcon> getInventorIcons(){
         InventorIconVisitor visitor = new InventorIconVisitor();
         Set<InventionIcon> iconSet = new HashSet<>();
         for (CharacterCard card : characterDeck.get(CharacterType.INVENTOR)) {
@@ -570,6 +634,6 @@ public class Player {
             InventionIcon icon = visitor.getAndClearIcon();
             if (icon != null) iconSet.add(icon);
         }
-        return iconSet.size();
+        return iconSet;
     }
 }

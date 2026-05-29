@@ -23,15 +23,6 @@ public abstract class DTOvisitor {
      *
      * @param dto the patch getting visited.
      */
-    public void visit(GameStateChangeDTO dto) {
-        visit((SmallModelEditor) dto);
-    }
-
-    /**
-     * Overridable hook for generic DTO patches.
-     *
-     * @param dto the patch getting visited.
-     */
     public void visit(BuildingsRefillDTO dto) {
         visit((SmallModelEditor) dto);
     }
@@ -177,6 +168,15 @@ public abstract class DTOvisitor {
      * @param dto the patch getting visited.
      */
     public void visit(MesosStartedDTO dto) {
+        visit((SmallModelEditor) dto);
+    }
+
+    /**
+     * Overridable hook for generic DTO patches.
+     *
+     * @param dto the patch getting visited.
+     */
+    public void visit(PlayerRecapDTO dto) {
         visit((SmallModelEditor) dto);
     }
 }

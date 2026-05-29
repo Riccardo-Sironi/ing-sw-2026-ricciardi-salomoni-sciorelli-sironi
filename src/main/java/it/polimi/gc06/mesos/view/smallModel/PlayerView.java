@@ -5,9 +5,7 @@ import it.polimi.gc06.mesos.model.cards.Card;
 import it.polimi.gc06.mesos.model.cards.CardTypifiedVisitor;
 import it.polimi.gc06.mesos.model.cards.characters.*;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * A lightweight representation of a player's state used by the client-side UI.
@@ -24,6 +22,12 @@ public class PlayerView {
     private final ArrayList<Card> characters;
     private final ArrayList<Card> buildings;
 
+    //recap info
+    private final Map<CharacterType,Integer> tribeRecap;
+    private int buildersDiscount;
+    private int shamanStar;
+    private final Set<InventionIcon> collectedIcons;
+
     /**
      * Constructs a new PlayerView instance with initials properties.
      *
@@ -37,6 +41,9 @@ public class PlayerView {
         this.numPrestige = 0;
         this.characters = new ArrayList<>();
         this.buildings = new ArrayList<>();
+        this.tribeRecap = new HashMap<>();
+        Arrays.asList(CharacterType.values()).forEach(t -> tribeRecap.put(t,0)); //sets all characters recap to zero
+        this.collectedIcons = new HashSet<>();
     }
 
     /**
@@ -130,24 +137,32 @@ public class PlayerView {
     }
 
     /**
-     * Calculates the total sum of stars provided by all Shaman cards owned by the player.
+     * Calculates the total number of Artist cards owned by the player.
      *
-     * @return the total number of Shaman stars
+     * @return the count of Artists
      */
-    public int getNumShamanStar() {
+    public int getNumArtist() {
+        return tribeRecap.get(CharacterType.ARTIST);
+    }
 
-        CardTypifiedVisitor<Integer> shamanVisitor = new CardTypifiedVisitor<>() {
-            @Override
-            public void visit(ShamanCard card) {
-                setResult(getResult() + card.getStars());
-            }
-        };
-        shamanVisitor.setResult(0);
-        characters.forEach(c -> c.accept(shamanVisitor));
+    public void setArtistNumber(int artistNumber) {
+        tribeRecap.put(CharacterType.ARTIST,artistNumber);
+    }
 
-        // TODO : if the player has the "Shaman" building, add 3 star
+    public int getNumBuilders() {
+        return tribeRecap.get(CharacterType.BUILDER);
+    }
 
-        return shamanVisitor.getResult();
+    public void setBuilderNumber(int builderNumber) {
+        tribeRecap.put(CharacterType.BUILDER,builderNumber);
+    }
+
+    public int getBuildersDiscount() {
+        return buildersDiscount;
+    }
+
+    public void setBuildersDiscount(int buildersDiscount) {
+        this.buildersDiscount = buildersDiscount;
     }
 
     /**
@@ -156,52 +171,11 @@ public class PlayerView {
      * @return the count of Gatherers
      */
     public int getNumGatherer() {
-        CardTypifiedVisitor<Integer> gatherVisitor = new CardTypifiedVisitor<>() {
-            @Override
-            public void visit(GathererCard card) {
-                setResult(getResult() + 1);
-            }
-        };
-        gatherVisitor.setResult(0);
-        characters.forEach(c -> c.accept(gatherVisitor));
-
-        return gatherVisitor.getResult();
+        return tribeRecap.get(CharacterType.GATHERER);
     }
 
-    /**
-     * Calculates the total number of Shaman cards owned by the player.
-     *
-     * @return the count of Shamans
-     */
-    public int getNumShaman() {
-        CardTypifiedVisitor<Integer> shamanVisitor = new CardTypifiedVisitor<>() {
-            @Override
-            public void visit(ShamanCard card) {
-                setResult(getResult() + 1);
-            }
-        };
-        shamanVisitor.setResult(0);
-        characters.forEach(c -> c.accept(shamanVisitor));
-
-        return shamanVisitor.getResult();
-    }
-
-    /**
-     * Calculates the total number of Inventor cards owned by the player.
-     *
-     * @return the count of Inventors
-     */
-    public int getNumInventor() {
-        CardTypifiedVisitor<Integer> shamanVisitor = new CardTypifiedVisitor<>() {
-            @Override
-            public void visit(InventorCard card) {
-                setResult(getResult() + 1);
-            }
-        };
-        shamanVisitor.setResult(0);
-        characters.forEach(c -> c.accept(shamanVisitor));
-
-        return shamanVisitor.getResult();
+    public void setGathererNumber(int gathererNumber) {
+        tribeRecap.put(CharacterType.GATHERER,gathererNumber);
     }
 
     /**
@@ -210,88 +184,24 @@ public class PlayerView {
      * @return the count of Hunters
      */
     public int getNumHunter() {
-        CardTypifiedVisitor<Integer> hunterVisitor = new CardTypifiedVisitor<>() {
-            @Override
-            public void visit(HunterCard card) {
-                setResult(getResult() + 1);
-            }
-        };
-        hunterVisitor.setResult(0);
-        characters.forEach(c -> c.accept(hunterVisitor));
+        return tribeRecap.get(CharacterType.HUNTER);
+    }
 
-        return hunterVisitor.getResult();
+    public void setHunterNumber(int hunterNumber) {
+        tribeRecap.put(CharacterType.HUNTER,hunterNumber);
     }
 
     /**
-     * Calculates the total number of Artist cards owned by the player.
+     * Calculates the total number of Inventor cards owned by the player.
      *
-     * @return the count of Artists
+     * @return the count of Inventors
      */
-    public int getNumArtist() {
-        CardTypifiedVisitor<Integer> artistVisitor = new CardTypifiedVisitor<>() {
-            @Override
-            public void visit(ArtistCard card) {
-                setResult(getResult() + 1);
-            }
-        };
-        artistVisitor.setResult(0);
-        characters.forEach(c -> c.accept(artistVisitor));
-
-        return artistVisitor.getResult();
+    public int getNumInventor() {
+        return tribeRecap.get(CharacterType.INVENTOR);
     }
 
-    /**
-     * Calculates the total number of Builder cards owned by the player.
-     *
-     * @return the count of Builders
-     */
-    public int getNumBuilders() {
-        CardTypifiedVisitor<Integer> builderVisitor = new CardTypifiedVisitor<>() {
-            @Override
-            public void visit(BuilderCard card) {
-                setResult(getResult() + 1);
-            }
-        };
-        builderVisitor.setResult(0);
-        characters.forEach(c -> c.accept(builderVisitor));
-
-        return builderVisitor.getResult();
-    }
-
-    /**
-     * Calculates the total discount on food requirements provided by all owned Builder cards.
-     *
-     * @return the accumulated food discount from builders
-     */
-    public int getBuildersDiscount() {
-        CardTypifiedVisitor<Integer> builderVisitor = new CardTypifiedVisitor<>() {
-            @Override
-            public void visit(BuilderCard card) {
-                setResult(getResult() + card.getFoodDiscount());
-            }
-        };
-        builderVisitor.setResult(0);
-        characters.forEach(c -> c.accept(builderVisitor));
-
-        return builderVisitor.getResult();
-    }
-
-    /**
-     * Calculates the total prestige points provided statically by all owned Builder cards.
-     *
-     * @return the accumulated prestige points from builders
-     */
-    public int getBuildersPrestige() {
-        CardTypifiedVisitor<Integer> builderVisitor = new CardTypifiedVisitor<>() {
-            @Override
-            public void visit(BuilderCard card) {
-                setResult(getResult() + card.getPrestige());
-            }
-        };
-        builderVisitor.setResult(0);
-        characters.forEach(c -> c.accept(builderVisitor));
-
-        return builderVisitor.getResult();
+    public void setInventorNumber(int inventorNumber) {
+        tribeRecap.put(CharacterType.INVENTOR,inventorNumber);
     }
 
     /**
@@ -300,15 +210,37 @@ public class PlayerView {
      * @return a Set containing all unique collected invention icons
      */
     public Set<InventionIcon> getCollectedIcons() {
-        CardTypifiedVisitor<Set<InventionIcon>> inventorVisitor = new CardTypifiedVisitor<>() {
-            @Override
-            public void visit(InventorCard card) {
-                getResult().add(card.getIcon());
-            }
-        };
-        inventorVisitor.setResult(new HashSet<>());
-        characters.forEach(c -> c.accept(inventorVisitor));
+        return collectedIcons;
+    }
 
-        return inventorVisitor.getResult();
+    public void setCollectedIcons(Set<InventionIcon> collectedIcons) {
+        this.collectedIcons.clear();
+        this.collectedIcons.addAll(collectedIcons);
+    }
+
+    /**
+     * Calculates the total number of Shaman cards owned by the player.
+     *
+     * @return the count of Shamans
+     */
+    public int getNumShaman() {
+        return tribeRecap.get(CharacterType.SHAMAN);
+    }
+
+    public void setShamanNumber(int shamanNumber) {
+        tribeRecap.put(CharacterType.SHAMAN,shamanNumber);
+    }
+
+    /**
+     * Calculates the total sum of stars provided by all Shaman cards owned by the player.
+     *
+     * @return the total number of Shaman stars
+     */
+    public int getNumShamanStar() {
+        return shamanStar;
+    }
+
+    public void setShamanStar(int shamanStar) {
+        this.shamanStar = shamanStar;
     }
 }
