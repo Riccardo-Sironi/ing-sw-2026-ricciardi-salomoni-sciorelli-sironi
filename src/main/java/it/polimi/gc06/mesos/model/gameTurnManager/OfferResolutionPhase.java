@@ -23,10 +23,10 @@ public class OfferResolutionPhase extends Phase {
      * and checks whether the player has immediately finished their resolution.
      *
      * @param turnManager the turn manager controlling the flow of the game.
-     * @param player the player starting their offer resolution.
-     * @param tileSlot the tile slot chosen by the player on the offer track.
+     * @param player      the player starting their offer resolution.
+     * @param tileSlot    the tile slot chosen by the player on the offer track.
      * @throws IllegalPhaseActionException if it is not the specified player's turn.
-     * @throws IllegalArgumentException if the provided tile slot is null.
+     * @throws IllegalArgumentException    if the provided tile slot is null.
      */
     @Override
     public void startPlayerOfferResolution(TurnManager turnManager, Player player, TileSlot tileSlot) throws IllegalPhaseActionException {
@@ -53,9 +53,9 @@ public class OfferResolutionPhase extends Phase {
      * Decrements the player's available top draws and checks if their turn is finished.
      *
      * @param turnManager the turn manager controlling the flow of the game.
-     * @param player the player performing the action.
-     * @param card the CharacterCard being picked.
-     * @param board the game board containing the cards.
+     * @param player      the player performing the action.
+     * @param card        the CharacterCard being picked.
+     * @param board       the game board containing the cards.
      * @throws IllegalPhaseActionException if the phase hasn't started or the player has no top draws left.
      */
     @Override
@@ -79,9 +79,9 @@ public class OfferResolutionPhase extends Phase {
      * Decrements the player's available bottom draws and checks if their turn is finished.
      *
      * @param turnManager the turn manager controlling the flow of the game.
-     * @param player the player performing the action.
-     * @param card the CharacterCard being picked.
-     * @param board the game board containing the cards.
+     * @param player      the player performing the action.
+     * @param card        the CharacterCard being picked.
+     * @param board       the game board containing the cards.
      * @throws IllegalPhaseActionException if the phase hasn't started or the player has no bottom draws left.
      */
     @Override
@@ -105,9 +105,9 @@ public class OfferResolutionPhase extends Phase {
      * Decrements the player's available top draws and checks if their turn is finished.
      *
      * @param turnManager the turn manager controlling the flow of the game.
-     * @param player the player performing the action.
-     * @param card the BuildingCard being picked.
-     * @param board the game board containing the cards.
+     * @param player      the player performing the action.
+     * @param card        the BuildingCard being picked.
+     * @param board       the game board containing the cards.
      * @throws IllegalPhaseActionException if the phase hasn't started or the player has no top draws left.
      */
     @Override
@@ -131,9 +131,9 @@ public class OfferResolutionPhase extends Phase {
      * Decrements the player's available bottom draws and checks if their turn is finished.
      *
      * @param turnManager the turn manager controlling the flow of the game.
-     * @param player the player performing the action.
-     * @param card the BuildingCard being picked.
-     * @param board the game board containing the cards.
+     * @param player      the player performing the action.
+     * @param card        the BuildingCard being picked.
+     * @param board       the game board containing the cards.
      * @throws IllegalPhaseActionException if the phase hasn't started or the player has no bottom draws left.
      */
     @Override
@@ -160,8 +160,8 @@ public class OfferResolutionPhase extends Phase {
      * and automatically triggers the event resolution.
      *
      * @param turnManager the turn manager controlling the flow of the game.
-     * @param player the player currently resolving their offer.
-     * @param board the game board.
+     * @param player      the player currently resolving their offer.
+     * @param board       the game board.
      * @throws IllegalPhaseActionException if the offer resolution phase has not been started.
      */
     public void checkIfPlayerIsFinished(TurnManager turnManager, Player player, Board board) throws IllegalPhaseActionException {
@@ -176,7 +176,7 @@ public class OfferResolutionPhase extends Phase {
 
             turnManager.getPlayersOrder().remove(player);
 
-            if (!turnManager.getPlayersOrder().isEmpty()){
+            if (!turnManager.getPlayersOrder().isEmpty()) {
                 PlayerStateChangeDTO dto = new PlayerStateChangeDTO(turnManager.getActivePlayer().getNickname());
                 dto.setIsActive(true);
                 turnManager.getNotifier().notifyChange(dto);
@@ -184,6 +184,8 @@ public class OfferResolutionPhase extends Phase {
 
             for (TileSlot orderTile : board.getTurnOrderTile().slots()) {
                 if (orderTile.getPlayer() == null) {
+                    turnManager.getNotifier().notifyChange(new TotemTurnMoveDTO(player.getNickname(), board.getTurnOrderTile().slots().indexOf(orderTile)));
+
                     orderTile.setPlayer(player);
                     break;
                 }
@@ -202,20 +204,17 @@ public class OfferResolutionPhase extends Phase {
                 turnManager.setPhase(new OfferResolutionPhase());
                 turnManager.getPhase().startPlayerOfferResolution(turnManager, nextPlayer, board.getOfferTrackPlayerSlot(nextPlayer));
             }
-        }
-        else{
+        } else {
             //if he has not finished we send the notification to the player via gateway
             PlayerStateChangeDTO dto = new PlayerStateChangeDTO(player.getNickname());
             dto.setIsActive(true);
-            dto.setCanSkip(checkForRightToSkip(player,board));
+            dto.setCanSkip(checkForRightToSkip(player, board));
             turnManager.getNotifier().notifyChange(dto);
         }
 
 
         // if the offer track is empty then we can move on with the next phase
         if (board.isOfferTrackEmpty()) {
-            turnManager.getNotifier().notifyChange(new TotemTurnMoveDTO());
-
             PhaseChangeDTO dto = new PhaseChangeDTO(new EventResolutionPhase().toString());
             turnManager.getNotifier().notifyChange(dto);
 
@@ -306,7 +305,7 @@ public class OfferResolutionPhase extends Phase {
      * Combines the checks for both the top and bottom rows.
      *
      * @param player the player requesting to skip.
-     * @param board the game board.
+     * @param board  the game board.
      * @return {@code true} if the player can skip their remaining picks, {@code false} otherwise.
      */
     @Override
