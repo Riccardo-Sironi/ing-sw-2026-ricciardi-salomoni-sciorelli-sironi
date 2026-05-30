@@ -18,7 +18,6 @@ import java.util.List;
  * It sends local player commands to the server and receives game state updates.
  */
 public class RMIServerConnection extends UnicastRemoteObject implements ServerConnection {
-    private final List<ModelListener> listeners = new ArrayList<>();
     private Client prioritizedListener = null;
     private RMIServerInterface serverStub;
 
@@ -60,7 +59,6 @@ public class RMIServerConnection extends UnicastRemoteObject implements ServerCo
     public void receiveDTO(SmallModelEditor dto) {
         new Thread(() -> {
             if (prioritizedListener != null) prioritizedListener.update(dto);
-            listeners.forEach(l -> l.update(dto));
         }).start();
     }
 
@@ -244,23 +242,12 @@ public class RMIServerConnection extends UnicastRemoteObject implements ServerCo
     }
 
     /**
-     * Adds a local UI element that wants to receive updates from the server.
-     *
-     * @param listener the UI component to update
-     */
-    @Override
-    public void subscribe(ModelListener listener) {
-        listeners.add(listener);
-    }
-
-    /**
      * Stops sending updates to a local UI element.
      *
      * @param listener the UI component to remove
      */
     @Override
-    public void unsubscribe(ModelListener listener) {
-        listeners.remove(listener);
+    public void unsubscribe(Client listener) {
         if (listener.equals(prioritizedListener)) prioritizedListener = null;
     }
 

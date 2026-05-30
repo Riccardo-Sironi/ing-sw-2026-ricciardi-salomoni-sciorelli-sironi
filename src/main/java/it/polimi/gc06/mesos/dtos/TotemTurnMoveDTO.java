@@ -7,10 +7,12 @@ public class TotemTurnMoveDTO implements SmallModelEditor {
 
     private int index;
     private String player;
+    private Integer sequenceNumber;
 
     public TotemTurnMoveDTO(String player, int index) {
         this.player = player;
         this.index = index;
+        this.sequenceNumber = null;
     }
 
     /**
@@ -48,5 +50,15 @@ public class TotemTurnMoveDTO implements SmallModelEditor {
     @Override
     public void accept(DTOvisitor visitor) {
         visitor.visit(this);
+    }
+
+    @Override
+    public void setSequenceNumber(int sNum) {
+        sequenceNumber = sNum;
+    }
+
+    @Override
+    public Integer getSequenceNumber() {
+        return sequenceNumber;
     }
 }

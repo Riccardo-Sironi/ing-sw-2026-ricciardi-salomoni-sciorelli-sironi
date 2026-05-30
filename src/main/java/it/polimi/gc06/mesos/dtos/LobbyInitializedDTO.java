@@ -32,6 +32,8 @@ public class LobbyInitializedDTO implements SmallModelEditor {
     private final int bottomDrawNum;
     private final int tribeDeckSize;
 
+    private Integer sequenceNumber;
+
     /**
      * Stuffs everything needed for the first round into one giant container
      */
@@ -54,6 +56,8 @@ public class LobbyInitializedDTO implements SmallModelEditor {
         this.topDrawNum = topDrawNum;
         this.bottomDrawNum = bottomDrawNum;
         this.tribeDeckSize = tribeDeckSize;
+
+        this.sequenceNumber = null;
     }
 
     /**
@@ -111,5 +115,15 @@ public class LobbyInitializedDTO implements SmallModelEditor {
     @Override
     public void accept(DTOvisitor visitor) {
         visitor.visit(this);
+    }
+
+    @Override
+    public void setSequenceNumber(int sNum) {
+        sequenceNumber = sNum;
+    }
+
+    @Override
+    public Integer getSequenceNumber() {
+        return sequenceNumber;
     }
 }

@@ -85,11 +85,7 @@ public class GUI extends Application implements View, ModelListener {
     }
 
     public static void subscribeGUI() {
-        try {
-            client.getServerConnection().subscribe(gui);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        client.subscribe(gui);
     }
 
     @Override

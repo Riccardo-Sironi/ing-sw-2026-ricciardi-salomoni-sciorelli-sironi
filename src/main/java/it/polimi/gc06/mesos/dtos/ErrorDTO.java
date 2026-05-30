@@ -8,12 +8,14 @@ import it.polimi.gc06.mesos.view.smallModel.SmallModel;
 public class ErrorDTO implements SmallModelEditor{
 
     private final String message;
+    private Integer sequenceNumber;
 
     /**
      * @param message Text copy detailing why it errored out.
      */
     public ErrorDTO(String message){
         this.message = message;
+        this.sequenceNumber = null;
     }
 
     /**
@@ -33,5 +35,15 @@ public class ErrorDTO implements SmallModelEditor{
     @Override
     public void accept(DTOvisitor visitor) {
         visitor.visit(this);
+    }
+
+    @Override
+    public void setSequenceNumber(int sNum) {
+        sequenceNumber = sNum;
+    }
+
+    @Override
+    public Integer getSequenceNumber() {
+        return sequenceNumber;
     }
 }

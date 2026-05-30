@@ -10,6 +10,7 @@ public class PlayerStateChangeDTO implements SmallModelEditor {
     private final String player;
     private int isActive;
     private int canSkip;
+    private Integer sequenceNumber;
 
     /**
      * @param player The Nickname whose turn states are being configured.
@@ -18,6 +19,7 @@ public class PlayerStateChangeDTO implements SmallModelEditor {
         this.player = player;
         this.isActive = -1;
         this.canSkip = -1;
+        this.sequenceNumber = null;
     }
 
     /**
@@ -66,5 +68,15 @@ public class PlayerStateChangeDTO implements SmallModelEditor {
      */
     public String getPlayer() {
         return player;
+    }
+
+    @Override
+    public void setSequenceNumber(int sNum) {
+        sequenceNumber = sNum;
+    }
+
+    @Override
+    public Integer getSequenceNumber() {
+        return sequenceNumber;
     }
 }

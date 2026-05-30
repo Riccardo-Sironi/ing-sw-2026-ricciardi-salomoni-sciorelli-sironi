@@ -10,6 +10,7 @@ public class TotemOfferMoveDTO implements SmallModelEditor {
 
     private final String player;
     private final int index;
+    private Integer sequenceNumber;
 
     /**
      * @param player The active player setting their totem down.
@@ -18,6 +19,7 @@ public class TotemOfferMoveDTO implements SmallModelEditor {
     public TotemOfferMoveDTO(String player, int index) {
         this.player = player;
         this.index = index;
+        this.sequenceNumber = null;
     }
 
     /**
@@ -68,5 +70,15 @@ public class TotemOfferMoveDTO implements SmallModelEditor {
      */
     public String getPlayer() {
         return player;
+    }
+
+    @Override
+    public void setSequenceNumber(int sNum) {
+        sequenceNumber = sNum;
+    }
+
+    @Override
+    public Integer getSequenceNumber() {
+        return sequenceNumber;
     }
 }

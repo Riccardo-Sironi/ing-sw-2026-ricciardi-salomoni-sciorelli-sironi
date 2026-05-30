@@ -7,7 +7,10 @@ import it.polimi.gc06.mesos.view.smallModel.SmallModel;
  */
 public class MesosStartedDTO implements SmallModelEditor {
 
+    private Integer sequenceNumber;
+
     public MesosStartedDTO() {
+        this.sequenceNumber = null;
     }
 
     /**
@@ -26,6 +29,16 @@ public class MesosStartedDTO implements SmallModelEditor {
     @Override
     public void accept(DTOvisitor visitor) {
         visitor.visit(this);
+    }
+
+    @Override
+    public void setSequenceNumber(int sNum) {
+        sequenceNumber = sNum;
+    }
+
+    @Override
+    public Integer getSequenceNumber() {
+        return sequenceNumber;
     }
 
 }

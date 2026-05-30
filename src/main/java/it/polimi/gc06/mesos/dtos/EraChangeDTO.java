@@ -9,12 +9,14 @@ import it.polimi.gc06.mesos.view.smallModel.SmallModel;
 public class EraChangeDTO implements SmallModelEditor {
 
     private final Era era;
+    private Integer sequenceNumber;
 
     /**
      * @param era The newly activated era index.
      */
     public EraChangeDTO(Era era) {
         this.era = era;
+        this.sequenceNumber = null;
     }
 
     /**
@@ -42,5 +44,15 @@ public class EraChangeDTO implements SmallModelEditor {
      */
     public Era getEra() {
         return era;
+    }
+
+    @Override
+    public void setSequenceNumber(int sNum) {
+        sequenceNumber = sNum;
+    }
+
+    @Override
+    public Integer getSequenceNumber() {
+        return sequenceNumber;
     }
 }

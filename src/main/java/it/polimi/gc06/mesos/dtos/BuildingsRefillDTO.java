@@ -14,6 +14,7 @@ public class BuildingsRefillDTO implements SmallModelEditor, Serializable {
 
     private final ArrayList<Card> top;
     private final ArrayList<Card> bottom;
+    private Integer sequenceNumber;
 
     /**
      * @param top The full top row of building cards.
@@ -22,6 +23,7 @@ public class BuildingsRefillDTO implements SmallModelEditor, Serializable {
     public BuildingsRefillDTO(Collection<Card> top, Collection<Card> bottom) {
         this.top = new ArrayList<>(top);
         this.bottom = new ArrayList<>(bottom);
+        this.sequenceNumber = null;
     }
 
     /**
@@ -57,5 +59,15 @@ public class BuildingsRefillDTO implements SmallModelEditor, Serializable {
      */
     public ArrayList<Card> getBottom() {
         return bottom;
+    }
+
+    @Override
+    public void setSequenceNumber(int sNum) {
+        sequenceNumber = sNum;
+    }
+
+    @Override
+    public Integer getSequenceNumber() {
+        return sequenceNumber;
     }
 }

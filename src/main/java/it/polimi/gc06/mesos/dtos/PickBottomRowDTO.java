@@ -10,10 +10,12 @@ public class PickBottomRowDTO implements SmallModelEditor {
 
     private final String player;
     private final int cardIndex;
+    private Integer sequenceNumber;
 
     public PickBottomRowDTO(String player, int cardIndex) {
         this.player = player;
         this.cardIndex = cardIndex;
+        this.sequenceNumber = null;
     }
 
     /**
@@ -54,5 +56,15 @@ public class PickBottomRowDTO implements SmallModelEditor {
     @Override
     public void accept(DTOvisitor visitor) {
         visitor.visit(this);
+    }
+
+    @Override
+    public void setSequenceNumber(int sNum) {
+        sequenceNumber = sNum;
+    }
+
+    @Override
+    public Integer getSequenceNumber() {
+        return sequenceNumber;
     }
 }

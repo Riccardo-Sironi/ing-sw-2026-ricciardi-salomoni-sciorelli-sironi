@@ -23,4 +23,17 @@ public interface SmallModelEditor extends Serializable {
      * @param visitor
      */
     void accept(DTOvisitor visitor);
+
+    /**
+     * Set the sequence number for the DTO.
+     * @param sNum the sequence number.
+     */
+    void setSequenceNumber(int sNum);
+
+    /**
+     * Sequence number getter.
+     * @return the sequence number of the DTO, if {@code null} the DTO is
+     * not a global DTO and the sequence is irrelevant.
+     */
+    Integer getSequenceNumber();
 }

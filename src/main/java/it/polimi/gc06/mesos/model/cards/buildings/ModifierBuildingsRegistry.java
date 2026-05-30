@@ -3,7 +3,7 @@ package it.polimi.gc06.mesos.model.cards.buildings;
 import java.io.Serializable;
 import java.util.EnumMap;
 
-public class ModifierBuildingsRegistry implements Serializable {
+public class ModifierBuildingsRegistry{
 
     private final EnumMap<ModifierBuildingRegistryKey,ModifierBuildingCard> registry;
 

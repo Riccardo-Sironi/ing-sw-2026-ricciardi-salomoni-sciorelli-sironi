@@ -6,9 +6,11 @@ import it.polimi.gc06.mesos.view.smallModel.SmallModel;
 public class EventResolvedDTO implements SmallModelEditor {
 
     private EventCard eventCard;
+    private Integer sequenceNumber;
 
     public EventResolvedDTO(EventCard eventCard) {
         this.eventCard = eventCard;
+        this.sequenceNumber = null;
     }
 
     @Override
@@ -22,5 +24,15 @@ public class EventResolvedDTO implements SmallModelEditor {
 
     public EventCard getEventCard() {
         return eventCard;
+    }
+
+    @Override
+    public void setSequenceNumber(int sNum) {
+        sequenceNumber = sNum;
+    }
+
+    @Override
+    public Integer getSequenceNumber() {
+        return sequenceNumber;
     }
 }

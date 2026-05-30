@@ -32,7 +32,6 @@ public class TCPServerConnection implements ServerConnection, Runnable {
     private ObjectInputStream in;
 
     //listeners
-    private final List<ModelListener> listeners;
     private Client prioritizedListener;
 
     //state
@@ -50,7 +49,6 @@ public class TCPServerConnection implements ServerConnection, Runnable {
         this.host = host;
         this.port = port;
 
-        listeners = new ArrayList<>();
         prioritizedListener = null;
 
         request = new BlockingBox<>();
@@ -81,7 +79,6 @@ public class TCPServerConnection implements ServerConnection, Runnable {
     public void receiveDTO(SmallModelEditor dto) {
         System.out.println("'"+Thread.currentThread().getName()+"' client received a dto: "+dto.getClass().getSimpleName());
         prioritizedListener.update(dto);
-        listeners.forEach(l -> l.update(dto));
     }
 
     /**
@@ -350,19 +347,10 @@ public class TCPServerConnection implements ServerConnection, Runnable {
     }
 
     /**
-     * Register a new component waiting for incoming network updates.
-     */
-    @Override
-    public void subscribe(ModelListener listener) {
-        listeners.add(listener);
-    }
-
-    /**
      * Pulls the plug on an active listener when it's done rendering frames.
      */
     @Override
-    public void unsubscribe(ModelListener listener) {
-        listeners.remove(listener);
+    public void unsubscribe(Client listener) {
         if (listener.equals(prioritizedListener)) prioritizedListener = null;
     }
 

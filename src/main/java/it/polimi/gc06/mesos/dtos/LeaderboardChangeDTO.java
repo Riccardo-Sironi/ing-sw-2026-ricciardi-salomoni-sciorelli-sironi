@@ -11,12 +11,14 @@ import java.util.List;
 public class LeaderboardChangeDTO implements SmallModelEditor {
 
     private final List<Score> leaderboard;
+    private Integer sequenceNumber;
 
     /**
      * @param leaderboard The new sorted list of players and their scores.
      */
     public LeaderboardChangeDTO(List<Score> leaderboard) {
         this.leaderboard = leaderboard;
+        this.sequenceNumber = null;
     }
 
     /**
@@ -37,5 +39,15 @@ public class LeaderboardChangeDTO implements SmallModelEditor {
     @Override
     public void accept(DTOvisitor visitor) {
         visitor.visit(this);
+    }
+
+    @Override
+    public void setSequenceNumber(int sNum) {
+        sequenceNumber = sNum;
+    }
+
+    @Override
+    public Integer getSequenceNumber() {
+        return sequenceNumber;
     }
 }

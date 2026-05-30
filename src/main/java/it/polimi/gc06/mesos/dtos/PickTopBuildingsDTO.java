@@ -10,6 +10,7 @@ public class PickTopBuildingsDTO implements SmallModelEditor {
 
     private final String player;
     private final int cardIndex;
+    private Integer sequenceNumber;
     /**
      * @param player Who picked it.
      * @param cardIndex Which slot they picked the card from.
@@ -17,6 +18,7 @@ public class PickTopBuildingsDTO implements SmallModelEditor {
     public PickTopBuildingsDTO(String player, int cardIndex) {
         this.player = player;
         this.cardIndex = cardIndex;
+        this.sequenceNumber = null;
     }
 
     /**
@@ -57,5 +59,15 @@ public class PickTopBuildingsDTO implements SmallModelEditor {
     @Override
     public void accept(DTOvisitor visitor) {
         visitor.visit(this);
+    }
+
+    @Override
+    public void setSequenceNumber(int sNum) {
+        sequenceNumber = sNum;
+    }
+
+    @Override
+    public Integer getSequenceNumber() {
+        return sequenceNumber;
     }
 }

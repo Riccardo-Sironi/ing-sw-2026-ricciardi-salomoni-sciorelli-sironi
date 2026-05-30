@@ -4,18 +4,23 @@ import it.polimi.gc06.mesos.controller.ModelListener;
 import it.polimi.gc06.mesos.dtos.SmallModelEditor;
 import it.polimi.gc06.mesos.view.smallModel.SmallModel;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class Client implements ModelListener {
 
     private SmallModel smallModel;
     private ServerConnection serverConnection = null;
+    private final List<ModelListener> listeners;
+    private Integer nextSequenceNumber;
+    private final Map<Integer,SmallModelEditor> earlyDto; //out of sequence DTO
 
     public Client(){
-
-    }
-
-    //TODO: remove if small model needs to be instantiated out of the client
-    public Client(String nickname) {
-        smallModel = new SmallModel(nickname);
+        listeners = new ArrayList<>();
+        nextSequenceNumber = 0;
+        earlyDto = new HashMap<>();
     }
 
     public void connect(String tech, String host, int port) {
@@ -38,20 +43,50 @@ public class Client implements ModelListener {
         return serverConnection;
     }
 
-    public void subscribe(ModelListener listener) {
-
-    }
-
     /**
      * Should be called BEFORE other listeners to ensure that the small model is updated.
      *
      * @param dto the dto that the notification stemmed from.
      */
     @Override
-    public void update(SmallModelEditor dto){
-        try {
-            dto.edit(smallModel); //if it's an error DTO an Error will be thrown
-        }catch (Error _) {}
+    public synchronized void update(SmallModelEditor dto){
+        if(dto.getSequenceNumber() == null){
+            //non-sequenced DTO
+            try{
+                dto.edit(smallModel);
+            }catch (Error _) {} //if it's an error DTO an Error will be thrown
+            listeners.forEach(l -> l.update(dto));
+        }
+        else if(nextSequenceNumber.equals(dto.getSequenceNumber())){
+            //correct DTO
+            nextSequenceNumber++;
+            try{
+                dto.edit(smallModel);
+            }catch (Error _) {} //if it's an error DTO an Error will be thrown
+            listeners.forEach(l -> l.update(dto));
+            //takes all correct early dto
+            while(earlyDto.containsKey(nextSequenceNumber)){
+                SmallModelEditor nextDTO = earlyDto.remove(nextSequenceNumber);
+                nextSequenceNumber++;
+                try{
+                    nextDTO.edit(smallModel);
+                }catch (Error _) {} //if it's an error DTO an Error will be thrown
+                listeners.forEach(l -> l.update(nextDTO));
+            }
+        }
+        else{
+            //out of sequence DTO
+            earlyDto.put(dto.getSequenceNumber(),dto);
+        }
+    }
+
+    /**
+     * Subscribes a standard UI observer/listener to the model updates.
+     *
+     * @param l the observer component that requires game state deltas
+     */
+    public void subscribe(ModelListener l){
+        listeners.add(l);
     }
 
     /**

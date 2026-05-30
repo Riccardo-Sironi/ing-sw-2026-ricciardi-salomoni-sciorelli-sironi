@@ -15,6 +15,7 @@ public class TopRowRefillDTO implements SmallModelEditor, Serializable {
     private final ArrayList<Card> top; //we use an arraylist since collection might not be serializable
     private final ArrayList<Card> bottom;
     private final int deckSize;
+    private Integer sequenceNumber;
 
     /**
      * @param top The refreshed top row payload.
@@ -25,6 +26,7 @@ public class TopRowRefillDTO implements SmallModelEditor, Serializable {
         this.top = new ArrayList<>(top);
         this.bottom = new ArrayList<>(bottom);
         this.deckSize = deckSize;
+        this.sequenceNumber = null;
     }
 
     /**
@@ -61,5 +63,15 @@ public class TopRowRefillDTO implements SmallModelEditor, Serializable {
      */
     public ArrayList<Card> getBottom() {
         return bottom;
+    }
+
+    @Override
+    public void setSequenceNumber(int sNum) {
+        sequenceNumber = sNum;
+    }
+
+    @Override
+    public Integer getSequenceNumber() {
+        return sequenceNumber;
     }
 }

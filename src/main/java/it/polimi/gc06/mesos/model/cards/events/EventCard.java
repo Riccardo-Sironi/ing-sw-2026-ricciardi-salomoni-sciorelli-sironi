@@ -8,7 +8,7 @@ import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingsRegistry;
 public abstract class EventCard extends TribeCard {
 
     private final boolean lastToBeResolved;
-    private ModifierBuildingsRegistry buildingsRegistry;
+    private transient ModifierBuildingsRegistry buildingsRegistry;
 
     /**
      * For testing purpose only!

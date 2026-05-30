@@ -73,7 +73,7 @@ public class TUI implements View, ModelListener {
 
 
             // Start listening to the model updates, so we can redraw the board every time something changes
-            client.getServerConnection().subscribe(this);
+            client.subscribe(this);
 
             // Show startup banner for 1.5 seconds
             showBanner(1500);

@@ -9,6 +9,7 @@ import it.polimi.gc06.mesos.view.smallModel.SmallModel;
 public class ChooseTotemColorDTO implements SmallModelEditor {
     private final String nickname;
     private final Color color;
+    private Integer sequenceNumber;
 
     /**
      * @param nickname The player locking in a color.
@@ -17,6 +18,7 @@ public class ChooseTotemColorDTO implements SmallModelEditor {
     public ChooseTotemColorDTO(String nickname, Color color) {
         this.nickname = nickname;
         this.color = color;
+        this.sequenceNumber = null;
     }
 
     /**
@@ -53,5 +55,15 @@ public class ChooseTotemColorDTO implements SmallModelEditor {
                     .findFirst()
                     .ifPresent(o -> o.setColor(color));
         }
+    }
+
+    @Override
+    public void setSequenceNumber(int sNum) {
+        sequenceNumber = sNum;
+    }
+
+    @Override
+    public Integer getSequenceNumber() {
+        return sequenceNumber;
     }
 }

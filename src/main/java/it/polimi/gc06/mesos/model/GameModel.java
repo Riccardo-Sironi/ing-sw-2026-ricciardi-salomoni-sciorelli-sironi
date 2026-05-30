@@ -1,5 +1,6 @@
 package it.polimi.gc06.mesos.model;
 
+import it.polimi.gc06.mesos.dtos.LeaderboardChangeDTO;
 import it.polimi.gc06.mesos.dtos.LobbyInitializedDTO;
 import it.polimi.gc06.mesos.dtos.SmallModelEditor;
 import it.polimi.gc06.mesos.model.cards.TribeCard;
@@ -156,6 +157,8 @@ public class GameModel implements GameInfo {
                 .thenComparing(Player::getFoodTokens)
                 .reversed());
         endTimestamp = Timestamp.from(Instant.now());
+
+        notifier.notifyChange(new LeaderboardChangeDTO(getLeaderboard().getScores()));
     }
 
     /**

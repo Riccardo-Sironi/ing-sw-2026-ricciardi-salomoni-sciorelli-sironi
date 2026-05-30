@@ -8,9 +8,11 @@ import it.polimi.gc06.mesos.view.smallModel.SmallModel;
 public class RoundChangeDTO implements SmallModelEditor {
 
     private final int round;
+    private Integer sequenceNumber;
 
     public RoundChangeDTO(int round) {
         this.round = round;
+        this.sequenceNumber = null;
     }
 
     /**
@@ -31,5 +33,15 @@ public class RoundChangeDTO implements SmallModelEditor {
     @Override
     public void accept(DTOvisitor visitor) {
         visitor.visit(this);
+    }
+
+    @Override
+    public void setSequenceNumber(int sNum) {
+        sequenceNumber = sNum;
+    }
+
+    @Override
+    public Integer getSequenceNumber() {
+        return sequenceNumber;
     }
 }

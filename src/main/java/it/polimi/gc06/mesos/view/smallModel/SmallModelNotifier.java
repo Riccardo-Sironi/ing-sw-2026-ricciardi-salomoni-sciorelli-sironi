@@ -11,20 +11,12 @@ import it.polimi.gc06.mesos.network.client.Client;
 public interface SmallModelNotifier {
 
     /**
-     * Subscribes a standard UI observer/listener to the model updates.
-     *
-     * @param listener the observer component that requires game state deltas
-     * @throws java.rmi.RemoteException if a network disruption occurs during registration
-     */
-    void subscribe(ModelListener listener) throws java.rmi.RemoteException;
-
-    /**
      * Unsubscribes a previously attached observer from receiving further network abstraction updates.
      *
      * @param listener the UI listener intended for removal
      * @throws java.rmi.RemoteException if a network disruption is encountered
      */
-    void unsubscribe(ModelListener listener) throws java.rmi.RemoteException;
+    void unsubscribe(Client listener) throws java.rmi.RemoteException;
 
     /**
      * Subscribes a special high-priority observer (usually the main Client abstraction itself)

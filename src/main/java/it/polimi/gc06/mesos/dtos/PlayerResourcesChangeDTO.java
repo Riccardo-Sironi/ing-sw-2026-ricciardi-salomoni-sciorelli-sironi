@@ -13,6 +13,7 @@ public class PlayerResourcesChangeDTO implements SmallModelEditor {
     private final Integer bottomDrawNum;
     private final Integer food;
     private final Integer prestige;
+    private Integer sequenceNumber;
 
     /**
      * Creates a targeted patch for a user's wallet.
@@ -28,6 +29,7 @@ public class PlayerResourcesChangeDTO implements SmallModelEditor {
         this.food = food;
         this.prestige = prestige;
         this.player = player;
+        this.sequenceNumber = null;
     }
 
     /**
@@ -64,5 +66,15 @@ public class PlayerResourcesChangeDTO implements SmallModelEditor {
     @Override
     public void accept(DTOvisitor visitor) {
         visitor.visit(this);
+    }
+
+    @Override
+    public void setSequenceNumber(int sNum) {
+        sequenceNumber = sNum;
+    }
+
+    @Override
+    public Integer getSequenceNumber() {
+        return sequenceNumber;
     }
 }

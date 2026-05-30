@@ -1,49 +1,51 @@
 package it.polimi.gc06.mesos.network.leaderboard;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.IOException;
-import java.io.InputStream;
 import java.sql.*;
 import java.util.*;
 
-/**
- * The class is static and this application should be the only one accessing the DB, if this is not respected the
- * DAO won't be consistent with external updates. Right now the DAO has two states:
- * 1. Application just started, DB is created and at the first read request all the data is extracted from DB.
- * 2. First read request already happened, local data is up to date, no need to request DB update.
- */
 public class LeaderboardDAO {
 
     private final static List<Leaderboard> leaderboards = new ArrayList<>();
-    private final static String JSON_CONFIG_URL = "/it/polimi/gc06/mesos/jsons/dbConfig.json";
     private static Connection connection = null;
+    private static String dbUrl = "jdbc:mysql://localhost:3306/"; //default for mysql server on local host
+    private static String dbName = "GC06_Mesos_DB";
+    private static String dbUser = null;
+    private static String dbPassword = null;
 
-    public synchronized static void init() throws IOException, SQLException {
+    /**
+     * Sets the info for the db connection. Must be called before any other function.
+     *
+     * @param user the user of the db for this application, must have full access to db cannot be {@code null}
+     * @param password the password for the user, cannot be {@code null}
+     * @param databaseName can be {@code null} and default name (GC06_Mesos_DB) will be used
+     * @param location can be {@code null} if it is on localHost
+     * @throws IllegalArgumentException if {@code user} or {@code password} are null.
+     */
+    public static void setDbInfo(String user, String password, String databaseName, String location) throws IllegalArgumentException{
+        if(user == null || password == null) throw new IllegalArgumentException();
+        if(location!=null) dbUrl = "jdbc:mysql://"+location+"/";
+        if(databaseName!=null) dbName = databaseName;
+        dbUser = user;
+        dbPassword = password;
+    }
 
-        //gets DB config
-        String base_url;
-        String db_name;
-        String user;
-        String password;
-        try (InputStream input = LeaderboardDAO.class.getResourceAsStream(JSON_CONFIG_URL)) {
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode root = mapper.readTree(input);
-            base_url = root.get("base_url").asText();
-            db_name = root.get("db_name").asText();
-            user = root.get("user").asText();
-            password = root.get("password").asText();
-        }
+    /**
+     * Connect to db server and creates the db
+     *
+     * @throws SQLException
+     */
+    public synchronized static void init() throws SQLException {
+
+        if(connection != null) return; //already created
 
         //creates DB if necessary using config
-        try (Connection c = DriverManager.getConnection(base_url, user, password)){
-            String query = "CREATE DATABASE IF NOT EXISTS " + db_name;
+        try (Connection c = DriverManager.getConnection(dbUrl, dbUser, dbPassword)){
+            String query = "CREATE DATABASE IF NOT EXISTS " + dbName;
             c.createStatement().execute(query);
         }
 
         //sets up the connection to DB
-        connection = DriverManager.getConnection(base_url+db_name, user, password);
+        connection = DriverManager.getConnection(dbUrl+dbName, dbUser, dbPassword);
         try {
             String query = "CREATE TABLE IF NOT EXISTS leaderboards(" +
                     "id INT AUTO_INCREMENT PRIMARY KEY, " +
@@ -64,8 +66,15 @@ public class LeaderboardDAO {
         }
     }
 
-    public synchronized static List<Leaderboard> getLeaderboards() throws IOException, SQLException {
+    /**
+     * Get all leaderboards saved with db. Before that, if not present, tries to create the db.
+     *
+     * @return the leaderboards. {@code null} if db info have not been set.
+     * @throws SQLException if, when not saved locally, fails to get leaderboards from the db.
+     */
+    public synchronized static List<Leaderboard> getLeaderboards() throws SQLException {
 
+        if(dbName == null) return null;
         if(connection == null) init();
 
         //only if current list is empty it calls the DB to request the leaderboards
@@ -101,8 +110,16 @@ public class LeaderboardDAO {
         return Collections.unmodifiableList(leaderboards);
     }
 
-    public synchronized static void saveLeaderboard(Leaderboard l) throws IOException, SQLException {
+    /**
+     * Saves a leaderboard to the db. Before that, if not present, tries to create the db.
+     *
+     * @param l the leaderboard.
+     * @return {@code false} if db info have not been set.
+     * @throws SQLException if it fails to save {@code l} on the db.
+     */
+    public synchronized static boolean saveLeaderboard(Leaderboard l) throws SQLException {
 
+        if(dbName == null) return false;
         if(connection == null) init();
 
         //request to save the leaderboard to DB
@@ -148,5 +165,7 @@ public class LeaderboardDAO {
 
         //saves the leaderboard locally
         leaderboards.add(l);
+
+        return true;
     }
 }

@@ -19,6 +19,7 @@ public class PlayerRecapDTO implements SmallModelEditor{
     private final Integer inventorNumber;
     private final Integer shamanNumber;
     private final Set<InventionIcon> collectedIcons;
+    private Integer sequenceNumber;
 
     public PlayerRecapDTO(String nickname, Integer buildersDiscount, Integer shamanStar, Integer artistNumber,
                           Integer builderNumber, Integer gathererNumber, Integer hunterNumber, Integer inventorNumber,
@@ -33,6 +34,7 @@ public class PlayerRecapDTO implements SmallModelEditor{
         this.inventorNumber = inventorNumber;
         this.shamanNumber = shamanNumber;
         this.collectedIcons = collectedIcons;
+        this.sequenceNumber = null;
     }
 
     public PlayerRecapDTO(String nickname, Integer shamanNumber, Integer inventorNumber, Integer hunterNumber,
@@ -47,6 +49,7 @@ public class PlayerRecapDTO implements SmallModelEditor{
         this.collectedIcons = null;
         this.buildersDiscount = null;
         this.shamanStar = null;
+        this.sequenceNumber = null;
     }
 
 
@@ -85,6 +88,16 @@ public class PlayerRecapDTO implements SmallModelEditor{
      */
     public String getPlayer(){
         return nickname;
+    }
+
+    @Override
+    public void setSequenceNumber(int sNum) {
+        sequenceNumber = sNum;
+    }
+
+    @Override
+    public Integer getSequenceNumber() {
+        return sequenceNumber;
     }
 
 }

@@ -1,10 +1,13 @@
 package it.polimi.gc06.mesos.network.server;
 
+import it.polimi.gc06.mesos.network.leaderboard.LeaderboardDAO;
 import it.polimi.gc06.mesos.network.rmi.RMIServerInterfaceImpl;
 import it.polimi.gc06.mesos.network.socket.TCPServer;
 
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.sql.SQLException;
+import java.util.regex.PatternSyntaxException;
 
 /**
  * Entrypoint for the server application.
@@ -23,18 +26,46 @@ public class ServerMain {
     public static void main(String[] args) {
         // Mesos expressed as number
         // M = 13 = 1+3 = 4, E = 5, S = 19 = 1+9 = 1, O = 15 = 6, S = 1
-        int tcpPortNumber = 45161;
+        int tcpPortNumber = 45161; //should be --tcp=<port>
         // Leave the RMI Port to the default value
-        int RMIPortNumber = 1099;
+        int RMIPortNumber = 1099; //should be --rmi=<port>
+
+        //db data
+        String dbUser = null; //should be --duser=<user:password>
+        String dbPwd = null;
+        String dbName = null; //should be --dname=<name>
+        String dbLocation = null; //should be --dloc=<ip>:<port>
 
         try {
             try {
-                if (args.length >= 1) tcpPortNumber = Integer.parseInt(args[0]);
-                if (args.length >= 2) RMIPortNumber = Integer.parseInt(args[1]);
-            } catch (NumberFormatException e) {
-                System.err.println("Failed to parse server startup arguments: invalid TCP or RMI port number.");
+                for(String arg : args){
+                    if(arg.startsWith("--tcp=")) tcpPortNumber = Integer.parseInt(arg.split("=")[1]);
+                    else if(arg.startsWith("--rmi=")) RMIPortNumber = Integer.parseInt(arg.split("=")[1]);
+                    else if(arg.startsWith("--dname=")) dbName = arg.split("=")[1];
+                    else if(arg.startsWith("--dloc")) dbLocation = arg.split("=")[1];
+                    else if(arg.startsWith("--duser=")){
+                        String s = arg.split("=")[1];
+                        dbUser = s.split(":")[0];
+                        dbPwd = s.split(":")[1];
+                    }
+                }
+            } catch (NumberFormatException | IndexOutOfBoundsException | PatternSyntaxException e) {
+                System.err.println("Failed to parse server startup arguments.");
                 e.printStackTrace();
                 return;
+            }
+
+            if(dbUser != null && dbPwd != null){
+                LeaderboardDAO.setDbInfo(dbUser, dbPwd, dbName, dbLocation);
+                try{
+                    LeaderboardDAO.init();
+                    System.out.println("Connected to db correctly.");
+                }catch(SQLException e){
+                    System.err.println("Connection to db failed.");
+                }
+            }
+            else if(dbLocation != null || dbName != null){
+                System.err.println("Cannot setup db name or location if correct user has not been given.");
             }
 
             System.out.println("Server started");
