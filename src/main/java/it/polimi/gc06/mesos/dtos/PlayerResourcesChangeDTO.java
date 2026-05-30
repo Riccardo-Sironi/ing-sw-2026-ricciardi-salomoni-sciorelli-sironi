@@ -1,6 +1,5 @@
 package it.polimi.gc06.mesos.dtos;
 
-import it.polimi.gc06.mesos.view.smallModel.PlayerView;
 import it.polimi.gc06.mesos.view.smallModel.SmallModel;
 
 /**
@@ -17,11 +16,12 @@ public class PlayerResourcesChangeDTO implements SmallModelEditor {
 
     /**
      * Creates a targeted patch for a user's wallet.
-     * @param player Target nickname.
-     * @param topDrawNum New top draws allowed (can be null).
+     *
+     * @param player        Target nickname.
+     * @param topDrawNum    New top draws allowed (can be null).
      * @param bottomDrawNum New bottom draws allowed (can be null).
-     * @param food New food stash (can be null).
-     * @param prestige New prestige count (can be null).
+     * @param food          New food stash (can be null).
+     * @param prestige      New prestige count (can be null).
      */
     public PlayerResourcesChangeDTO(String player, Integer topDrawNum, Integer bottomDrawNum, Integer food, Integer prestige) {
         this.topDrawNum = topDrawNum;
@@ -34,6 +34,7 @@ public class PlayerResourcesChangeDTO implements SmallModelEditor {
 
     /**
      * {@inheritDoc}
+     *
      * @param smallModel the client's small model.
      * @throws IllegalStateException if the indicated player doesn't exist locally.
      */
@@ -45,10 +46,11 @@ public class PlayerResourcesChangeDTO implements SmallModelEditor {
             if (bottomDrawNum != null) smallModel.setBottomDrawNum(bottomDrawNum);
             if (topDrawNum != null) smallModel.setTopDrawNum(topDrawNum);
         } else {
-            PlayerView view = smallModel.getOpponents().stream().filter(v -> v.getNickname().equals(player))
-                    .findFirst().orElseThrow(IllegalStateException::new);
-            if (food != null) view.setNumFood(food);
-            if (prestige != null) view.setNumPrestige(prestige);
+            smallModel.getOpponents().stream().filter(v -> v.getNickname().equals(player))
+                    .findFirst().ifPresent(view -> {
+                        if (food != null) view.setNumFood(food);
+                        if (prestige != null) view.setNumPrestige(prestige);
+                    });
         }
     }
 
@@ -61,6 +63,7 @@ public class PlayerResourcesChangeDTO implements SmallModelEditor {
 
     /**
      * {@inheritDoc}
+     *
      * @param visitor
      */
     @Override
