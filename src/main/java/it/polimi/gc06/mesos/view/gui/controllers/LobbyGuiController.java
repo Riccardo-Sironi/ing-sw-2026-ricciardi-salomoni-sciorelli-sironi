@@ -40,18 +40,28 @@ public class LobbyGuiController {
     // =========================================================================
     // NODI FXML
     // =========================================================================
-    @FXML public StackPane lobbyRoot;
-    @FXML public ImageView backgroundImage;
-    @FXML public VBox mainContent;
-    @FXML public HBox lobbyContainer;
-    @FXML public HBox totemSelectionBox;
-    @FXML public AnchorPane effectsLayer;
+    @FXML
+    public StackPane lobbyRoot;
+    @FXML
+    public ImageView backgroundImage;
+    @FXML
+    public VBox mainContent;
+    @FXML
+    public HBox lobbyContainer;
+    @FXML
+    public HBox totemSelectionBox;
+    @FXML
+    public AnchorPane effectsLayer;
 
-    @FXML public ImageView smokeGifView;
-    @FXML public ImageView fireGifView;
+    @FXML
+    public ImageView smokeGifView;
+    @FXML
+    public ImageView fireGifView;
 
-    @FXML public Label titleLabel;
-    @FXML public Label playerCounterLabel;
+    @FXML
+    public Label titleLabel;
+    @FXML
+    public Label playerCounterLabel;
 
     private boolean gameStarting = false;
 
@@ -265,7 +275,8 @@ public class LobbyGuiController {
         }
 
         List<Totem> occupiedTotems = new ArrayList<>();
-        if (GUI.smallModel.getPlayer().getColor() != null) occupiedTotems.add(mapColorToTotem(GUI.smallModel.getPlayer().getColor()));
+        if (GUI.smallModel.getPlayer().getColor() != null)
+            occupiedTotems.add(mapColorToTotem(GUI.smallModel.getPlayer().getColor()));
         for (var opponent : GUI.smallModel.getOpponents()) {
             if (opponent.getColor() != null) occupiedTotems.add(mapColorToTotem(opponent.getColor()));
         }
@@ -392,17 +403,23 @@ public class LobbyGuiController {
         TranslateTransition translateOut = new TranslateTransition(Duration.seconds(0.15), bowlBox);
 
         bowlBox.setOnMouseEntered(e -> {
-            scaleOut.stop(); translateOut.stop();
+            scaleOut.stop();
+            translateOut.stop();
             translateIn.setToY(-15);
-            scaleIn.setToX(1.1); scaleIn.setToY(1.1);
-            translateIn.playFromStart(); scaleIn.playFromStart();
+            scaleIn.setToX(1.1);
+            scaleIn.setToY(1.1);
+            translateIn.playFromStart();
+            scaleIn.playFromStart();
         });
 
         bowlBox.setOnMouseExited(e -> {
-            translateIn.stop(); scaleIn.stop();
+            translateIn.stop();
+            scaleIn.stop();
             translateOut.setToY(0);
-            scaleOut.setToX(1.0); scaleOut.setToY(1.0);
-            translateOut.playFromStart(); scaleOut.playFromStart();
+            scaleOut.setToX(1.0);
+            scaleOut.setToY(1.0);
+            translateOut.playFromStart();
+            scaleOut.playFromStart();
         });
     }
 
@@ -429,26 +446,28 @@ public class LobbyGuiController {
     }
 
     public void checkAndStartGame() {
-        if (gameStarting) return;
+        Platform.runLater(() -> {
+            if (gameStarting) return;
 
-        if (GUI.smallModel.getPlayer().getColor() == null) return;
-        for (var opponent : GUI.smallModel.getOpponents()) {
-            if (opponent.getColor() == null) return;
-        }
-        gameStarting = true;
-
-        try {
-            if (GUI.imageFetcher == null) {
-                GUI.imageFetcher = new ImageFetcher(GUI.smallModel.getOpponents().size() + 1);
+            if (GUI.smallModel.getPlayer().getColor() == null) return;
+            for (var opponent : GUI.smallModel.getOpponents()) {
+                if (opponent.getColor() == null) return;
             }
+            gameStarting = true;
 
-            PauseTransition delay = new PauseTransition(Duration.seconds(2));
-            delay.setOnFinished(event -> startSceneTransition());
-            delay.play();
+            try {
+                if (GUI.imageFetcher == null) {
+                    GUI.imageFetcher = new ImageFetcher(GUI.smallModel.getOpponents().size() + 1);
+                }
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+                PauseTransition delay = new PauseTransition(Duration.seconds(2));
+                delay.setOnFinished(event -> startSceneTransition());
+                delay.play();
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     private void startSceneTransition() {

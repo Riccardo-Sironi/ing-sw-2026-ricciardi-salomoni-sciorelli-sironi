@@ -1,6 +1,5 @@
 package it.polimi.gc06.mesos.network.client;
 
-import it.polimi.gc06.mesos.controller.ModelListener;
 import it.polimi.gc06.mesos.controller.commands.ControllerCommand;
 import it.polimi.gc06.mesos.controller.commands.Request;
 import it.polimi.gc06.mesos.dtos.DTOvisitor;
@@ -14,8 +13,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -73,11 +70,12 @@ public class TCPServerConnection implements ServerConnection, Runnable {
 
     /**
      * Drops a model update straight to the listeners so the UI knows what happened.
+     *
      * @param dto the newest game patch.
      */
     @Override
     public void receiveDTO(SmallModelEditor dto) {
-        System.out.println("'"+Thread.currentThread().getName()+"' client received a dto: "+dto.getClass().getSimpleName());
+        System.out.println("'" + Thread.currentThread().getName() + "' client received a dto: " + dto.getClass().getSimpleName());
         prioritizedListener.update(dto);
     }
 
@@ -91,6 +89,7 @@ public class TCPServerConnection implements ServerConnection, Runnable {
 
     /**
      * Try to send your nickname over to see if the server lets you in.
+     *
      * @param nickname Your chosen username.
      * @return True if you're good to go, false otherwise.
      */
@@ -100,7 +99,7 @@ public class TCPServerConnection implements ServerConnection, Runnable {
         if (nicknameSent || isInsideMatch) throw new IllegalStateException("This action shouldn't be performed now");
         if (!request.store("LOGIN" + nickname))
             throw new IllegalStateException("An action is already getting performed");
-        if(((String)this.result.take()).equals("OK")){
+        if (((String) this.result.take()).equals("OK")) {
             nicknameSent = true;
             return true;
         }
@@ -109,6 +108,7 @@ public class TCPServerConnection implements ServerConnection, Runnable {
 
     /**
      * Tell the server you're heading out.
+     *
      * @param nickname The name to logout from.
      */
     @Override
@@ -120,6 +120,7 @@ public class TCPServerConnection implements ServerConnection, Runnable {
 
     /**
      * Ask the server which match lobby you currently belong to.
+     *
      * @return The ID of your current match setup.
      */
     @Override
@@ -130,6 +131,7 @@ public class TCPServerConnection implements ServerConnection, Runnable {
 
     /**
      * Pulls the detailed status info mapping roughly how many are inside the given ID.
+     *
      * @param matchId Target match footprint.
      * @return A status description line.
      */
@@ -142,6 +144,7 @@ public class TCPServerConnection implements ServerConnection, Runnable {
 
     /**
      * Grabs a printable text dump of any match that still has open seats.
+     *
      * @return String representation of available match IDs and player counts.
      */
     @Override
@@ -153,8 +156,9 @@ public class TCPServerConnection implements ServerConnection, Runnable {
 
     /**
      * Creates up a brand-new game lobby.
+     *
      * @param numOfPlayers Target max seats (2, 3, 4, 5).
-     * @param nickname Who is booking the place.
+     * @param nickname     Who is booking the place.
      * @return The resulting Match ID so you know where you landed.
      */
     @Override
@@ -167,14 +171,15 @@ public class TCPServerConnection implements ServerConnection, Runnable {
             throw new IllegalStateException("An action is already getting performed");
 
         String r = (String) result.take();
-        if(r.equals("KO")) throw new IllegalArgumentException("Match num of player not valid.");
+        if (r.equals("KO")) throw new IllegalArgumentException("Match num of player not valid.");
         else isInsideMatch = true;
         return Integer.parseInt(r);
     }
 
     /**
      * Tries joining an already created game.
-     * @param matchId The room you want in.
+     *
+     * @param matchId  The room you want in.
      * @param nickname Your alias.
      * @return True if you slid in successfully.
      */
@@ -187,7 +192,7 @@ public class TCPServerConnection implements ServerConnection, Runnable {
         if (!request.store("JOIN" + matchId))
             throw new IllegalStateException("An action is already getting performed");
 
-        if(((String)this.result.take()).equals("OK")){
+        if (((String) this.result.take()).equals("OK")) {
             isInsideMatch = true;
             return true;
         }
@@ -196,7 +201,8 @@ public class TCPServerConnection implements ServerConnection, Runnable {
 
     /**
      * Let the server know exactly where you are slamming your totem piece.
-     * @param nickname Who you are.
+     *
+     * @param nickname  Who you are.
      * @param tileIndex The track slot code (0-based).
      */
     @Override
@@ -207,7 +213,8 @@ public class TCPServerConnection implements ServerConnection, Runnable {
 
     /**
      * Ask the server to grab a card from the bottom display row.
-     * @param nickname The acting player nickname.
+     *
+     * @param nickname  The acting player nickname.
      * @param cardIndex The column location requested.
      */
     @Override
@@ -279,10 +286,10 @@ public class TCPServerConnection implements ServerConnection, Runnable {
             reqThread.start();
             cmdThread.start();
 
-            while(true){
+            while (true) {
                 //dispatches input
                 Object input = in.readObject();
-                if(input instanceof SmallModelEditor dto){
+                if (input instanceof SmallModelEditor dto) {
                     AtomicBoolean isEndgame = new AtomicBoolean();
                     DTOvisitor visitor = new DTOvisitor() {
                         @Override
@@ -295,8 +302,7 @@ public class TCPServerConnection implements ServerConnection, Runnable {
                         isInsideMatch = false;
                     }
                     receiveDTO(dto);
-                }
-                else{
+                } else {
                     responses.put(input);
                 }
             }
@@ -306,9 +312,10 @@ public class TCPServerConnection implements ServerConnection, Runnable {
         } catch (IOException e) {
             System.err.println("Invalid data for server communication.");
             e.printStackTrace();
-        } catch (InterruptedException _) {
+        } catch (Exception e) {
+            System.err.println("Runtime error during DTO processing!");
+            e.printStackTrace();
         } finally {
-            //whatever the case, tries to interrupt the thread
             reqThread.interrupt();
             cmdThread.interrupt();
         }
@@ -317,16 +324,17 @@ public class TCPServerConnection implements ServerConnection, Runnable {
     /**
      * Sits running forever to dump synchronous state requests (like login) onto the out queue.
      */
-    private void requestHandlerLoop(){
-        while (true) try{
+    private void requestHandlerLoop() {
+        while (true) try {
             String req = request.look();
-            synchronized (out){
+            synchronized (out) {
                 out.writeObject(req);
                 out.flush();
+                out.reset();
             }
             result.store(responses.take());
             request.empty(); // prepares for next request
-        } catch (InterruptedException | IOException _){
+        } catch (InterruptedException | IOException _) {
             return;
         }
     }
@@ -334,16 +342,18 @@ public class TCPServerConnection implements ServerConnection, Runnable {
     /**
      * Polling mechanism that drains your controller actions and shoves them to the output stream.
      */
-    private void commandHandlerLoop(){
-        while(true) try{
-            ControllerCommand cmd = commands.poll(5,TimeUnit.MILLISECONDS);
-            if(cmd!=null){
-                synchronized (out){
+    private void commandHandlerLoop() {
+        while (true) try {
+            ControllerCommand cmd = commands.poll(5, TimeUnit.MILLISECONDS);
+            if (cmd != null) {
+                synchronized (out) {
                     out.writeObject(cmd);
                     out.flush();
+                    out.reset();
                 }
             }
-        } catch(IOException | InterruptedException _){}
+        } catch (IOException | InterruptedException _) {
+        }
     }
 
     /**
