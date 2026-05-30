@@ -16,17 +16,27 @@ public class TCPServer implements Runnable {
     private final MatchManager sharedManager;
     private boolean running;
     private ServerSocket serverSocket;
+    private final String ipAddress;
 
     /**
      * Builds the listener logic, ready to be tossed into a thread.
      * @param port the TCP port to hog.
      * @param sharedManager the core MatchManager tracking all rooms.
      */
+    public TCPServer(int port, MatchManager sharedManager, String ipAddress) {
+        this.port = port;
+        this.sharedManager = sharedManager;
+        running = true;
+        serverSocket = null;
+        this.ipAddress = ipAddress;
+    }
+
     public TCPServer(int port, MatchManager sharedManager) {
         this.port = port;
         this.sharedManager = sharedManager;
         running = true;
         serverSocket = null;
+        this.ipAddress = null;
     }
 
     /**
@@ -36,8 +46,14 @@ public class TCPServer implements Runnable {
     @Override
     public void run() {
         try {
-            serverSocket = new ServerSocket(port);
-            System.out.println("TCP listening on port " + port + ".");
+            if (ipAddress != null) {
+                java.net.InetAddress addr = java.net.InetAddress.getByName(ipAddress);
+                serverSocket = new ServerSocket(port, 50, addr);
+                System.out.println("TCP listening esplicitamente su IP " + ipAddress + " porta " + port);
+            } else {
+                serverSocket = new ServerSocket(port);
+                System.out.println("TCP listening su TUTTE le interfacce (0.0.0.0) porta " + port);
+            }
             while (running) {
                 Socket clientSocket = serverSocket.accept();
                 new Thread(new TCPClientReceiver(clientSocket, sharedManager)).start();

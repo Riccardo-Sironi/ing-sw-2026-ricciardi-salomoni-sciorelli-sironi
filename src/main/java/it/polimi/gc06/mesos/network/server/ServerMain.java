@@ -29,6 +29,7 @@ public class ServerMain {
         int tcpPortNumber = 45161; //should be --tcp=<port>
         // Leave the RMI Port to the default value
         int RMIPortNumber = 1099; //should be --rmi=<port>
+        String ipAddress = null;
 
         //db data
         String dbUser = null; //should be --duser=<user:password>
@@ -48,6 +49,7 @@ public class ServerMain {
                         dbUser = s.split(":")[0];
                         dbPwd = s.split(":")[1];
                     }
+                    else if(arg.startsWith("--ip=")) ipAddress = arg.split("=")[1];
                 }
             } catch (NumberFormatException | IndexOutOfBoundsException | PatternSyntaxException e) {
                 System.err.println("Failed to parse server startup arguments.");
@@ -71,6 +73,7 @@ public class ServerMain {
             System.out.println("Server started");
 
             //tries to start RMI protocol
+            //TODO: handle ip
             try {
                 RMIServerInterfaceImpl rmiImpl = new RMIServerInterfaceImpl(sharedManager);
                 Registry registry = null;
@@ -89,7 +92,9 @@ public class ServerMain {
 
             //tries to start TCP protocol (socket)
             try {
-                TCPServer tcpServer = new TCPServer(tcpPortNumber, sharedManager);
+                TCPServer tcpServer = null;
+                if(ipAddress == null) tcpServer = new TCPServer(tcpPortNumber, sharedManager);
+                else tcpServer = new TCPServer(tcpPortNumber, sharedManager, ipAddress);
                 Thread tcpServerThread = new Thread(tcpServer);
                 tcpServerThread.start();
             } catch (Exception e) {
