@@ -49,10 +49,10 @@ public class TCPServer implements Runnable {
             if (ipAddress != null) {
                 java.net.InetAddress addr = java.net.InetAddress.getByName(ipAddress);
                 serverSocket = new ServerSocket(port, 50, addr);
-                System.out.println("TCP listening esplicitamente su IP " + ipAddress + " porta " + port);
+                System.out.println("TCP listening on IP " + ipAddress + ", port " + port);
             } else {
                 serverSocket = new ServerSocket(port);
-                System.out.println("TCP listening su TUTTE le interfacce (0.0.0.0) porta " + port);
+                System.out.println("TCP listening on port " + port);
             }
             while (running) {
                 Socket clientSocket = serverSocket.accept();
