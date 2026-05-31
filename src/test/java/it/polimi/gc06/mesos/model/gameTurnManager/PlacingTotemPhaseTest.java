@@ -28,6 +28,7 @@ class PlacingTotemPhaseTest {
     private TileSlot slotMock;
     private Board boardMock;
     private TurnOrderTile turnOrderTileMock;
+    private DTONotifier notifierMock;
 
     @BeforeAll
     static void whichTest() {
@@ -53,6 +54,10 @@ class PlacingTotemPhaseTest {
         slotMock = mock(TileSlot.class);
         boardMock = mock(Board.class);
         turnOrderTileMock = mock(TurnOrderTile.class);
+        notifierMock = mock(DTONotifier.class);
+
+        when(boardMock.getTurnOrderTile()).thenReturn(turnOrderTileMock);
+        when(turnManagerMock.getNotifier()).thenReturn(notifierMock);
 
         System.out.println("[START] " + testInfo.getDisplayName());
     }
@@ -65,7 +70,7 @@ class PlacingTotemPhaseTest {
         ArrayList<TileSlot> orderSlots = new ArrayList<>();
         ArrayList<TileSlot> offerSlots = new ArrayList<>();
 
-         for (int i = 0; i < numPlayers; i++) {
+        for (int i = 0; i < numPlayers; i++) {
             players.add(new Player("Player" + (i + 1), Color.values()[i], new ModifierBuildingsRegistry(), new DTONotifier()));
 
             TileSlot orderSlot = new TileSlot();
@@ -78,10 +83,10 @@ class PlacingTotemPhaseTest {
         LinkedList<Player> playersOrder = new LinkedList<>(players);
 
         when(turnManagerMock.getPlayersOrder()).thenReturn(playersOrder);
-        when(boardMock.getTurnOrderTile()).thenReturn(turnOrderTileMock);
         when(turnOrderTileMock.slots()).thenReturn(orderSlots);
         when(boardMock.getOfferTrack()).thenReturn(offerSlots);
         when(boardMock.getOfferTrackPlayerSlot(any(Player.class))).thenReturn(offerSlots.getFirst());
+        when(turnManagerMock.getActivePlayer()).thenReturn(players.getFirst());
 
         Phase offerPhaseMock = mock(OfferResolutionPhase.class);
         when(turnManagerMock.getPhase()).thenReturn(offerPhaseMock);
@@ -155,6 +160,7 @@ class PlacingTotemPhaseTest {
     void placeTotem_RemovesPlayerFromCorrectSlot_BranchCoverage() throws IllegalPhaseActionException {
         LinkedList<Player> playersOrder = new LinkedList<>(List.of(playerMock, mock(Player.class)));
         when(turnManagerMock.getPlayersOrder()).thenReturn(playersOrder);
+        when(turnManagerMock.getActivePlayer()).thenReturn(playersOrder.getFirst());
         when(slotMock.isEmpty()).thenReturn(true);
 
         TileSlot emptySlot = mock(TileSlot.class);

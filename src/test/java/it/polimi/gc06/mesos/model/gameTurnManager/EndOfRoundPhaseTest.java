@@ -2,6 +2,7 @@ package it.polimi.gc06.mesos.model.gameTurnManager;
 
 import it.polimi.gc06.mesos.gameExceptions.IllegalGameActionException;
 import it.polimi.gc06.mesos.gameExceptions.IllegalPhaseActionException;
+import it.polimi.gc06.mesos.model.DTONotifier;
 import it.polimi.gc06.mesos.model.GameModel;
 import it.polimi.gc06.mesos.model.Player;
 import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
@@ -21,23 +22,16 @@ class EndOfRoundPhaseTest {
 
     private EndOfRoundPhase endOfRoundPhase;
 
-    private final TurnManager turnManager =  mock(TurnManager.class);
-
-    private final GameModel gameModel =  mock(GameModel.class);
-
-    private final Board board = mock(Board.class);
-
-    private final Player player0 = mock(Player.class);
-
-    private final Player player1 = mock(Player.class);
-
-    private final ModifierBuildingCard specialBuildingCard =  mock(ModifierBuildingCard.class);
-
-    private final CharacterCard characterCardToPick =  mock(CharacterCard.class);
-
-    private final BuildingCard buildingCardToPick = mock(BuildingCard.class);
-
+    private TurnManager turnManager;
+    private GameModel gameModel;
+    private Board board;
+    private Player player0;
+    private Player player1;
+    private ModifierBuildingCard specialBuildingCard;
+    private CharacterCard characterCardToPick;
+    private BuildingCard buildingCardToPick;
     private ArrayList<Player> players;
+    private DTONotifier notifier;
 
     @BeforeAll
     static void whichTest() {
@@ -57,7 +51,26 @@ class EndOfRoundPhaseTest {
     @BeforeEach
     void setUp(TestInfo testInfo) {
         endOfRoundPhase = new EndOfRoundPhase();
+
+        turnManager = mock(TurnManager.class);
+        gameModel = mock(GameModel.class);
+        board = mock(Board.class);
+        player0 = mock(Player.class);
+        player1 = mock(Player.class);
+        specialBuildingCard = mock(ModifierBuildingCard.class);
+        characterCardToPick = mock(CharacterCard.class);
+        buildingCardToPick = mock(BuildingCard.class);
+        notifier = mock(DTONotifier.class);
+
         players = new ArrayList<>(List.of(player0, player1));
+
+        when(turnManager.getPlayersOrder()).thenReturn(players);
+        when(turnManager.getGameModel()).thenReturn(gameModel);
+        when(gameModel.getBoard()).thenReturn(board);
+        when(turnManager.getNotifier()).thenReturn(notifier);
+        when(player0.getNickname()).thenReturn("Player0");
+        when(player1.getNickname()).thenReturn("Player1");
+        when(turnManager.getActivePlayer()).thenReturn(players.getFirst());
 
         System.out.println("[START] " + testInfo.getDisplayName() + " DONE");
     }
@@ -85,9 +98,7 @@ class EndOfRoundPhaseTest {
 
     @Test
     void givenNoSpecialBuilding_whenEndOfRound_thenTriggerEndGame() throws IllegalPhaseActionException {
-        when(turnManager.getPlayersOrder()).thenReturn(players);
         when(turnManager.getPickFromTopCard()).thenReturn(specialBuildingCard);
-        when(turnManager.getGameModel()).thenReturn(gameModel);
 
         when(player0.getBuildingCards()).thenReturn(new ArrayList<>());
         when(player1.getBuildingCards()).thenReturn(new ArrayList<>());

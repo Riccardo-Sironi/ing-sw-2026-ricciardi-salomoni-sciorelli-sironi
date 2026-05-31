@@ -1,6 +1,7 @@
 package it.polimi.gc06.mesos.model.gameTurnManager;
 
 import it.polimi.gc06.mesos.gameExceptions.IllegalPhaseActionException;
+import it.polimi.gc06.mesos.model.DTONotifier;
 import it.polimi.gc06.mesos.model.GameModel;
 import it.polimi.gc06.mesos.model.Player;
 import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
@@ -12,7 +13,6 @@ import org.junit.jupiter.api.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
@@ -22,6 +22,7 @@ class EventResolutionPhaseTest {
     private TurnManager turnManagerMock;
     private Board boardMock;
     private GameModel gameModelMock;
+    private DTONotifier notifierMock;
 
     @BeforeAll
     static void whichTest() {
@@ -45,6 +46,12 @@ class EventResolutionPhaseTest {
         turnManagerMock = mock(TurnManager.class);
         boardMock = mock(Board.class);
         gameModelMock = mock(GameModel.class);
+        notifierMock = mock(DTONotifier.class);
+
+        when(gameModelMock.getTurnManager()).thenReturn(turnManagerMock);
+        when(gameModelMock.getBoard()).thenReturn(boardMock);
+        when(turnManagerMock.getNotifier()).thenReturn(notifierMock);
+        when(turnManagerMock.getGameModel()).thenReturn(gameModelMock);
 
         System.out.println("[START] " + testInfo.getDisplayName());
     }
@@ -57,7 +64,6 @@ class EventResolutionPhaseTest {
         List<Player> players = List.of(p1, p2);
 
         when(turnManagerMock.getPlayersOrder()).thenReturn(players);
-        when(turnManagerMock.getGameModel()).thenReturn(gameModelMock);
 
         EventCard event1 = mock(EventCard.class);
         EventCard event2 = mock(EventCard.class);
@@ -85,7 +91,6 @@ class EventResolutionPhaseTest {
     @Test
     void resolveEvent_NoEvents_EmptyList() throws Exception {
         when(boardMock.cleanBottomRow()).thenReturn(new ArrayList<>());
-        when(turnManagerMock.getGameModel()).thenReturn(gameModelMock);
 
         Phase endOfRoundPhaseMock = mock(EndOfRoundPhase.class);
         when(turnManagerMock.getPhase()).thenReturn(endOfRoundPhaseMock);
@@ -105,7 +110,6 @@ class EventResolutionPhaseTest {
 
         when(boardMock.cleanBottomRow()).thenReturn(new ArrayList<>(List.of(event1)));
         when(turnManagerMock.getPlayersOrder()).thenReturn(new ArrayList<>());
-        when(turnManagerMock.getGameModel()).thenReturn(gameModelMock);
 
         Phase endOfRoundPhaseMock = mock(EndOfRoundPhase.class);
         when(turnManagerMock.getPhase()).thenReturn(endOfRoundPhaseMock);
