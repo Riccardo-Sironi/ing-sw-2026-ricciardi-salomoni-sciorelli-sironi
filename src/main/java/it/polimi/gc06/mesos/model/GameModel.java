@@ -1,5 +1,6 @@
 package it.polimi.gc06.mesos.model;
 
+import it.polimi.gc06.mesos.dtos.EventResolvedDTO;
 import it.polimi.gc06.mesos.dtos.LeaderboardChangeDTO;
 import it.polimi.gc06.mesos.dtos.LobbyInitializedDTO;
 import it.polimi.gc06.mesos.dtos.SmallModelEditor;
@@ -85,8 +86,8 @@ public class GameModel implements GameInfo {
         }
 
         //prepares notification for all player
-        for(Player p : players){
-            notifier.notifyChangeToPlayer(p.getNickname(),getStartingStateAsDTO(p.getNickname()));
+        for (Player p : players) {
+            notifier.notifyChangeToPlayer(p.getNickname(), getStartingStateAsDTO(p.getNickname()));
         }
     }
 
@@ -145,6 +146,20 @@ public class GameModel implements GameInfo {
      * and food tokens to determine the final ranking of the players.
      */
     public void endGame() {
+        ArrayList<EventCard> events = board.cleanBottomRow();
+
+        board.moveFromTopToBottom();
+
+        events.addAll(board.cleanBottomRow());
+
+        events.forEach(card -> {
+            notifier.notifyChange(new EventResolvedDTO(card));
+            turnManager.getPlayersOrder().forEach(card::resolveEvent);
+        });
+
+        // TODO : send end of game DTO (should show an overlay in the GUI)
+
+        // TODO : we should not update the stats of the players before the leaderboard screen
 
         players.forEach(p -> p.addPrestigeTokens(p.getBuildersPrestige()));
         players.forEach(p -> p.addPrestigeTokens(p.getInventorsCounter() * p.getNumOfIcon()));
@@ -156,6 +171,7 @@ public class GameModel implements GameInfo {
         players.sort(Comparator.comparing(Player::getPrestigeTokens)
                 .thenComparing(Player::getFoodTokens)
                 .reversed());
+
         endTimestamp = Timestamp.from(Instant.now());
 
         notifier.notifyChange(new LeaderboardChangeDTO(getLeaderboard().getScores()));
@@ -270,7 +286,7 @@ public class GameModel implements GameInfo {
      * @return the leaderboard of the match, with timestamp the moment of the call
      * @throws IllegalStateException if the game is not finished yet.
      */
-    public Leaderboard getLeaderboard() throws IllegalStateException{
+    public Leaderboard getLeaderboard() throws IllegalStateException {
         if (!isFinished()) throw new IllegalStateException("Game is not finished yet");
 
         Leaderboard leaderboard = new Leaderboard();
@@ -286,7 +302,7 @@ public class GameModel implements GameInfo {
      *
      * @return true if it has finished.
      */
-    public boolean isFinished(){
+    public boolean isFinished() {
         return endTimestamp != null;
     }
 }

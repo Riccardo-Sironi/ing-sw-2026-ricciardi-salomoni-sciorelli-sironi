@@ -9,7 +9,6 @@ import it.polimi.gc06.mesos.model.Player;
 import it.polimi.gc06.mesos.model.cards.CharactersPresenceVisitor;
 import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
 import it.polimi.gc06.mesos.model.cards.characters.CharacterCard;
-import it.polimi.gc06.mesos.model.cards.events.EventCard;
 import it.polimi.gc06.mesos.model.gameBoard.Board;
 
 import java.util.ArrayList;
@@ -65,9 +64,9 @@ public class EndOfRoundPhase extends Phase {
      * and the standard end-of-round routine resumes.
      *
      * @param turnManager the turn manager controlling the flow of the game.
-     * @param player the player performing the action.
-     * @param card the CharacterCard being picked.
-     * @param board the game board.
+     * @param player      the player performing the action.
+     * @param card        the CharacterCard being picked.
+     * @param board       the game board.
      * @throws IllegalPhaseActionException if the phase hasn't started or the player has no top draws left.
      */
     @Override
@@ -95,9 +94,9 @@ public class EndOfRoundPhase extends Phase {
      * and the standard end-of-round routine resumes.
      *
      * @param turnManager the turn manager controlling the flow of the game.
-     * @param player the player performing the action.
-     * @param card the CharacterCard being picked.
-     * @param board the game board.
+     * @param player      the player performing the action.
+     * @param card        the CharacterCard being picked.
+     * @param board       the game board.
      * @throws IllegalPhaseActionException if the phase hasn't started or the player has no top draws left.
      */
     @Override
@@ -186,16 +185,6 @@ public class EndOfRoundPhase extends Phase {
             turnManager.setRound(turnManager.getRound() + 1);
 
             if (board.isEndGame()) {
-
-                // end of game routine:
-                board.moveFromTopToBottom();
-
-                ArrayList<EventCard> events = board.cleanBottomRow();
-
-                events.forEach(card -> {
-                    turnManager.getPlayersOrder().forEach(card::resolveEvent);
-                });
-
                 gameModel.endGame();
                 return;
             }
