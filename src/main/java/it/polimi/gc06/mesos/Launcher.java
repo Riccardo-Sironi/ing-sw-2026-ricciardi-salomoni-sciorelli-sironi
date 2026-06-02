@@ -4,6 +4,7 @@ import it.polimi.gc06.mesos.model.Color;
 import it.polimi.gc06.mesos.network.ConnectionDetails;
 import it.polimi.gc06.mesos.network.client.Client;
 import it.polimi.gc06.mesos.view.gui.GUI;
+import it.polimi.gc06.mesos.view.smallModel.PlayerView;
 import it.polimi.gc06.mesos.view.smallModel.SmallModel;
 import it.polimi.gc06.mesos.view.tui.LobbyTui;
 import it.polimi.gc06.mesos.view.tui.Style;
@@ -140,7 +141,7 @@ public class Launcher {
 
                             for (String color : allColors) {
                                 if (!takenColors.contains(color)) {
-                                    candidates.add(new Candidate(color));
+                                    candidates.add(new Candidate(color, Style.getAnsiFromColorName(color) + color + Style.RESET, null, null, null, null, true));
                                 }
                             }
                         }
@@ -156,6 +157,9 @@ public class Launcher {
                         .completer(completer)
                         .build();
 
+                String coloredAvailableColors = Arrays.stream(Color.values())
+                                .map(c -> Style.getAnsiFromColorName(c.toString()) + c.toString() + Style.RESET)
+                                .collect(Collectors.joining(", "));
 
                 while (smallModel.getPlayer().getColor() == null) {
                     terminal.writer().println("Please choose your totem color using the command: /set_color <color>");
@@ -171,7 +175,7 @@ public class Launcher {
 
                     if (command.equals("/set_color")) {
                         if (tokens.length < 2) {
-                            terminal.writer().println("Usage: /set_color <color> - Available colors: ORANGE, WHITE, TURQUOISE, YELLOW, PURPLE");
+                            terminal.writer().println("Usage: /set_color <color> - Available colors: " + coloredAvailableColors);
                         } else {
                             String color = tokens[1].trim().toUpperCase();
                             try {
