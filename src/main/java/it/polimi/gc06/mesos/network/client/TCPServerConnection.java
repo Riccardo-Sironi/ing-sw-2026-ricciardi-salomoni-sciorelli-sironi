@@ -287,6 +287,7 @@ public class TCPServerConnection implements ServerConnection, Runnable {
             cmdThread.start();
 
             while (true) {
+                // TODO Come in TCPClientReceiver, il prof. Cugola ha approvato l'uso in questo caso di instanceof. Ma è davvero necessario? Se possibile sarebbe carino toglierlo.
                 //dispatches input
                 Object input = in.readObject();
                 if (input instanceof SmallModelEditor dto) {
