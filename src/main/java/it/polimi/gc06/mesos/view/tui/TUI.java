@@ -169,6 +169,13 @@ public class TUI implements View, ModelListener {
                                 }
                             }
                             break;
+                        case "/board":
+                            if (tokens.length > 1) {
+                                showPlayerBoard(tokens[1]);
+                            } else {
+                                showPlayerBoard(smallModel.getPlayer().getNickname());
+                            }
+                            break;
                         case "/clear":
                             statusMessage = "";
                             break;
@@ -248,11 +255,28 @@ public class TUI implements View, ModelListener {
             }
         };
 
+        Completer boardCompleter = (reader, line, candidates) -> {
+            List<String> words = line.words();
+            if (!words.isEmpty() && "/board".equals(words.get(0))) {
+                if (line.wordIndex() == 1) {
+                    if (smallModel.getPlayer() != null && smallModel.getPlayer().getNickname() != null) {
+                        candidates.add(new Candidate(smallModel.getPlayer().getNickname()));
+                    }
+                    if (smallModel.getOpponents() != null) {
+                        for (PlayerView p : smallModel.getOpponents()) {
+                            candidates.add(new Candidate(p.getNickname()));
+                        }
+                    }
+                }
+            }
+        };
+
         return new AggregateCompleter(
-                new ArgumentCompleter(new StringsCompleter("/pick_card", "/end_turn", "/quit", "/clear"), NullCompleter.INSTANCE),
+                new ArgumentCompleter(new StringsCompleter("/pick_card", "/end_turn", "/quit", "/clear", "/board"), NullCompleter.INSTANCE),
                 new ArgumentCompleter(new StringsCompleter("/help"), new StringsCompleter("place_totem", "pick_card", "end_turn", "clear", "cards"), NullCompleter.INSTANCE),
                 new ArgumentCompleter(new StringsCompleter("/place_totem"), totemCompleter, NullCompleter.INSTANCE),
-                cardCompleter
+                cardCompleter,
+                boardCompleter
         );
     }
 
@@ -297,7 +321,7 @@ public class TUI implements View, ModelListener {
         terminal.writer().flush();
 
         while (true) {
-            String input = lineReader.readLine("\nPress ENTER or type 'q' or '/board' to return\n");
+            String input = lineReader.readLine("\nPress ENTER or type 'q' to return\n");
 
             // Input sanitization
             if (input == null) {
@@ -306,13 +330,59 @@ public class TUI implements View, ModelListener {
             input = input.trim().toLowerCase();
 
             // Exit conditions
-            if (input.equals("q") || input.equals("/board") || input.equals("/b") || input.isEmpty()) {
+            if (input.equals("q") || input.isEmpty()) {
                 break;
             } else {
-                terminal.writer().println("Unrecognized command. Press ENTER to return to the board.");
+                terminal.writer().println("Unrecognized command. Press ENTER or 'q' to return to the board.");
                 terminal.writer().flush();
             }
         }
+    }
+
+    private void showPlayerBoard(String nickname) {
+        terminal.puts(InfoCmp.Capability.clear_screen);
+        terminal.puts(InfoCmp.Capability.cursor_home);
+
+        PlayerView targetPlayer = null;
+        if (smallModel.getPlayer().getNickname().equals(nickname)) {
+            targetPlayer = smallModel.getPlayer();
+        } else {
+            for (PlayerView p : smallModel.getOpponents()) {
+                if (p.getNickname().equals(nickname)) {
+                    targetPlayer = p;
+                    break;
+                }
+            }
+        }
+
+        if (targetPlayer == null) {
+            terminal.writer().println("Player " + nickname + " not found.");
+            terminal.writer().flush();
+        } else {
+            terminal.writer().println("Board of: " + nickname);
+            tuiBoardRenderer.printCardRow(targetPlayer.getCharacters());
+            tuiBoardRenderer.printCardRow(targetPlayer.getBuildings());
+            terminal.writer().flush();
+        }
+
+        while (true) {
+            String input = lineReader.readLine("\nPress ENTER or type 'q' to return\n");
+
+            // Input sanitization
+            if (input == null) {
+                input = "";
+            }
+            input = input.trim().toLowerCase();
+
+            // Exit conditions
+            if (input.equals("q") || input.isEmpty()) {
+                break;
+            } else {
+                terminal.writer().println("Unrecognized command. Press ENTER or 'q' to return to the board.");
+                terminal.writer().flush();
+            }
+        }
+
     }
 
     /**
@@ -400,7 +470,7 @@ public class TUI implements View, ModelListener {
         } else {
             terminal.writer().println("\n");
         }
-
+        
         if (lineReader.isReading()) {
             lineReader.callWidget(LineReader.REDRAW_LINE);
             lineReader.callWidget(LineReader.REDISPLAY);

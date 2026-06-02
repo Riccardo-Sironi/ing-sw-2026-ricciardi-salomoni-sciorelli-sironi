@@ -32,4 +32,22 @@ public class Style {
     public static String COLOR(int r, int g, int b) {
         return String.format("\033[38;2;%d;%d;%dm", r, g, b);
     }
+
+    /**
+     * Maps a color name to its ANSI escape sequence.
+     *
+     * @param colorName the name of the color
+     * @return the ANSI escape sequence
+     */
+    public static String getAnsiFromColorName(String colorName) {
+        if (colorName == null) return RESET;
+        return switch (colorName.toUpperCase()) {
+            case "WHITE" -> WHITE;
+            case "ORANGE" -> COLOR(255, 165, 0);
+            case "TURQUOISE" -> COLOR(64, 224, 208);
+            case "YELLOW" -> YELLOW;
+            case "PURPLE" -> PURPLE;
+            default -> RESET;
+        };
+    }
 }
