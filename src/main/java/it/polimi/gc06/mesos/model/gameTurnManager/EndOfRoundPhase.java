@@ -178,16 +178,16 @@ public class EndOfRoundPhase extends Phase {
         }
 
         if (!isEndOfRoundPickPlayerPresent) {
+            if (board.isEndGame()) {
+                gameModel.endGame();
+                return;
+            }
+
             board.moveFromTopToBottom();
 
             board.populateTopRow(gameModel);
 
             turnManager.setRound(turnManager.getRound() + 1);
-
-            if (board.isEndGame()) {
-                gameModel.endGame();
-                return;
-            }
 
             // if the game is not over we move on with the next round
             // we also notify the first player of the next round via gateway

@@ -258,4 +258,19 @@ public class GUIDTOvisitor extends DTOvisitor {
             });
         });
     }
+
+    @Override
+    public void visit(EndGameDTO dto) {
+        if (gameViewController == null) return;
+        System.out.println("Game ended!");
+        Platform.runLater(() -> {
+            guiEventsManager.enqueueEvent(() -> {
+                boardController.handleEndGame();
+                gameViewController.handleEndGame(() -> {
+                    guiEventsManager.onAnimationFinished();
+                });
+            });
+        });
+    }
+
 }

@@ -148,4 +148,9 @@ public class GameViewController {
     public void handleLeaderboardChange(LeaderboardChangeDTO dto) {
         changeScene(GameScene.LEADERBOARD.getPath());
     }
+
+    public void handleEndGame(Runnable endOfAnimation) {
+        // TODO : overlay for end game events
+        if (endOfAnimation != null) endOfAnimation.run();
+    }
 }

@@ -1168,18 +1168,22 @@ public class BoardController {
     }
 
     private void drawEraText() {
-        eraText.setText(smallModel.getEra().toString());
+        eraText.setText(smallModel.getEra().toString().replace("_", " "));
     }
 
     private void drawPhaseText() {
+        // TODO : the model updates too fast so during the event and end of round animations
+        //  we always have placing totem phase text
+
         phaseText.setText(
-                switch (smallModel.getPhase()) {
-                    case "placing_totem" -> "Placing Totem Phase";
-                    case "offer_resolution" -> "Offer Resolution Phase";
-                    case "event_resolution" -> "Event Resolution Phase";
-                    case "end_of_round" -> "End Of Round Phase";
-                    default -> "?";
-                }
+//                switch (smallModel.getPhase()) {
+//                    case "placing_totem" -> "Placing Totem Phase";
+//                    case "offer_resolution" -> "Offer Resolution Phase";
+//                    case "event_resolution" -> "Event Resolution Phase";
+//                    case "end_of_round" -> "End Of Round Phase";
+//                    default -> "?";
+//                }
+                " "
         );
     }
 
@@ -1368,5 +1372,15 @@ public class BoardController {
         AnimationsManager.eventResolutionAnimation(dto.getEventCard(), mainRoot, () -> {
             if (onEndActions != null) onEndActions.run();
         });
+    }
+
+    public void handleEndGame() {
+        // TODO : we should add some end game animation here, but for now we just clear the board and show the end game screen
+
+        topCharactersContainer.getChildren().clear();
+        bottomCharactersContainer.getChildren().clear();
+        topBuildingsContainer.getChildren().clear();
+        bottomBuildingsContainer.getChildren().clear();
+        drawBottomRowCards();
     }
 }

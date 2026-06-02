@@ -1,9 +1,7 @@
 package it.polimi.gc06.mesos.model;
 
-import it.polimi.gc06.mesos.dtos.EventResolvedDTO;
-import it.polimi.gc06.mesos.dtos.LeaderboardChangeDTO;
-import it.polimi.gc06.mesos.dtos.LobbyInitializedDTO;
-import it.polimi.gc06.mesos.dtos.SmallModelEditor;
+import it.polimi.gc06.mesos.dtos.*;
+import it.polimi.gc06.mesos.model.cards.Card;
 import it.polimi.gc06.mesos.model.cards.TribeCard;
 import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
 import it.polimi.gc06.mesos.model.cards.events.EventCard;
@@ -152,14 +150,16 @@ public class GameModel implements GameInfo {
 
         events.addAll(board.cleanBottomRow());
 
+        board.getBottomRow().addAll(events);
+
+        ArrayList<Card> endBottomRow = new ArrayList<>(events);
+
+        notifier.notifyChange(new EndGameDTO(endBottomRow));
+
         events.forEach(card -> {
             notifier.notifyChange(new EventResolvedDTO(card));
             turnManager.getPlayersOrder().forEach(card::resolveEvent);
         });
-
-        // TODO : send end of game DTO (should show an overlay in the GUI)
-
-        // TODO : we should not update the stats of the players before the leaderboard screen
 
         players.forEach(p -> p.addPrestigeTokens(p.getBuildersPrestige()));
         players.forEach(p -> p.addPrestigeTokens(p.getInventorsCounter() * p.getNumOfIcon()));
