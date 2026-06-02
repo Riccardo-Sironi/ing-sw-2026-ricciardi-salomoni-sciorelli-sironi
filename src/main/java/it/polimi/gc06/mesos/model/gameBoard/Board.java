@@ -16,8 +16,6 @@ import it.polimi.gc06.mesos.model.cards.events.EventListVisitor;
 import it.polimi.gc06.mesos.model.gameTurnManager.DrawObserver;
 import it.polimi.gc06.mesos.model.gameTurnManager.DrawSubject;
 
-import java.sql.Timestamp;
-import java.time.Instant;
 import java.util.*;
 
 public class Board implements DrawSubject {
@@ -324,7 +322,7 @@ public class Board implements DrawSubject {
         }
 
         notifier.notifyChange(new TopRowRefillDTO(new ArrayList<>(topRow),
-                new ArrayList<>(bottomRow),model.getTribeCardsDeck().values().stream().mapToInt(ArrayList::size).sum()));
+                new ArrayList<>(bottomRow), model.getTribeCardsDeck().values().stream().mapToInt(ArrayList::size).sum() + 2));
     }
 
     /**
@@ -429,7 +427,7 @@ public class Board implements DrawSubject {
         buildingsDecks.get(currentEra).clear();
 
         //sends notification
-        notifier.notifyChange(new BuildingsRefillDTO(new ArrayList<>(topBuildings),new ArrayList<>(bottomBuildings)));
+        notifier.notifyChange(new BuildingsRefillDTO(new ArrayList<>(topBuildings), new ArrayList<>(bottomBuildings)));
     }
 
     /**

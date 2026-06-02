@@ -1,6 +1,5 @@
 package it.polimi.gc06.mesos.model.gameTurnManager;
 
-import it.polimi.gc06.mesos.dtos.PhaseChangeDTO;
 import it.polimi.gc06.mesos.dtos.RoundChangeDTO;
 import it.polimi.gc06.mesos.model.DTONotifier;
 import it.polimi.gc06.mesos.model.GameModel;
@@ -26,7 +25,7 @@ public class TurnManager {
         this.pickFromTopCard = registry.get(ModifierBuildingRegistryKey.PICK_FROM_TOP);
         this.phase = new PlacingTotemPhase();
         this.activePlayerIndex = 0; // this is normally set to 0, it could change in the endOfRoundPhase
-        this.round = 0;
+        this.round = 1;
         this.gameModel = null;
         this.notifier = notifier;
     }
