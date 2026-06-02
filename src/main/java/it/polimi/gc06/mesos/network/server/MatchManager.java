@@ -70,7 +70,7 @@ public class MatchManager {
      */
     public String getAvailableMatchesString() {
         return activeMatches.values().stream()
-                .filter(m -> !m.isFull() || !m.hasStarted())
+                .filter(m -> !m.isFull() && !m.hasStarted() && m.getMatchNumOfPlayers() > 0)
                 .map(m -> "Match " + m.getMatchId() + ": "
                         + m.getMatchNumOfPlayers() + "/"
                         + m.getMatchMaxPlayers() + " players")
