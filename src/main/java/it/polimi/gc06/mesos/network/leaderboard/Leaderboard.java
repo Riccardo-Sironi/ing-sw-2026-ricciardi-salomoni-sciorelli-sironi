@@ -1,18 +1,16 @@
 package it.polimi.gc06.mesos.network.leaderboard;
 
-import java.io.Serializable;
 import java.sql.Timestamp;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class Leaderboard implements Comparable<Leaderboard>{
+public class Leaderboard implements Comparable<Leaderboard> {
 
     private Timestamp timestamp;
     private final List<Score> scores;
 
-    public Leaderboard(){
+    public Leaderboard() {
         timestamp = null;
         scores = new ArrayList<>();
     }
@@ -34,7 +32,7 @@ public class Leaderboard implements Comparable<Leaderboard>{
      *
      * @param score the score object for the player
      */
-    public void addScore(Score score){
+    public void addScore(Score score) {
         scores.add(score);
     }
 
@@ -43,9 +41,9 @@ public class Leaderboard implements Comparable<Leaderboard>{
      *
      * @return an immutable list that represent the scores.
      */
-    public List<Score> getScores(){
-        scores.sort((Score s1, Score s2) -> s2.getPrestigeScore()- s1.getPrestigeScore() == 0 ?
-                s2.getFoodScore() - s1.getFoodScore() : s2.getPrestigeScore()- s1.getPrestigeScore() );
+    public List<Score> getScores() {
+        scores.sort((Score s1, Score s2) -> s2.getPrestigeScore() - s1.getPrestigeScore() == 0 ?
+                s2.getFoodScore() - s1.getFoodScore() : s2.getPrestigeScore() - s1.getPrestigeScore());
         return Collections.unmodifiableList(scores);
     }
 

@@ -1,7 +1,6 @@
 package it.polimi.gc06.mesos.model.cards.events;
 
 import it.polimi.gc06.mesos.model.Era;
-import it.polimi.gc06.mesos.model.GameInfo;
 import it.polimi.gc06.mesos.model.Player;
 import it.polimi.gc06.mesos.model.cards.CardVisitor;
 import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
@@ -47,7 +46,7 @@ public class SustenanceEventTest {
     }
 
     @BeforeEach
-    void setUp(TestInfo testInfo)  {
+    void setUp(TestInfo testInfo) {
 
         mockGathererDiscountCard = mock(ModifierBuildingCard.class);
         mockArtistDiscountCard = mock(ModifierBuildingCard.class);

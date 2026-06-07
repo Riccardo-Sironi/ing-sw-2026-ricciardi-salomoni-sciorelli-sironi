@@ -1,7 +1,5 @@
 package it.polimi.gc06.mesos.dtos;
 
-import it.polimi.gc06.mesos.view.smallModel.SmallModel;
-
 /**
  * Lightweight dto alerting the client model to tick the round counter up.
  */
@@ -17,9 +15,10 @@ public class RoundChangeDTO implements SmallModelEditor {
 
     /**
      * {@inheritDoc}
+     *
      * @param smallModel the client's small model.
      * @throws IllegalStateException if round scaling is locked.
-     * @throws Error on critical failure.
+     * @throws Error                 on critical failure.
      */
     @Override
     public void edit(it.polimi.gc06.mesos.view.smallModel.SmallModel smallModel) throws IllegalStateException, Error {
@@ -28,6 +27,7 @@ public class RoundChangeDTO implements SmallModelEditor {
 
     /**
      * {@inheritDoc}
+     *
      * @param visitor
      */
     @Override

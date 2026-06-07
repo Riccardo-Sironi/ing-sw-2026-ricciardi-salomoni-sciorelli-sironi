@@ -1,7 +1,6 @@
 package it.polimi.gc06.mesos.model.gameBoard;
 
 import it.polimi.gc06.mesos.model.Player;
-import it.polimi.gc06.mesos.model.cards.CardVisitor;
 
 public class RemoveFoodTileEffect implements TileEffect {
 
@@ -28,5 +27,7 @@ public class RemoveFoodTileEffect implements TileEffect {
      * @param visitor the visitor that will visit the card.
      */
     @Override
-    public void accept(TileEffectVisitor visitor) {visitor.visit(this);}
+    public void accept(TileEffectVisitor visitor) {
+        visitor.visit(this);
+    }
 }

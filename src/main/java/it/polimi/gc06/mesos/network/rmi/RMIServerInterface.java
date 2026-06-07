@@ -67,7 +67,7 @@ public interface RMIServerInterface extends Remote {
      * @return the id of the game match this participant tracks
      * @throws RemoteException if a remote failure breaks standard flow bounds
      */
-    public int getPlayersMatchId(String nickname) throws RemoteException;
+    int getPlayersMatchId(String nickname) throws RemoteException;
 
     /**
      * Extracts readable details concerning specific structured matches from its ID wrapper.
@@ -76,7 +76,7 @@ public interface RMIServerInterface extends Remote {
      * @return the literal abstraction tracking details over the specified setup
      * @throws RemoteException if RMI abstractions disrupt transmission
      */
-    public String getMatchInfo(int matchId) throws RemoteException;
+    String getMatchInfo(int matchId) throws RemoteException;
 
     /**
      * Dispatches the action of placing a specific placement marker onto a game tile.

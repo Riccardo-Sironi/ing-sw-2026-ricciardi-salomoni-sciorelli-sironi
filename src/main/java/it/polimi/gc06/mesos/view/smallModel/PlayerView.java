@@ -2,8 +2,8 @@ package it.polimi.gc06.mesos.view.smallModel;
 
 import it.polimi.gc06.mesos.model.Color;
 import it.polimi.gc06.mesos.model.cards.Card;
-import it.polimi.gc06.mesos.model.cards.CardTypifiedVisitor;
-import it.polimi.gc06.mesos.model.cards.characters.*;
+import it.polimi.gc06.mesos.model.cards.characters.CharacterType;
+import it.polimi.gc06.mesos.model.cards.characters.InventionIcon;
 
 import java.util.*;
 
@@ -23,7 +23,7 @@ public class PlayerView {
     private final ArrayList<Card> buildings;
 
     //recap info
-    private final Map<CharacterType,Integer> tribeRecap;
+    private final Map<CharacterType, Integer> tribeRecap;
     private int buildersDiscount;
     private int shamanStar;
     private final Set<InventionIcon> collectedIcons;
@@ -42,7 +42,7 @@ public class PlayerView {
         this.characters = new ArrayList<>();
         this.buildings = new ArrayList<>();
         this.tribeRecap = new HashMap<>();
-        Arrays.asList(CharacterType.values()).forEach(t -> tribeRecap.put(t,0)); //sets all characters recap to zero
+        Arrays.asList(CharacterType.values()).forEach(t -> tribeRecap.put(t, 0)); //sets all characters recap to zero
         this.collectedIcons = new HashSet<>();
     }
 
@@ -146,7 +146,7 @@ public class PlayerView {
     }
 
     public void setArtistNumber(int artistNumber) {
-        tribeRecap.put(CharacterType.ARTIST,artistNumber);
+        tribeRecap.put(CharacterType.ARTIST, artistNumber);
     }
 
     public int getNumBuilders() {
@@ -154,7 +154,7 @@ public class PlayerView {
     }
 
     public void setBuilderNumber(int builderNumber) {
-        tribeRecap.put(CharacterType.BUILDER,builderNumber);
+        tribeRecap.put(CharacterType.BUILDER, builderNumber);
     }
 
     public int getBuildersDiscount() {
@@ -175,7 +175,7 @@ public class PlayerView {
     }
 
     public void setGathererNumber(int gathererNumber) {
-        tribeRecap.put(CharacterType.GATHERER,gathererNumber);
+        tribeRecap.put(CharacterType.GATHERER, gathererNumber);
     }
 
     /**
@@ -188,7 +188,7 @@ public class PlayerView {
     }
 
     public void setHunterNumber(int hunterNumber) {
-        tribeRecap.put(CharacterType.HUNTER,hunterNumber);
+        tribeRecap.put(CharacterType.HUNTER, hunterNumber);
     }
 
     /**
@@ -201,7 +201,7 @@ public class PlayerView {
     }
 
     public void setInventorNumber(int inventorNumber) {
-        tribeRecap.put(CharacterType.INVENTOR,inventorNumber);
+        tribeRecap.put(CharacterType.INVENTOR, inventorNumber);
     }
 
     /**
@@ -228,7 +228,7 @@ public class PlayerView {
     }
 
     public void setShamanNumber(int shamanNumber) {
-        tribeRecap.put(CharacterType.SHAMAN,shamanNumber);
+        tribeRecap.put(CharacterType.SHAMAN, shamanNumber);
     }
 
     /**

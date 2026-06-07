@@ -7,11 +7,10 @@ import it.polimi.gc06.mesos.model.cards.characters.CharacterType;
 import org.junit.jupiter.api.*;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 
@@ -50,7 +49,7 @@ class EndGameBuildingFunctionTest {
     }
 
     @Test
-    void testCountArtist(){
+    void testCountArtist() {
         characterDeck.get(CharacterType.ARTIST).add(mock(CharacterCard.class));
         characterDeck.get(CharacterType.ARTIST).add(mock(CharacterCard.class));
 
@@ -59,7 +58,7 @@ class EndGameBuildingFunctionTest {
     }
 
     @Test
-    void testCountBuilders(){
+    void testCountBuilders() {
         characterDeck.get(CharacterType.BUILDER).add(mock(CharacterCard.class));
         characterDeck.get(CharacterType.BUILDER).add(mock(CharacterCard.class));
         characterDeck.get(CharacterType.BUILDER).add(mock(CharacterCard.class));
@@ -69,7 +68,7 @@ class EndGameBuildingFunctionTest {
     }
 
     @Test
-    void testCountGatherers(){
+    void testCountGatherers() {
         characterDeck.get(CharacterType.GATHERER).add(mock(CharacterCard.class));
 
         assertEquals(1, characterDeck.get(CharacterType.GATHERER).size());
@@ -77,7 +76,7 @@ class EndGameBuildingFunctionTest {
     }
 
     @Test
-    void testCountHunters(){
+    void testCountHunters() {
         characterDeck.get(CharacterType.HUNTER).add(mock(CharacterCard.class));
         characterDeck.get(CharacterType.HUNTER).add(mock(CharacterCard.class));
 
@@ -86,7 +85,7 @@ class EndGameBuildingFunctionTest {
     }
 
     @Test
-    void testCountInventors(){
+    void testCountInventors() {
         characterDeck.get(CharacterType.INVENTOR).add(mock(CharacterCard.class));
         characterDeck.get(CharacterType.INVENTOR).add(mock(CharacterCard.class));
 
@@ -95,7 +94,7 @@ class EndGameBuildingFunctionTest {
     }
 
     @Test
-    void testCountShamans(){
+    void testCountShamans() {
         characterDeck.get(CharacterType.SHAMAN).add(mock(CharacterCard.class));
 
         assertEquals(1, characterDeck.get(CharacterType.SHAMAN).size());
@@ -103,7 +102,7 @@ class EndGameBuildingFunctionTest {
     }
 
     @Test
-    void testCountSets(){
+    void testCountSets() {
         for (CharacterType type : CharacterType.values()) {
             characterDeck.get(type).add(mock(CharacterCard.class));
             characterDeck.get(type).add(mock(CharacterCard.class));
@@ -116,23 +115,23 @@ class EndGameBuildingFunctionTest {
     }
 
     @Test
-    void testCountSetsEmpty(){
+    void testCountSetsEmpty() {
         assertEquals(0, EndGameBuildingFunction.COUNT_SETS.applyAsInt(playerMock), "COUNT_SETS should return 0 when there are no character cards (0 * 6)");
     }
 
     @Test
-    void testSetDoubleBuilders(){
+    void testSetDoubleBuilders() {
         when(playerMock.getBuildersPrestige()).thenReturn(15);
         assertEquals(15, EndGameBuildingFunction.DOUBLE_BUILDERS.applyAsInt(playerMock), "DOUBLE_BUILDERS should return the player's builders prestige (15)");
     }
 
     @Test
-    void test25Prestige(){
+    void test25Prestige() {
         assertEquals(25, EndGameBuildingFunction.FIXED_25.applyAsInt(playerMock), "FIXED_25 should always return 25");
     }
 
     @Test
-    void testEnnumValuesAndValueOf(){
+    void testEnnumValuesAndValueOf() {
         String name = EndGameBuildingFunction.FIXED_25.name();
 
         assertEquals(EndGameBuildingFunction.FIXED_25, EndGameBuildingFunction.valueOf(name), "valueOf should return the correct enum constant for a valid name");

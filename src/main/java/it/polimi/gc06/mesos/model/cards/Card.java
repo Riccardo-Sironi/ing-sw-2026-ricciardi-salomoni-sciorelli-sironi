@@ -2,7 +2,10 @@ package it.polimi.gc06.mesos.model.cards;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import it.polimi.gc06.mesos.model.cards.buildings.*;
+import it.polimi.gc06.mesos.model.cards.buildings.EndGameBuildingCard;
+import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingCard;
+import it.polimi.gc06.mesos.model.cards.buildings.ObserverPairBuildingCard;
+import it.polimi.gc06.mesos.model.cards.buildings.ObserverSetBuildingCard;
 import it.polimi.gc06.mesos.model.cards.characters.*;
 import it.polimi.gc06.mesos.model.cards.events.HuntEvent;
 import it.polimi.gc06.mesos.model.cards.events.PaintingsEvent;
@@ -35,5 +38,5 @@ import java.io.Serializable;
 
 public interface Card extends Serializable {
 
-    public void accept(CardVisitor visitor);
+    void accept(CardVisitor visitor);
 }

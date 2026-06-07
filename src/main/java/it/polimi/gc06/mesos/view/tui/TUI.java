@@ -257,7 +257,7 @@ public class TUI implements View, ModelListener {
 
         Completer boardCompleter = (reader, line, candidates) -> {
             List<String> words = line.words();
-            if (!words.isEmpty() && "/board".equals(words.get(0))) {
+            if (!words.isEmpty() && "/board".equals(words.getFirst())) {
                 if (line.wordIndex() == 1) {
                     if (smallModel.getPlayer() != null && smallModel.getPlayer().getNickname() != null) {
                         candidates.add(new Candidate(smallModel.getPlayer().getNickname()));

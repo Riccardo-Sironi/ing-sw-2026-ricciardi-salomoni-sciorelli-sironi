@@ -1,11 +1,6 @@
 package it.polimi.gc06.mesos.view.gui.controllers;
 
-import javafx.animation.Animation;
-import javafx.animation.FadeTransition;
-import javafx.animation.ParallelTransition;
-import javafx.animation.PauseTransition;
-import javafx.animation.TranslateTransition;
-import javafx.application.Platform;
+import javafx.animation.*;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.NumberBinding;
 import javafx.event.Event;
@@ -13,7 +8,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -29,29 +23,39 @@ import java.net.URL;
 
 public class StartController {
 
-    @FXML private StackPane rootPane;
-    @FXML private ImageView backgroundImageView;
-    @FXML private ImageView flamesImageView;
-    @FXML private ImageView particlesImageView;
+    @FXML
+    private StackPane rootPane;
+    @FXML
+    private ImageView backgroundImageView;
+    @FXML
+    private ImageView flamesImageView;
+    @FXML
+    private ImageView particlesImageView;
 
-    @FXML private Region bottomGlow;
-    @FXML private Region topVignette;
-    @FXML private Region leftVignette;
-    @FXML private Region rightVignette;
+    @FXML
+    private Region bottomGlow;
+    @FXML
+    private Region topVignette;
+    @FXML
+    private Region leftVignette;
+    @FXML
+    private Region rightVignette;
 
-    @FXML private Label titleLabel;
-    @FXML private Label pressKeyLabel;
+    @FXML
+    private Label titleLabel;
+    @FXML
+    private Label pressKeyLabel;
 
     private boolean transitionStarted = false;
     private FadeTransition glowPulse;
 
-    private static final double TIME_FADE_PARTICLES  = 500;
-    private static final double TIME_FADE_TEXTS      = 1500;
-    private static final double TIME_SHRINK_FLAMES   = 3000;
-    private static final double TIME_FADE_FLAMES     = 1500;
+    private static final double TIME_FADE_PARTICLES = 500;
+    private static final double TIME_FADE_TEXTS = 1500;
+    private static final double TIME_SHRINK_FLAMES = 3000;
+    private static final double TIME_FADE_FLAMES = 1500;
     private static final double TIME_FADE_BACKGROUND = 2000;
-    private static final double TIME_WAIT_IN_DARK    = 200;
-    private static final double TIME_FADE_IN_LOGIN   = 500;
+    private static final double TIME_WAIT_IN_DARK = 200;
+    private static final double TIME_FADE_IN_LOGIN = 500;
 
     @FXML
     public void initialize() {

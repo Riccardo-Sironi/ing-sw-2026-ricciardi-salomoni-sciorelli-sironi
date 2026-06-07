@@ -10,7 +10,6 @@ import org.junit.jupiter.api.*;
 
 import java.util.ArrayList;
 
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
 
 public class PaintingsEventTest {
@@ -35,7 +34,7 @@ public class PaintingsEventTest {
     }
 
     @BeforeEach
-    void setUp(TestInfo testInfo)  {
+    void setUp(TestInfo testInfo) {
         player = mock(Player.class);
         mockRegistry = mock(ModifierBuildingsRegistry.class);
         ModifierBuildingCard foodGainBuilding = mock(ModifierBuildingCard.class);
@@ -118,7 +117,7 @@ public class PaintingsEventTest {
         verify(player, never()).addPrestigeTokens(anyInt());
         verify(player).addFoodTokens(0);
     }
-    
+
     @Test
     void testAcceptCardVisitor() {
         CardVisitor visitor = mock(CardVisitor.class);

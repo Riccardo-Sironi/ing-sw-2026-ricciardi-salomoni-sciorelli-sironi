@@ -1,12 +1,10 @@
 package it.polimi.gc06.mesos.model.cards.characters;
 
-import it.polimi.gc06.mesos.model.Color;
 import it.polimi.gc06.mesos.model.Era;
-import it.polimi.gc06.mesos.model.Player;
-import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingsRegistry;
 import org.junit.jupiter.api.*;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
 class InventorCardTest {
@@ -27,7 +25,7 @@ class InventorCardTest {
     }
 
     @BeforeEach
-    void setUp(TestInfo testInfo)  {
+    void setUp(TestInfo testInfo) {
         System.out.println("[START] " + testInfo.getDisplayName());
     }
 

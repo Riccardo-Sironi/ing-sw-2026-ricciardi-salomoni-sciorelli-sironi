@@ -1,6 +1,5 @@
 package it.polimi.gc06.mesos.view.gui.elements;
 
-import it.polimi.gc06.mesos.view.gui.ImageFetcher;
 import it.polimi.gc06.mesos.view.smallModel.PlayerView;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.ImageView;

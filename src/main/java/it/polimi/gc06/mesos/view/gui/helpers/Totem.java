@@ -21,7 +21,6 @@ public enum Totem {
             case WHITE -> Totem.WHITE;
             case YELLOW -> Totem.YELLOW;
             case PURPLE -> Totem.PURPLE;
-            default -> Totem.NONE;
         };
     }
 
@@ -33,7 +32,6 @@ public enum Totem {
             case YELLOW -> javafx.scene.paint.Color.web("F0C135");
             case PURPLE -> javafx.scene.paint.Color.web("2D1220");
             case NONE -> javafx.scene.paint.Color.GREY;
-            default -> null;
         };
     }
 
@@ -54,7 +52,6 @@ public enum Totem {
             case YELLOW -> "240, 193, 53";
             case PURPLE -> "45, 18, 32";
             case NONE -> "128, 128, 128";
-            default -> null;
         };
     }
 
@@ -66,7 +63,6 @@ public enum Totem {
             case YELLOW -> "255, 220, 100";
             case PURPLE -> "80, 50, 70";
             case NONE -> "160, 160, 160";
-            default -> null;
         };
     }
 }

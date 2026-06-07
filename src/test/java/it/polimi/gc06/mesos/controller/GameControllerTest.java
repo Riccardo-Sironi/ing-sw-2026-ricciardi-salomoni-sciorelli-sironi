@@ -4,7 +4,6 @@ import it.polimi.gc06.mesos.gameExceptions.IllegalGameActionException;
 import it.polimi.gc06.mesos.gameExceptions.IllegalPhaseActionException;
 import it.polimi.gc06.mesos.model.DTONotifier;
 import it.polimi.gc06.mesos.model.GameModel;
-import it.polimi.gc06.mesos.model.InstancesManager.ModelInstancesManager;
 import it.polimi.gc06.mesos.model.Player;
 import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
 import it.polimi.gc06.mesos.model.cards.characters.CharacterCard;
@@ -33,15 +32,23 @@ class GameControllerTest {
 
     private GameController controller;
 
-    @Mock private GameModel modelMock;
-    @Mock private TurnManager turnManagerMock;
-    @Mock private Phase phaseMock;
-    @Mock private Board boardMock;
-    @Mock private Player activePlayerMock;
+    @Mock
+    private GameModel modelMock;
+    @Mock
+    private TurnManager turnManagerMock;
+    @Mock
+    private Phase phaseMock;
+    @Mock
+    private Board boardMock;
+    @Mock
+    private Player activePlayerMock;
 
-    @Mock private TileSlot tileSlotMock;
-    @Mock private CharacterCard characterCardMock;
-    @Mock private BuildingCard buildingCardMock;
+    @Mock
+    private TileSlot tileSlotMock;
+    @Mock
+    private CharacterCard characterCardMock;
+    @Mock
+    private BuildingCard buildingCardMock;
 
     private final String activeNickname = "ActivePlayer";
 

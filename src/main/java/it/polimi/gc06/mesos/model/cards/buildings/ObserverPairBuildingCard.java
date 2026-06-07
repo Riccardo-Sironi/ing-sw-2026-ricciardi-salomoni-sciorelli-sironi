@@ -1,9 +1,8 @@
 package it.polimi.gc06.mesos.model.cards.buildings;
 
-import it.polimi.gc06.mesos.model.Era;
+import it.polimi.gc06.mesos.model.Player;
 import it.polimi.gc06.mesos.model.cards.CardVisitor;
 import it.polimi.gc06.mesos.model.gameTurnManager.DrawObserver;
-import it.polimi.gc06.mesos.model.Player;
 
 public class ObserverPairBuildingCard extends BuildingCard implements DrawObserver {
 

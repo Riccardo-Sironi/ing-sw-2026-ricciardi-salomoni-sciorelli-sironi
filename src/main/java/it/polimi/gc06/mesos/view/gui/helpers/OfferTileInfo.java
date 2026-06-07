@@ -15,13 +15,10 @@ public enum OfferTileInfo {
 
     public double getXPercent() {
         return switch (this) {
-            case OFFER_TILE_A -> 0.53;
-            case OFFER_TILE_B -> 0.53;
+            case OFFER_TILE_A, OFFER_TILE_B,
+                 OFFER_TILE_D, OFFER_TILE_E,
+                 OFFER_TILE_F, OFFER_TILE_G -> 0.53;
             case OFFER_TILE_C -> 0.52;
-            case OFFER_TILE_D -> 0.53;
-            case OFFER_TILE_E -> 0.53;
-            case OFFER_TILE_F -> 0.53;
-            case OFFER_TILE_G -> 0.53;
         };
     }
 

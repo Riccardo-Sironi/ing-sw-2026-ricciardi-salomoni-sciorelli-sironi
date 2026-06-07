@@ -8,8 +8,8 @@ public interface ControllerCaller {
      * This method executes a specific controller method based on the caller implementation.
      *
      * @param controller the game controller on which to invoke the action.
-     * @param nickname the nickname of the player performing the action.
-     * @param index the index parameter relevant to the specific action.
+     * @param nickname   the nickname of the player performing the action.
+     * @param index      the index parameter relevant to the specific action.
      */
-    public void call(GameController controller, String nickname, int index);
+    void call(GameController controller, String nickname, int index);
 }

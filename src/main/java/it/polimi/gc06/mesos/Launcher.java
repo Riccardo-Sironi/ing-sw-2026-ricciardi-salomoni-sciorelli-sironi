@@ -4,7 +4,6 @@ import it.polimi.gc06.mesos.model.Color;
 import it.polimi.gc06.mesos.network.ConnectionDetails;
 import it.polimi.gc06.mesos.network.client.Client;
 import it.polimi.gc06.mesos.view.gui.GUI;
-import it.polimi.gc06.mesos.view.smallModel.PlayerView;
 import it.polimi.gc06.mesos.view.smallModel.SmallModel;
 import it.polimi.gc06.mesos.view.tui.LobbyTui;
 import it.polimi.gc06.mesos.view.tui.Style;
@@ -31,7 +30,7 @@ import java.util.stream.Collectors;
  */
 public class Launcher {
 
-    public static void main(String[] args) {
+    static void main(String[] args) {
         if (args.length > 0) {
             if (args[0].equals("--cli")) {
                 startTUI();
@@ -158,8 +157,8 @@ public class Launcher {
                         .build();
 
                 String coloredAvailableColors = Arrays.stream(Color.values())
-                                .map(c -> Style.getAnsiFromColorName(c.toString()) + c.toString() + Style.RESET)
-                                .collect(Collectors.joining(", "));
+                        .map(c -> Style.getAnsiFromColorName(c.toString()) + c + Style.RESET)
+                        .collect(Collectors.joining(", "));
 
                 while (smallModel.getPlayer().getColor() == null) {
                     terminal.writer().println("Please choose your totem color using the command: /set_color <color>");

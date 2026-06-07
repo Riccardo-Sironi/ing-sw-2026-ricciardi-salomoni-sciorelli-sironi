@@ -17,30 +17,30 @@ public interface ServerConnection extends Remote, SmallModelNotifier {
 
     String getMatchInfo(int matchId) throws Exception;
 
-    public boolean login(String nickname) throws Exception;
+    boolean login(String nickname) throws Exception;
 
-    public void logout(String nickname) throws Exception;
+    void logout(String nickname) throws Exception;
 
-    public int getPlayersMatchId(String nickname) throws Exception;
+    int getPlayersMatchId(String nickname) throws Exception;
 
-    public String getAvailableMatches() throws Exception;
+    String getAvailableMatches() throws Exception;
 
-    public int createMatch(int numOfPlayers, String nickname) throws Exception;
+    int createMatch(int numOfPlayers, String nickname) throws Exception;
 
-    public boolean joinMatch(int matchId, String nickname) throws Exception;
+    boolean joinMatch(int matchId, String nickname) throws Exception;
 
-    public void placeTotem(String nickname, int tileIndex) throws Exception;
+    void placeTotem(String nickname, int tileIndex) throws Exception;
 
-    public void pickCardFromBottom(String nickname, int cardIndex) throws Exception;
+    void pickCardFromBottom(String nickname, int cardIndex) throws Exception;
 
-    public void pickCardFromTop(String nickname, int cardIndex) throws Exception;
+    void pickCardFromTop(String nickname, int cardIndex) throws Exception;
 
-    public void pickBuildingFromBottom(String nickname, int cardIndex) throws Exception;
+    void pickBuildingFromBottom(String nickname, int cardIndex) throws Exception;
 
-    public void pickBuildingFromTop(String nickname, int cardIndex) throws Exception;
+    void pickBuildingFromTop(String nickname, int cardIndex) throws Exception;
 
-    public void handleSkip(String nickname) throws Exception;
+    void handleSkip(String nickname) throws Exception;
 
-    public void chooseTotemColor(String nickname, Color color) throws Exception;
+    void chooseTotemColor(String nickname, Color color) throws Exception;
 }
 

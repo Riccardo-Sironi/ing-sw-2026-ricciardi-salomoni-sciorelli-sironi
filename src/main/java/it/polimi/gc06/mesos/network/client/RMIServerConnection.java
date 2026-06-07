@@ -1,6 +1,5 @@
 package it.polimi.gc06.mesos.network.client;
 
-import it.polimi.gc06.mesos.controller.ModelListener;
 import it.polimi.gc06.mesos.dtos.SmallModelEditor;
 import it.polimi.gc06.mesos.model.Color;
 import it.polimi.gc06.mesos.network.rmi.RMIServerInterface;
@@ -10,8 +9,6 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Client-side component handling the RMI connection to the server.

@@ -1,13 +1,14 @@
 package it.polimi.gc06.mesos.model.cards.characters;
 
-import it.polimi.gc06.mesos.model.Color;
 import it.polimi.gc06.mesos.model.Era;
 import it.polimi.gc06.mesos.model.Player;
 import it.polimi.gc06.mesos.model.cards.TribeCard;
-import it.polimi.gc06.mesos.model.cards.events.*;
+import it.polimi.gc06.mesos.model.cards.events.HuntEvent;
+import it.polimi.gc06.mesos.model.cards.events.PaintingsEvent;
+import it.polimi.gc06.mesos.model.cards.events.RitualEvent;
+import it.polimi.gc06.mesos.model.cards.events.SustenanceEvent;
 import org.junit.jupiter.api.*;
 
-import java.util.ArrayList;
 import java.util.EnumMap;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -34,7 +35,7 @@ class CharactersSetsVisitorTest {
     }
 
     @BeforeEach
-    void setUp(TestInfo testInfo)  {
+    void setUp(TestInfo testInfo) {
 
         player = mock(Player.class);
         EnumMap<CharacterType, Integer> sets = new EnumMap<CharacterType, Integer>(CharacterType.class);

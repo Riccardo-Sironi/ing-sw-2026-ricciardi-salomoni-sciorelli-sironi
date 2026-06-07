@@ -99,7 +99,7 @@ public class TCPServerConnection implements ServerConnection, Runnable {
         if (nicknameSent || isInsideMatch) throw new IllegalStateException("This action shouldn't be performed now");
         if (!request.store("LOGIN" + nickname))
             throw new IllegalStateException("An action is already getting performed");
-        if (((String) this.result.take()).equals("OK")) {
+        if ((this.result.take()).equals("OK")) {
             nicknameSent = true;
             return true;
         }
@@ -192,7 +192,7 @@ public class TCPServerConnection implements ServerConnection, Runnable {
         if (!request.store("JOIN" + matchId))
             throw new IllegalStateException("An action is already getting performed");
 
-        if (((String) this.result.take()).equals("OK")) {
+        if ((this.result.take()).equals("OK")) {
             isInsideMatch = true;
             return true;
         }

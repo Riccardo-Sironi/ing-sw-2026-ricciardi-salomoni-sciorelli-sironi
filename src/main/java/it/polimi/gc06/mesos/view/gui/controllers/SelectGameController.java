@@ -2,7 +2,6 @@ package it.polimi.gc06.mesos.view.gui.controllers;
 
 import it.polimi.gc06.mesos.view.gui.GUI;
 import it.polimi.gc06.mesos.view.gui.GameScene;
-import it.polimi.gc06.mesos.view.gui.ImageFetcher;
 import javafx.animation.Animation;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
@@ -148,7 +147,7 @@ public class SelectGameController {
 
         try {
             String matchesStr = "";
-            
+
             matchesStr = GUI.client.getServerConnection().getAvailableMatches();
             /* } */
 

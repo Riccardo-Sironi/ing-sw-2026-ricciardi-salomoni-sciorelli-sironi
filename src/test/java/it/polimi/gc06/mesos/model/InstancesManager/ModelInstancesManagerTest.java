@@ -9,9 +9,6 @@ import it.polimi.gc06.mesos.model.gameBoard.TurnOrderTile;
 import org.junit.jupiter.api.*;
 import org.mockito.MockedConstruction;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -131,11 +128,11 @@ public class ModelInstancesManagerTest {
 
             assertDoesNotThrow(() -> manager.createGame(num_player_2));
 
-            if(!mockedBoard.constructed().isEmpty()){
+            if (!mockedBoard.constructed().isEmpty()) {
                 Board createdBoard = mockedBoard.constructed().get(0);
 
-                for(TileSlot slot : createdBoard.getTurnOrderTile().slots()){
-                    if(slot.getTileEffect() != null){
+                for (TileSlot slot : createdBoard.getTurnOrderTile().slots()) {
+                    if (slot.getTileEffect() != null) {
                         slot.getTileEffect().accept(any());
                     }
                 }

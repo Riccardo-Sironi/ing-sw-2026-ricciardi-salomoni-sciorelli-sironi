@@ -1,12 +1,12 @@
 package it.polimi.gc06.mesos.network.server;
 
 import it.polimi.gc06.mesos.controller.GameController;
+import it.polimi.gc06.mesos.controller.commands.ControllerCommand;
 import it.polimi.gc06.mesos.gameExceptions.IllegalGameActionException;
 import it.polimi.gc06.mesos.model.DTONotifier;
 import it.polimi.gc06.mesos.model.GameModel;
 import it.polimi.gc06.mesos.model.InstancesManager.ModelInstancesManager;
 import it.polimi.gc06.mesos.network.leaderboard.LeaderboardDAO;
-import it.polimi.gc06.mesos.controller.commands.ControllerCommand;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -58,7 +58,7 @@ public class Match {
      * @throws IOException if there's an error during the creation of the match components
      */
     private synchronized void start() throws IOException {
-        ArrayList<String> playerNames = new ArrayList<>(players.stream().map(VirtualClient::getNickname).collect(Collectors.toCollection(ArrayList::new)));
+        ArrayList<String> playerNames = players.stream().map(VirtualClient::getNickname).collect(Collectors.toCollection(ArrayList::new));
         DTONotifier notifier = new DTONotifier();
         GameModel model = new ModelInstancesManager(notifier).createGame(playerNames);
 
@@ -104,7 +104,7 @@ public class Match {
                 } catch (IllegalGameActionException | IndexOutOfBoundsException e) {
                     System.err.println("An error occurred while trying to perform " + action.getNickname() + " action: ");
                     e.printStackTrace();
-                    System.err.println("Faulty action: "+action.getRequest()+", index: "+action.getIndex());
+                    System.err.println("Faulty action: " + action.getRequest() + ", index: " + action.getIndex());
 
                     players.stream()
                             .filter(c -> c.getNickname().equals(action.getNickname()))
@@ -122,7 +122,8 @@ public class Match {
         }
         if (controller != null && controller.isGameFinished()) {
             try {
-                if(LeaderboardDAO.saveLeaderboard(controller.getModel().getLeaderboard())) System.out.println("Leaderboard saved!");
+                if (LeaderboardDAO.saveLeaderboard(controller.getModel().getLeaderboard()))
+                    System.out.println("Leaderboard saved!");
             } catch (Exception e) {
                 System.err.println("Something went wrong with leaderboard saving request, please check if mySql server is online");
                 e.printStackTrace();

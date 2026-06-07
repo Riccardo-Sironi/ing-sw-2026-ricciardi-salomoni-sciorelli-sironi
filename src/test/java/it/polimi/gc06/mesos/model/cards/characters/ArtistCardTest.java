@@ -1,15 +1,11 @@
 package it.polimi.gc06.mesos.model.cards.characters;
 
 import it.polimi.gc06.mesos.model.Era;
-import it.polimi.gc06.mesos.model.Player;
-import it.polimi.gc06.mesos.model.cards.buildings.AddToBuildingsVisitor;
 import org.junit.jupiter.api.*;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.times;
-
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.*;
 
 class ArtistCardTest {
 
@@ -29,7 +25,7 @@ class ArtistCardTest {
     }
 
     @BeforeEach
-    void setUp(TestInfo testInfo)  {
+    void setUp(TestInfo testInfo) {
         System.out.println("[START] " + testInfo.getDisplayName());
     }
 

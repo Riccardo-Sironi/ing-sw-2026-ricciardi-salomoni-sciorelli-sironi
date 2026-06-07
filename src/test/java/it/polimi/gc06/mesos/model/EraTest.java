@@ -1,10 +1,9 @@
 package it.polimi.gc06.mesos.model;
 
-import it.polimi.gc06.mesos.model.cards.buildings.AddToBuildingsVisitor;
 import org.junit.jupiter.api.*;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class EraTest {
     @BeforeAll
@@ -23,22 +22,22 @@ class EraTest {
     }
 
     @BeforeEach
-    void setUp(TestInfo testInfo)  {
+    void setUp(TestInfo testInfo) {
         System.out.println("[START] " + testInfo.getDisplayName());
     }
 
     @Test
-    void testERAI(){
+    void testERAI() {
         assertEquals(Era.ERA_II, Era.ERA_I.nextEra(), "ERA_II is the next of ERA_I");
     }
 
     @Test
-    void testERAII(){
+    void testERAII() {
         assertEquals(Era.ERA_III, Era.ERA_II.nextEra(), "ERA_III is the next of ERA_II");
     }
 
     @Test
-    void testERAIII(){
+    void testERAIII() {
         assertThrows(IllegalStateException.class, () -> Era.ERA_III.nextEra());
     }
 }

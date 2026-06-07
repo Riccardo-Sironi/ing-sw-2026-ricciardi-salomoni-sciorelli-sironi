@@ -1,6 +1,5 @@
 package it.polimi.gc06.mesos.model;
 
-import it.polimi.gc06.mesos.controller.GameController;
 import it.polimi.gc06.mesos.model.cards.TribeCard;
 import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
 import it.polimi.gc06.mesos.model.cards.events.EventCard;
@@ -21,16 +20,18 @@ import java.util.EnumMap;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 class GameModelTest {
 
-    @Mock private Board boardMock;
-    @Mock private TurnManager turnManagerMock;
-    @Mock private TurnOrderTile turnOrderTileMock;
+    @Mock
+    private Board boardMock;
+    @Mock
+    private TurnManager turnManagerMock;
+    @Mock
+    private TurnOrderTile turnOrderTileMock;
 
     private EnumMap<Era, ArrayList<BuildingCard>> buildingCardsDecks;
     private EnumMap<Era, ArrayList<TribeCard>> tribeCardsDeck;

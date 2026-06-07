@@ -27,6 +27,6 @@ public interface TileEffect extends Serializable {
      */
     void execute(Player player) throws IllegalArgumentException;
 
-    public void accept(TileEffectVisitor visitor);
+    void accept(TileEffectVisitor visitor);
 
 }

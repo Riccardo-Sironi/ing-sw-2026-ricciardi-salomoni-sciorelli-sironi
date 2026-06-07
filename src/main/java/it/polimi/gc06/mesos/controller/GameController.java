@@ -1,6 +1,7 @@
 package it.polimi.gc06.mesos.controller;
 
-import it.polimi.gc06.mesos.dtos.*;
+import it.polimi.gc06.mesos.dtos.ChooseTotemColorDTO;
+import it.polimi.gc06.mesos.dtos.MesosStartedDTO;
 import it.polimi.gc06.mesos.gameExceptions.IllegalGameActionException;
 import it.polimi.gc06.mesos.gameExceptions.IllegalPhaseActionException;
 import it.polimi.gc06.mesos.model.Color;
@@ -12,12 +13,9 @@ import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
 import it.polimi.gc06.mesos.model.gameBoard.TileSlot;
 import it.polimi.gc06.mesos.model.gameTurnManager.TurnManager;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-public class GameController{
+public class GameController {
 
     private final GameModel model;
     private final DTONotifier notifier;
@@ -158,7 +156,7 @@ public class GameController{
      *
      * @param playerNickname the player performing the action.
      * @throws IllegalGameActionException if the action is not allowed in the current phase or if the player is trying
-     * to perform an action that is not his turn.
+     *                                    to perform an action that is not his turn.
      */
     public void handlePickSkip(String playerNickname) throws IllegalGameActionException {
         TurnManager turnManager = model.getTurnManager();

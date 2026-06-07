@@ -1,18 +1,12 @@
 package it.polimi.gc06.mesos.model.InstancesManager;
 
 import it.polimi.gc06.mesos.model.Era;
-import it.polimi.gc06.mesos.model.Player;
 import it.polimi.gc06.mesos.model.cards.TribeCard;
 import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
 import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingsRegistry;
 import it.polimi.gc06.mesos.model.cards.events.EventCard;
 import it.polimi.gc06.mesos.model.cards.events.RitualEvent;
 import it.polimi.gc06.mesos.model.cards.events.SustenanceEvent;
-import it.polimi.gc06.mesos.model.gameBoard.Board;
-import it.polimi.gc06.mesos.model.gameBoard.TileSlot;
-import it.polimi.gc06.mesos.model.gameBoard.TurnOrderTile;
-import it.polimi.gc06.mesos.model.gameTurnManager.PlacingTotemPhase;
-import it.polimi.gc06.mesos.model.gameTurnManager.TurnManager;
 import org.junit.jupiter.api.*;
 
 import java.util.ArrayList;
@@ -119,7 +113,7 @@ public class InstanceSorterCardVisitorTest {
 
         verify(mockCard).setRegistry(mockRegistry);
         assertTrue(visitor.getTribeCards().get(Era.ERA_I).contains(mockCard));
-        
+
         // Ensure finalEvents does NOT contain this
         boolean contains = false;
         for (EventCard card : visitor.getFinalEvents()) {
@@ -143,7 +137,7 @@ public class InstanceSorterCardVisitorTest {
             if (card == mockCard) contains = true;
         }
         assertTrue(contains);
-        
+
         // Ensure it did not go into regular tribe cards map
         assertFalse(visitor.getTribeCards().get(Era.ERA_III).contains(mockCard));
     }
@@ -167,7 +161,7 @@ public class InstanceSorterCardVisitorTest {
         visitor.visit(mockCard);
 
         verify(mockCard).setRegistry(mockRegistry);
-        
+
         boolean contains = false;
         for (EventCard card : visitor.getFinalEvents()) {
             if (card == mockCard) contains = true;
@@ -195,24 +189,29 @@ public class InstanceSorterCardVisitorTest {
     void testGetFinalEvents_WithMoreThanTwoElements() {
         // Technically there should be exactly two ERA_III events in the game,
         // but if someone puts 3 what happens?
-        SustenanceEvent m1 = mock(SustenanceEvent.class); when(m1.getEra()).thenReturn(Era.ERA_III);
-        RitualEvent m2 = mock(RitualEvent.class); when(m2.getEra()).thenReturn(Era.ERA_III);
-        EventCard m3 = mock(EventCard.class); when(m3.getEra()).thenReturn(Era.ERA_III);
+        SustenanceEvent m1 = mock(SustenanceEvent.class);
+        when(m1.getEra()).thenReturn(Era.ERA_III);
+        RitualEvent m2 = mock(RitualEvent.class);
+        when(m2.getEra()).thenReturn(Era.ERA_III);
+        EventCard m3 = mock(EventCard.class);
+        when(m3.getEra()).thenReturn(Era.ERA_III);
 
         visitor.visit(m1);
         visitor.visit(m2);
         // Note: generic EventCard in ERA_III goes to tribeCards, not finalEvents! Let's use RitualEvent again.
-        RitualEvent m4 = mock(RitualEvent.class); when(m4.getEra()).thenReturn(Era.ERA_III);
+        RitualEvent m4 = mock(RitualEvent.class);
+        when(m4.getEra()).thenReturn(Era.ERA_III);
         visitor.visit(m4);
 
         EventCard[] finalEvents = visitor.getFinalEvents();
         // toArray(new EventCard[2]) allocates a larger array automatically if size > 2.
-        assertEquals(3, finalEvents.length); 
+        assertEquals(3, finalEvents.length);
     }
 
     @Test
     void testGetFinalEvents_WithFewerThanTwoElements() {
-        SustenanceEvent m1 = mock(SustenanceEvent.class); when(m1.getEra()).thenReturn(Era.ERA_III);
+        SustenanceEvent m1 = mock(SustenanceEvent.class);
+        when(m1.getEra()).thenReturn(Era.ERA_III);
 
         visitor.visit(m1);
 

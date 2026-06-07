@@ -5,7 +5,6 @@ import it.polimi.gc06.mesos.view.smallModel.PlayerView;
 import it.polimi.gc06.mesos.view.smallModel.TileSlotView;
 import org.jline.terminal.Terminal;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static it.polimi.gc06.mesos.view.tui.TUI.centerOnScreen;
@@ -22,7 +21,7 @@ public class TuiBoardRenderer {
     public void printCardRow(List<Card> rowCards) {
         printCardRow(rowCards, null);
     }
-    
+
     // We use Integer instead of int, in order to allow null values, which indicate that we don't want to render the deck card
     public void printCardRow(List<Card> rowCards, Integer deckSize) {
         if (rowCards == null || rowCards.isEmpty()) {

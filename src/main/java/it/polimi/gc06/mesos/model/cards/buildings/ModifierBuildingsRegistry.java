@@ -1,14 +1,13 @@
 package it.polimi.gc06.mesos.model.cards.buildings;
 
-import java.io.Serializable;
 import java.util.EnumMap;
 
-public class ModifierBuildingsRegistry{
+public class ModifierBuildingsRegistry {
 
-    private final EnumMap<ModifierBuildingRegistryKey,ModifierBuildingCard> registry;
+    private final EnumMap<ModifierBuildingRegistryKey, ModifierBuildingCard> registry;
 
-    public ModifierBuildingsRegistry(){
-        registry = new EnumMap<ModifierBuildingRegistryKey,ModifierBuildingCard>(ModifierBuildingRegistryKey.class);
+    public ModifierBuildingsRegistry() {
+        registry = new EnumMap<ModifierBuildingRegistryKey, ModifierBuildingCard>(ModifierBuildingRegistryKey.class);
     }
 
     /**
@@ -16,8 +15,8 @@ public class ModifierBuildingsRegistry{
      *
      * @param card the ModifierBuildingCard to be registered.
      */
-    public void register(ModifierBuildingCard card){
-        registry.put(card.getCardKey(),card);
+    public void register(ModifierBuildingCard card) {
+        registry.put(card.getCardKey(), card);
     }
 
 
@@ -27,7 +26,7 @@ public class ModifierBuildingsRegistry{
      * @param key the ModifierBuildingRegistryKey to look up.
      * @return the ModifierBuildingCard associated with the key
      */
-    public ModifierBuildingCard get(ModifierBuildingRegistryKey key){
+    public ModifierBuildingCard get(ModifierBuildingRegistryKey key) {
         return registry.get(key);
     }
 }
