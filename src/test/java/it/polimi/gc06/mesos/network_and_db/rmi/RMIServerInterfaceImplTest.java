@@ -1,11 +1,11 @@
 package it.polimi.gc06.mesos.network_and_db.rmi;
 
 import it.polimi.gc06.mesos.controller.GameController;
+import it.polimi.gc06.mesos.controller.commands.ControllerCommand;
 import it.polimi.gc06.mesos.network.client.ServerConnection;
 import it.polimi.gc06.mesos.network.rmi.RMIServerInterfaceImpl;
 import it.polimi.gc06.mesos.network.server.MatchManager;
 import it.polimi.gc06.mesos.network.server.RMIClientManager;
-import it.polimi.gc06.mesos.controller.commands.ControllerCommand;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
@@ -54,7 +54,7 @@ class RMIServerInterfaceImplTest {
 
     @BeforeEach
     void setUp(TestInfo testInfo) throws RemoteException {
-        serverImpl = new RMIServerInterfaceImpl(serverManagerMock);
+        serverImpl = new RMIServerInterfaceImpl(serverManagerMock, 1100);
 
         System.out.println("[START] " + testInfo.getDisplayName());
     }

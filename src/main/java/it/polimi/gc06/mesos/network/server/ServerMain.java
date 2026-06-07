@@ -29,6 +29,7 @@ public class ServerMain {
         int tcpPortNumber = 45161; //should be --tcp=<port>
         // Leave the RMI Port to the default value
         int RMIPortNumber = 1099; //should be --rmi=<port>
+        int RMIExportPortNumber = 1100; //should be --rmiexport=<port>
         String ipAddress = null;
 
         //db data
@@ -39,17 +40,17 @@ public class ServerMain {
 
         try {
             try {
-                for(String arg : args){
-                    if(arg.startsWith("--tcp=")) tcpPortNumber = Integer.parseInt(arg.split("=")[1]);
-                    else if(arg.startsWith("--rmi=")) RMIPortNumber = Integer.parseInt(arg.split("=")[1]);
-                    else if(arg.startsWith("--dname=")) dbName = arg.split("=")[1];
-                    else if(arg.startsWith("--dloc")) dbLocation = arg.split("=")[1];
-                    else if(arg.startsWith("--duser=")){
+                for (String arg : args) {
+                    if (arg.startsWith("--tcp=")) tcpPortNumber = Integer.parseInt(arg.split("=")[1]);
+                    else if (arg.startsWith("--rmi=")) RMIPortNumber = Integer.parseInt(arg.split("=")[1]);
+                    else if (arg.startsWith("--rmiexport=")) RMIExportPortNumber = Integer.parseInt(arg.split("=")[1]);
+                    else if (arg.startsWith("--dname=")) dbName = arg.split("=")[1];
+                    else if (arg.startsWith("--dloc")) dbLocation = arg.split("=")[1];
+                    else if (arg.startsWith("--duser=")) {
                         String s = arg.split("=")[1];
                         dbUser = s.split(":")[0];
                         dbPwd = s.split(":")[1];
-                    }
-                    else if(arg.startsWith("--ip=")) ipAddress = arg.split("=")[1];
+                    } else if (arg.startsWith("--ip=")) ipAddress = arg.split("=")[1];
                 }
             } catch (NumberFormatException | IndexOutOfBoundsException | PatternSyntaxException e) {
                 System.err.println("Failed to parse server startup arguments.");
@@ -57,25 +58,28 @@ public class ServerMain {
                 return;
             }
 
-            if(dbUser != null && dbPwd != null){
+            if (dbUser != null && dbPwd != null) {
                 LeaderboardDAO.setDbInfo(dbUser, dbPwd, dbName, dbLocation);
-                try{
+                try {
                     LeaderboardDAO.init();
                     System.out.println("Connected to db correctly.");
-                }catch(SQLException e){
+                } catch (SQLException e) {
                     System.err.println("Connection to db failed.");
                 }
-            }
-            else if(dbLocation != null || dbName != null){
+            } else if (dbLocation != null || dbName != null) {
                 System.err.println("Cannot setup db name or location if correct user has not been given.");
             }
 
             System.out.println("Server started");
 
             //tries to start RMI protocol
-            //TODO: handle ip
+            if (ipAddress != null) {
+                System.setProperty("java.rmi.server.hostname", ipAddress);
+                System.out.println("RMI hostname set to: " + ipAddress);
+            }
+
             try {
-                RMIServerInterfaceImpl rmiImpl = new RMIServerInterfaceImpl(sharedManager);
+                RMIServerInterfaceImpl rmiImpl = new RMIServerInterfaceImpl(sharedManager, RMIExportPortNumber);
                 Registry registry = null;
                 try {
                     registry = LocateRegistry.createRegistry(RMIPortNumber);
@@ -92,8 +96,11 @@ public class ServerMain {
 
             //tries to start TCP protocol (socket)
             try {
+                // TODO Da rivedere? é un po' strano. In rete locale tutto bene, quando si passa alla VPN fa fatica a
+                // TODO l'interfaccia corretta e quindi va per forza specificato l'IP.
+                // TODO Possiamo rendere la cosa più dinamica? 
                 TCPServer tcpServer = null;
-                if(ipAddress == null) tcpServer = new TCPServer(tcpPortNumber, sharedManager);
+                if (ipAddress == null) tcpServer = new TCPServer(tcpPortNumber, sharedManager);
                 else tcpServer = new TCPServer(tcpPortNumber, sharedManager, ipAddress);
                 Thread tcpServerThread = new Thread(tcpServer);
                 tcpServerThread.start();

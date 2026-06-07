@@ -95,7 +95,7 @@ public class MatchManager {
     /**
      * Retrieves the ratio of current players to max players for a specific match.
      *
-     * @param matchId
+     * @param matchId The ID of the match we're interested about
      * @return a formatted string "current/max"
      */
     public String getMatchInfo(int matchId) {
@@ -167,7 +167,7 @@ public class MatchManager {
      * @param id the id of {@link Match} that will be checked.
      * @return if the match is running.
      */
-    public boolean isMatchRunning(int id){
+    public boolean isMatchRunning(int id) {
         return hasMatchStarted(id) && !hasMatchEnded(id);
     }
 }

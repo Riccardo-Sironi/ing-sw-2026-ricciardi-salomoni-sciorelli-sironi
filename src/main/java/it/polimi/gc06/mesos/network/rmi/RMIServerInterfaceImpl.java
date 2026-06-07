@@ -1,12 +1,12 @@
 package it.polimi.gc06.mesos.network.rmi;
 
 import it.polimi.gc06.mesos.controller.GameController;
+import it.polimi.gc06.mesos.controller.commands.ControllerCommand;
+import it.polimi.gc06.mesos.controller.commands.Request;
 import it.polimi.gc06.mesos.model.Color;
 import it.polimi.gc06.mesos.network.client.ServerConnection;
 import it.polimi.gc06.mesos.network.server.MatchManager;
 import it.polimi.gc06.mesos.network.server.RMIClientManager;
-import it.polimi.gc06.mesos.controller.commands.ControllerCommand;
-import it.polimi.gc06.mesos.controller.commands.Request;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -26,12 +26,19 @@ public class RMIServerInterfaceImpl extends UnicastRemoteObject implements RMISe
      * Creates the RMI server interface implementation.
      *
      * @param serverManager the main server manager handling matches and logins
+     * @param exportPort    Specify a new UnicastRemoteObject object using the particular supplied port.
      * @throws RemoteException if RMI initialization fails
      */
-    public RMIServerInterfaceImpl(MatchManager serverManager) throws RemoteException {
-        super();
+    public RMIServerInterfaceImpl(MatchManager serverManager, int exportPort) throws RemoteException {
+        super(exportPort);
         this.serverManager = serverManager;
         this.clientManagers = new ConcurrentHashMap<>();
+    }
+
+
+    private void logRMICall(String nickname, String action) throws RemoteException {
+        int matchId = serverManager.getPlayersMatchId(nickname);
+        System.out.println("[RMI - Match " + matchId + "] Received a command: " + action + " from " + nickname);
     }
 
     /**
@@ -43,8 +50,10 @@ public class RMIServerInterfaceImpl extends UnicastRemoteObject implements RMISe
      */
     @Override
     public boolean login(String nickname) throws RemoteException {
+        System.out.println("[RMI] Received a login request from " + nickname);
         return serverManager.login(nickname);
     }
+
 
     /**
      * Logs out a player, removing them from the server and closing their connection.
@@ -59,6 +68,8 @@ public class RMIServerInterfaceImpl extends UnicastRemoteObject implements RMISe
         if (manager != null) {
             manager.closeConnection();
         }
+        System.out.println("[RMI] Received a logout request from " + nickname);
+
         return serverManager.logout(nickname);
     }
 
@@ -106,6 +117,7 @@ public class RMIServerInterfaceImpl extends UnicastRemoteObject implements RMISe
      */
     @Override
     public int createMatch(int numOfPlayers) throws RemoteException {
+        System.out.println("[RMI] Received a match creation request for a " + numOfPlayers + "-player match");
         return serverManager.createMatch(numOfPlayers).getMatchId();
     }
 
@@ -121,6 +133,7 @@ public class RMIServerInterfaceImpl extends UnicastRemoteObject implements RMISe
     @Override
     public boolean joinMatch(int matchId, String nickname, ServerConnection clientCallback) throws RemoteException {
         RMIClientManager rmiClientManager = new RMIClientManager(nickname, clientCallback, serverManager);
+        System.out.println("[RMI - Match " + matchId + "] Received a join request from " + nickname);
         boolean success = serverManager.joinMatch(matchId, rmiClientManager);
         if (success) {
             clientManagers.put(nickname, rmiClientManager);
@@ -156,6 +169,8 @@ public class RMIServerInterfaceImpl extends UnicastRemoteObject implements RMISe
         ControllerCommand command = new ControllerCommand(nickname, tileIndex, Request.OFFER_TRACK_REQUEST);
 
         manager.enqueueCommand(command);
+
+        logRMICall(nickname, "OFFER_TRACK_REQUEST");
     }
 
     /**
@@ -175,6 +190,7 @@ public class RMIServerInterfaceImpl extends UnicastRemoteObject implements RMISe
         ControllerCommand command = new ControllerCommand(nickname, cardIndex, Request.BOTTOM_CARD_REQUEST);
 
         manager.enqueueCommand(command);
+        logRMICall(nickname, "BOTTOM_CARD_REQUEST");
     }
 
     /**
@@ -194,6 +210,8 @@ public class RMIServerInterfaceImpl extends UnicastRemoteObject implements RMISe
         ControllerCommand command = new ControllerCommand(nickname, cardIndex, Request.TOP_CARD_REQUEST);
 
         manager.enqueueCommand(command);
+
+        logRMICall(nickname, "TOP_CARD_REQUEST");
     }
 
     /**
@@ -213,6 +231,8 @@ public class RMIServerInterfaceImpl extends UnicastRemoteObject implements RMISe
         ControllerCommand command = new ControllerCommand(nickname, cardIndex, Request.BOTTOM_BUILDING_REQUEST);
 
         manager.enqueueCommand(command);
+
+        logRMICall(nickname, "BOTTOM_BUILDING_REQUEST");
     }
 
     /**
@@ -232,6 +252,8 @@ public class RMIServerInterfaceImpl extends UnicastRemoteObject implements RMISe
         ControllerCommand command = new ControllerCommand(nickname, cardIndex, Request.TOP_BUILDING_REQUEST);
 
         manager.enqueueCommand(command);
+
+        logRMICall(nickname, "TOP_BUILDING_REQUEST");
     }
 
     /**
@@ -250,6 +272,8 @@ public class RMIServerInterfaceImpl extends UnicastRemoteObject implements RMISe
         ControllerCommand command = new ControllerCommand(nickname, 0, Request.SKIP_REQUEST);
 
         manager.enqueueCommand(command);
+
+        logRMICall(nickname, "SKIP_REQUEST");
     }
 
     /**
@@ -267,5 +291,8 @@ public class RMIServerInterfaceImpl extends UnicastRemoteObject implements RMISe
         }
         ControllerCommand command = new ControllerCommand(nickname, color.ordinal(), Request.CHOOSE_TOTEM_COLOR_REQUEST);
         manager.enqueueCommand(command);
+
+        logRMICall(nickname, "CHOOSE_TOTEM_COLOR_REQUEST");
     }
+
 }

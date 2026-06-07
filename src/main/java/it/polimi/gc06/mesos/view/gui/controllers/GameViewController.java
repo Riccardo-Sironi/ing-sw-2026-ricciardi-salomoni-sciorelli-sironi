@@ -132,7 +132,7 @@ public class GameViewController {
         String backgroundUrl = imageFetcher.getEraBackgroundsImage(smallModel.getEra());
 
         if (backgroundUrl == null) {
-            System.err.println("Impossibile caricare il background per l'era: " + smallModel.getEra());
+            System.err.println("Unable to load the background for Era " + smallModel.getEra());
             return;
         }
 

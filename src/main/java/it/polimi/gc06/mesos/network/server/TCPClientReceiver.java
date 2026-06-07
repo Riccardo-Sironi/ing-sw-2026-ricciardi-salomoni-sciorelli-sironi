@@ -54,7 +54,7 @@ public class TCPClientReceiver implements Runnable {
                     } else {
                         String p = command.getNickname();
                         int matchID = sharedManager.getPlayersMatchId(p);
-                        System.out.println("[TCP - Match " + matchID + "] Received a command: " + command.getRequest() + "from " + p);
+                        System.out.println("[TCP - Match " + matchID + "] Received a command: " + command.getRequest() + " from " + p);
                     }
 
                     if (virtualClient == null) {
