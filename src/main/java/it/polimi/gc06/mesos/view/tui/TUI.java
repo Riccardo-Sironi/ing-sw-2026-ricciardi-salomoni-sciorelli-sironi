@@ -165,7 +165,7 @@ public class TUI implements View, ModelListener {
                                     case "cards":
                                         showCardHelp();
                                     default:
-                                        statusMessage = "Available commands: /place_totem, /pick_card, /end_turn, quit";
+                                        statusMessage = "Available commands: /place_totem, /pick_card, /end_turn, /quit";
                                 }
                             }
                             break;
@@ -359,8 +359,15 @@ public class TUI implements View, ModelListener {
             terminal.writer().println("Player " + nickname + " not found.");
             terminal.writer().flush();
         } else {
-            terminal.writer().println("Board of: " + nickname);
+            String[] title = centerOnScreen(new String[]{"  === Board of: " + nickname + " ===  "}, terminal);
+            terminal.writer().println("\n" + title[0]);
+
+            String[] charactersTitle = centerOnScreen(new String[]{"--- CHARACTERS ---"}, terminal);
+            terminal.writer().println("\n" + charactersTitle[0] + "\n");
             tuiBoardRenderer.printCardRow(targetPlayer.getCharacters());
+
+            String[] buildingsTitle = centerOnScreen(new String[]{"--- BUILDINGS ---"}, terminal);
+            terminal.writer().println("\n" + buildingsTitle[0] + "\n");
             tuiBoardRenderer.printCardRow(targetPlayer.getBuildings());
             terminal.writer().flush();
         }
@@ -436,7 +443,6 @@ public class TUI implements View, ModelListener {
      */
     @Override
     public void update(SmallModelEditor dto) {
-
         this.needsRedraw = true;
         // We've received an update. Let's redraw the board
         render();
@@ -470,7 +476,7 @@ public class TUI implements View, ModelListener {
         } else {
             terminal.writer().println("\n");
         }
-        
+
         if (lineReader.isReading()) {
             lineReader.callWidget(LineReader.REDRAW_LINE);
             lineReader.callWidget(LineReader.REDISPLAY);

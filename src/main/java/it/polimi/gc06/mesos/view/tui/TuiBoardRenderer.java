@@ -26,8 +26,10 @@ public class TuiBoardRenderer {
     // We use Integer instead of int, in order to allow null values, which indicate that we don't want to render the deck card
     public void printCardRow(List<Card> rowCards, Integer deckSize) {
         if (rowCards == null || rowCards.isEmpty()) {
-            String centeredEmpty = Arrays.toString(TUI.centerOnScreen(new String[]{"[Empty Row]"}, terminal));
-            terminal.writer().println(centeredEmpty);
+            String[] centeredEmpty = TUI.centerOnScreen(new String[]{"[Empty Row]"}, terminal);
+            for (String line : centeredEmpty) {
+                terminal.writer().println(line);
+            }
             return;
         }
 
@@ -80,7 +82,10 @@ public class TuiBoardRenderer {
 
     public void printOfferTrack(List<TileSlotView> tiles) {
         if (tiles == null || tiles.isEmpty()) {
-            terminal.writer().println("[Empty Row]");
+            String[] centeredEmpty = TUI.centerOnScreen(new String[]{"[Empty Row]"}, terminal);
+            for (String line : centeredEmpty) {
+                terminal.writer().println(line);
+            }
             return;
         }
 
@@ -113,7 +118,10 @@ public class TuiBoardRenderer {
 
     public void printPlayerInfo(List<PlayerView> players) {
         if (players == null || players.isEmpty()) {
-            terminal.writer().println("[Empty Row]");
+            String[] centeredEmpty = TUI.centerOnScreen(new String[]{"[Empty Row]"}, terminal);
+            for (String line : centeredEmpty) {
+                terminal.writer().println(line);
+            }
             return;
         }
 
