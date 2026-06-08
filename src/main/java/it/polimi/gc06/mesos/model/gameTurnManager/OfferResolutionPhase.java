@@ -187,6 +187,7 @@ public class OfferResolutionPhase extends Phase {
                     turnManager.getNotifier().notifyChange(new TotemTurnMoveDTO(player.getNickname(), board.getTurnOrderTile().slots().indexOf(orderTile)));
 
                     orderTile.setPlayer(player);
+                    orderTile.applyEffect();
                     break;
                 }
             }

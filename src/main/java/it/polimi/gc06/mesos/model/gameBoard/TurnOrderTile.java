@@ -22,6 +22,9 @@ public record TurnOrderTile(ArrayList<TileSlot> slots) {
         slots.add(index, slot);
     }
 
+
+    // TODO : this methods are not used at all (just in the tests)
+
     /**
      * Returns the player on the nth tile.
      *
