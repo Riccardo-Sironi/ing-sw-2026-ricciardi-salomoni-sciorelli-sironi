@@ -1,17 +1,18 @@
 package it.polimi.gc06.mesos.model.InstancesManager;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import it.polimi.gc06.mesos.model.DTONotifier;
 import it.polimi.gc06.mesos.model.GameModel;
-import it.polimi.gc06.mesos.model.gameBoard.Board;
+import it.polimi.gc06.mesos.model.cards.Card;
+import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingCard;
 import it.polimi.gc06.mesos.model.gameBoard.TileEffect;
 import it.polimi.gc06.mesos.model.gameBoard.TileSlot;
-import it.polimi.gc06.mesos.model.gameBoard.TurnOrderTile;
 import org.junit.jupiter.api.*;
 import org.mockito.MockedConstruction;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.io.InputStream;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -41,37 +42,29 @@ public class ModelInstancesManagerTest {
         System.out.println("[START] " + testInfo.getDisplayName() + " DONE");
     }
 
+    // --- STANDARD VALIDATION TESTS ---
+
     @Test
     @DisplayName("Creates game with valid number of players (2-5)")
     void testCreateGame_ValidNumOfPlayers() {
-        try (MockedConstruction<Board> mockedBoard = mockConstruction(Board.class)) {
+        assertDoesNotThrow(() -> {
+            List<String> num_player_2 = new ArrayList<>(Arrays.asList("p1", "p2"));
+            GameModel model_2_players = manager.createGame(num_player_2);
+            assertNotNull(model_2_players);
+            assertEquals(2, model_2_players.getPlayers().size());
 
-            assertDoesNotThrow(() -> {
-                // 2 players
-                List<String> num_player_2 = new ArrayList<>(Arrays.asList("p1", "p2"));
-                GameModel model_2_players = manager.createGame(num_player_2);
-                assertNotNull(model_2_players);
-                assertEquals(2, model_2_players.getPlayers().size());
+            List<String> num_players_3 = new ArrayList<>(Arrays.asList("p1", "p2", "p3"));
+            GameModel model_3_players = manager.createGame(num_players_3);
+            assertEquals(3, model_3_players.getPlayers().size());
 
-                // 3 players
-                List<String> num_players_3 = new ArrayList<>(Arrays.asList("p1", "p2", "p3"));
-                GameModel model_3_players = manager.createGame(num_players_3);
-                assertEquals(3, model_3_players.getPlayers().size());
+            List<String> num_players_4 = new ArrayList<>(Arrays.asList("p1", "p2", "p3", "p4"));
+            GameModel model_4_players = manager.createGame(num_players_4);
+            assertEquals(4, model_4_players.getPlayers().size());
 
-                // 4 players
-                List<String> num_players_4 = new ArrayList<>(Arrays.asList("p1", "p2", "p3", "p4"));
-                GameModel model_4_players = manager.createGame(num_players_4);
-                assertEquals(4, model_4_players.getPlayers().size());
-
-                // 5 players
-                List<String> num_players_5 = new ArrayList<>(Arrays.asList("p1", "p2", "p3", "p4", "p5"));
-                GameModel model_5_players = manager.createGame(num_players_5);
-                assertEquals(5, model_5_players.getPlayers().size());
-            });
-
-        } catch (Exception e) {
-            fail("Exception should not be thrown for valid number of players (2-5): " + e.getMessage());
-        }
+            List<String> num_players_5 = new ArrayList<>(Arrays.asList("p1", "p2", "p3", "p4", "p5"));
+            GameModel model_5_players = manager.createGame(num_players_5);
+            assertEquals(5, model_5_players.getPlayers().size());
+        });
     }
 
     @Test
@@ -105,38 +98,43 @@ public class ModelInstancesManagerTest {
         assertEquals("Nicknames list size should be between 2 and 5", exception.getMessage());
     }
 
+    // --- BRANCH COVERAGE TESTS ---
+
     @Test
-    @DisplayName("Branch coverage: TileSlot with non-null TileEffect calls accept()")
-    void testCreateGame_TileEffectNotNull_CallsAccept() throws Exception {
+    @DisplayName("Branch coverage: TileSlot with both non-null and null TileEffect in offer track")
+    void testCreateGame_OfferTrack_BranchCoverage() throws Exception {
+        Map<String, List<Card>> cardMap = new HashMap<>();
+        cardMap.put("2", new ArrayList<>());
 
-        TileEffect dummyEffect = mock(TileEffect.class);
+        List<ModifierBuildingCard> modifierCards = new ArrayList<>();
 
-        try (MockedConstruction<Board> mockedBoard = mockConstruction(Board.class, (mockBoard, context) -> {
+        Map<String, ArrayList<TileSlot>> turnOrderTileConfig = new HashMap<>();
+        TileSlot turnOrderSlot = mock(TileSlot.class);
+        when(turnOrderSlot.getTileEffect()).thenReturn(mock(TileEffect.class));
+        turnOrderTileConfig.put("2", new ArrayList<>(List.of(turnOrderSlot)));
 
-            TurnOrderTile fakeTurnOrderTile = mock(TurnOrderTile.class);
-            TileSlot fakeSlot = mock(TileSlot.class);
+        Map<String, ArrayList<TileSlot>> offerTrackConfig = new HashMap<>();
+        TileSlot offerSlotWithEffect = mock(TileSlot.class);
+        when(offerSlotWithEffect.getTileEffect()).thenReturn(mock(TileEffect.class));
 
-            when(fakeSlot.getTileEffect()).thenReturn(dummyEffect);
+        TileSlot offerSlotWithoutEffect = mock(TileSlot.class);
+        when(offerSlotWithoutEffect.getTileEffect()).thenReturn(null);
 
-            when(fakeTurnOrderTile.slots()).thenReturn(new ArrayList<>(List.of(fakeSlot)));
+        offerTrackConfig.put("2", new ArrayList<>(Arrays.asList(offerSlotWithEffect, offerSlotWithoutEffect)));
 
-            when(mockBoard.getTurnOrderTile()).thenReturn(fakeTurnOrderTile);
-
+        try (MockedConstruction<ObjectMapper> mockedMapper = mockConstruction(ObjectMapper.class, (mock, context) -> {
+            when(mock.readValue(any(InputStream.class), any(TypeReference.class)))
+                    .thenReturn(cardMap)
+                    .thenReturn(modifierCards)
+                    .thenReturn(turnOrderTileConfig)
+                    .thenReturn(offerTrackConfig);
         })) {
+            List<String> nicknames = new ArrayList<>(Arrays.asList("p1", "p2"));
+            GameModel model = manager.createGame(nicknames);
 
-            List<String> num_player_2 = new ArrayList<>(Arrays.asList("p1", "p2"));
-
-            assertDoesNotThrow(() -> manager.createGame(num_player_2));
-
-            if (!mockedBoard.constructed().isEmpty()) {
-                Board createdBoard = mockedBoard.constructed().get(0);
-
-                for (TileSlot slot : createdBoard.getTurnOrderTile().slots()) {
-                    if (slot.getTileEffect() != null) {
-                        slot.getTileEffect().accept(any());
-                    }
-                }
-            }
+            assertNotNull(model);
+            verify(offerSlotWithEffect, times(2)).getTileEffect();
+            verify(offerSlotWithoutEffect, times(1)).getTileEffect();
         }
     }
 }
