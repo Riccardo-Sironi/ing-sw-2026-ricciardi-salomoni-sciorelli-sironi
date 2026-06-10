@@ -46,6 +46,8 @@ public class SmallModel {
 
     private ModelListener listener;
 
+    private String systemMessage;
+
     /**
      * Constructs a new SmallModel instance for a specific player.
      * Initializes all the standard collections and zeroes out integers.
@@ -72,6 +74,7 @@ public class SmallModel {
         this.leaderboard = new ArrayList<>();
         this.listener = null;
         this.maxPlayers = -1;
+        this.systemMessage = "";
     }
 
     /**
@@ -91,6 +94,25 @@ public class SmallModel {
     public void setActive(boolean active) {
         isActive = active;
     }
+
+    /**
+     * Sets the System's message (Model notifications, Errors or information in general)
+     *
+     * @param systemMessage the message to be displayed on the client interface
+     */
+    public void setSystemMessage(String systemMessage) {
+        this.systemMessage = systemMessage;
+    }
+
+    /**
+     * Getter for the System's message (Model notifications, Errors or information in general)
+     *
+     * @return systemMessage the message to be displayed on the client interface
+     */
+    public String getSystemMessage() {
+        return this.systemMessage;
+    }
+
 
     /**
      * Checks whether the game has transitioned into the endgame scenario

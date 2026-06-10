@@ -95,7 +95,7 @@ public class TCPClientReceiver implements Runnable {
                     } else if (message.startsWith("JOIN") && virtualClient == null && nickname != null && isNumeric(message.substring(4))) {
                         virtualClient = new TCPClientManager(nickname, out);
                         int matchId = Integer.parseInt(message.substring(4));
-                        System.out.println("[TCP] Received a join request to Match " + matchId + "from " + nickname);
+                        System.out.println("[TCP - Match " + matchId + "]" + " Received a join request from " + nickname);
                         if (sharedManager.joinMatch(matchId, virtualClient)) {
                             synchronized (out) {
                                 out.writeObject("OK");
