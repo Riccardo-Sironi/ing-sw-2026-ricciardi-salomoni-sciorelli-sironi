@@ -159,7 +159,8 @@ public class SelectGameController {
             parseAndDisplayMatches(matchesStr);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println("Error connecting to the server: " + e.getMessage());
+            //e.printStackTrace();
             showEmptyMessage("ERROR CONNECTING TO SERVER");
         }
     }
@@ -216,7 +217,8 @@ public class SelectGameController {
             proceedToLobby();
         } catch (Exception e) {
             rootPane.setDisable(false);
-            e.printStackTrace();
+            //e.printStackTrace();
+            System.err.println("Error creating match: " + e.getMessage());
         }
     }
 
@@ -236,7 +238,8 @@ public class SelectGameController {
             }
         } catch (Exception e) {
             rootPane.setDisable(false);
-            e.printStackTrace();
+            //e.printStackTrace();
+            System.err.println("Error joining match: " + e.getMessage());
         }
     }
 
@@ -246,7 +249,8 @@ public class SelectGameController {
             try {
                 GUI.changeScene(GameScene.LOBBY.getPath());
             } catch (Exception e) {
-                e.printStackTrace();
+                //e.printStackTrace();
+                System.err.println("Error proceeding to lobby: " + e.getMessage());
             }
         });
     }

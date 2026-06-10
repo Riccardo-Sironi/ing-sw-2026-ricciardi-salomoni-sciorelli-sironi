@@ -46,9 +46,7 @@ public class TCPClientReceiver implements Runnable {
             try {
                 Object input = in.readObject();
 
-                // TODO Il Prof. Cugola ha approvato l'uso in questo caso di instanceof. Ma è davvero necessario? Se possibile sarebber carino toglierlo.
-                if (input instanceof ControllerCommand) {
-                    ControllerCommand command = (ControllerCommand) input;
+                if (input instanceof ControllerCommand command) {
                     if (command == null) {
                         System.out.println("Received an empty command, discarding...");
                     } else {

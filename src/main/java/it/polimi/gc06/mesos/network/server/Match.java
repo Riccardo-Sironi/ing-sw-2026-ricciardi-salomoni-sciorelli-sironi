@@ -103,7 +103,7 @@ public class Match {
 
                 } catch (IllegalGameActionException | IndexOutOfBoundsException e) {
                     System.err.println("An error occurred while trying to perform " + action.getNickname() + " action: ");
-                    e.printStackTrace();
+                    //e.printStackTrace();
                     System.err.println("Faulty action: " + action.getRequest() + ", index: " + action.getIndex());
 
                     players.stream()
@@ -111,8 +111,8 @@ public class Match {
                             .findFirst().ifPresent(offender -> offender.sendErrorMessage(e.getMessage()));
 
                 } catch (Exception e) {
-                    System.err.println("Critical error stemming from: " + action.getNickname() + " action: ");
-                    e.printStackTrace();
+                    System.err.println("Critical error stemming from: " + action.getNickname() + " action: " + e.getMessage());
+                    //e.printStackTrace();
                 }
 
             } catch (InterruptedException e) {
@@ -125,8 +125,8 @@ public class Match {
                 if (LeaderboardDAO.saveLeaderboard(controller.getModel().getLeaderboard()))
                     System.out.println("Leaderboard saved!");
             } catch (Exception e) {
-                System.err.println("Something went wrong with leaderboard saving request, please check if mySql server is online");
-                e.printStackTrace();
+                System.err.println("Something went wrong with leaderboard saving request, please check if mySql server is online: " + e.getMessage());
+                //e.printStackTrace();
             }
         }
     }

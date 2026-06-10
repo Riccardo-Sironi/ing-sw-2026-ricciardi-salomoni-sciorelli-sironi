@@ -1,7 +1,10 @@
 package it.polimi.gc06.mesos.model.cards;
 
 import it.polimi.gc06.mesos.model.cards.characters.*;
-import it.polimi.gc06.mesos.model.cards.events.*;
+import it.polimi.gc06.mesos.model.cards.events.HuntEvent;
+import it.polimi.gc06.mesos.model.cards.events.PaintingsEvent;
+import it.polimi.gc06.mesos.model.cards.events.RitualEvent;
+import it.polimi.gc06.mesos.model.cards.events.SustenanceEvent;
 
 import java.util.ArrayList;
 
@@ -9,9 +12,6 @@ public class BottomRowInitVisitor extends CardVisitor {
     ArrayList<TribeCard> bottomRow;
     ArrayList<TribeCard> topRow;
     int maxTopRowSize;
-
-    // TODO : qui dobbiamo gestire il caso (REMOTO) in cui durante l'init della board vengono pescate tante carte evento
-    // quante a riempire tutta la top row prima di finire l'init della bottom (assurdo)
 
     public BottomRowInitVisitor(ArrayList<TribeCard> bottomRow, ArrayList<TribeCard> topRow, int maxTopRowSize) {
         this.bottomRow = bottomRow;

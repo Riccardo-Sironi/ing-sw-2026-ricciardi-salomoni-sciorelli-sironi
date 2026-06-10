@@ -6,8 +6,6 @@ import java.util.ArrayList;
 
 public record TurnOrderTile(ArrayList<TileSlot> slots) {
 
-    //TODO: implement tile id for view (or the class loses significance).
-
     /**
      * TurnOrderTile constructor.
      *

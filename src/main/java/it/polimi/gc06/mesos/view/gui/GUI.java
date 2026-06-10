@@ -80,7 +80,8 @@ public class GUI extends Application implements View, ModelListener {
                 }
             });
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Failed to load scene transition: " + e.getMessage());
+            //e.printStackTrace();
         }
     }
 

@@ -136,7 +136,7 @@ public class StartController {
 
         } catch (Exception e) {
             System.err.println("Error: Loading Fonts failed");
-            e.printStackTrace();
+            //e.printStackTrace();
         }
     }
 
@@ -172,7 +172,7 @@ public class StartController {
 
         } catch (IOException e) {
             System.err.println("Error I/O in loading Login.fxml");
-            e.printStackTrace();
+            //e.printStackTrace();
         }
     }
 

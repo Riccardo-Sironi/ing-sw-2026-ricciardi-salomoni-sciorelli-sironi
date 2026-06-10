@@ -3,24 +3,16 @@ package it.polimi.gc06.mesos.view.gui.controllers;
 import it.polimi.gc06.mesos.view.gui.GUI;
 import it.polimi.gc06.mesos.view.gui.GameScene;
 import it.polimi.gc06.mesos.view.gui.ImageFetcher;
-import it.polimi.gc06.mesos.view.smallModel.PlayerView;
 import it.polimi.gc06.mesos.view.gui.helpers.Totem;
-import javafx.animation.FadeTransition;
-import javafx.animation.ParallelTransition;
-import javafx.animation.PauseTransition;
-import javafx.animation.ScaleTransition;
-import javafx.animation.TranslateTransition;
+import it.polimi.gc06.mesos.view.smallModel.PlayerView;
+import javafx.animation.*;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.control.Label;
-import javafx.scene.effect.BlendMode;
-import javafx.scene.effect.DropShadow;
-import javafx.scene.effect.GaussianBlur;
-import javafx.scene.effect.Lighting;
-import javafx.scene.effect.Light;
+import javafx.scene.effect.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
@@ -465,7 +457,8 @@ public class LobbyGuiController {
                 delay.play();
 
             } catch (Exception e) {
-                e.printStackTrace();
+                System.err.println("Error during game start transition: " + e.getMessage());
+                //e.printStackTrace();
             }
         });
     }

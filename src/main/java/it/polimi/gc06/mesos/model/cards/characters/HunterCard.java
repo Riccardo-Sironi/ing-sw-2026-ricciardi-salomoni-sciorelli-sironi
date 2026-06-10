@@ -1,14 +1,14 @@
 package it.polimi.gc06.mesos.model.cards.characters;
 
-import it.polimi.gc06.mesos.model.cards.CardVisitor;
 import it.polimi.gc06.mesos.model.Era;
+import it.polimi.gc06.mesos.model.cards.CardVisitor;
 
 import java.util.Objects;
 
 public class HunterCard extends CharacterCard {
     private boolean hasFoodIcon;
 
-    public HunterCard(){
+    public HunterCard() {
         super();
         this.hasFoodIcon = false;
     }
@@ -37,7 +37,7 @@ public class HunterCard extends CharacterCard {
      * @return true if the card has a food icon, false otherwise.
      */
     public boolean hasFoodIcon() {
-        return hasFoodIcon; // TODO : ricordarsi di gestire questa logica quando implementiamo il pescaggio
+        return hasFoodIcon;
     }
 
     /**
@@ -47,7 +47,9 @@ public class HunterCard extends CharacterCard {
      * @param visitor the visitor that will visit the card.
      */
     @Override
-    public void accept(CardVisitor visitor) {visitor.visit(this);}
+    public void accept(CardVisitor visitor) {
+        visitor.visit(this);
+    }
 
 
     /**

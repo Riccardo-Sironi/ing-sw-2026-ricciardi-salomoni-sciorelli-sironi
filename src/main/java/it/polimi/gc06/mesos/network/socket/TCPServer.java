@@ -20,7 +20,8 @@ public class TCPServer implements Runnable {
 
     /**
      * Builds the listener logic, ready to be tossed into a thread.
-     * @param port the TCP port to hog.
+     *
+     * @param port          the TCP port to hog.
      * @param sharedManager the core MatchManager tracking all rooms.
      */
     public TCPServer(int port, MatchManager sharedManager, String ipAddress) {
@@ -65,7 +66,7 @@ public class TCPServer implements Runnable {
                 try {
                     serverSocket.close();
                 } catch (IOException e) {
-                    System.err.println("Error while closing server socket (TCP)");
+                    System.err.println("Error while closing server socket (TCP) " + e.getMessage());
                     e.printStackTrace();
                 }
             }
