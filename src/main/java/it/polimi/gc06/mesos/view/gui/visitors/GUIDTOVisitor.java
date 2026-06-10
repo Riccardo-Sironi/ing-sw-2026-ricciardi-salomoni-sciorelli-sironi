@@ -8,13 +8,13 @@ import javafx.application.Platform;
 
 import static it.polimi.gc06.mesos.view.gui.GUI.guiEventsManager;
 
-public class GUIDTOvisitor extends DTOvisitor {
+public class GUIDTOVisitor extends DTOVisitor {
 
     BoardController boardController;
     GameViewController gameViewController;
     LobbyGuiController lobbyGuiController;
 
-    public GUIDTOvisitor() {
+    public GUIDTOVisitor() {
     }
 
     public void setLobbyGuiController(LobbyGuiController lobbyGuiController) {

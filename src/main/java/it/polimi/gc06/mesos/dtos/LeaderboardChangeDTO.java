@@ -23,9 +23,10 @@ public class LeaderboardChangeDTO implements SmallModelEditor {
 
     /**
      * {@inheritDoc}
+     *
      * @param smallModel the client's small model.
      * @throws IllegalStateException if state modifications fail.
-     * @throws Error on deeper failure situations.
+     * @throws Error                 on deeper failure situations.
      */
     @Override
     public void edit(SmallModel smallModel) throws IllegalStateException, Error {
@@ -34,10 +35,11 @@ public class LeaderboardChangeDTO implements SmallModelEditor {
 
     /**
      * {@inheritDoc}
+     *
      * @param visitor
      */
     @Override
-    public void accept(DTOvisitor visitor) {
+    public void accept(DTOVisitor visitor) {
         visitor.visit(this);
     }
 

@@ -6,7 +6,7 @@ import it.polimi.gc06.mesos.view.smallModel.SmallModel;
 
 import java.util.Set;
 
-public class PlayerRecapDTO implements SmallModelEditor{
+public class PlayerRecapDTO implements SmallModelEditor {
 
     //everything can be null
     private final String nickname;
@@ -57,27 +57,28 @@ public class PlayerRecapDTO implements SmallModelEditor{
     public void edit(SmallModel smallModel) throws IllegalStateException, Error {
         //finds the player by nickname
         PlayerView player = smallModel.getPlayer().getNickname().equals(nickname) ? smallModel.getPlayer() : null;
-        if(player == null) player = smallModel.getOpponents().stream().filter(pv -> pv.getNickname().equals(nickname))
+        if (player == null) player = smallModel.getOpponents().stream().filter(pv -> pv.getNickname().equals(nickname))
                 .findFirst().orElse(null);
-        if(player == null) throw new IllegalStateException("Nickname given not present in smallModel");
+        if (player == null) throw new IllegalStateException("Nickname given not present in smallModel");
         //sets all not-null parameters
-        if(shamanNumber != null) player.setShamanNumber(shamanNumber);
-        if(inventorNumber != null) player.setInventorNumber(inventorNumber);
-        if(hunterNumber != null) player.setHunterNumber(hunterNumber);
-        if(gathererNumber != null) player.setGathererNumber(gathererNumber);
-        if(builderNumber != null) player.setBuilderNumber(builderNumber);
-        if(artistNumber != null) player.setArtistNumber(artistNumber);
-        if(collectedIcons != null) player.setCollectedIcons(collectedIcons);
-        if(buildersDiscount != null) player.setBuildersDiscount(buildersDiscount);
-        if(shamanStar != null) player.setShamanStar(shamanStar);
+        if (shamanNumber != null) player.setShamanNumber(shamanNumber);
+        if (inventorNumber != null) player.setInventorNumber(inventorNumber);
+        if (hunterNumber != null) player.setHunterNumber(hunterNumber);
+        if (gathererNumber != null) player.setGathererNumber(gathererNumber);
+        if (builderNumber != null) player.setBuilderNumber(builderNumber);
+        if (artistNumber != null) player.setArtistNumber(artistNumber);
+        if (collectedIcons != null) player.setCollectedIcons(collectedIcons);
+        if (buildersDiscount != null) player.setBuildersDiscount(buildersDiscount);
+        if (shamanStar != null) player.setShamanStar(shamanStar);
     }
 
     /**
      * {@inheritDoc}
+     *
      * @param visitor
      */
     @Override
-    public void accept(DTOvisitor visitor) {
+    public void accept(DTOVisitor visitor) {
         visitor.visit(this);
     }
 
@@ -86,7 +87,7 @@ public class PlayerRecapDTO implements SmallModelEditor{
      *
      * @return the player's nickname
      */
-    public String getPlayer(){
+    public String getPlayer() {
         return nickname;
     }
 

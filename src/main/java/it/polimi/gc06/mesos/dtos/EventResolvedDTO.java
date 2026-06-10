@@ -18,7 +18,7 @@ public class EventResolvedDTO implements SmallModelEditor {
     }
 
     @Override
-    public void accept(DTOvisitor visitor) {
+    public void accept(DTOVisitor visitor) {
         visitor.visit(this);
     }
 

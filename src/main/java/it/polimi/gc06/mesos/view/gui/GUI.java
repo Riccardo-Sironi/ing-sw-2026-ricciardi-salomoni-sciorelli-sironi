@@ -4,7 +4,7 @@ import it.polimi.gc06.mesos.controller.ModelListener;
 import it.polimi.gc06.mesos.dtos.SmallModelEditor;
 import it.polimi.gc06.mesos.network.client.Client;
 import it.polimi.gc06.mesos.view.View;
-import it.polimi.gc06.mesos.view.gui.visitors.GUIDTOvisitor;
+import it.polimi.gc06.mesos.view.gui.visitors.GUIDTOVisitor;
 import it.polimi.gc06.mesos.view.smallModel.SmallModel;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -25,7 +25,7 @@ public class GUI extends Application implements View, ModelListener {
     public static ImageFetcher imageFetcher;
     public static Client client;
 
-    public static GUIDTOvisitor guidtovisitor;
+    public static GUIDTOVisitor guidtovisitor;
 
     public static Stage primaryStage;
 
@@ -37,7 +37,7 @@ public class GUI extends Application implements View, ModelListener {
     public void start(Stage stage) throws IOException {
         primaryStage = stage;
         gui = this;
-        guidtovisitor = new GUIDTOvisitor();
+        guidtovisitor = new GUIDTOVisitor();
         guiEventsManager = new GuiEventsManager();
 
         changeScene(GameScene.START.getPath());

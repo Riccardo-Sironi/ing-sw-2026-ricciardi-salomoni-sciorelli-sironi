@@ -15,6 +15,7 @@ public class MesosStartedDTO implements SmallModelEditor {
 
     /**
      * {@inheritDoc}
+     *
      * @param smallModel the client's small model.
      * @throws IllegalStateException on state conflicts.
      */
@@ -24,10 +25,11 @@ public class MesosStartedDTO implements SmallModelEditor {
 
     /**
      * {@inheritDoc}
+     *
      * @param visitor
      */
     @Override
-    public void accept(DTOvisitor visitor) {
+    public void accept(DTOVisitor visitor) {
         visitor.visit(this);
     }
 

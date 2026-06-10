@@ -62,6 +62,7 @@ public class LobbyInitializedDTO implements SmallModelEditor {
 
     /**
      * {@inheritDoc}
+     *
      * @param smallModel the client's small model.
      * @throws IllegalStateException if the board hasn't been set up correctly yet or blocks the setup.
      */
@@ -110,10 +111,11 @@ public class LobbyInitializedDTO implements SmallModelEditor {
 
     /**
      * {@inheritDoc}
+     *
      * @param visitor
      */
     @Override
-    public void accept(DTOvisitor visitor) {
+    public void accept(DTOVisitor visitor) {
         visitor.visit(this);
     }
 

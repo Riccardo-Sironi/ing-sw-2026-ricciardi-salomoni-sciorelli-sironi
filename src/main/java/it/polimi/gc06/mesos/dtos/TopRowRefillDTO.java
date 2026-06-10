@@ -18,8 +18,8 @@ public class TopRowRefillDTO implements SmallModelEditor, Serializable {
     private Integer sequenceNumber;
 
     /**
-     * @param top The refreshed top row payload.
-     * @param bottom The latest bottom row (usually what slid down).
+     * @param top      The refreshed top row payload.
+     * @param bottom   The latest bottom row (usually what slid down).
      * @param deckSize Remaining deck count in the reserve queue.
      */
     public TopRowRefillDTO(Collection<Card> top, Collection<Card> bottom, int deckSize) {
@@ -31,6 +31,7 @@ public class TopRowRefillDTO implements SmallModelEditor, Serializable {
 
     /**
      * {@inheritDoc}
+     *
      * @param smallModel the client's small model.
      */
     @Override
@@ -44,10 +45,11 @@ public class TopRowRefillDTO implements SmallModelEditor, Serializable {
 
     /**
      * {@inheritDoc}
+     *
      * @param visitor
      */
     @Override
-    public void accept(DTOvisitor visitor) {
+    public void accept(DTOVisitor visitor) {
         visitor.visit(this);
     }
 

@@ -17,7 +17,7 @@ public class BuildingsRefillDTO implements SmallModelEditor, Serializable {
     private Integer sequenceNumber;
 
     /**
-     * @param top The full top row of building cards.
+     * @param top    The full top row of building cards.
      * @param bottom The full bottom row of building cards.
      */
     public BuildingsRefillDTO(Collection<Card> top, Collection<Card> bottom) {
@@ -28,6 +28,7 @@ public class BuildingsRefillDTO implements SmallModelEditor, Serializable {
 
     /**
      * {@inheritDoc}
+     *
      * @param smallModel the client's small model.
      */
     @Override
@@ -40,10 +41,11 @@ public class BuildingsRefillDTO implements SmallModelEditor, Serializable {
 
     /**
      * {@inheritDoc}
+     *
      * @param visitor
      */
     @Override
-    public void accept(DTOvisitor visitor) {
+    public void accept(DTOVisitor visitor) {
         visitor.visit(this);
     }
 

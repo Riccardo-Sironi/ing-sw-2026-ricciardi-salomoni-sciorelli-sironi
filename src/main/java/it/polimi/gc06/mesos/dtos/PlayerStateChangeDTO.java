@@ -24,6 +24,7 @@ public class PlayerStateChangeDTO implements SmallModelEditor {
 
     /**
      * Toggles whether the active player state is on or off.
+     *
      * @param isActive Boolean indicating if the player should be considered active.
      */
     public void setIsActive(boolean isActive) {
@@ -32,6 +33,7 @@ public class PlayerStateChangeDTO implements SmallModelEditor {
 
     /**
      * Toggles whether the player is allowed to hit the skip button or not.
+     *
      * @param canSkip Boolean indicating skipping allowance.
      */
     public void setCanSkip(boolean canSkip) {
@@ -40,6 +42,7 @@ public class PlayerStateChangeDTO implements SmallModelEditor {
 
     /**
      * {@inheritDoc}
+     *
      * @param smallModel the client's small model.
      * @throws IllegalStateException if the state update violates integrity.
      */
@@ -56,10 +59,11 @@ public class PlayerStateChangeDTO implements SmallModelEditor {
 
     /**
      * {@inheritDoc}
+     *
      * @param visitor
      */
     @Override
-    public void accept(DTOvisitor visitor) {
+    public void accept(DTOVisitor visitor) {
         visitor.visit(this);
     }
 

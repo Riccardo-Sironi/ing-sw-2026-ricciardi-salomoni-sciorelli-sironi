@@ -19,9 +19,10 @@ public class PhaseChangeDTO implements SmallModelEditor {
 
     /**
      * {@inheritDoc}
+     *
      * @param smallModel the client's small model.
      * @throws IllegalStateException when the phase transition is not allowed.
-     * @throws Error if phase resolution fails entirely.
+     * @throws Error                 if phase resolution fails entirely.
      */
     @Override
     public void edit(SmallModel smallModel) throws IllegalStateException, Error {
@@ -30,10 +31,11 @@ public class PhaseChangeDTO implements SmallModelEditor {
 
     /**
      * {@inheritDoc}
+     *
      * @param visitor
      */
     @Override
-    public void accept(DTOvisitor visitor) {
+    public void accept(DTOVisitor visitor) {
         visitor.visit(this);
     }
 

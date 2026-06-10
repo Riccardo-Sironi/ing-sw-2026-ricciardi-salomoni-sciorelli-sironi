@@ -4,7 +4,7 @@ package it.polimi.gc06.mesos.dtos;
  * Base visitor allowing UI or logic pieces to hook into specific update events.
  * It's all empty defaults, overridden when needed.
  */
-public abstract class DTOvisitor {
+public abstract class DTOVisitor {
 
     /**
      * Overridable hook for generic DTO patches.

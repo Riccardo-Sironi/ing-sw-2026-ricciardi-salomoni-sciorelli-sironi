@@ -13,7 +13,7 @@ public class ChooseTotemColorDTO implements SmallModelEditor {
 
     /**
      * @param nickname The player locking in a color.
-     * @param color The chosen token color shade.
+     * @param color    The chosen token color shade.
      */
     public ChooseTotemColorDTO(String nickname, Color color) {
         this.nickname = nickname;
@@ -24,32 +24,37 @@ public class ChooseTotemColorDTO implements SmallModelEditor {
     /**
      * @return the nickname of the player.
      */
-    public String getNickname() { return nickname; }
+    public String getNickname() {
+        return nickname;
+    }
 
     /**
      * @return the chosen color by the player.
      */
-    public Color getColor() { return color; }
+    public Color getColor() {
+        return color;
+    }
 
     /**
      * {@inheritDoc}
+     *
      * @param visitor
      */
     @Override
-    public void accept(DTOvisitor visitor) {
+    public void accept(DTOVisitor visitor) {
         visitor.visit(this);
     }
 
     /**
      * {@inheritDoc}
+     *
      * @param smallModel the client's small model.
      */
     @Override
     public void edit(SmallModel smallModel) {
         if (smallModel.getPlayer().getNickname().equals(nickname)) {
             smallModel.getPlayer().setColor(color);
-        }
-        else {
+        } else {
             smallModel.getOpponents().stream()
                     .filter(o -> o.getNickname().equals(nickname))
                     .findFirst()

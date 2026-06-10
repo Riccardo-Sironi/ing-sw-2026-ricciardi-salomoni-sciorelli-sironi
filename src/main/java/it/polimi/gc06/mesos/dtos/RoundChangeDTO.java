@@ -31,7 +31,7 @@ public class RoundChangeDTO implements SmallModelEditor {
      * @param visitor
      */
     @Override
-    public void accept(DTOvisitor visitor) {
+    public void accept(DTOVisitor visitor) {
         visitor.visit(this);
     }
 

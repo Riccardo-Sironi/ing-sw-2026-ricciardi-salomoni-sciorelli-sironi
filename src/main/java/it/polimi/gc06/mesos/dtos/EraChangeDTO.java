@@ -21,9 +21,10 @@ public class EraChangeDTO implements SmallModelEditor {
 
     /**
      * {@inheritDoc}
+     *
      * @param smallModel the client's small model.
      * @throws IllegalStateException when state is inconsistent.
-     * @throws Error on severe faults.
+     * @throws Error                 on severe faults.
      */
     @Override
     public void edit(SmallModel smallModel) throws IllegalStateException, Error {
@@ -32,10 +33,11 @@ public class EraChangeDTO implements SmallModelEditor {
 
     /**
      * {@inheritDoc}
+     *
      * @param visitor
      */
     @Override
-    public void accept(DTOvisitor visitor) {
+    public void accept(DTOVisitor visitor) {
         visitor.visit(this);
     }
 

@@ -13,7 +13,7 @@ public class PickBottomBuildingsDTO implements SmallModelEditor {
     private Integer sequenceNumber;
 
     /**
-     * @param player Who picked it.
+     * @param player    Who picked it.
      * @param cardIndex Which slot they picked the card from.
      */
     public PickBottomBuildingsDTO(String player, int cardIndex) {
@@ -24,6 +24,7 @@ public class PickBottomBuildingsDTO implements SmallModelEditor {
 
     /**
      * {@inheritDoc}
+     *
      * @param smallModel the client's small model.
      * @throws IllegalStateException if the target player is not found.
      */
@@ -55,10 +56,11 @@ public class PickBottomBuildingsDTO implements SmallModelEditor {
 
     /**
      * {@inheritDoc}
+     *
      * @param visitor
      */
     @Override
-    public void accept(DTOvisitor visitor) {
+    public void accept(DTOVisitor visitor) {
         visitor.visit(this);
     }
 
