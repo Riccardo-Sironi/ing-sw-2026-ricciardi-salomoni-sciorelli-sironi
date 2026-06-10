@@ -28,8 +28,8 @@ public class RMIServerConnection extends UnicastRemoteObject implements ServerCo
      * @param port the server's RMI port
      * @throws Exception if something goes wrong during initialization
      */
-    public RMIServerConnection(String host, int port) throws Exception {
-        super();
+    public RMIServerConnection(String host, int port, int clientPort) throws Exception {
+        super(clientPort);
         this.host = host;
         this.port = port;
     }

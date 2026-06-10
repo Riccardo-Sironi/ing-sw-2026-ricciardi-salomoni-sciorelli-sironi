@@ -7,7 +7,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.Random;
 
@@ -21,11 +23,14 @@ public class TCPClientDispatcherTest {
             ServerMain.main(new String[]{"1234", "1099"});
         });
         serverThread.start();
-        try { Thread.sleep(1000); } catch (InterruptedException _) {}
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException _) {
+        }
     }
 
     @Test
-    void testLogin(){
+    void testLogin() {
         try (Socket socket = new Socket("localhost", 1234)) {
             assertTrue(socket.isConnected());
             System.out.println("Connected");
@@ -42,7 +47,7 @@ public class TCPClientDispatcherTest {
     }
 
     @Test
-    void testLoginFail(){
+    void testLoginFail() {
         try (Socket socket = new Socket("localhost", 1234)) {
             assertTrue(socket.isConnected());
 
@@ -70,7 +75,7 @@ public class TCPClientDispatcherTest {
     }
 
     @Test
-    void testLogout(){
+    void testLogout() {
         MatchManager manager = ServerMain.getMatchManager();
         try {
             Socket socket = new Socket("localhost", 1234);
@@ -82,7 +87,10 @@ public class TCPClientDispatcherTest {
             assertEquals("OK", (String) in.readObject(), "Nickname sent.");
             out.writeObject("LOGOUT");
             assertEquals("OK", (String) in.readObject(), "Logout not worked");
-            try { Thread.sleep(500); } catch (InterruptedException _) {}
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException _) {
+            }
             assertFalse(manager.isUserLogged("Alice"));
 
         } catch (ClassNotFoundException | IOException e) {
@@ -91,7 +99,7 @@ public class TCPClientDispatcherTest {
     }
 
     @Test
-    void testLoginAfterLogout(){
+    void testLoginAfterLogout() {
         String loginMsg = "LOGINAlice";
         try {
             Socket socket = new Socket("localhost", 1234);
@@ -103,7 +111,10 @@ public class TCPClientDispatcherTest {
             assertEquals("OK", (String) in.readObject(), "Nickname sent.");
             out.writeObject("LOGOUT");
             assertEquals("OK", (String) in.readObject(), "Logout not worked");
-            try { Thread.sleep(500); } catch (InterruptedException _) {}
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException _) {
+            }
 
         } catch (ClassNotFoundException | IOException e) {
             fail("Error during communication");
@@ -125,8 +136,9 @@ public class TCPClientDispatcherTest {
     }
 
     @ParameterizedTest
-    @ValueSource(ints = {3}) // min 2, max 5 (both included), give a single value
-    void testMatchCreation(int numOfPlayers){
+    @ValueSource(ints = {3})
+        // min 2, max 5 (both included), give a single value
+    void testMatchCreation(int numOfPlayers) {
         try (Socket socket = new Socket("localhost", 1234)) {
             assertTrue(socket.isConnected());
 
@@ -149,7 +161,7 @@ public class TCPClientDispatcherTest {
         }
     }
 
-    private void createMatch(String nickname, int numOfPlayers){
+    private void createMatch(String nickname, int numOfPlayers) {
         try (Socket socket = new Socket("localhost", 1234)) {
             assertTrue(socket.isConnected());
 
@@ -172,18 +184,21 @@ public class TCPClientDispatcherTest {
        until match is started. */
     @ParameterizedTest
     @ValueSource(ints = {5})
-    void testMultipleMatchCreation(int n){
+    void testMultipleMatchCreation(int n) {
         Random r = new Random();
-        for(int i = 0; i < n; i++) {
-            createMatch("Alice" + i , r.nextInt(2, 6));
-            try { Thread.sleep(1000); } catch (InterruptedException _) {}
+        for (int i = 0; i < n; i++) {
+            createMatch("Alice" + i, r.nextInt(2, 6));
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException _) {
+            }
         }
         System.out.println(ServerMain.getMatchManager().getAvailableMatchesString().replace(',', '\n'));
         assertTrue(true, "Matches created with success");
     }
 
     @Test
-    void testMatchJoin(){
+    void testMatchJoin() {
         createMatch("Alice", 5);
         try (Socket socket = new Socket("localhost", 1234)) {
             assertTrue(socket.isConnected());
@@ -211,7 +226,7 @@ public class TCPClientDispatcherTest {
         }
     }
 
-    private void joinMatch(String nickname, int id){
+    private void joinMatch(String nickname, int id) {
         try (Socket socket = new Socket("localhost", 1234)) {
             assertTrue(socket.isConnected());
 
@@ -231,12 +246,12 @@ public class TCPClientDispatcherTest {
 
     @ParameterizedTest
     @ValueSource(ints = {3})
-    void testMatchStart(int numOfPlayers){
+    void testMatchStart(int numOfPlayers) {
         createMatch("Alice", 2);  // ID: 0
         createMatch("Bob", 2);    // ID: 1
         createMatch("Carl", numOfPlayers); // ID: 2
 
-        for(int i = 0; i < numOfPlayers - 1; i++) {
+        for (int i = 0; i < numOfPlayers - 1; i++) {
             joinMatch("David" + i, 2);
         }
 
@@ -246,9 +261,8 @@ public class TCPClientDispatcherTest {
 
     //this test fails for different reason, but it is linked to disconnection,
     // and it is not required that disconnection is handled properly
-    //TODO: se abbiamo tempo potrebbe essere interessante sistemarlo (ma non strettamente necessario)
     @Test
-    void testLogoutAfterMatchStart(){
+    void testLogoutAfterMatchStart() {
         MatchManager mm = ServerMain.getMatchManager();
         createMatch("Alice", 3); // ID: 0
 
@@ -261,7 +275,10 @@ public class TCPClientDispatcherTest {
         joinMatch("Carl", 0);
         assertTrue(mm.hasMatchStarted(0) && !mm.hasMatchEnded(0), "Check match state");
 
-        try { Thread.sleep(1000); } catch (InterruptedException _) {}
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException _) {
+        }
 
         assertFalse(mm.isUserLogged("Alice"), "Creator disconnection check after match started");
         assertFalse(mm.isUserLogged("Bob") || mm.isUserLogged("Carl"),

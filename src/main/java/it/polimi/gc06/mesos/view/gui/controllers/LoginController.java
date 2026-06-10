@@ -177,10 +177,14 @@ public class LoginController {
         rootPane.setDisable(false);
     }
 
+    // TODO Assolutamente da cambiare qusta parte.
     private boolean connectToServer() {
         GUI.client = new Client();
-        GUI.client.connect("RMI", "localhost", 1099);
-
+        try {
+            GUI.client.connect("RMI", "localhost", 1099, "192.168.1.117", 1102);
+        } catch (Exception e) {
+            System.err.println("Failed to connect to server: " + e.getMessage());
+        }
         try {
             if (!GUI.client.getServerConnection().login(nickname)) {
                 handleLoginError();
@@ -211,7 +215,8 @@ public class LoginController {
             fadeOut.play();
 
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println("Failed to load scene transition: " + e.getMessage());
+            //e.printStackTrace();
             unlockUI(); // in case of critical failure, unlock the UI
         }
     }

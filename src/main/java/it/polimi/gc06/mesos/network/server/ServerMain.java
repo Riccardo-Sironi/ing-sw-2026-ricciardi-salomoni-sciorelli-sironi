@@ -54,7 +54,7 @@ public class ServerMain {
                 }
             } catch (NumberFormatException | IndexOutOfBoundsException | PatternSyntaxException e) {
                 System.err.println("Failed to parse server startup arguments.");
-                e.printStackTrace();
+                //e.printStackTrace();
                 return;
             }
 
@@ -90,7 +90,7 @@ public class ServerMain {
                 System.out.println("RMI started on port " + RMIPortNumber);
             } catch (Exception e) {
                 System.err.println("Failed to start RMI server component on port " + RMIPortNumber + ".");
-                e.printStackTrace();
+                //e.printStackTrace();
                 return;
             }
 
@@ -106,11 +106,11 @@ public class ServerMain {
                 tcpServerThread.start();
             } catch (Exception e) {
                 System.err.println("Failed to start TCP server component on port " + tcpPortNumber + ".");
-                e.printStackTrace();
+                //e.printStackTrace();
             }
 
         } catch (Exception e) {
-            System.err.println("Unexpected error while starting server components.");
+            System.err.println("Unexpected error while starting server components: " + e.getMessage());
             e.printStackTrace();
 
         }

@@ -42,6 +42,8 @@ public class TCPServerConnection implements ServerConnection, Runnable {
     private final BlockingQueue<ControllerCommand> commands;
     private final BlockingQueue<Object> responses;
 
+    private Socket socket;
+
     public TCPServerConnection(String host, int port) {
         this.host = host;
         this.port = port;
@@ -65,6 +67,10 @@ public class TCPServerConnection implements ServerConnection, Runnable {
      */
     @Override
     public void startConnection() throws Exception {
+        this.socket = new Socket(host, port);
+        this.out = new ObjectOutputStream(socket.getOutputStream());
+        this.in = new ObjectInputStream(socket.getInputStream());
+
         new Thread(this).start();
     }
 
@@ -75,7 +81,7 @@ public class TCPServerConnection implements ServerConnection, Runnable {
      */
     @Override
     public void receiveDTO(SmallModelEditor dto) {
-        System.out.println("'" + Thread.currentThread().getName() + "' client received a dto: " + dto.getClass().getSimpleName());
+        //System.out.println("'" + Thread.currentThread().getName() + "' client received a dto: " + dto.getClass().getSimpleName());
         prioritizedListener.update(dto);
     }
 
@@ -94,7 +100,7 @@ public class TCPServerConnection implements ServerConnection, Runnable {
      * @return True if you're good to go, false otherwise.
      */
     @Override
-    public boolean login(String nickname) throws Exception {
+    public boolean login(String nickname) throws IllegalStateException {
         //if the action was already performed before with success, exit
         if (nicknameSent || isInsideMatch) throw new IllegalStateException("This action shouldn't be performed now");
         if (!request.store("LOGIN" + nickname))
@@ -278,16 +284,12 @@ public class TCPServerConnection implements ServerConnection, Runnable {
         Thread reqThread = new Thread(this::requestHandlerLoop);
         Thread cmdThread = new Thread(this::commandHandlerLoop);
 
-        try (Socket socket = new Socket(host, port)) {
-
-            out = new ObjectOutputStream(socket.getOutputStream());
-            in = new ObjectInputStream(socket.getInputStream());
+        try {
 
             reqThread.start();
             cmdThread.start();
 
             while (true) {
-                // TODO Come in TCPClientReceiver, il prof. Cugola ha approvato l'uso in questo caso di instanceof. Ma è davvero necessario? Se possibile sarebbe carino toglierlo.
                 //dispatches input
                 Object input = in.readObject();
                 if (input instanceof SmallModelEditor dto) {
@@ -312,13 +314,10 @@ public class TCPServerConnection implements ServerConnection, Runnable {
             System.err.println("Server connection ended.");
         } catch (IOException e) {
             System.err.println("Invalid data for server communication.");
-            e.printStackTrace();
+            //e.printStackTrace();
         } catch (Exception e) {
             System.err.println("Runtime error during DTO processing!");
-            e.printStackTrace();
-        } finally {
-            reqThread.interrupt();
-            cmdThread.interrupt();
+            //e.printStackTrace();
         }
     }
 

@@ -4,6 +4,7 @@ import it.polimi.gc06.mesos.controller.ModelListener;
 import it.polimi.gc06.mesos.dtos.SmallModelEditor;
 import it.polimi.gc06.mesos.view.smallModel.SmallModel;
 
+import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,27 +16,28 @@ public class Client implements ModelListener {
     private ServerConnection serverConnection = null;
     private final List<ModelListener> listeners;
     private Integer nextSequenceNumber;
-    private final Map<Integer,SmallModelEditor> earlyDto; //out of sequence DTO
+    private final Map<Integer, SmallModelEditor> earlyDto; //out of sequence DTO
 
-    public Client(){
+    public Client() {
         listeners = new ArrayList<>();
         nextSequenceNumber = 0;
         earlyDto = new HashMap<>();
     }
 
-    public void connect(String tech, String host, int port) {
+    public void connect(String tech, String host, int hostPort, String clientIp, int clientPort) throws IllegalStateException, ConnectException {
         if (serverConnection != null) {
             throw new IllegalStateException("Already connected to a server");
         }
 
         try {
-            serverConnection = tech.equals("RMI") ? new RMIServerConnection(host, port) :
-                    new TCPServerConnection(host, port);
+            System.setProperty("java.rmi.server.hostname", clientIp);
+            serverConnection = tech.equals("RMI") ? new RMIServerConnection(host, hostPort, clientPort) :
+                    new TCPServerConnection(host, hostPort);
             serverConnection.startConnection();
             serverConnection.prioritizedSubscribe(this);
         } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("Failed to connect to server: " + e.getMessage(), e);
+            //e.printStackTrace();
+            throw new ConnectException(e.getMessage());
         }
     }
 
@@ -49,34 +51,35 @@ public class Client implements ModelListener {
      * @param dto the dto that the notification stemmed from.
      */
     @Override
-    public synchronized void update(SmallModelEditor dto){
-        if(dto.getSequenceNumber() == null){
+    public synchronized void update(SmallModelEditor dto) {
+        if (dto.getSequenceNumber() == null) {
             //non-sequenced DTO
-            try{
+            try {
                 dto.edit(smallModel);
-            }catch (Error _) {} //if it's an error DTO an Error will be thrown
+            } catch (Error _) {
+            } //if it's an error DTO an Error will be thrown
             listeners.forEach(l -> l.update(dto));
-        }
-        else if(nextSequenceNumber.equals(dto.getSequenceNumber())){
+        } else if (nextSequenceNumber.equals(dto.getSequenceNumber())) {
             //correct DTO
             nextSequenceNumber++;
-            try{
+            try {
                 dto.edit(smallModel);
-            }catch (Error _) {} //if it's an error DTO an Error will be thrown
+            } catch (Error _) {
+            } //if it's an error DTO an Error will be thrown
             listeners.forEach(l -> l.update(dto));
             //takes all correct early dto
-            while(earlyDto.containsKey(nextSequenceNumber)){
+            while (earlyDto.containsKey(nextSequenceNumber)) {
                 SmallModelEditor nextDTO = earlyDto.remove(nextSequenceNumber);
                 nextSequenceNumber++;
-                try{
+                try {
                     nextDTO.edit(smallModel);
-                }catch (Error _) {} //if it's an error DTO an Error will be thrown
+                } catch (Error _) {
+                } //if it's an error DTO an Error will be thrown
                 listeners.forEach(l -> l.update(nextDTO));
             }
-        }
-        else{
+        } else {
             //out of sequence DTO
-            earlyDto.put(dto.getSequenceNumber(),dto);
+            earlyDto.put(dto.getSequenceNumber(), dto);
         }
     }
 
@@ -85,7 +88,7 @@ public class Client implements ModelListener {
      *
      * @param l the observer component that requires game state deltas
      */
-    public void subscribe(ModelListener l){
+    public void subscribe(ModelListener l) {
         listeners.add(l);
     }
 
@@ -104,4 +107,6 @@ public class Client implements ModelListener {
     public void setSmallModel(SmallModel smallModel) {
         this.smallModel = smallModel;
     }
+
+
 }
