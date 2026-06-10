@@ -1,8 +1,10 @@
-package it.polimi.gc06.mesos.view.tui;
+package it.polimi.gc06.mesos.view.tui.visitors;
 
 import it.polimi.gc06.mesos.model.Color;
 import it.polimi.gc06.mesos.model.gameBoard.*;
 import it.polimi.gc06.mesos.view.smallModel.TileSlotView;
+import it.polimi.gc06.mesos.view.tui.Style;
+import it.polimi.gc06.mesos.view.tui.TuiRenderer;
 
 /**
  * A visitor that generates an ASCII representation for different types of tile slots
@@ -66,24 +68,24 @@ public class TuiTileSlotRendererVisitor implements TuiRenderer<TileSlotView>, Ti
      * @return an array of strings providing structural ASCII layout lines
      */
     public String[] render(TileSlotView slot) {
-        String[] card = new String[5];
+        String[] card = new String[7];
 
         slot.getTileEffect().accept(this);
 
         card[0] = "┌─────────┐";
         // Center the player totem placeholder, if present, within 9 characters (11 - 2 for the borders)
+        card[1] = "│         │";
         if (!slot.isEmpty()) {
             String playerString = toString(slot.getPlayer().getColor()) + centerText("P", 9) + Style.RESET;
-            card[1] = "│" + playerString + "│";
+            card[2] = "│" + playerString + "│";
         } else {
-            card[1] = "│         │";
+            card[2] = "│         │";
         }
-        //card[2] = "│         │";
         // Center the effect string, within 9 characters (11 - 2 for the borders)
-        //card[4] = "│         │";
-        card[2] = "│         │";
-        card[3] = "│" + centerText(effectString, 9) + "│";
-        card[4] = "└─────────┘";
+        card[3] = "│         │";
+        card[4] = "│         │";
+        card[5] = "│" + centerText(effectString, 9) + "│";
+        card[6] = "└─────────┘";
 
         // Clear strings
         effectString = "";

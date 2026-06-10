@@ -1,11 +1,15 @@
 package it.polimi.gc06.mesos.view.tui;
 
 import it.polimi.gc06.mesos.controller.ModelListener;
+import it.polimi.gc06.mesos.dtos.DTOVisitor;
+import it.polimi.gc06.mesos.dtos.EventResolvedDTO;
 import it.polimi.gc06.mesos.dtos.SmallModelEditor;
+import it.polimi.gc06.mesos.model.cards.events.EventCard;
 import it.polimi.gc06.mesos.network.client.Client;
 import it.polimi.gc06.mesos.view.View;
 import it.polimi.gc06.mesos.view.smallModel.PlayerView;
 import it.polimi.gc06.mesos.view.smallModel.SmallModel;
+import it.polimi.gc06.mesos.view.tui.visitors.TuiEventArtVisitor;
 import org.jline.reader.*;
 import org.jline.reader.impl.completer.AggregateCompleter;
 import org.jline.reader.impl.completer.ArgumentCompleter;
@@ -19,6 +23,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * Text-Based User Interface implementation for the Mesos game.
@@ -34,6 +40,9 @@ public class TUI implements View, ModelListener {
     private LineReader lineReader;
     private Terminal terminal;
     private TuiBoardRenderer tuiBoardRenderer;
+
+    private final BlockingQueue<EventCard> eventDisplayQueue = new LinkedBlockingQueue<>();
+    private EventCard currentlyDisplayingEvent = null;
 
     /**
      * Constructs a new TUI.
@@ -83,6 +92,10 @@ public class TUI implements View, ModelListener {
             terminal.puts(InfoCmp.Capability.clear_screen);
             terminal.puts(InfoCmp.Capability.cursor_home);
 
+            // Thread demone per gestire le schermate degli eventi in sequenza
+            Thread eventDisplayThread = getDisplayThread();
+            eventDisplayThread.start();
+
             while (true) {
                 if (needsRedraw) {
                     render();
@@ -129,11 +142,19 @@ public class TUI implements View, ModelListener {
                             } else {
                                 switch (tokens[1].toLowerCase()) {
                                     case "top":
-                                        client.getServerConnection().pickCardFromTop(smallModel.getPlayer().getNickname(), Integer.parseInt(tokens[2]));
-                                        statusMessage = "Picking card in slot " + tokens[2] + " from the top row";
+                                        try {
+                                            client.getServerConnection().pickCardFromTop(smallModel.getPlayer().getNickname(), Integer.parseInt(tokens[2]));
+                                        } catch (Exception e) {
+                                            smallModel.setSystemMessage(Style.RED + "An error occurred while trying to perform this action!" + Style.RESET);
+                                        }
+                                        smallModel.setSystemMessage("Picking card in slot " + tokens[2] + " from the top row");
                                         break;
                                     case "bottom":
-                                        client.getServerConnection().pickCardFromBottom(smallModel.getPlayer().getNickname(), Integer.parseInt(tokens[2]));
+                                        try {
+                                            client.getServerConnection().pickCardFromBottom(smallModel.getPlayer().getNickname(), Integer.parseInt(tokens[2]));
+                                        } catch (Exception e) {
+                                            smallModel.setSystemMessage(Style.RED + "You cannot perform this action right now!" + Style.RESET);
+                                        }
                                         statusMessage = "Picking card in slot " + tokens[2] + " from the bottom row";
                                         break;
                                     default:
@@ -142,7 +163,11 @@ public class TUI implements View, ModelListener {
                             }
                             break;
                         case "/end_turn":
-                            client.getServerConnection().handleSkip(smallModel.getPlayer().getNickname());
+                            try {
+                                client.getServerConnection().handleSkip(smallModel.getPlayer().getNickname());
+                            } catch (Exception e) {
+                                smallModel.setSystemMessage(Style.RED + "You cannot perform this action right now!" + Style.RESET);
+                            }
                             statusMessage = "Ending turn...";
                             break;
                         case "/help":
@@ -178,6 +203,7 @@ public class TUI implements View, ModelListener {
                             break;
                         case "/clear":
                             statusMessage = "";
+                            smallModel.setSystemMessage("");
                             break;
                         case "/quit":
                             terminal.writer().println("Closing...");
@@ -203,8 +229,39 @@ public class TUI implements View, ModelListener {
             // Critical Error whilst initializing the terminal. Close the application as we cannot proceed any further.
         } catch (IOException e) {
             System.err.println("Error initializing the terminal: " + e.getMessage());
-            System.exit(0);
+            System.exit(1);
         }
+    }
+
+    private Thread getDisplayThread() {
+        Thread eventDisplayThread = new Thread(() -> {
+            while (true) {
+                try {
+                    currentlyDisplayingEvent = eventDisplayQueue.take();
+
+                    synchronized (TUI.this) {
+                        needsRedraw = true;
+                        render();
+                    }
+
+                    Thread.sleep(4000);
+
+                    synchronized (TUI.this) {
+                        currentlyDisplayingEvent = null;
+                        if (eventDisplayQueue.isEmpty()) {
+                            needsRedraw = true;
+                            render();
+                        }
+                    }
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    break;
+                }
+            }
+        });
+        // Close it when closing the app
+        eventDisplayThread.setDaemon(true);
+        return eventDisplayThread;
     }
 
     /**
@@ -436,6 +493,34 @@ public class TUI implements View, ModelListener {
     }
 
     /**
+     * Visitor class to handle the different types of DTOs that can be received from the server.
+     */
+    public class TUIDTOVisitor extends DTOVisitor {
+
+        /**
+         * If the dto we received signals an event being resolved, we should show a small "animation"
+         *
+         * @param dto the patch getting visited.
+         */
+        @Override
+        public void visit(EventResolvedDTO dto) {
+            eventDisplayQueue.offer(dto.getEventCard());
+        }
+
+        /**
+         * If the dto we received is a generic small model update, we should just flag the interface to be redrawn, so that the new state gets rendered.
+         *
+         * @param dto the patch getting visited.
+         */
+        @Override
+        public void visit(SmallModelEditor dto) {
+            needsRedraw = true;
+            render();
+        }
+    }
+
+
+    /**
      * Called whenever the model updates from the server.
      * Flags the interface to be redrawn.
      *
@@ -443,10 +528,9 @@ public class TUI implements View, ModelListener {
      */
     @Override
     public void update(SmallModelEditor dto) {
-        this.needsRedraw = true;
-        // We've received an update. Let's redraw the board
-        render();
+        dto.accept(new TUIDTOVisitor());
     }
+
 
     /**
      * Renders the current state of the board in the terminal.
@@ -458,6 +542,18 @@ public class TUI implements View, ModelListener {
         terminal.puts(InfoCmp.Capability.clear_screen);
         terminal.puts(InfoCmp.Capability.cursor_home);
 
+        if (currentlyDisplayingEvent != null) {
+            drawEventAsciiArt(currentlyDisplayingEvent);
+
+            if (lineReader.isReading()) {
+                lineReader.callWidget(LineReader.REDRAW_LINE);
+                lineReader.callWidget(LineReader.REDISPLAY);
+            }
+            terminal.writer().flush();
+            needsRedraw = false;
+            return;
+        }
+
         List<PlayerView> players = new ArrayList<>();
         players.add(smallModel.getPlayer());
         players.addAll(smallModel.getOpponents());
@@ -467,14 +563,18 @@ public class TUI implements View, ModelListener {
         tuiBoardRenderer.printCardRow(smallModel.getBottomRow());
         tuiBoardRenderer.printPlayerInfo(players);
 
-        if (smallModel.isActive()) {
-            terminal.writer().println(Style.GREEN + "\nSystem> It's your Turn!" + Style.RESET);
+        if (!statusMessage.isEmpty()) {
+            terminal.writer().println(statusMessage);
         }
 
-        if (!statusMessage.isEmpty()) {
-            terminal.writer().println("\nSystem> " + statusMessage);
+        if (!smallModel.getSystemMessage().isEmpty() || !smallModel.getSystemMessage().isBlank()) {
+            terminal.writer().println("\nSystem> " + smallModel.getSystemMessage());
         } else {
             terminal.writer().println("\n");
+        }
+
+        if (smallModel.isActive()) {
+            terminal.writer().println(Style.GREEN + "It's your Turn!" + Style.RESET);
         }
 
         if (lineReader.isReading()) {
@@ -483,6 +583,29 @@ public class TUI implements View, ModelListener {
         }
 
         terminal.writer().flush();
+    }
+
+    private void drawEventAsciiArt(EventCard eventCard) {
+        TuiEventArtVisitor artVisitor = new TuiEventArtVisitor();
+        eventCard.accept(artVisitor);
+
+        String[] asciiArt = artVisitor.getAsciiArt();
+        String color = artVisitor.getColor();
+        String title = artVisitor.getTitle();
+
+        int paddingTop = Math.max(0, (terminal.getHeight() - asciiArt.length) / 2);
+        for (int i = 0; i < paddingTop; i++) {
+            terminal.writer().println();
+        }
+
+        String[] centeredAscii = centerOnScreen(asciiArt, terminal);
+        for (String line : centeredAscii) {
+            terminal.writer().println(color + line + Style.RESET);
+        }
+
+        terminal.writer().println("\n");
+        String[] subtitle = centerOnScreen(new String[]{"[ EVENT RESOLUTION PHASE - " + title + " ]"}, terminal);
+        terminal.writer().println(subtitle[0]);
     }
 
     /**

@@ -75,7 +75,7 @@ public class GameController {
         TurnManager turnManager = model.getTurnManager();
         Player activePlayer = turnManager.getActivePlayer();
         if (!activePlayer.getNickname().equals(playerNickname)) {
-            throw new IllegalPhaseActionException("It's not " + playerNickname + " turn !");
+            throw new IllegalPhaseActionException("It's not " + playerNickname + "'s turn !");
         }
 
         TribeCard card = model.getBoard().getBottomCardFromIndex(cardIndex);
@@ -98,7 +98,7 @@ public class GameController {
 
         Player activePlayer = turnManager.getActivePlayer();
         if (!activePlayer.getNickname().equals(playerNickname)) {
-            throw new IllegalPhaseActionException("It's not " + playerNickname + " turn !");
+            throw new IllegalPhaseActionException("It's not " + playerNickname + "'s turn !");
         }
 
         TribeCard card = model.getBoard().getTopCardFromIndex(cardIndex);
@@ -123,7 +123,7 @@ public class GameController {
         Player activePlayer = turnManager.getActivePlayer();
 
         if (!activePlayer.getNickname().equals(playerNickname)) {
-            throw new IllegalPhaseActionException("It's not " + playerNickname + " turn !");
+            throw new IllegalPhaseActionException("It's not " + playerNickname + "'s turn !");
         }
 
         BuildingCard card = model.getBoard().getBottomBuildingFromIndex(cardIndex);
@@ -144,7 +144,7 @@ public class GameController {
         Player activePlayer = turnManager.getActivePlayer();
 
         if (!activePlayer.getNickname().equals(playerNickname)) {
-            throw new IllegalPhaseActionException("It's not " + playerNickname + " turn !");
+            throw new IllegalPhaseActionException("It's not " + playerNickname + "'s turn !");
         }
 
         BuildingCard card = model.getBoard().getTopBuildingFromIndex(cardIndex);
@@ -163,7 +163,7 @@ public class GameController {
         Player activePlayer = turnManager.getActivePlayer();
 
         if (!activePlayer.getNickname().equals(playerNickname)) {
-            throw new IllegalPhaseActionException("It's not " + playerNickname + " turn !");
+            throw new IllegalPhaseActionException("It's not " + playerNickname + "'s turn !");
         }
         turnManager.getPhase().skipPick(turnManager, activePlayer);
     }

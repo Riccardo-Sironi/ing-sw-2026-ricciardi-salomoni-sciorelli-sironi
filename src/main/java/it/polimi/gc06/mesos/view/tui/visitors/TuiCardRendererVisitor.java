@@ -1,4 +1,4 @@
-package it.polimi.gc06.mesos.view.tui;
+package it.polimi.gc06.mesos.view.tui.visitors;
 
 import it.polimi.gc06.mesos.model.cards.Card;
 import it.polimi.gc06.mesos.model.cards.CardVisitor;
@@ -7,6 +7,8 @@ import it.polimi.gc06.mesos.model.cards.events.HuntEvent;
 import it.polimi.gc06.mesos.model.cards.events.PaintingsEvent;
 import it.polimi.gc06.mesos.model.cards.events.RitualEvent;
 import it.polimi.gc06.mesos.model.cards.events.SustenanceEvent;
+import it.polimi.gc06.mesos.view.tui.Style;
+import it.polimi.gc06.mesos.view.tui.TuiRenderer;
 
 /**
  * A visitor that generates an ASCII representation for different types of cards
