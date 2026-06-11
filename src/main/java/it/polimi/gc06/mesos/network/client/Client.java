@@ -24,6 +24,21 @@ public class Client implements ModelListener {
         earlyDto = new HashMap<>();
     }
 
+    public void connect(String tech, String host, int hostPort) throws IllegalStateException, ConnectException {
+        if (serverConnection != null) {
+            throw new IllegalStateException("Already connected to a server");
+        }
+        try {
+            serverConnection = tech.equals("RMI") ? new RMIServerConnection(host, hostPort, 0) :
+                    new TCPServerConnection(host, hostPort);
+            serverConnection.startConnection();
+            serverConnection.prioritizedSubscribe(this);
+        } catch (Exception e) {
+            //e.printStackTrace();
+            throw new ConnectException(e.getMessage());
+        }
+    }
+
     public void connect(String tech, String host, int hostPort, String clientIp, int clientPort) throws IllegalStateException, ConnectException {
         if (serverConnection != null) {
             throw new IllegalStateException("Already connected to a server");
