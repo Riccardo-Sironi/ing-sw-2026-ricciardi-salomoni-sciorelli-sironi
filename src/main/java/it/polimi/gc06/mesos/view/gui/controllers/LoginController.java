@@ -181,7 +181,7 @@ public class LoginController {
     private boolean connectToServer() {
         GUI.client = new Client();
         try {
-            GUI.client.connect("RMI", "localhost", 1099, "192.168.1.117", 1102);
+            GUI.client.connect("RMI", "localhost", 1099);
         } catch (Exception e) {
             System.err.println("Failed to connect to server: " + e.getMessage());
         }
