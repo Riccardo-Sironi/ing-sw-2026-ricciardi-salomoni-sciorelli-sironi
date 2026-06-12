@@ -300,7 +300,7 @@ public class TCPServerConnection implements ServerConnection, Runnable {
                             isEndgame.set(true);
                         }
                     };
-                    visitor.visit(dto);
+                    dto.accept(visitor);
                     if (isEndgame.get()) {
                         isInsideMatch = false;
                     }
