@@ -1377,10 +1377,10 @@ public class BoardController {
     public void handleEndGame() {
         // TODO : we should add some end game animation here, but for now we just clear the board and show the end game screen
 
-        topCharactersContainer.getChildren().clear();
-        bottomCharactersContainer.getChildren().clear();
-        topBuildingsContainer.getChildren().clear();
-        bottomBuildingsContainer.getChildren().clear();
-        drawBottomRowCards();
+        // topCharactersContainer.getChildren().clear();
+        // bottomCharactersContainer.getChildren().clear();
+        // topBuildingsContainer.getChildren().clear();
+        // bottomBuildingsContainer.getChildren().clear();
+        // drawBottomRowCards();
     }
 }

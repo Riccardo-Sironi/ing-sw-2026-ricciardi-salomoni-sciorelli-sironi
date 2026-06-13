@@ -5,21 +5,11 @@ import javafx.geometry.Point2D;
 import java.util.List;
 
 public enum TurnOrderTileInfo {
-    TURN_ORDER_TILE_5_PLAYERS(5),
-    TURN_ORDER_TILE_4_PLAYERS(4),
-    TURN_ORDER_TILE_3_PLAYERS(3),
-    TURN_ORDER_TILE_2_PLAYERS(2);
-
-    private int nPlayers;
-
-    TurnOrderTileInfo(int nPlayers) {
-        this.nPlayers = nPlayers;
-    }
-
-    public String getImagePath() {
-        return this.name().toLowerCase() + ".png";
-    }
-
+    TURN_ORDER_TILE_5_PLAYERS,
+    TURN_ORDER_TILE_4_PLAYERS,
+    TURN_ORDER_TILE_3_PLAYERS,
+    TURN_ORDER_TILE_2_PLAYERS;
+    
     public List<Point2D> getPoints() {
         return switch (this) {
             case TURN_ORDER_TILE_5_PLAYERS -> List.of(

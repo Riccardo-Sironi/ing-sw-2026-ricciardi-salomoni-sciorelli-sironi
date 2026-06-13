@@ -177,19 +177,20 @@ public class LeaderboardController {
         playerSlot.getChildren().addAll(scoreValueLabel, scoreBar, totemStack, nameLabel);
 
         int finalScorePoints = score.getPrestigeScore() + score.getFoodScore();
-        double targetH = finalScorePoints * PIXELS_PER_POINT;
+        double targetH = Math.max(0, finalScorePoints * PIXELS_PER_POINT);
 
-        double duration = Math.max(0.1, finalScorePoints / POINTS_PER_SECOND);
+        double duration = Math.max(0.1, Math.max(0, finalScorePoints) / POINTS_PER_SECOND);
 
         Transition climb = new Transition() {
             {
                 setCycleDuration(Duration.seconds(duration));
                 setInterpolator(Interpolator.LINEAR);
             }
+
             @Override
             protected void interpolate(double frac) {
                 scoreBar.setPrefHeight(targetH * frac);
-                scoreValueLabel.setText(String.valueOf((int)(finalScorePoints * frac)));
+                scoreValueLabel.setText(String.valueOf((int) (finalScorePoints * frac)));
             }
         };
 
@@ -197,8 +198,10 @@ public class LeaderboardController {
             scoreValueLabel.setText(String.valueOf(finalScorePoints));
 
             ScaleTransition st = new ScaleTransition(Duration.millis(300), scoreValueLabel);
-            st.setFromX(1.0); st.setFromY(1.0);
-            st.setToX(1.3); st.setToY(1.3);
+            st.setFromX(1.0);
+            st.setFromY(1.0);
+            st.setToX(1.3);
+            st.setToY(1.3);
             st.setAutoReverse(true);
             st.setCycleCount(2);
             st.play();

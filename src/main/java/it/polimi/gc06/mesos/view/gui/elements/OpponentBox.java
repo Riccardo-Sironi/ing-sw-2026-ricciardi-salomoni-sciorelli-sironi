@@ -28,7 +28,6 @@ public class OpponentBox extends VBox {
     private Text artistsText;
     private Text buildersDiscountText;
 
-    // --- NUOVI CAMPI PER CIBO E PRESTIGIO ---
     private Text prestigeTokensText;
     private Text foodTokensText;
 
@@ -93,7 +92,7 @@ public class OpponentBox extends VBox {
         VBox.setVgrow(spacer3, Priority.ALWAYS);
         Region spacer4 = new Region();
         VBox.setVgrow(spacer4, Priority.ALWAYS);
-        
+
         this.detailsContainer.getChildren().addAll(spacer1, this.tokensBox, spacer2, this.statsBox, spacer3, this.cardsScroll, spacer4);
 
         this.detailsContainer.setManaged(false);

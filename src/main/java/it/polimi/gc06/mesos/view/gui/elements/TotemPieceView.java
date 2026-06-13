@@ -8,8 +8,7 @@ import static it.polimi.gc06.mesos.view.gui.GUI.imageFetcher;
 
 public class TotemPieceView extends ImageView {
     private PlayerView player;
-
-    // In TotemPieceView.java
+    
     public TotemPieceView() {
         super();
         this.setImage(imageFetcher.getTotemImage());

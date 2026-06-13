@@ -28,10 +28,7 @@ import java.util.List;
 import static it.polimi.gc06.mesos.view.gui.GUI.guidtovisitor;
 
 public class LobbyGuiController {
-
-    // =========================================================================
-    // NODI FXML
-    // =========================================================================
+    
     @FXML
     public StackPane lobbyRoot;
     @FXML
