@@ -39,8 +39,7 @@ public class Launcher {
             showInteractiveMenu(args);
         }
     }
-
-
+    
     /**
      * Shows an interactive menu to let the user choose the interface mode.
      */
@@ -67,8 +66,7 @@ public class Launcher {
         if (choice == 1) {
             startTUI(clientPort);
         } else {
-            System.out.println("\nStarting GUI...");
-            Application.launch(GUI.class, args);
+            startGUI(args);
         }
     }
 
@@ -87,4 +85,8 @@ public class Launcher {
 
     }
 
+    private static void startGUI(String[] args) {
+        System.out.println("\nStarting GUI...");
+        Application.launch(GUI.class, args);
+    }
 }
