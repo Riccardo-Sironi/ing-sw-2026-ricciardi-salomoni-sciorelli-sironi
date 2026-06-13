@@ -80,7 +80,7 @@ public class ServerMain {
 
             try {
                 RMIServerInterfaceImpl rmiImpl = new RMIServerInterfaceImpl(sharedManager, RMIExportPortNumber);
-                Registry registry = null;
+                Registry registry;
                 try {
                     registry = LocateRegistry.createRegistry(RMIPortNumber);
                 } catch (Exception e) {
@@ -96,10 +96,7 @@ public class ServerMain {
 
             //tries to start TCP protocol (socket)
             try {
-                // TODO Da rivedere? é un po' strano. In rete locale tutto bene, quando si passa alla VPN fa fatica a
-                // TODO l'interfaccia corretta e quindi va per forza specificato l'IP.
-                // TODO Possiamo rendere la cosa più dinamica? 
-                TCPServer tcpServer = null;
+                TCPServer tcpServer;
                 if (ipAddress == null) tcpServer = new TCPServer(tcpPortNumber, sharedManager);
                 else tcpServer = new TCPServer(tcpPortNumber, sharedManager, ipAddress);
                 Thread tcpServerThread = new Thread(tcpServer);

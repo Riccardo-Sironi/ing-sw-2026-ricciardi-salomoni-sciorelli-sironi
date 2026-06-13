@@ -292,31 +292,36 @@ public class TCPServerConnection implements ServerConnection, Runnable {
             while (true) {
                 //dispatches input
                 Object input = in.readObject();
-                if (input instanceof SmallModelEditor dto) {
-                    AtomicBoolean isEndgame = new AtomicBoolean();
-                    DTOVisitor visitor = new DTOVisitor() {
-                        @Override
-                        public void visit(LeaderboardChangeDTO dto) {
-                            isEndgame.set(true);
+                try {
+                    if (input instanceof SmallModelEditor dto) {
+                        AtomicBoolean isEndgame = new AtomicBoolean();
+                        DTOVisitor visitor = new DTOVisitor() {
+                            @Override
+                            public void visit(LeaderboardChangeDTO dto) {
+                                isEndgame.set(true);
+                            }
+                        };
+                        dto.accept(visitor);
+                        if (isEndgame.get()) {
+                            isInsideMatch = false;
                         }
-                    };
-                    dto.accept(visitor);
-                    if (isEndgame.get()) {
-                        isInsideMatch = false;
+                        receiveDTO(dto);
+                    } else {
+                        responses.put(input);
                     }
-                    receiveDTO(dto);
-                } else {
-                    responses.put(input);
+                } catch (RuntimeException e) {
+                    System.err.println("Runtime error during DTO processing!");
+                    //e.printStackTrace();
                 }
             }
 
         } catch (ClassNotFoundException | EOFException _) {
-            System.err.println("Server connection ended.");
+            System.err.println("[TCP] Server connection ended.");
         } catch (IOException e) {
-            System.err.println("Invalid data for server communication.");
+            System.err.println("[TCP] Invalid data for server communication.");
             //e.printStackTrace();
         } catch (Exception e) {
-            System.err.println("Runtime error during DTO processing!");
+            System.err.println("[TCP] Critical error in server connection: " + e.getMessage());
             //e.printStackTrace();
         }
     }

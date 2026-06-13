@@ -5,10 +5,10 @@ import it.polimi.gc06.mesos.dtos.SmallModelEditor;
 import it.polimi.gc06.mesos.view.smallModel.SmallModel;
 
 import java.net.ConnectException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Client implements ModelListener {
 
@@ -19,7 +19,7 @@ public class Client implements ModelListener {
     private final Map<Integer, SmallModelEditor> earlyDto; //out of sequence DTO
 
     public Client() {
-        listeners = new ArrayList<>();
+        listeners = new CopyOnWriteArrayList<>();
         nextSequenceNumber = 0;
         earlyDto = new HashMap<>();
     }
@@ -31,8 +31,8 @@ public class Client implements ModelListener {
         try {
             serverConnection = tech.equals("RMI") ? new RMIServerConnection(host, hostPort, 0) :
                     new TCPServerConnection(host, hostPort);
-            serverConnection.startConnection();
             serverConnection.prioritizedSubscribe(this);
+            serverConnection.startConnection();
         } catch (Exception e) {
             //e.printStackTrace();
             throw new ConnectException(e.getMessage());
@@ -48,8 +48,8 @@ public class Client implements ModelListener {
             System.setProperty("java.rmi.server.hostname", clientIp);
             serverConnection = tech.equals("RMI") ? new RMIServerConnection(host, hostPort, clientPort) :
                     new TCPServerConnection(host, hostPort);
-            serverConnection.startConnection();
             serverConnection.prioritizedSubscribe(this);
+            serverConnection.startConnection();
         } catch (Exception e) {
             //e.printStackTrace();
             throw new ConnectException(e.getMessage());
