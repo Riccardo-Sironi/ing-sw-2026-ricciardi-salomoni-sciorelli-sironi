@@ -81,9 +81,6 @@ public class TUI implements View, ModelListener {
                     .build();
 
 
-            // Start listening to the model updates, so we can redraw the board every time something changes
-            client.subscribe(this);
-
             // Show startup banner for 1.5 seconds
             showBanner(1500);
 
@@ -92,9 +89,12 @@ public class TUI implements View, ModelListener {
             terminal.puts(InfoCmp.Capability.clear_screen);
             terminal.puts(InfoCmp.Capability.cursor_home);
 
-            // Thread demone per gestire le schermate degli eventi in sequenza
+            // Daemon thread to handle events in sequence (In order to show them slightly delayed and one after the other)
             Thread eventDisplayThread = getDisplayThread();
             eventDisplayThread.start();
+
+            // Start listening to the model updates, so we can redraw the board every time something changes
+            client.subscribe(this);
 
             while (true) {
                 if (needsRedraw) {
