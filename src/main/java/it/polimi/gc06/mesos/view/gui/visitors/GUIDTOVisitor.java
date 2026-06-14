@@ -199,7 +199,7 @@ public class GUIDTOVisitor extends DTOVisitor {
         Platform.runLater(() -> {
             guiEventsManager.enqueueEvent(() -> {
                 gameViewController.showPhaseOverlay(dto.getPhase(), () -> {
-                    boardController.handlePhaseChanged();
+                    boardController.handlePhaseChanged(dto.getPhase());
                     guiEventsManager.onAnimationFinished();
                 });
             });
@@ -253,7 +253,7 @@ public class GUIDTOVisitor extends DTOVisitor {
         System.out.println("Leaderboard change!");
         Platform.runLater(() -> {
             guiEventsManager.enqueueEvent(() -> {
-                gameViewController.handleLeaderboardChange(dto);
+                gameViewController.handleLeaderboardChange();
                 guiEventsManager.onAnimationFinished();
             });
         });

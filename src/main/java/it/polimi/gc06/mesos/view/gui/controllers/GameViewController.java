@@ -1,6 +1,5 @@
 package it.polimi.gc06.mesos.view.gui.controllers;
 
-import it.polimi.gc06.mesos.dtos.LeaderboardChangeDTO;
 import it.polimi.gc06.mesos.model.Era;
 import it.polimi.gc06.mesos.view.gui.GameScene;
 import javafx.animation.FadeTransition;
@@ -8,6 +7,7 @@ import javafx.animation.ScaleTransition;
 import javafx.animation.SequentialTransition;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
+import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
@@ -27,6 +27,9 @@ public class GameViewController {
     @FXML
     private HBox overlaysBox;
 
+    @FXML
+    public HBox endGameBlurBox;
+
     private ImageView overlay;
     private SequentialTransition overlaySequence;
 
@@ -42,6 +45,15 @@ public class GameViewController {
 
         if (overlaysBox != null) {
             initOverlays();
+        }
+
+        if (endGameBlurBox != null) {
+            endGameBlurBox.prefWidthProperty().bind(root.widthProperty());
+            endGameBlurBox.prefHeightProperty().bind(root.heightProperty());
+            endGameBlurBox.setStyle("-fx-background-color: rgb(21, 21, 21);"); // temp could make something fancier
+            endGameBlurBox.setEffect(new GaussianBlur());
+            endGameBlurBox.setVisible(false);
+            endGameBlurBox.setMouseTransparent(true);
         }
 
         drawEraBackground();
@@ -145,12 +157,24 @@ public class GameViewController {
         root.setStyle(style);
     }
 
-    public void handleLeaderboardChange(LeaderboardChangeDTO dto) {
+    public void handleLeaderboardChange() {
         changeScene(GameScene.LEADERBOARD.getPath());
     }
 
     public void handleEndGame(Runnable endOfAnimation) {
-        // TODO : overlay for end game events
-        if (endOfAnimation != null) endOfAnimation.run();
+
+        endGameBlurBox.setVisible(true);
+        endGameBlurBox.setMouseTransparent(false);
+        endGameBlurBox.setOpacity(0);
+
+        FadeTransition fadeIn = new FadeTransition(Duration.millis(400), endGameBlurBox);
+        fadeIn.setFromValue(0.0);
+        fadeIn.setToValue(1.0);
+
+        fadeIn.setOnFinished(e -> {
+            if (endOfAnimation != null) endOfAnimation.run();
+        });
+
+        fadeIn.play();
     }
 }

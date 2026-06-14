@@ -2,6 +2,7 @@ package it.polimi.gc06.mesos.view.gui.controllers;
 
 import it.polimi.gc06.mesos.dtos.*;
 import it.polimi.gc06.mesos.model.cards.Card;
+import it.polimi.gc06.mesos.model.gameTurnManager.EventResolutionPhase;
 import it.polimi.gc06.mesos.model.gameTurnManager.PlacingTotemPhase;
 import it.polimi.gc06.mesos.view.gui.elements.*;
 import it.polimi.gc06.mesos.view.gui.helpers.AnimationsManager;
@@ -182,6 +183,8 @@ public class BoardController {
     private String currentActivePlayer = null;
 
     private LayoutConfiguration currentLayout = LayoutConfiguration.CAVE_COLORS;
+
+    private boolean isEndGame = false;
 
     @FXML
     public void initialize() {
@@ -510,20 +513,22 @@ public class BoardController {
     }
 
     public void drawOpponentsStats() {
-        for (PlayerView opponent : smallModel.getOpponents()) {
-            OpponentBox opp = opponentsBoxes.get(opponent.getNickname());
+        if (!isEndGame) {
+            for (PlayerView opponent : smallModel.getOpponents()) {
+                OpponentBox opp = opponentsBoxes.get(opponent.getNickname());
 
-            // we need this to reset the glow effect that tells who is the active player
-            opp.getNicknameText().setEffect(null);
+                // we need this to reset the glow effect that tells who is the active player
+                opp.getNicknameText().setEffect(null);
 
-            opp.getPrestigeTokensText().setText(String.valueOf(opponent.getNumPrestige()));
-            opp.getFoodTokensText().setText(String.valueOf(opponent.getNumFood()));
+                opp.getPrestigeTokensText().setText(String.valueOf(opponent.getNumPrestige()));
+                opp.getFoodTokensText().setText(String.valueOf(opponent.getNumFood()));
 
-            opp.getShamanStarsText().setText(String.valueOf(opponent.getNumShamanStar()));
-            opp.getGatherersText().setText(String.valueOf(opponent.getNumGatherer()));
-            opp.getHuntersText().setText(String.valueOf(opponent.getNumHunter()));
-            opp.getArtistsText().setText(String.valueOf(opponent.getNumArtist()));
-            opp.getBuildersDiscountText().setText(String.valueOf(opponent.getBuildersDiscount()));
+                opp.getShamanStarsText().setText(String.valueOf(opponent.getNumShamanStar()));
+                opp.getGatherersText().setText(String.valueOf(opponent.getNumGatherer()));
+                opp.getHuntersText().setText(String.valueOf(opponent.getNumHunter()));
+                opp.getArtistsText().setText(String.valueOf(opponent.getNumArtist()));
+                opp.getBuildersDiscountText().setText(String.valueOf(opponent.getBuildersDiscount()));
+            }
         }
     }
 
@@ -689,24 +694,26 @@ public class BoardController {
     }
 
     private void drawPlayerStats() {
-        PlayerView p = smallModel.getPlayer();
+        if (!isEndGame) {
+            PlayerView p = smallModel.getPlayer();
 
-        prestigeTokensText.setText(String.valueOf(p.getNumPrestige()));
+            prestigeTokensText.setText(String.valueOf(p.getNumPrestige()));
 
-        if (p.getNumPrestige() < 0) {
-            prestigeTokensImage.setImage(imageFetcher.getNegativePrestigeTokenImage());
-        } else {
-            if (prestigeTokensImage.getImage().equals(imageFetcher.getNegativePrestigeTokenImage())) {
-                prestigeTokensImage.setImage(imageFetcher.getPositivePrestigeTokenImage());
+            if (p.getNumPrestige() < 0) {
+                prestigeTokensImage.setImage(imageFetcher.getNegativePrestigeTokenImage());
+            } else {
+                if (prestigeTokensImage.getImage().equals(imageFetcher.getNegativePrestigeTokenImage())) {
+                    prestigeTokensImage.setImage(imageFetcher.getPositivePrestigeTokenImage());
+                }
             }
-        }
 
-        foodTokensText.setText(String.valueOf(p.getNumFood()));
-        shamanStarsText.setText(String.valueOf(p.getNumShamanStar()));
-        gathererQuantityText.setText(String.valueOf(p.getNumGatherer()));
-        hunterQuantityText.setText(String.valueOf(p.getNumHunter()));
-        artistQuantityText.setText(String.valueOf(p.getNumArtist()));
-        buildersDiscountText.setText(String.valueOf(p.getBuildersDiscount()));
+            foodTokensText.setText(String.valueOf(p.getNumFood()));
+            shamanStarsText.setText(String.valueOf(p.getNumShamanStar()));
+            gathererQuantityText.setText(String.valueOf(p.getNumGatherer()));
+            hunterQuantityText.setText(String.valueOf(p.getNumHunter()));
+            artistQuantityText.setText(String.valueOf(p.getNumArtist()));
+            buildersDiscountText.setText(String.valueOf(p.getBuildersDiscount()));
+        }
     }
 
     private void drawPlayerCards() {
@@ -1355,8 +1362,12 @@ public class BoardController {
         updateAllBoardEffects();
     }
 
-    public void handlePhaseChanged() {
+    public void handlePhaseChanged(String phase) {
         drawPhaseText();
+
+        if (phase.equals(new EventResolutionPhase().toString()) && smallModel.getRound() == 10) {
+            isEndGame = true;
+        }
     }
 
     public void handleEraChanged() {
@@ -1377,10 +1388,10 @@ public class BoardController {
     public void handleEndGame() {
         // TODO : we should add some end game animation here, but for now we just clear the board and show the end game screen
 
-        // topCharactersContainer.getChildren().clear();
-        // bottomCharactersContainer.getChildren().clear();
-        // topBuildingsContainer.getChildren().clear();
-        // bottomBuildingsContainer.getChildren().clear();
+        topCharactersContainer.getChildren().clear();
+        bottomCharactersContainer.getChildren().clear();
+        topBuildingsContainer.getChildren().clear();
+        bottomBuildingsContainer.getChildren().clear();
         // drawBottomRowCards();
     }
 }
