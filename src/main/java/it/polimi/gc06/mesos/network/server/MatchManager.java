@@ -1,6 +1,10 @@
 package it.polimi.gc06.mesos.network.server;
 
+import it.polimi.gc06.mesos.model.GameModel;
+import it.polimi.gc06.mesos.network.server.persistenceService.RestoredMatch;
+
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -16,9 +20,21 @@ import java.util.stream.Collectors;
 public class MatchManager {
 
     // All these members are Thread Safe, since we're working across multiple threads
-    private final Map<Integer, Match> activeMatches = new ConcurrentHashMap<>();
-    private final Set<String> loggedUsers = ConcurrentHashMap.newKeySet();
-    private final static AtomicInteger idGenerator = new AtomicInteger();
+    private final Map<Integer, Match> activeMatches;
+    private final Set<String> loggedUsers;
+    private final AtomicInteger idGenerator;
+
+    public MatchManager(int largestResumedMatchId){
+        activeMatches = new ConcurrentHashMap<>();
+        loggedUsers = ConcurrentHashMap.newKeySet();
+        idGenerator = new AtomicInteger(largestResumedMatchId);
+    }
+
+    public MatchManager(){
+        activeMatches = new ConcurrentHashMap<>();
+        loggedUsers = ConcurrentHashMap.newKeySet();
+        idGenerator = new AtomicInteger();
+    }
 
     /**
      * Attempts to register a user globally on the server.
@@ -54,13 +70,20 @@ public class MatchManager {
      * @return the newly created match instance
      */
     public synchronized Match createMatch(int numOfPlayers) {
-        //check if a match should be removed (memory leak handling)
-        List<Match> removables = activeMatches.values().stream().filter(Match::hasEnded).toList();
-        activeMatches.values().removeAll(removables);
+        removeClosedMatches();
         //creates match
         Match newMatch = new Match(idGenerator.getAndIncrement(), numOfPlayers);
         activeMatches.put(newMatch.getMatchId(), newMatch);
         return newMatch;
+    }
+
+    /**
+     * removes from the list all closed matches
+     */
+    private void removeClosedMatches(){
+        //check if a match should be removed (memory leak handling)
+        List<Match> removables = activeMatches.values().stream().filter(Match::hasEnded).toList();
+        activeMatches.values().removeAll(removables);
     }
 
     /**
@@ -69,12 +92,23 @@ public class MatchManager {
      * @return a formatted string of available matches (e.g. "id:currentPlayers/maxPlayers,...")
      */
     public String getAvailableMatchesString() {
+        removeClosedMatches();
         return activeMatches.values().stream()
-                .filter(m -> !m.isFull() && !m.hasStarted() && m.getMatchNumOfPlayers() > 0)
+                .filter(m -> !m.isFull() && !m.hasStarted())
                 .map(m -> "Match " + m.getMatchId() + ": "
                         + m.getMatchNumOfPlayers() + "/"
                         + m.getMatchMaxPlayers() + " players")
                 .collect(Collectors.joining(","));
+    }
+
+    /**
+     * Returns all started but not ended matches
+     *
+     * @return an {@link Collection} view of active matches.
+     */
+    public synchronized Collection<Match> getActiveMatches() {
+        removeClosedMatches();
+        return activeMatches.values();
     }
 
     /**
@@ -84,6 +118,7 @@ public class MatchManager {
      * @return the match ID, if the player is in any. Otherwise, returns -1.
      */
     public int getPlayersMatchId(String nickname) {
+        removeClosedMatches();
         for (Match match : activeMatches.values()) {
             if (match.hasPlayer(nickname)) {
                 return match.getMatchId();
@@ -95,10 +130,11 @@ public class MatchManager {
     /**
      * Retrieves the ratio of current players to max players for a specific match.
      *
-     * @param matchId The ID of the match we're interested about
+     * @param matchId
      * @return a formatted string "current/max"
      */
     public String getMatchInfo(int matchId) {
+        removeClosedMatches();
         Match match = activeMatches.values().stream().filter(m -> m.getMatchId() == matchId).findFirst().orElse(null);
         if (match == null) return "Match not found";
         return match.getMatchNumOfPlayers() + "/" + match.getMatchMaxPlayers();
@@ -113,13 +149,13 @@ public class MatchManager {
      * @return true if the client successfully joined the match, false otherwise
      */
     public boolean joinMatch(int matchId, VirtualClient client) {
+        removeClosedMatches();
         Match match = activeMatches.values().stream().filter(m -> m.getMatchId() == matchId).findFirst().orElse(null);
         if (match == null) return false;
         synchronized (match) {
             if (match.isFull() || match.hasStarted()) return false;
             try {
-                match.addPlayer(client);
-                return true;
+                return match.addPlayer(client);
             } catch (IOException _) {
                 activeMatches.values().remove(match); //match is not safe
                 match.killMatch();
@@ -127,6 +163,18 @@ public class MatchManager {
                 return false;
             }
         }
+    }
+
+    /**
+     * Create a match identical to the one lost due to server crash.
+     *
+     * @param matchId the previous match id.
+     * @param model the game model representing the previous game state.
+     */
+    public void restoreMatch(int matchId, GameModel model){
+        RestoredMatch match = new RestoredMatch(matchId,model);
+        activeMatches.put(matchId,match);
+        System.out.println("Restored match: "+matchId);
     }
 
     /**
@@ -146,6 +194,7 @@ public class MatchManager {
      * @return if the match has started.
      */
     public boolean hasMatchStarted(int id) {
+        removeClosedMatches();
         return activeMatches.values().stream().filter(m -> m.getMatchId() == id)
                 .allMatch(Match::hasStarted);
     }
@@ -157,6 +206,7 @@ public class MatchManager {
      * @return if the match has ended.
      */
     public boolean hasMatchEnded(int id) {
+        removeClosedMatches();
         return activeMatches.values().stream().filter(m -> m.getMatchId() == id)
                 .allMatch(Match::hasEnded);
     }
@@ -167,7 +217,8 @@ public class MatchManager {
      * @param id the id of {@link Match} that will be checked.
      * @return if the match is running.
      */
-    public boolean isMatchRunning(int id) {
+    public boolean isMatchRunning(int id){
+        removeClosedMatches();
         return hasMatchStarted(id) && !hasMatchEnded(id);
     }
 }

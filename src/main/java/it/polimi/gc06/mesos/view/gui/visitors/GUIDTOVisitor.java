@@ -1,6 +1,9 @@
 package it.polimi.gc06.mesos.view.gui.visitors;
 
 import it.polimi.gc06.mesos.dtos.*;
+import it.polimi.gc06.mesos.view.gui.GUI;
+import it.polimi.gc06.mesos.view.gui.GameScene;
+import it.polimi.gc06.mesos.view.gui.ImageFetcher;
 import it.polimi.gc06.mesos.view.gui.controllers.BoardController;
 import it.polimi.gc06.mesos.view.gui.controllers.GameViewController;
 import it.polimi.gc06.mesos.view.gui.controllers.LobbyGuiController;
@@ -40,6 +43,25 @@ public class GUIDTOVisitor extends DTOVisitor {
         Platform.runLater(() -> {
             lobbyGuiController.refreshLobbyUI();
             lobbyGuiController.checkAndStartGame();
+        });
+    }
+
+    @Override
+    public void visit(GameResumeDTO dto) {
+        System.out.println("Game should be resumed, redirecting to GameView...");
+        Platform.runLater(() -> {
+            try {
+                System.out.println("SmallModel received: "+dto);
+                if (GUI.imageFetcher == null) {
+                    int totalPlayers = GUI.smallModel.getOpponents().size() + 1;
+                    GUI.imageFetcher = new ImageFetcher(totalPlayers);
+                }
+                GUI.changeScene(GameScene.GAME.getPath());
+                boardController.drawEverything();
+            } catch (Exception e) {
+                System.err.println("Error during GameView redirecting:");
+                e.printStackTrace();
+            }
         });
     }
 

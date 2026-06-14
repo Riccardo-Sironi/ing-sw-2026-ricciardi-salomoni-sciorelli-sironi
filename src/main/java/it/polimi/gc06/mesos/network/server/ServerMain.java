@@ -2,8 +2,12 @@ package it.polimi.gc06.mesos.network.server;
 
 import it.polimi.gc06.mesos.network.leaderboard.LeaderboardDAO;
 import it.polimi.gc06.mesos.network.rmi.RMIServerInterfaceImpl;
+import it.polimi.gc06.mesos.network.server.persistenceService.PersistenceService;
 import it.polimi.gc06.mesos.network.socket.TCPServer;
 
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.sql.SQLException;
@@ -16,7 +20,8 @@ import java.util.regex.PatternSyntaxException;
  */
 public class ServerMain {
 
-    private static MatchManager sharedManager = new MatchManager();
+    private static MatchManager sharedManager;
+    public static final Path appDirectory = Paths.get(System.getProperty("user.home"),"MesosApp");
 
     /**
      * Main method to start the server.
@@ -65,12 +70,28 @@ public class ServerMain {
                     System.out.println("Connected to db correctly.");
                 } catch (SQLException e) {
                     System.err.println("Connection to db failed.");
+                    e.printStackTrace();
                 }
             } else if (dbLocation != null || dbName != null) {
                 System.err.println("Cannot setup db name or location if correct user has not been given.");
             }
 
             System.out.println("Server started");
+
+            //tries to restore matches
+            sharedManager = new MatchManager();
+            try{
+                PersistenceService persistenceService = new PersistenceService();
+                sharedManager = new MatchManager(persistenceService.getBiggestBackupMatchId()); //overwrites previous instance
+                persistenceService.setMatchManager(sharedManager);
+                persistenceService.restoreMatches();
+                new Thread(persistenceService).start();
+                System.out.println("Persistence service started...");
+            }catch (IOException e){
+                System.err.println("Failed to restore matches due to error: ");
+                e.printStackTrace();
+            }
+
 
             //tries to start RMI protocol
             if (ipAddress != null) {

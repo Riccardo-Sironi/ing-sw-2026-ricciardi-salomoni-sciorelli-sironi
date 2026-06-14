@@ -134,6 +134,7 @@ public class TCPClientReceiver implements Runnable {
                             out.flush();
                         }
                     } else if (message.equals("AVAILABLE")) {
+                        System.out.println("[TCP] Received an available matches request.");
                         synchronized (out) {
                             out.writeObject(sharedManager.getAvailableMatchesString());
                             out.flush();

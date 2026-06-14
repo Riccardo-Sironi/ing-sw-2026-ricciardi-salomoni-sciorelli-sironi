@@ -182,6 +182,7 @@ public class LoginController {
         GUI.client = new Client();
         try {
             GUI.client.connect("RMI", "localhost", 1099);
+            GUI.subscribeGUI();
         } catch (Exception e) {
             System.err.println("Failed to connect to server: " + e.getMessage());
         }

@@ -20,7 +20,7 @@ import java.util.*;
 
 public class ModelInstancesManager {
 
-    private static final String JSON_PATH = "/it/polimi/gc06/mesos/jsons/";
+    public static final String JSON_PATH = "/it/polimi/gc06/mesos/jsons/";
     private final DTONotifier notifier;
 
     public ModelInstancesManager(DTONotifier notifier){

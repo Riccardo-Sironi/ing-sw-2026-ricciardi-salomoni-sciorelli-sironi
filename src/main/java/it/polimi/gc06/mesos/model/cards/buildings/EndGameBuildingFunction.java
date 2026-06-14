@@ -83,16 +83,16 @@ public enum EndGameBuildingFunction implements ToIntFunction<Player> {
         }
     },
 
-    /**
-     * this method is used to calculate the prestige gained by the card at the end of the game,
-     * based on the number of sets ( = having at least one card of each character type)
-     * in the player's character deck multiplied by 6.
-     *
-     * @param player the function argument
-     * @return the prestige gained by the card at the end of the game,
-     * calculated as 6 times the number of sets in the player's character deck.
-     */
     COUNT_SETS{
+        /**
+         * this method is used to calculate the prestige gained by the card at the end of the game,
+         * based on the number of sets ( = having at least one card of each character type)
+         * in the player's character deck multiplied by 6.
+         *
+         * @param player the function argument
+         * @return the prestige gained by the card at the end of the game,
+         * calculated as 6 times the number of sets in the player's character deck.
+         */
         @Override
         public int applyAsInt(Player player) {
             return player.getCharacterDeck().values().stream().mapToInt(List::size).min().orElse(0) *6;

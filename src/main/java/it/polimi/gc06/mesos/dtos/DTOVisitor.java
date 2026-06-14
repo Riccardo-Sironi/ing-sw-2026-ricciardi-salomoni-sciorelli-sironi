@@ -189,4 +189,11 @@ public abstract class DTOVisitor {
     public void visit(EndGameDTO dto) {
         visit((SmallModelEditor) dto);
     }
+
+    /**
+     * Overridable hook for generic DTO patches.
+     *
+     * @param dto the patch getting visited.
+     */
+    public void visit(GameResumeDTO dto) {visit((SmallModelEditor) dto);}
 }

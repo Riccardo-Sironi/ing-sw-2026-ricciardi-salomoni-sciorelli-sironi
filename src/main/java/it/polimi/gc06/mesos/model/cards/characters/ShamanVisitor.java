@@ -21,7 +21,7 @@ public class ShamanVisitor extends CardVisitor {
      */
     @Override
     public void visit(ShamanCard card) {
-        player.increaseShamanStars(card.getStars());
+        player.increaseShamanStars(card.getnStars());
     }
 
 }

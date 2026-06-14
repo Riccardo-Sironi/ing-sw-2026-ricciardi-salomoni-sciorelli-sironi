@@ -91,6 +91,17 @@ public class GUI extends Application implements View, ModelListener {
 
     @Override
     public void update(SmallModelEditor dto) {
-        Platform.runLater(() -> dto.accept(guidtovisitor));
+        Platform.runLater(() -> {
+            try {
+                if (guidtovisitor == null) {
+                    System.err.println("Null GUI DTOVisitor.");
+                    return;
+                }
+                dto.accept(guidtovisitor);
+            } catch (Throwable t) {
+                System.err.println("Fatal error during DTO acceptance:");
+                t.printStackTrace();
+            }
+        });
     }
 }

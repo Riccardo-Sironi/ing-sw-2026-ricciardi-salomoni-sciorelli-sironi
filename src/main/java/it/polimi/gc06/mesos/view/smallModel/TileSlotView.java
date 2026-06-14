@@ -2,12 +2,14 @@ package it.polimi.gc06.mesos.view.smallModel;
 
 import it.polimi.gc06.mesos.model.gameBoard.TileEffect;
 
+import java.io.Serializable;
+
 /**
  * A lightweight client-side representation of a slot on the game board's offer track.
  * This class ties together an interactive {@link TileEffect tile effect} and the presence of a specific
  * player (typically represented as a placing totem) occupying it.
  */
-public class TileSlotView {
+public class TileSlotView implements Serializable {
     private PlayerView player;
     private TileEffect tileEffect;
 
@@ -90,5 +92,17 @@ public class TileSlotView {
      */
     public boolean isEmpty() {
         return player == null;
+    }
+
+    /**
+     * for debugging.
+     */
+    @Override
+    public String toString() {
+        return "TileSlotView{" +
+                "player=" + (player != null ? player.getNickname() : "null") +
+                ", tileEffect=" + tileEffect +
+                ", isEmpty=" + isEmpty() +
+                '}';
     }
 }

@@ -36,7 +36,7 @@ public class Board implements DrawSubject {
 
     private final ArrayList<DrawObserver> observers;
 
-    private final DTONotifier notifier;
+    private DTONotifier notifier;
 
     public Board(TurnOrderTile turnOrderTile, List<TileSlot> offerTrack, DTONotifier notifier) {
 
@@ -700,5 +700,39 @@ public class Board implements DrawSubject {
     @Override
     public void notifyObserverBuildings(Player player) {
         observers.forEach(observer -> observer.update(player));
+    }
+
+    /**
+     * Sets the notifier. Is used when restoring game.
+     *
+     * @param notifier the notifier.
+     */
+    public void setNotifier(DTONotifier notifier) {
+        this.notifier = notifier;
+    }
+
+    /**
+     * Forces the specified state onto the board. Used to recover games on server crash.
+     */
+    public void forceState(
+            Era currentEra, boolean isEndGame,
+            List<TribeCard> topRow, List<TribeCard> bottomRow,
+            List<BuildingCard> topBuildings, List<BuildingCard> bottomBuildings,
+            Map<Era, List<BuildingCard>> buildingsDecks
+    ) {
+        this.currentEra = currentEra;
+        this.isEndGame = isEndGame;
+
+        this.topRow.clear();
+        this.topRow.addAll(topRow);
+        this.bottomRow.clear();
+        this.bottomRow.addAll(bottomRow);
+        this.topBuildings.clear();
+        this.topBuildings.addAll(topBuildings);
+        this.bottomBuildings.clear();
+        this.bottomBuildings.addAll(bottomBuildings);
+
+        this.buildingsDecks.clear();
+        buildingsDecks.forEach((era, list) -> this.buildingsDecks.put(era, new ArrayList<>(list)));
     }
 }

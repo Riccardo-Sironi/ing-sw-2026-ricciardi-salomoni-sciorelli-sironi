@@ -5,17 +5,16 @@ import it.polimi.gc06.mesos.model.Player;
 import it.polimi.gc06.mesos.model.cards.CardVisitor;
 
 import java.util.Objects;
-import java.util.function.ToIntFunction;
 
 public class EndGameBuildingCard extends BuildingCard {
 
-    private ToIntFunction<Player> prestigeEffect;
+    private EndGameBuildingFunction prestigeEffect;
 
     /**
      * @param prestigeEffect please use standard function in enum EndGameBuildingFunction
      *                       For testing purpose only!
      */
-    public EndGameBuildingCard(Era era, int prestigeGain, int foodCost, ToIntFunction<Player> prestigeEffect) {
+    public EndGameBuildingCard(Era era, int prestigeGain, int foodCost, EndGameBuildingFunction prestigeEffect) {
         super(era, prestigeGain, foodCost);
         this.prestigeEffect = prestigeEffect;
     }
@@ -49,6 +48,15 @@ public class EndGameBuildingCard extends BuildingCard {
         if (prestigeEffect == null) throw new IllegalArgumentException();
         if (this.prestigeEffect != null) throw new IllegalStateException("Setter has been already called");
         this.prestigeEffect = prestigeEffect;
+    }
+
+    /**
+     * PrestigeEffect getter. This method used by Jackson to save the prestige effect.
+     *
+     * @return the prestige effect.
+     */
+    public EndGameBuildingFunction getPrestigeEffect(){
+        return prestigeEffect;
     }
 
     /**

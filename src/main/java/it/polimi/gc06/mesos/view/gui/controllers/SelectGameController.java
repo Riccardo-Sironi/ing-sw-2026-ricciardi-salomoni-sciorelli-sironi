@@ -244,7 +244,6 @@ public class SelectGameController {
     }
 
     private void proceedToLobby() {
-        GUI.subscribeGUI();
         Platform.runLater(() -> {
             try {
                 GUI.changeScene(GameScene.LOBBY.getPath());

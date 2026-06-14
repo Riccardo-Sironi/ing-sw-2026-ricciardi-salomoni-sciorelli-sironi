@@ -1,15 +1,22 @@
 package it.polimi.gc06.mesos.network.server;
 
 import it.polimi.gc06.mesos.controller.GameController;
+import it.polimi.gc06.mesos.dtos.snapshots.*;
 import it.polimi.gc06.mesos.controller.commands.ControllerCommand;
 import it.polimi.gc06.mesos.gameExceptions.IllegalGameActionException;
 import it.polimi.gc06.mesos.model.DTONotifier;
 import it.polimi.gc06.mesos.model.GameModel;
 import it.polimi.gc06.mesos.model.InstancesManager.ModelInstancesManager;
+import it.polimi.gc06.mesos.model.Player;
+import it.polimi.gc06.mesos.model.gameBoard.Board;
+import it.polimi.gc06.mesos.model.gameTurnManager.TurnManager;
 import it.polimi.gc06.mesos.network.leaderboard.LeaderboardDAO;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.stream.Collectors;
@@ -20,17 +27,19 @@ import java.util.stream.Collectors;
  * coordinating the players' action queue and running the main game loop until a winner emerges or the match is aborted.
  */
 public class Match {
-    private final BlockingQueue<VirtualClient> players;
-    private final BlockingQueue<Thread> playersThreads;
+    protected final BlockingQueue<VirtualClient> players;
+    protected final BlockingQueue<Thread> playersThreads;
 
-    private final BlockingQueue<ControllerCommand> actionQueue;
-    private Thread matchExecutorThread;
+    protected final BlockingQueue<ControllerCommand> actionQueue;
+    protected Thread matchExecutorThread;
 
     private final int matchId;
     private final int matchMaxPlayers;
-    private volatile boolean hasStarted;
+    protected volatile boolean hasStarted;
     private volatile boolean hasBeenForcefullyEnded;
-    private GameController controller;
+    protected GameController controller;
+
+    private GameModel model;
 
     /**
      * Initializes a new match waiting for players to join.
@@ -46,6 +55,7 @@ public class Match {
         hasStarted = false;
         hasBeenForcefullyEnded = false;
         controller = null;
+        model = null;
 
         actionQueue = new LinkedBlockingQueue<>();
 
@@ -57,10 +67,10 @@ public class Match {
      *
      * @throws IOException if there's an error during the creation of the match components
      */
-    private synchronized void start() throws IOException {
-        ArrayList<String> playerNames = players.stream().map(VirtualClient::getNickname).collect(Collectors.toCollection(ArrayList::new));
+    protected synchronized void start() throws IOException {
+        ArrayList<String> playerNames = new ArrayList<>(players.stream().map(VirtualClient::getNickname).collect(Collectors.toCollection(ArrayList::new)));
         DTONotifier notifier = new DTONotifier();
-        GameModel model = new ModelInstancesManager(notifier).createGame(playerNames);
+        model = new ModelInstancesManager(notifier).createGame(playerNames);
 
         players.forEach(c -> c.subscribeToNotifier(notifier)); //adds all listeners
         model.startGame();
@@ -93,7 +103,7 @@ public class Match {
      * and handles any exceptions.
      * Automatically attempts to save the leaderboard whenever the game reaches its natural end.
      */
-    private void matchLoop() {
+    protected void matchLoop() {
         while (!hasEnded()) {
             try {
                 ControllerCommand action = actionQueue.take();
@@ -145,11 +155,14 @@ public class Match {
      * @param c the client trying to join
      * @throws IllegalStateException if the match is full or has already started
      * @throws IOException           if there is an issue establishing the initial game model for the clients
+     *
+     * @return always true
      */
-    public synchronized void addPlayer(VirtualClient c) throws IllegalStateException, IOException {
+    public synchronized boolean addPlayer(VirtualClient c) throws IllegalStateException, IOException {
         if (isFull() || hasStarted) throw new IllegalStateException();
         players.add(c);
         if (isFull()) start();
+        return true;
     }
 
     /**
@@ -218,5 +231,15 @@ public class Match {
      */
     public boolean hasEnded() {
         return hasBeenForcefullyEnded || (controller != null && controller.isGameFinished());
+    }
+
+    /**
+     * Returns the model state as a small record, can be used to save match state
+     *
+     * @return the gameSnapshot
+     */
+    public GameSnapshot getSnapshot(){
+        if(model == null) return null;
+        return model.getLatestSnapshot();
     }
 }

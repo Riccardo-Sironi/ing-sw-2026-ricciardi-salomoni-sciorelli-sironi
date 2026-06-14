@@ -18,7 +18,7 @@ public class Player {
     private int shamanStars;
 
     private transient GameInfo gameInfo; // GameInfo must be transient in order to avoid serialization issues.
-    private final transient DTONotifier notifier;
+    private transient DTONotifier notifier;
 
     private final EnumMap<CharacterType, ArrayList<CharacterCard>> characterDeck;
     private final ArrayList<BuildingCard> buildingDeck;
@@ -635,5 +635,42 @@ public class Player {
             if (icon != null) iconSet.add(icon);
         }
         return iconSet;
+    }
+
+    public void setNotifier(DTONotifier notifier) {
+        this.notifier = notifier;
+    }
+
+    /**
+     * Forces the specified state onto the player. Used to recover games on server crash.
+     */
+    public void forceState(
+            int prestigeTokens, int foodTokens, int shamanStars,
+            int topDrawNum, int bottomDrawNum,
+            Map<CharacterType, List<CharacterCard>> savedCharacterDeck,
+            List<BuildingCard> savedBuildingDeck,
+            Map<CharacterType, Integer> savedCharactersSets,
+            Map<InventionIcon, Integer> savedInventorPairs
+    ) {
+        this.prestigeTokens = prestigeTokens;
+        this.foodTokens = foodTokens;
+        this.shamanStars = shamanStars;
+        this.topDrawNum = topDrawNum;
+        this.bottomDrawNum = bottomDrawNum;
+
+        this.characterDeck.clear();
+        savedCharacterDeck.forEach((type, cards) -> this.characterDeck.put(type, new ArrayList<>(cards)));
+
+        this.buildingDeck.clear();
+        this.buildingDeck.addAll(savedBuildingDeck);
+
+        if (savedCharactersSets != null) {
+            this.charactersSets = new EnumMap<>(CharacterType.class);
+            this.charactersSets.putAll(savedCharactersSets);
+        }
+        if (savedInventorPairs != null) {
+            this.inventorPairs = new EnumMap<>(InventionIcon.class);
+            this.inventorPairs.putAll(savedInventorPairs);
+        }
     }
 }

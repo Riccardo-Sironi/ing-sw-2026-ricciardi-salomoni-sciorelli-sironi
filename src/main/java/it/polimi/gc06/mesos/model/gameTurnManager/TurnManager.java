@@ -18,7 +18,7 @@ public class TurnManager {
     private int activePlayerIndex;
     private final ModifierBuildingCard pickFromTopCard;
     private GameModel gameModel;
-    private final DTONotifier notifier;
+    private DTONotifier notifier;
 
     public TurnManager(List<Player> playersOrder, ModifierBuildingsRegistry registry, DTONotifier notifier) {
         this.playersOrder = playersOrder;
@@ -35,8 +35,6 @@ public class TurnManager {
      *
      */
     public void setPhase(Phase phase) {
-
-        // TODO: Add throw
         this.phase = phase;
     }
 
@@ -47,6 +45,7 @@ public class TurnManager {
     public void setRound(int round) {
         notifier.notifyChange(new RoundChangeDTO(round));
         this.round = round;
+        gameModel.saveSnapshot();
     }
 
     public DTONotifier getNotifier() {
@@ -60,6 +59,15 @@ public class TurnManager {
      */
     public void setActivePlayerIndex(int activePlayerIndex) {
         this.activePlayerIndex = activePlayerIndex;
+    }
+
+    /**
+     * activePlayerIndex getter.
+     *
+     * @return the activePlayerIndex.
+     */
+    public int getActivePlayerIndex() {
+        return activePlayerIndex;
     }
 
     /**
@@ -121,5 +129,23 @@ public class TurnManager {
      */
     public void setGameModel(GameModel model) {
         this.gameModel = model;
+    }
+
+    /**
+     * Sets the notifier. Is used when restoring game.
+     *
+     * @param notifier the notifier.
+     */
+    public void setNotifier(DTONotifier notifier) {
+        this.notifier = notifier;
+    }
+
+    /**
+     * Forces the specified state onto the turnManager. Used to recover games on server crash.
+     */
+    public void forceState(int round, int activePlayerIndex, Phase phase) {
+        this.round = round;
+        this.activePlayerIndex = activePlayerIndex;
+        this.phase = phase;
     }
 }

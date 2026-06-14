@@ -103,7 +103,7 @@ public class ImageFetcher {
             if (bgUrl != null) {
                 eraBackgroundsMap.put(era, bgUrl.toExternalForm());
             } else {
-                System.err.println("Immagine di background non trovata: " + bgPath);
+                System.err.println("Background image not found: " + bgPath);
             }
         }
 

@@ -81,7 +81,7 @@ public class TuiCardRendererVisitor extends CardVisitor implements TuiRenderer<C
     @Override
     public void visit(ShamanCard card) {
         eraStr = card.getEra().name().replace("ERA_", "");
-        topRight = Style.YELLOW + "★: " + card.getStars() + Style.RESET;
+        topRight = Style.YELLOW + "★: " + card.getnStars() + Style.RESET;
         center = "[S]";
     }
 

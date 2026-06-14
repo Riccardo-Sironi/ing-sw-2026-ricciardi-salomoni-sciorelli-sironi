@@ -37,7 +37,7 @@ class ShamanCardTest {
         ShamanCard card = new ShamanCard(expectedEra, expectedStars);
         assertNotNull(card);
         assertEquals(expectedEra, card.getEra());
-        assertEquals(expectedStars, card.getStars());
+        assertEquals(expectedStars, card.getnStars());
     }
 
     @Test

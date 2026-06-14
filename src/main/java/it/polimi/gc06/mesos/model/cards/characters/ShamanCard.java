@@ -35,7 +35,7 @@ public class ShamanCard extends CharacterCard {
      *
      * @return the integer number of stars of the shaman card
      */
-    public int getStars() {
+    public int getnStars() {
         return nStars;
     }
 

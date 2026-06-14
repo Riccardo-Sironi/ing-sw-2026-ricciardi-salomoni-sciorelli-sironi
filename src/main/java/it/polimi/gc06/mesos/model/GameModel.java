@@ -1,9 +1,12 @@
 package it.polimi.gc06.mesos.model;
 
 import it.polimi.gc06.mesos.dtos.*;
+import it.polimi.gc06.mesos.dtos.snapshots.*;
+import it.polimi.gc06.mesos.gameExceptions.IllegalGameActionException;
 import it.polimi.gc06.mesos.model.cards.Card;
 import it.polimi.gc06.mesos.model.cards.TribeCard;
 import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
+import it.polimi.gc06.mesos.model.cards.characters.CharacterType;
 import it.polimi.gc06.mesos.model.cards.events.EventCard;
 import it.polimi.gc06.mesos.model.gameBoard.Board;
 import it.polimi.gc06.mesos.model.gameBoard.TileEffect;
@@ -12,6 +15,9 @@ import it.polimi.gc06.mesos.model.gameTurnManager.DrawObserver;
 import it.polimi.gc06.mesos.model.gameTurnManager.TurnManager;
 import it.polimi.gc06.mesos.network.leaderboard.Leaderboard;
 import it.polimi.gc06.mesos.network.leaderboard.Score;
+import it.polimi.gc06.mesos.view.smallModel.PlayerView;
+import it.polimi.gc06.mesos.view.smallModel.SmallModel;
+import it.polimi.gc06.mesos.view.smallModel.TileSlotView;
 
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -25,8 +31,9 @@ public class GameModel implements GameInfo {
     private final EventCard[] finalEventCards;
     private final ArrayList<Player> players;
     private final TurnManager turnManager;
-    private final DTONotifier notifier;
+    private DTONotifier notifier;
     private Timestamp endTimestamp;
+    private GameSnapshot latestSnapshot;
 
     public GameModel(Board board, EnumMap<Era, ArrayList<BuildingCard>> buildingCardsDecks,
                      EnumMap<Era, ArrayList<TribeCard>> tribeCardsDeck, EventCard[] finalEventCards,
@@ -39,6 +46,7 @@ public class GameModel implements GameInfo {
         this.turnManager = turnManager;
         this.notifier = notifier;
         this.endTimestamp = null;
+        this.latestSnapshot = null;
     }
 
     /**
@@ -87,6 +95,8 @@ public class GameModel implements GameInfo {
         for (Player p : players) {
             notifier.notifyChangeToPlayer(p.getNickname(), getStartingStateAsDTO(p.getNickname()));
         }
+        //saves game snapshot
+        saveSnapshot();
     }
 
     public SmallModelEditor getStartingStateAsDTO(String nickname) {
@@ -304,5 +314,140 @@ public class GameModel implements GameInfo {
      */
     public boolean isFinished() {
         return endTimestamp != null;
+    }
+
+    /**
+     * Sets the notifier of the model and each subcomponent. Is used when restoring game.
+     *
+     * @param notifier the notifier.
+     */
+    public void setNotifier(DTONotifier notifier) {
+        this.notifier = notifier;
+        board.setNotifier(notifier);
+        turnManager.setNotifier(notifier);
+        players.forEach(p -> p.setNotifier(notifier));
+    }
+
+    /**
+     * Sends resume DTO to all clients (when a match is restored and the game should resume where left).
+     *
+     * @throws IllegalStateException if model configuration are inconsistent:
+     * 1. there are player in the turn orderTile not present in players board list.
+     */
+    public void sendResumeInfo() throws IllegalStateException{
+
+        List<SmallModel> models = new ArrayList<>();
+
+        for(Player p: getPlayers()){
+            SmallModel model = new SmallModel(p.getNickname());
+            //setup model
+            model.setTribeDeckSize(getTribeCardsDeck().values().stream().mapToInt(ArrayList::size).sum() + 2);
+            model.setEra(board.getCurrentEra());
+            model.setRound(turnManager.getRound());
+            model.setPhase(turnManager.getPhase().toString());
+            model.getTopRow().addAll(board.getTopRow());
+            model.getBottomRow().addAll(board.getBottomRow());
+            model.getTopBuildings().addAll(board.getTopBuildings());
+            model.getBottomBuildings().addAll(board.getBottomBuildings());
+            //setup player
+            model.setPlayer(p.getNickname(),p.getPlayerColor());
+            model.setBottomDrawNum(p.getBottomDrawNum());
+            model.setTopDrawNum(p.getTopDrawNum());
+            model.setBottomDrawNum(p.getBottomDrawNum());
+            model.getPlayer().setNumFood(p.getFoodTokens());
+            model.getPlayer().setNumPrestige(p.getPrestigeTokens());
+            p.getCharacterDeck().forEach((t,l)-> model.getPlayer().getCharacters().addAll(l));
+            model.getPlayer().getBuildings().addAll(p.getBuildingCards());
+            model.setActive(turnManager.getActivePlayer().getNickname().equals(p.getNickname()));
+            boolean canSkip = false;
+            try{
+                canSkip = turnManager.getPhase().checkForRightToSkip(p,board);
+            }catch(IllegalGameActionException e) {}
+            model.setCanSkip(canSkip);
+            //player recap info
+            model.getPlayer().setShamanStar(p.getShamanStars());
+            model.getPlayer().setBuildersDiscount(p.getBuildersDiscount());
+            model.getPlayer().setArtistNumber(p.getArtistsCounter());
+            model.getPlayer().setBuilderNumber(p.getCharacterDeck().get(CharacterType.BUILDER).size());
+            model.getPlayer().setGathererNumber(p.getGatherersCounter());
+            model.getPlayer().setHunterNumber(p.getHuntersCounter());
+            model.getPlayer().setInventorNumber(p.getInventorsCounter());
+            model.getPlayer().setShamanNumber(p.getCharacterDeck().get(CharacterType.SHAMAN).size());
+            model.getPlayer().setCollectedIcons(p.getInventorIcons());
+            models.add(model);
+        }
+        //setup turn order tile
+        for(TileSlot tile : board.getTurnOrderTile().slots()){
+            if(tile.getPlayer() == null) models.forEach(m -> m.getTurnOrderTile().add(null));
+            else{
+                PlayerView pv = models.stream().map(SmallModel::getPlayer)
+                        .filter(p -> p.getNickname().equals(tile.getPlayer().getNickname())).findFirst()
+                        .orElseThrow(IllegalStateException::new);
+                models.forEach(m -> m.getTurnOrderTile().add(pv));
+            }
+        }
+        //setup offer track
+        for(TileSlot tile : board.getOfferTrack()){
+            TileSlotView tv = new TileSlotView(tile.getTileEffect());
+            if(tile.getPlayer() != null){
+                PlayerView pv = models.stream().map(SmallModel::getPlayer)
+                        .filter(p -> p.getNickname().equals(tile.getPlayer().getNickname())).findFirst()
+                        .orElseThrow(IllegalStateException::new);
+                tv.setPlayer(pv);
+            }
+            models.forEach(m -> m.getOfferTrack().add(tv));
+        }
+        //setup opponents
+        for(SmallModel m : models){
+            List<PlayerView> ops = models.stream().map(SmallModel::getPlayer)
+                    .filter(p -> !p.getNickname().equals(m.getPlayer().getNickname()))
+                    .toList();
+            m.getOpponents().clear();
+            m.getOpponents().addAll(ops);
+        }
+        models.forEach(m -> notifier.notifyChangeToPlayer(m.getPlayer().getNickname(),
+                new GameResumeDTO(m)));
+    }
+
+    public synchronized GameSnapshot getLatestSnapshot() {
+        return this.latestSnapshot;
+    }
+
+    public synchronized void saveSnapshot() {
+        //players mapping
+        List<PlayerSnapshot> playerSnapshots = getPlayers().stream().map(p -> new PlayerSnapshot(
+                p.getNickname(), p.getPlayerColor(), p.getPrestigeTokens(), p.getFoodTokens(), p.getShamanStars(),
+                p.getTopDrawNum(), p.getBottomDrawNum(), new HashMap<>(p.getCharacterDeck()), new ArrayList<>(p.getBuildingCards()),
+                p.hasSetBuildingCard() ? p.getCharactersSets() : null,
+                p.hasPairBuildingCard() ? p.getInventorPairs() : null
+        )).toList();
+
+        //board mapping
+        List<TileSlotSnapshot> turnOrderSlots = board.getTurnOrderTile().slots().stream()
+                .map(slot -> new TileSlotSnapshot(slot.getPlayer() != null ? slot.getPlayer().getNickname() : null, slot.getTileEffect()))
+                .toList();
+
+        List<TileSlotSnapshot> offerTrackSlots = board.getOfferTrack().stream()
+                .map(slot -> new TileSlotSnapshot(slot.getPlayer() != null ? slot.getPlayer().getNickname() : null, slot.getTileEffect()))
+                .toList();
+
+        BoardSnapshot boardSnapshot = new BoardSnapshot(
+                board.getCurrentEra(), board.isEndGame(),
+                new ArrayList<>(board.getTopRow()), new ArrayList<>(board.getBottomRow()),
+                new ArrayList<>(board.getTopBuildings()), new ArrayList<>(board.getBottomBuildings()),
+                new HashMap<>(board.getBuildingsDecks()), turnOrderSlots, offerTrackSlots
+        );
+
+        //Turn manager mapping
+        TurnManagerSnapshot tmSnapshot = new TurnManagerSnapshot(
+                turnManager.getRound(), turnManager.getActivePlayerIndex(),
+                turnManager.getPlayersOrder().stream().map(Player::getNickname).toList()
+        );
+
+        //snapshot instance creation and saving
+        latestSnapshot = new GameSnapshot(
+                playerSnapshots, boardSnapshot, tmSnapshot, new HashMap<>(getTribeCardsDeck()),
+                Arrays.asList(getFinalEventCards())
+        );
     }
 }

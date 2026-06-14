@@ -7,6 +7,7 @@ import it.polimi.gc06.mesos.model.Era;
 import it.polimi.gc06.mesos.model.cards.Card;
 import it.polimi.gc06.mesos.network.leaderboard.Score;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -17,7 +18,7 @@ import java.util.List;
  * the offer track, the player's info, and their opponents' info.
  * This model is updated dynamically by receiving DTO changes from the server.
  */
-public class SmallModel {
+public class SmallModel implements Serializable {
 
     //cards
     private final ArrayList<Card> topRow;
@@ -40,11 +41,11 @@ public class SmallModel {
     //context
     private PlayerView player;
     private final List<PlayerView> opponents; //is immutable
-    private final ArrayList<Score> leaderboard;
+    transient private final ArrayList<Score> leaderboard;
 
     private int maxPlayers;
 
-    private ModelListener listener;
+    transient private ModelListener listener;
 
     private String systemMessage;
 
@@ -75,6 +76,50 @@ public class SmallModel {
         this.listener = null;
         this.maxPlayers = -1;
         this.systemMessage = "";
+    }
+
+    /**
+     * Factory to completely copy a small model reference.
+     *
+     * @param other the small model reference
+     */
+    public void copy(SmallModel other) {
+        topRow.clear();
+        topRow.addAll(other.topRow);
+        bottomRow.clear();
+        bottomRow.addAll(other.bottomRow);
+        topBuildings.clear();
+        topBuildings.addAll(other.topBuildings);
+        bottomBuildings.clear();
+        bottomBuildings.addAll(other.bottomBuildings);
+        turnOrderTile.clear();
+        turnOrderTile.addAll(other.turnOrderTile);
+        offerTrack.clear();
+        offerTrack.addAll(other.offerTrack);
+        if(other.era != null) this.era = other.era;
+        if(other.phase != null) this.phase = other.phase;
+        this.tribeDeckSize = other.tribeDeckSize;
+        this.round = other.round;
+        this.topDrawNum = other.topDrawNum;
+        this.bottomDrawNum = other.bottomDrawNum;
+        this.isActive = other.isActive;
+        this.canSkip = other.canSkip;
+        this.maxPlayers = other.maxPlayers;
+        this.player = null;
+        if(other.player != null){
+            PlayerView pv = new PlayerView(other.player.getNickname(),other.getPlayer().getColor());
+            pv.copy(other.player);
+            this.player = pv;
+        }
+        opponents.clear();
+        for (PlayerView op : other.opponents) {
+            PlayerView pv = new PlayerView(op.getNickname(),op.getColor());
+            pv.copy(op);
+            this.opponents.add(pv);
+        }
+        this.leaderboard.clear();
+        if(other.leaderboard != null) this.leaderboard.addAll(other.leaderboard);
+        this.listener = null;
     }
 
     /**
@@ -400,5 +445,31 @@ public class SmallModel {
      */
     public void setMaxPlayers(int maxPlayers) {
         this.maxPlayers = maxPlayers;
+    }
+
+    /**
+     * For debugging.
+     */
+    @Override
+    public String toString() {
+        return "SmallModel{" +
+                "era=" + era +
+                ", phase='" + phase + '\'' +
+                ", tribeDeckSize=" + tribeDeckSize + ",\n" +
+                ", round=" + round + ",\n" +
+                ", topDrawNum=" + topDrawNum + ",\n" +
+                ", bottomDrawNum=" + bottomDrawNum + ",\n" +
+                ", isActive=" + isActive + ",\n" +
+                ", canSkip=" + canSkip + ",\n" +
+                ", maxPlayers=" + maxPlayers + ",\n" +
+                ", player=" + player + ",\n" +
+                ", opponents=" + opponents.toString() + ",\n" +
+                "  topRow=" + topRow.toString() + ",\n" +
+                "  bottomRow=" + bottomRow.toString() + ",\n" +
+                ", topBuildings=" + topBuildings.toString() + ",\n" +
+                ", bottomBuildings=" + bottomBuildings.toString() + ",\n" +
+                ", turnOrderTile=" + turnOrderTile.toString() + ",\n" +
+                ", offerTrack=" + offerTrack.toString() + "\n" +
+                '}';
     }
 }

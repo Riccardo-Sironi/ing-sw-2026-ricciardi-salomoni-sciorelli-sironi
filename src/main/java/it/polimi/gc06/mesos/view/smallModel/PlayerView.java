@@ -5,6 +5,7 @@ import it.polimi.gc06.mesos.model.cards.Card;
 import it.polimi.gc06.mesos.model.cards.characters.CharacterType;
 import it.polimi.gc06.mesos.model.cards.characters.InventionIcon;
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -12,7 +13,7 @@ import java.util.*;
  * It contains the nickname, assigned color, current resources, and owned cards.
  * Provides helper methods to compute aggregate stats like characters held, discounts, and points.
  */
-public class PlayerView {
+public class PlayerView implements Serializable {
 
     //state
     private String nickname;
@@ -44,6 +45,27 @@ public class PlayerView {
         this.tribeRecap = new HashMap<>();
         Arrays.asList(CharacterType.values()).forEach(t -> tribeRecap.put(t, 0)); //sets all characters recap to zero
         this.collectedIcons = new HashSet<>();
+    }
+
+    /**
+     * Factory to completely copy a player view reference.
+     *
+     * @param other the player view reference
+     */
+    public void copy(PlayerView other) {
+        if (other == null) return;
+        this.numFood = other.numFood;
+        this.numPrestige = other.numPrestige;
+        this.characters.clear();
+        this.characters.addAll(other.characters);
+        this.buildings.clear();
+        this.buildings.addAll(other.buildings);
+        this.buildersDiscount = other.buildersDiscount;
+        this.shamanStar = other.shamanStar;
+        this.tribeRecap.clear();
+        this.tribeRecap.putAll(other.tribeRecap);
+        this.collectedIcons.clear();
+        this.collectedIcons.addAll(other.collectedIcons);
     }
 
     /**
@@ -242,5 +264,24 @@ public class PlayerView {
 
     public void setShamanStar(int shamanStar) {
         this.shamanStar = shamanStar;
+    }
+
+    /**
+     * For debugging
+     */
+    @Override
+    public String toString() {
+        return "PlayerView{" +
+                "nickname='" + nickname + '\'' +
+                ", color=" + color +
+                ", numFood=" + numFood +
+                ", numPrestige=" + numPrestige +
+                ", characters=" + characters +
+                ", buildings=" + buildings +
+                ", tribeRecap=" + tribeRecap +
+                ", buildersDiscount=" + buildersDiscount +
+                ", shamanStar=" + shamanStar +
+                ", collectedIcons=" + collectedIcons +
+                '}';
     }
 }

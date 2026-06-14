@@ -1,5 +1,6 @@
 package it.polimi.gc06.mesos.model.cards.buildings;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import it.polimi.gc06.mesos.model.Era;
 import it.polimi.gc06.mesos.model.Player;
 import it.polimi.gc06.mesos.model.cards.Card;
@@ -52,6 +53,16 @@ public abstract class BuildingCard implements Card {
      */
     public int getPrestigeGain(Player owner) {
         return prestigeGain;
+    }
+
+    /**
+     * Base prestige getter. Used by Jackson when saving player state.
+     *
+     * @return the base prestige of the card, ignoring other effects.
+     */
+    @JsonProperty("prestigeGain")
+    public int getBasePrestigeGain() {
+        return this.prestigeGain;
     }
 
     /**

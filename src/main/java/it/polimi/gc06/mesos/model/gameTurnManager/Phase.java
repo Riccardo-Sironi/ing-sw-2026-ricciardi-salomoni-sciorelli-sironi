@@ -1,5 +1,8 @@
 package it.polimi.gc06.mesos.model.gameTurnManager;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import it.polimi.gc06.mesos.gameExceptions.IllegalPhaseActionException;
 import it.polimi.gc06.mesos.model.GameModel;
 import it.polimi.gc06.mesos.model.Player;
@@ -8,6 +11,19 @@ import it.polimi.gc06.mesos.model.cards.characters.CharacterCard;
 import it.polimi.gc06.mesos.model.cards.events.EventCard;
 import it.polimi.gc06.mesos.model.gameBoard.Board;
 import it.polimi.gc06.mesos.model.gameBoard.TileSlot;
+
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        include = JsonTypeInfo.As.PROPERTY,
+        property = "type"
+)
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = PlacingTotemPhase.class, name = "placing_totem"),
+        @JsonSubTypes.Type(value = OfferResolutionPhase.class, name = "offer_resolution"),
+        @JsonSubTypes.Type(value = EventResolutionPhase.class, name = "event_resolution"),
+        @JsonSubTypes.Type(value = EndOfRoundPhase.class, name = "end_of_round")
+})
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 
 public abstract class Phase {
 

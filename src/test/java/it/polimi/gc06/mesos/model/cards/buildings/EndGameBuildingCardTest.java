@@ -34,8 +34,7 @@ class EndGameBuildingCardTest {
 
     @Test
     void testPrestigeGain(){
-        ToIntFunction<Player> mockEffect = p -> 25;
-        EndGameBuildingCard endGameBuildingCard = new EndGameBuildingCard(Era.ERA_III, 5, 2,  mockEffect);
+        EndGameBuildingCard endGameBuildingCard = new EndGameBuildingCard(Era.ERA_III, 5, 2,  EndGameBuildingFunction.FIXED_25);
 
         assertThrows(IllegalArgumentException.class, () -> endGameBuildingCard.getPrestigeGain(null));
 
