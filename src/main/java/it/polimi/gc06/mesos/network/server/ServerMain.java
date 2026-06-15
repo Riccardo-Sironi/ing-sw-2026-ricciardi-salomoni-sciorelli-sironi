@@ -21,7 +21,7 @@ import java.util.regex.PatternSyntaxException;
 public class ServerMain {
 
     private static MatchManager sharedManager;
-    public static final Path appDirectory = Paths.get(System.getProperty("user.home"),"MesosApp");
+    public static final Path appDirectory = Paths.get(System.getProperty("user.home"),"Mesos");
 
     /**
      * Main method to start the server.

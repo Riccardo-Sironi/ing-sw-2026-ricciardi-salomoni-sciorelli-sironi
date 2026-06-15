@@ -72,7 +72,7 @@ class RMIServerInterfaceImplTest {
         String expectedString = "Match1, Match2";
         when(serverManagerMock.getAvailableMatchesString()).thenReturn(expectedString);
 
-        assertEquals(expectedString, serverImpl.getAvailableMatches());
+        assertEquals(expectedString, serverImpl.getAvailableMatches(""));
         verify(serverManagerMock, times(1)).getAvailableMatchesString();
     }
 

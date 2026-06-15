@@ -17,6 +17,7 @@ import java.rmi.server.UnicastRemoteObject;
 public class RMIServerConnection extends UnicastRemoteObject implements ServerConnection {
     private Client prioritizedListener = null;
     private RMIServerInterface serverStub;
+    private String nickname = null;
 
     private final String host;
     private final int port;
@@ -78,7 +79,11 @@ public class RMIServerConnection extends UnicastRemoteObject implements ServerCo
      */
     @Override
     public boolean login(String nickname) throws Exception {
-        return serverStub.login(nickname);
+        if(serverStub.login(nickname)){
+            this.nickname = nickname;
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -89,7 +94,9 @@ public class RMIServerConnection extends UnicastRemoteObject implements ServerCo
      */
     @Override
     public void logout(String nickname) throws Exception {
-        serverStub.logout(nickname);
+        if(serverStub.logout(nickname)){
+            this.nickname = null;
+        }
     }
 
     /**
@@ -112,7 +119,8 @@ public class RMIServerConnection extends UnicastRemoteObject implements ServerCo
      */
     @Override
     public String getAvailableMatches() throws Exception {
-        return serverStub.getAvailableMatches();
+        if(nickname == null) return "";
+        return serverStub.getAvailableMatches(nickname);
     }
 
     /**

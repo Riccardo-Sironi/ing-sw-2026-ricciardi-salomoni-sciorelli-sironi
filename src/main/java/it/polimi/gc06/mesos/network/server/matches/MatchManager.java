@@ -6,6 +6,7 @@ import it.polimi.gc06.mesos.network.server.VirtualClient;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -129,6 +130,28 @@ public class MatchManager {
     public synchronized Collection<Match> getActiveMatches() {
         removeClosedMatches();
         return activeMatches.values();
+    }
+
+    public synchronized Collection<Match> getUnfinishedRestoredMatches(){
+        removeClosedMatches();
+        List<Match> result = new ArrayList<>();
+        AtomicBoolean isNotFinished = new AtomicBoolean();
+        MatchVisitor unfinishedFinder = new MatchVisitor() {
+            @Override
+            public void visit(RestoredMatch match) {
+                isNotFinished.set(!match.hasEnded());
+            }
+
+            @Override
+            public void visit(Match match) {
+                isNotFinished.set(false);
+            }
+        };
+        for(Match m : activeMatches.values()){
+            m.accept(unfinishedFinder);
+            if(isNotFinished.get()) result.add(m);
+        }
+        return result;
     }
 
     /**

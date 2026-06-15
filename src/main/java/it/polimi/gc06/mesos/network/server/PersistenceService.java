@@ -36,6 +36,7 @@ public class PersistenceService implements Runnable {
     public static final long backupCooldown = 60;
     private final File backupFile;
     private final File tmpFile;
+    private Map<Integer, GameSnapshot> lastSaveSnapshots;
     private final Map<Integer, GameModel> backupMatches;
     private MatchManager matchManager;
 
@@ -57,9 +58,9 @@ public class PersistenceService implements Runnable {
             //fill temp map
             ObjectMapper mapper = new ObjectMapper();
 
-            Map<Integer, GameSnapshot> snapshotMap = new HashMap<>();
+            lastSaveSnapshots = new HashMap<>();
             if (backupFile.length() > 0) {
-                snapshotMap = mapper.readValue(backupFile, new TypeReference<Map<Integer, GameSnapshot>>() {
+                lastSaveSnapshots = mapper.readValue(backupFile, new TypeReference<Map<Integer, GameSnapshot>>() {
                 });
             }
 
@@ -71,7 +72,7 @@ public class PersistenceService implements Runnable {
             modifierCards.forEach(registry::register);
 
             //fill backupMatches
-            for (Map.Entry<Integer, GameSnapshot> entry : snapshotMap.entrySet()) {
+            for (Map.Entry<Integer, GameSnapshot> entry : lastSaveSnapshots.entrySet()) {
                 backupMatches.put(entry.getKey(), RestoredMatch.restoreGame(entry.getValue(), registry));
             }
         } catch (MismatchedInputException e) {
@@ -120,16 +121,26 @@ public class PersistenceService implements Runnable {
                 mapper.enable(SerializationFeature.INDENT_OUTPUT); //to make JSON file more readable for debugging
                 mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS); //for phase correct save
                 Map<Integer, GameSnapshot> matchMap = new HashMap<>();
-                for (Match m : matchManager.getActiveMatches()) {
+                //add all non closed active restored matches present in backup file
+                for(int id : lastSaveSnapshots.keySet()){
+                    if(matchManager.getUnfinishedRestoredMatches().stream().anyMatch(m -> m.getMatchId() == id)){
+                        matchMap.put(id, lastSaveSnapshots.get(id));
+                    }
+                }
+                //add all new active matches (if not already present)
+                for (Match m : matchManager.getActiveMatches()) if(!matchMap.containsKey(m.getMatchId())){
                     GameSnapshot gs = m.getSnapshot();
                     if (gs != null) matchMap.put(m.getMatchId(), gs);
                 }
                 if (!matchMap.isEmpty()) {
-                    //first writes to tmp file than ask SO to move all content to backupFile to avoid corruption due to crash
+                    //first writes to tmp file then ask SO to move all content to backupFile to avoid corruption due to crash
                     mapper.writeValue(tmpFile, matchMap);
                     Files.move(tmpFile.toPath(), backupFile.toPath(), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
-                    System.out.println("Persistence service saved matches successfully (" + matchMap.keySet().stream().map(i -> String.valueOf(i))
+                    System.out.println("Persistence service saved matches successfully (" + matchMap.keySet().stream().map(String::valueOf)
                             .collect(Collectors.joining(", ")) + ")");
+                    //update last save map accordingly
+                    lastSaveSnapshots.clear();
+                    lastSaveSnapshots.putAll(matchMap);
                 }
             }
         } catch (InterruptedException _) {

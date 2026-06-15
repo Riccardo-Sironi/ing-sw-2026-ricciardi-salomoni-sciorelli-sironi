@@ -21,7 +21,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public class RMIServerInterfaceImpl extends UnicastRemoteObject implements RMIServerInterface {
     private final MatchManager serverManager;
     private final Map<String, RMIClientManager> clientManagers;
-    private String nickname;
 
     /**
      * Creates the RMI server interface implementation.
@@ -34,7 +33,6 @@ public class RMIServerInterfaceImpl extends UnicastRemoteObject implements RMISe
         super(exportPort);
         this.serverManager = serverManager;
         this.clientManagers = new ConcurrentHashMap<>();
-        this.nickname = null;
     }
 
 
@@ -53,11 +51,7 @@ public class RMIServerInterfaceImpl extends UnicastRemoteObject implements RMISe
     @Override
     public boolean login(String nickname) throws RemoteException {
         System.out.println("[RMI] Received a login request from " + nickname);
-        if(serverManager.login(nickname)){
-            this.nickname = nickname;
-            return true;
-        }
-        return false;
+        return (serverManager.login(nickname));
     }
 
 
@@ -110,8 +104,7 @@ public class RMIServerInterfaceImpl extends UnicastRemoteObject implements RMISe
      * @throws RemoteException if a network error occurs
      */
     @Override
-    public String getAvailableMatches() throws RemoteException {
-        if(nickname == null) return "";
+    public String getAvailableMatches(String nickname) throws RemoteException {
         return serverManager.getAvailableMatchesString(nickname);
     }
 

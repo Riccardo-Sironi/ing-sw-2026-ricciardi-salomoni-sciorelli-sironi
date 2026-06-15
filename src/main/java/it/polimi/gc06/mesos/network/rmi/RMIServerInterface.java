@@ -37,7 +37,7 @@ public interface RMIServerInterface extends Remote {
      * @return a serialized string summarizing the joinable matchmaking groups
      * @throws RemoteException if underlying communication disrupts
      */
-    String getAvailableMatches() throws RemoteException;
+    String getAvailableMatches(String nickname) throws RemoteException;
 
     /**
      * Instantiates a new match lobby with the specified player capacity and returns its unique identifier for future reference.
