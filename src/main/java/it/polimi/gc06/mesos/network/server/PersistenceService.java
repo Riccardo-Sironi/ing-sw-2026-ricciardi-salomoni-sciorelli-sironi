@@ -1,4 +1,4 @@
-package it.polimi.gc06.mesos.network.server.persistenceService;
+package it.polimi.gc06.mesos.network.server;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,9 +9,9 @@ import it.polimi.gc06.mesos.model.GameModel;
 import it.polimi.gc06.mesos.model.InstancesManager.ModelInstancesManager;
 import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingCard;
 import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingsRegistry;
-import it.polimi.gc06.mesos.network.server.Match;
-import it.polimi.gc06.mesos.network.server.MatchManager;
-import it.polimi.gc06.mesos.network.server.ServerMain;
+import it.polimi.gc06.mesos.network.server.matches.Match;
+import it.polimi.gc06.mesos.network.server.matches.MatchManager;
+import it.polimi.gc06.mesos.network.server.matches.RestoredMatch;
 
 import java.io.File;
 import java.io.IOException;

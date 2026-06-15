@@ -1,4 +1,4 @@
-package it.polimi.gc06.mesos.network.server.persistenceService;
+package it.polimi.gc06.mesos.network.server.matches;
 
 import it.polimi.gc06.mesos.controller.GameController;
 import it.polimi.gc06.mesos.dtos.snapshots.*;
@@ -20,7 +20,6 @@ import it.polimi.gc06.mesos.model.gameBoard.TileSlot;
 import it.polimi.gc06.mesos.model.gameBoard.TurnOrderTile;
 import it.polimi.gc06.mesos.model.gameTurnManager.PlacingTotemPhase;
 import it.polimi.gc06.mesos.model.gameTurnManager.TurnManager;
-import it.polimi.gc06.mesos.network.server.Match;
 import it.polimi.gc06.mesos.network.server.VirtualClient;
 
 import java.io.IOException;
@@ -190,12 +189,9 @@ public class RestoredMatch extends Match {
 
         //subscribe observer building to board
         CardVisitor observerRegistrant = new CardVisitor() {
-            @Override
             public void visit(ObserverSetBuildingCard building) {
                 board.addObserver(building);
             }
-
-            @Override
             public void visit(ObserverPairBuildingCard building) {
                 board.addObserver(building);
             }
@@ -205,5 +201,19 @@ public class RestoredMatch extends Match {
         }
 
         return model;
+    }
+
+    @Override
+    public void accept(MatchVisitor mv){
+        mv.visit(this);
+    }
+
+    /**
+     * Previous player getter.
+     *
+     * @return the {@link List} of player that were in the match before the server crashed.
+     */
+    public Map<String, Boolean> getPreviousPlayers() {
+        return previousPlayers;
     }
 }

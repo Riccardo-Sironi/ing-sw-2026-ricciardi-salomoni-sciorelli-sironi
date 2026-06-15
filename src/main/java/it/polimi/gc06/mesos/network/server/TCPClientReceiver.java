@@ -1,6 +1,7 @@
 package it.polimi.gc06.mesos.network.server;
 
 import it.polimi.gc06.mesos.controller.commands.ControllerCommand;
+import it.polimi.gc06.mesos.network.server.matches.MatchManager;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -136,7 +137,11 @@ public class TCPClientReceiver implements Runnable {
                     } else if (message.equals("AVAILABLE")) {
                         System.out.println("[TCP] Received an available matches request.");
                         synchronized (out) {
-                            out.writeObject(sharedManager.getAvailableMatchesString());
+                            if(nickname == null){
+                                out.writeObject("KO");
+                                out.flush();
+                            }
+                            out.writeObject(sharedManager.getAvailableMatchesString(nickname));
                             out.flush();
                         }
                     } else {

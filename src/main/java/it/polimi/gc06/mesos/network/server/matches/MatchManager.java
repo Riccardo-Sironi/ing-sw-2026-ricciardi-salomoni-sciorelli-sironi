@@ -1,13 +1,10 @@
-package it.polimi.gc06.mesos.network.server;
+package it.polimi.gc06.mesos.network.server.matches;
 
 import it.polimi.gc06.mesos.model.GameModel;
-import it.polimi.gc06.mesos.network.server.persistenceService.RestoredMatch;
+import it.polimi.gc06.mesos.network.server.VirtualClient;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -27,7 +24,7 @@ public class MatchManager {
     public MatchManager(int largestResumedMatchId){
         activeMatches = new ConcurrentHashMap<>();
         loggedUsers = ConcurrentHashMap.newKeySet();
-        idGenerator = new AtomicInteger(largestResumedMatchId);
+        idGenerator = new AtomicInteger(largestResumedMatchId+1);
     }
 
     public MatchManager(){
@@ -94,6 +91,29 @@ public class MatchManager {
     public String getAvailableMatchesString() {
         removeClosedMatches();
         return activeMatches.values().stream()
+                .filter(m -> !m.isFull() && !m.hasStarted())
+                .map(m -> "Match " + m.getMatchId() + ": "
+                        + m.getMatchNumOfPlayers() + "/"
+                        + m.getMatchMaxPlayers() + " players")
+                .collect(Collectors.joining(","));
+    }
+
+    /**
+     * Retrieves a formatted, comma-separated string of matches that can still be joined by the specified player.
+     *
+     * @return a formatted string of available matches (e.g. "id:currentPlayers/maxPlayers,...")
+     */
+    public String getAvailableMatchesString(String nickname) {
+        removeClosedMatches();
+        //saves only visible matches
+        List <Match> playerActiveMatches = new ArrayList<>();
+        PreviousPlayerMatchVisitor visitor = new PreviousPlayerMatchVisitor(nickname);
+        for(Match m : activeMatches.values()){
+            m.accept(visitor);
+            if(visitor.canEnter()) playerActiveMatches.add(m);
+        }
+        //excludes all started or ended matches
+        return playerActiveMatches.stream()
                 .filter(m -> !m.isFull() && !m.hasStarted())
                 .map(m -> "Match " + m.getMatchId() + ": "
                         + m.getMatchNumOfPlayers() + "/"

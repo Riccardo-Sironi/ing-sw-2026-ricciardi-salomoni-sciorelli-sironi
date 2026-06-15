@@ -6,6 +6,7 @@ import it.polimi.gc06.mesos.dtos.ErrorDTO;
 import it.polimi.gc06.mesos.dtos.SmallModelEditor;
 import it.polimi.gc06.mesos.model.DTONotifier;
 import it.polimi.gc06.mesos.network.client.ServerConnection;
+import it.polimi.gc06.mesos.network.server.matches.MatchManager;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;

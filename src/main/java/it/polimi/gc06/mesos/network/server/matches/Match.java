@@ -1,4 +1,4 @@
-package it.polimi.gc06.mesos.network.server;
+package it.polimi.gc06.mesos.network.server.matches;
 
 import it.polimi.gc06.mesos.controller.GameController;
 import it.polimi.gc06.mesos.dtos.snapshots.*;
@@ -7,16 +7,11 @@ import it.polimi.gc06.mesos.gameExceptions.IllegalGameActionException;
 import it.polimi.gc06.mesos.model.DTONotifier;
 import it.polimi.gc06.mesos.model.GameModel;
 import it.polimi.gc06.mesos.model.InstancesManager.ModelInstancesManager;
-import it.polimi.gc06.mesos.model.Player;
-import it.polimi.gc06.mesos.model.gameBoard.Board;
-import it.polimi.gc06.mesos.model.gameTurnManager.TurnManager;
 import it.polimi.gc06.mesos.network.leaderboard.LeaderboardDAO;
+import it.polimi.gc06.mesos.network.server.VirtualClient;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.stream.Collectors;
@@ -241,5 +236,9 @@ public class Match {
     public GameSnapshot getSnapshot(){
         if(model == null) return null;
         return model.getLatestSnapshot();
+    }
+
+    public void accept(MatchVisitor mv){
+        mv.visit(this);
     }
 }

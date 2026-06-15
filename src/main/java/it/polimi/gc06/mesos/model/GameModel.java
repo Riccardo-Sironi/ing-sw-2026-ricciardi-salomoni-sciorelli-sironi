@@ -95,8 +95,6 @@ public class GameModel implements GameInfo {
         for (Player p : players) {
             notifier.notifyChangeToPlayer(p.getNickname(), getStartingStateAsDTO(p.getNickname()));
         }
-        //saves game snapshot
-        saveSnapshot();
     }
 
     public SmallModelEditor getStartingStateAsDTO(String nickname) {

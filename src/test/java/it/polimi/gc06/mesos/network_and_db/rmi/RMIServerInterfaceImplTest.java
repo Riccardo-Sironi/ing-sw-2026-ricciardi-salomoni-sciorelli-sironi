@@ -4,7 +4,7 @@ import it.polimi.gc06.mesos.controller.GameController;
 import it.polimi.gc06.mesos.controller.commands.ControllerCommand;
 import it.polimi.gc06.mesos.network.client.ServerConnection;
 import it.polimi.gc06.mesos.network.rmi.RMIServerInterfaceImpl;
-import it.polimi.gc06.mesos.network.server.MatchManager;
+import it.polimi.gc06.mesos.network.server.matches.MatchManager;
 import it.polimi.gc06.mesos.network.server.RMIClientManager;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;

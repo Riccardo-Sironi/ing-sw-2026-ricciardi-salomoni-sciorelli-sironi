@@ -1,6 +1,6 @@
 package it.polimi.gc06.mesos.network_and_db.tcp;
 
-import it.polimi.gc06.mesos.network.server.MatchManager;
+import it.polimi.gc06.mesos.network.server.matches.MatchManager;
 import it.polimi.gc06.mesos.network.server.ServerMain;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

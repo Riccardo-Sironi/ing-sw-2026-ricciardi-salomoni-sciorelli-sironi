@@ -190,6 +190,7 @@ public class GameController {
         if (areAllPlayersReady) {
             MesosStartedDTO dto2 = new MesosStartedDTO();
             notifier.notifyChange(dto2);
+            model.saveSnapshot(); //also saves the state of the game
         }
 
     }

@@ -5,7 +5,7 @@ import it.polimi.gc06.mesos.controller.commands.ControllerCommand;
 import it.polimi.gc06.mesos.controller.commands.Request;
 import it.polimi.gc06.mesos.model.Color;
 import it.polimi.gc06.mesos.network.client.ServerConnection;
-import it.polimi.gc06.mesos.network.server.MatchManager;
+import it.polimi.gc06.mesos.network.server.matches.MatchManager;
 import it.polimi.gc06.mesos.network.server.RMIClientManager;
 
 import java.rmi.RemoteException;
@@ -21,6 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class RMIServerInterfaceImpl extends UnicastRemoteObject implements RMIServerInterface {
     private final MatchManager serverManager;
     private final Map<String, RMIClientManager> clientManagers;
+    private String nickname;
 
     /**
      * Creates the RMI server interface implementation.
@@ -33,6 +34,7 @@ public class RMIServerInterfaceImpl extends UnicastRemoteObject implements RMISe
         super(exportPort);
         this.serverManager = serverManager;
         this.clientManagers = new ConcurrentHashMap<>();
+        this.nickname = null;
     }
 
 
@@ -51,7 +53,11 @@ public class RMIServerInterfaceImpl extends UnicastRemoteObject implements RMISe
     @Override
     public boolean login(String nickname) throws RemoteException {
         System.out.println("[RMI] Received a login request from " + nickname);
-        return serverManager.login(nickname);
+        if(serverManager.login(nickname)){
+            this.nickname = nickname;
+            return true;
+        }
+        return false;
     }
 
 
@@ -105,7 +111,8 @@ public class RMIServerInterfaceImpl extends UnicastRemoteObject implements RMISe
      */
     @Override
     public String getAvailableMatches() throws RemoteException {
-        return serverManager.getAvailableMatchesString();
+        if(nickname == null) return "";
+        return serverManager.getAvailableMatchesString(nickname);
     }
 
     /**

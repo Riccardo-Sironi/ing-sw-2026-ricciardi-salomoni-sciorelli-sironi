@@ -2,7 +2,7 @@ package it.polimi.gc06.mesos.network.server;
 
 import it.polimi.gc06.mesos.network.leaderboard.LeaderboardDAO;
 import it.polimi.gc06.mesos.network.rmi.RMIServerInterfaceImpl;
-import it.polimi.gc06.mesos.network.server.persistenceService.PersistenceService;
+import it.polimi.gc06.mesos.network.server.matches.MatchManager;
 import it.polimi.gc06.mesos.network.socket.TCPServer;
 
 import java.io.IOException;

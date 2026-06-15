@@ -1,6 +1,6 @@
 package it.polimi.gc06.mesos.network.socket;
 
-import it.polimi.gc06.mesos.network.server.MatchManager;
+import it.polimi.gc06.mesos.network.server.matches.MatchManager;
 import it.polimi.gc06.mesos.network.server.TCPClientReceiver;
 
 import java.io.IOException;

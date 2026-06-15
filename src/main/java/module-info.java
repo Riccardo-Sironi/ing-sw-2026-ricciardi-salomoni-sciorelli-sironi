@@ -40,6 +40,6 @@ module it.polimi.gc06.mesos {
     opens it.polimi.gc06.mesos.view.smallModel to javafx.fxml, javafx.graphics;
     exports it.polimi.gc06.mesos.network.client to java.rmi;
     exports it.polimi.gc06.mesos.network.server to java.rmi;
-    exports it.polimi.gc06.mesos.network.server.persistenceService to java.rmi;
     opens it.polimi.gc06.mesos.dtos.snapshots to com.fasterxml.jackson.databind;
+    exports it.polimi.gc06.mesos.network.server.matches to java.rmi;
 }
