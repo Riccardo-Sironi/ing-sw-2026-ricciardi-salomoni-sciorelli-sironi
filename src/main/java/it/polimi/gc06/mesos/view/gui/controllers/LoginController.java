@@ -19,6 +19,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -50,6 +51,28 @@ public class LoginController {
     @FXML
     private DropShadow buttonShadow;
 
+    @FXML
+    private Label advancedSettingsLabel;
+
+    // --- OVERLAY ELEMENTS ---
+    @FXML
+    private StackPane advancedSettingsOverlay;
+    @FXML
+    private VBox advancedSettingsModal;
+    @FXML
+    private Label advancedSettingsTitle;
+    @FXML
+    private Button rmiButton;
+    @FXML
+    private Button tcpButton;
+    @FXML
+    private TextField ipField;
+    @FXML
+    private TextField portField;
+    @FXML
+    private Button okButton;
+
+    private String connectionType = "RMI";
     private static String nickname = "";
     private boolean transitionStarted = false;
 
@@ -57,6 +80,12 @@ public class LoginController {
 
     private static final String BTN_STYLE_DEFAULT = "-fx-background-color: transparent; -fx-border-color: #2B2B2B; -fx-border-width: 3; -fx-text-fill: #2B2B2B; -fx-background-radius: 10; -fx-border-radius: 10; -fx-cursor: hand;";
     private static final String BTN_STYLE_HOVER = "-fx-background-color: rgba(0,0,0,0.1); -fx-border-color: #2B2B2B; -fx-border-width: 3; -fx-text-fill: #2B2B2B; -fx-background-radius: 10; -fx-border-radius: 10; -fx-cursor: hand;";
+
+    private static final String PROTOCOL_BTN_ACTIVE = "-fx-background-color: #2B2B2B; -fx-border-color: #2B2B2B; -fx-border-width: 3; -fx-text-fill: white; -fx-background-radius: 10; -fx-border-radius: 10; -fx-cursor: hand;";
+
+    private static final String MODAL_BTN_DEFAULT = "-fx-background-color: transparent; -fx-border-color: #E0E0E0; -fx-border-width: 3; -fx-text-fill: #E0E0E0; -fx-background-radius: 10; -fx-border-radius: 10; -fx-cursor: hand;";
+    private static final String MODAL_BTN_HOVER = "-fx-background-color: rgba(255,255,255,0.1); -fx-border-color: #E0E0E0; -fx-border-width: 3; -fx-text-fill: #E0E0E0; -fx-background-radius: 10; -fx-border-radius: 10; -fx-cursor: hand;";
+
     private static final String FIELD_STYLE_VALID = "-fx-background-color: transparent; -fx-border-color: transparent transparent #2B2B2B transparent; -fx-border-width: 0 0 3 0; -fx-text-fill: #2B2B2B; -fx-prompt-text-fill: rgba(43,43,43,0.5); -fx-alignment: center;";
     private static final String FIELD_STYLE_ERROR = "-fx-background-color: transparent; -fx-border-color: transparent transparent #8a0303 transparent; -fx-border-width: 0 0 3 0; -fx-text-fill: #2B2B2B; -fx-prompt-text-fill: rgba(43,43,43,0.5); -fx-alignment: center;";
 
@@ -65,12 +94,112 @@ public class LoginController {
         loadImage(backgroundImageView, "/imgs/background/login_background.png");
         loadImage(particlesImageView, "/imgs/effect/fire_particles.gif");
 
+        setupProtocolButtons();
+        setupAdvancedSettingsModal();
         loadFonts();
         setupDynamicLayout();
         setupGlowAnimation();
         setupButtonInteractions();
 
         Platform.runLater(nicknameField::requestFocus);
+    }
+
+    private void setupProtocolButtons() {
+        if (rmiButton != null && tcpButton != null) {
+            rmiButton.setOnAction(e -> selectProtocol("RMI"));
+            tcpButton.setOnAction(e -> selectProtocol("TCP"));
+
+            selectProtocol("RMI");
+        }
+    }
+
+    private void selectProtocol(String protocol) {
+        connectionType = protocol;
+        if ("RMI".equals(protocol)) {
+            rmiButton.setStyle(PROTOCOL_BTN_ACTIVE);
+            tcpButton.setStyle(MODAL_BTN_DEFAULT);
+            if (portField != null) portField.setPromptText("Port (default: 1099)");
+        } else {
+            tcpButton.setStyle(PROTOCOL_BTN_ACTIVE);
+            rmiButton.setStyle(MODAL_BTN_DEFAULT);
+            if (portField != null) portField.setPromptText("Port (default: 45161)");
+        }
+    }
+
+    private void setupAdvancedSettingsModal() {
+        if (advancedSettingsOverlay != null) {
+            advancedSettingsOverlay.setVisible(false);
+            advancedSettingsOverlay.setManaged(false);
+
+            advancedSettingsOverlay.setOnMouseClicked(e -> closeAdvancedSettings());
+
+            if (advancedSettingsModal != null) {
+                advancedSettingsModal.setOnMouseClicked(javafx.event.Event::consume);
+
+                advancedSettingsModal.setOnKeyPressed(e -> {
+                    if (e.getCode() == KeyCode.ENTER) {
+                        closeAdvancedSettings();
+                        e.consume();
+                    }
+                });
+            }
+
+            if (advancedSettingsLabel != null) {
+                advancedSettingsLabel.setOnMouseClicked(e -> openAdvancedSettings());
+
+                advancedSettingsLabel.setOnMouseEntered(e -> {
+                    advancedSettingsLabel.setTextFill(Color.WHITE);
+                    DropShadow shadow = (DropShadow) advancedSettingsLabel.getEffect();
+                    if (shadow != null) {
+                        shadow.setRadius(15.0);
+                        shadow.setSpread(0.6);
+                    }
+                });
+
+                advancedSettingsLabel.setOnMouseExited(e -> {
+                    advancedSettingsLabel.setTextFill(Color.web("#2B2B2B"));
+                    DropShadow shadow = (DropShadow) advancedSettingsLabel.getEffect();
+                    if (shadow != null) {
+                        shadow.setRadius(1.0);
+                        shadow.setSpread(0.8);
+                    }
+                });
+            }
+        }
+    }
+
+    private void openAdvancedSettings() {
+        joinButton.setDefaultButton(false);
+
+        advancedSettingsOverlay.setVisible(true);
+        advancedSettingsOverlay.setManaged(true);
+
+        Platform.runLater(() -> ipField.requestFocus());
+
+        FadeTransition fadeIn = new FadeTransition(Duration.millis(200), advancedSettingsOverlay);
+        fadeIn.setFromValue(0.0);
+        fadeIn.setToValue(1.0);
+        fadeIn.play();
+    }
+
+    @FXML
+    private void closeAdvancedSettings() {
+        FadeTransition fadeOut = new FadeTransition(Duration.millis(200), advancedSettingsOverlay);
+        fadeOut.setFromValue(1.0);
+        fadeOut.setToValue(0.0);
+        fadeOut.setOnFinished(e -> {
+            advancedSettingsOverlay.setVisible(false);
+            advancedSettingsOverlay.setManaged(false);
+
+            joinButton.setDefaultButton(true);
+
+            Platform.runLater(() -> {
+                nicknameField.requestFocus();
+                nicknameField.deselect();
+                nicknameField.positionCaret(nicknameField.getText().length());
+            });
+        });
+        fadeOut.play();
     }
 
     private void setupDynamicLayout() {
@@ -84,6 +213,11 @@ public class LoginController {
 
         loginBox.scaleXProperty().bind(scale);
         loginBox.scaleYProperty().bind(scale);
+
+        if (advancedSettingsModal != null) {
+            advancedSettingsModal.scaleXProperty().bind(scale);
+            advancedSettingsModal.scaleYProperty().bind(scale);
+        }
 
         if (particlesImageView != null) {
             particlesImageView.setPreserveRatio(true);
@@ -107,12 +241,20 @@ public class LoginController {
             setFontIfValid(promptLabel, 50);
             setFontIfValid(nicknameField, 35);
             setFontIfValid(joinButton, 30);
+            setFontIfValid(rmiButton, 20);
+            setFontIfValid(tcpButton, 20);
+            setFontIfValid(advancedSettingsLabel, 20);
+            setFontIfValid(advancedSettingsTitle, 30);
+            setFontIfValid(ipField, 25);
+            setFontIfValid(portField, 25);
+            setFontIfValid(okButton, 20);
         } catch (Exception e) {
             System.err.println("Font Loading Error: " + e.getMessage());
         }
     }
 
     private void setFontIfValid(Region node, double size) {
+        if (node == null) return;
         Font font = Font.loadFont(getClass().getResourceAsStream(FONT_PATH), size);
         if (font == null) return;
 
@@ -130,14 +272,31 @@ public class LoginController {
     private void setupButtonInteractions() {
         joinButton.setOnMouseEntered(e -> joinButton.setStyle(BTN_STYLE_HOVER));
         joinButton.setOnMouseExited(e -> joinButton.setStyle(BTN_STYLE_DEFAULT));
+        joinButton.setOnMousePressed(e -> applyButtonPressEffect(joinButton, buttonShadow, 0.5, 0.5));
+        joinButton.setOnMouseReleased(e -> applyButtonPressEffect(joinButton, buttonShadow, 0, 2.5));
 
-        joinButton.setOnMousePressed(e -> applyButtonPressEffect(0.5, 0.5));
-        joinButton.setOnMouseReleased(e -> applyButtonPressEffect(0, 2.5));
+        okButton.setOnMouseEntered(e -> okButton.setStyle(MODAL_BTN_HOVER));
+        okButton.setOnMouseExited(e -> okButton.setStyle(MODAL_BTN_DEFAULT));
+
+        // RMI e TCP ora usano lo stile MODAL_BTN di default, dato che sono nell'overlay scuro
+        rmiButton.setOnMouseEntered(e -> {
+            if (!"RMI".equals(connectionType)) rmiButton.setStyle(MODAL_BTN_HOVER);
+        });
+        rmiButton.setOnMouseExited(e -> {
+            if (!"RMI".equals(connectionType)) rmiButton.setStyle(MODAL_BTN_DEFAULT);
+        });
+
+        tcpButton.setOnMouseEntered(e -> {
+            if (!"TCP".equals(connectionType)) tcpButton.setStyle(MODAL_BTN_HOVER);
+        });
+        tcpButton.setOnMouseExited(e -> {
+            if (!"TCP".equals(connectionType)) tcpButton.setStyle(MODAL_BTN_DEFAULT);
+        });
     }
 
-    private void applyButtonPressEffect(double translateY, double shadowOffsetY) {
-        joinButton.setTranslateY(translateY);
-        if (buttonShadow != null) buttonShadow.setOffsetY(shadowOffsetY);
+    private void applyButtonPressEffect(Button button, DropShadow shadow, double translateY, double shadowOffsetY) {
+        button.setTranslateY(translateY);
+        if (shadow != null) shadow.setOffsetY(shadowOffsetY);
     }
 
     @FXML
@@ -177,22 +336,40 @@ public class LoginController {
         rootPane.setDisable(false);
     }
 
-    // TODO Assolutamente da cambiare qusta parte.
     private boolean connectToServer() {
         GUI.client = new Client();
+
+        String ip = (ipField != null && !ipField.getText().trim().isEmpty()) ? ipField.getText().trim() : "localhost";
+        String networkTech = "TCP".equals(connectionType) ? "SOCKET" : connectionType;
+
+        int defaultPort = "RMI".equals(connectionType) ? 1099 : 45161;
+        int port = defaultPort;
+
+        if (portField != null && !portField.getText().trim().isEmpty()) {
+            try {
+                port = Integer.parseInt(portField.getText().trim());
+            } catch (NumberFormatException e) {
+                System.err.println("Invalid port provided, falling back to default: " + defaultPort);
+                port = defaultPort;
+            }
+        }
+
         try {
-            GUI.client.connect("RMI", "localhost", 1099);
+            GUI.client.connect(networkTech, ip, port);
             GUI.subscribeGUI();
         } catch (Exception e) {
             System.err.println("Failed to connect to server: " + e.getMessage());
+            return false;
         }
+
         try {
             if (!GUI.client.getServerConnection().login(nickname)) {
                 handleLoginError();
                 return false;
             }
         } catch (Exception e) {
-            System.err.println("Connection Error");
+            System.err.println("Connection Error: " + e.getMessage());
+            return false;
         }
 
         GUI.smallModel = new SmallModel(nickname);
@@ -217,8 +394,7 @@ public class LoginController {
 
         } catch (Exception e) {
             System.err.println("Failed to load scene transition: " + e.getMessage());
-            //e.printStackTrace();
-            unlockUI(); // in case of critical failure, unlock the UI
+            unlockUI();
         }
     }
 
