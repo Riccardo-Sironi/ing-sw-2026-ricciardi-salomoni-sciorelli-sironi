@@ -6,7 +6,6 @@ import it.polimi.gc06.mesos.gameExceptions.IllegalGameActionException;
 import it.polimi.gc06.mesos.gameExceptions.IllegalPhaseActionException;
 import it.polimi.gc06.mesos.model.GameModel;
 import it.polimi.gc06.mesos.model.Player;
-import it.polimi.gc06.mesos.model.cards.CharactersPresenceVisitor;
 import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
 import it.polimi.gc06.mesos.model.cards.characters.CharacterCard;
 import it.polimi.gc06.mesos.model.gameBoard.Board;
@@ -152,14 +151,19 @@ public class EndOfRoundPhase extends Phase {
      */
     @Override
     public boolean checkForRightToSkip(Player player, Board board) throws IllegalPhaseActionException {
-        if (player.getTopDrawNum() > 0) {
-            CharactersPresenceVisitor charactersPresenceVisitor = new CharactersPresenceVisitor();
-            board.getTopRow().forEach(card -> card.accept(charactersPresenceVisitor));
 
-            return !charactersPresenceVisitor.areCharactersPresent();
-        } else {
-            return true;
-        }
+        // rules state that a player COULD pick a card, so we set his right to skip to true by default
+
+//        if (player.getTopDrawNum() > 0) {
+//            CharactersPresenceVisitor charactersPresenceVisitor = new CharactersPresenceVisitor();
+//            board.getTopRow().forEach(card -> card.accept(charactersPresenceVisitor));
+//
+//            return !charactersPresenceVisitor.areCharactersPresent();
+//        } else {
+//            return true;
+//        }
+        
+        return true;
     }
 
     /**

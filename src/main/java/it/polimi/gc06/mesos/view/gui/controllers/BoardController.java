@@ -279,7 +279,7 @@ public class BoardController {
     public void drawEverything() {
         drawEraText();
         drawRoundText();
-        drawPhaseText();
+        drawPhaseText(" ");
         drawEraText();
         drawDeck();
         drawTopRowCards();
@@ -1178,19 +1178,15 @@ public class BoardController {
         eraText.setText(smallModel.getEra().toString().replace("_", " "));
     }
 
-    private void drawPhaseText() {
-        // TODO : the model updates too fast so during the event and end of round animations
-        //  we always have placing totem phase text
-
+    private void drawPhaseText(String phase) {
         phaseText.setText(
-//                switch (smallModel.getPhase()) {
-//                    case "placing_totem" -> "Placing Totem Phase";
-//                    case "offer_resolution" -> "Offer Resolution Phase";
-//                    case "event_resolution" -> "Event Resolution Phase";
-//                    case "end_of_round" -> "End Of Round Phase";
-//                    default -> "?";
-//                }
-                " "
+                switch (phase) {
+                    case "placing_totem" -> "Placing Totem Phase";
+                    case "offer_resolution" -> "Offer Resolution Phase";
+                    case "event_resolution" -> "Event Resolution Phase";
+                    case "end_of_round" -> "End Of Round Phase";
+                    default -> " ";
+                }
         );
     }
 
@@ -1363,11 +1359,13 @@ public class BoardController {
     }
 
     public void handlePhaseChanged(String phase) {
-        drawPhaseText();
+        drawPhaseText(phase);
 
         if (phase.equals(new EventResolutionPhase().toString()) && smallModel.getRound() == 10) {
             isEndGame = true;
         }
+
+        drawOfferTrack();
     }
 
     public void handleEraChanged() {
