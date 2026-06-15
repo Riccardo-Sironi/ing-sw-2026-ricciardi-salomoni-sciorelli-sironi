@@ -278,7 +278,6 @@ public class LoginController {
         okButton.setOnMouseEntered(e -> okButton.setStyle(MODAL_BTN_HOVER));
         okButton.setOnMouseExited(e -> okButton.setStyle(MODAL_BTN_DEFAULT));
 
-        // RMI e TCP ora usano lo stile MODAL_BTN di default, dato che sono nell'overlay scuro
         rmiButton.setOnMouseEntered(e -> {
             if (!"RMI".equals(connectionType)) rmiButton.setStyle(MODAL_BTN_HOVER);
         });
