@@ -35,7 +35,9 @@ public class CardEffectVisitor extends CardVisitor {
 
     @Override
     public void visit(EventCard card) {
-        if (smallModel.getPhase().equals(END_OF_ROUND) || smallModel.getPhase().equals(PHASE_OFFER_RESOLUTION)) {
+        if ((smallModel.getPhase().equals(END_OF_ROUND) || smallModel.getPhase().equals(PHASE_OFFER_RESOLUTION)) && smallModel.isActive()) {
+            EffectsManager.disableCard(cardView);
+        } else if (smallModel.getPhase().equals(PHASE_OFFER_RESOLUTION) && !smallModel.isActive()) {
             EffectsManager.disableCard(cardView);
         } else {
             EffectsManager.normalCard(cardView);
@@ -52,6 +54,8 @@ public class CardEffectVisitor extends CardVisitor {
         if (isPickPhase && isActive && canPick) {
             EffectsManager.activeCard(cardView);
         } else if (isPickPhase && isActive) {
+            EffectsManager.disableCard(cardView);
+        } else if (currentPhase.equals(PHASE_OFFER_RESOLUTION) && !isActive) {
             EffectsManager.disableCard(cardView);
         } else {
             EffectsManager.normalCard(cardView);
