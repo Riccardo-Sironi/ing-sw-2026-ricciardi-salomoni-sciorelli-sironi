@@ -82,9 +82,9 @@ public class TuiTileSlotRendererVisitor implements TuiRenderer<TileSlotView>, Ti
             card[2] = "│         │";
         }
         // Center the effect string, within 9 characters (11 - 2 for the borders)
+        card[5] = "│" + centerText(effectString, 9) + "│";
         card[3] = "│         │";
         card[4] = "│         │";
-        card[5] = "│" + centerText(effectString, 9) + "│";
         card[6] = "└─────────┘";
 
         // Clear strings

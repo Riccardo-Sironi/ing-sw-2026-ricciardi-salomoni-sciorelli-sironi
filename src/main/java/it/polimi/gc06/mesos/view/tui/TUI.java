@@ -4,11 +4,13 @@ import it.polimi.gc06.mesos.controller.ModelListener;
 import it.polimi.gc06.mesos.dtos.DTOVisitor;
 import it.polimi.gc06.mesos.dtos.EventResolvedDTO;
 import it.polimi.gc06.mesos.dtos.SmallModelEditor;
+import it.polimi.gc06.mesos.model.cards.Card;
 import it.polimi.gc06.mesos.model.cards.events.EventCard;
 import it.polimi.gc06.mesos.network.client.Client;
 import it.polimi.gc06.mesos.view.View;
 import it.polimi.gc06.mesos.view.smallModel.PlayerView;
 import it.polimi.gc06.mesos.view.smallModel.SmallModel;
+import it.polimi.gc06.mesos.view.tui.visitors.TuiBuildingEffectVisitor;
 import it.polimi.gc06.mesos.view.tui.visitors.TuiEventArtVisitor;
 import org.jline.reader.*;
 import org.jline.reader.impl.completer.AggregateCompleter;
@@ -162,6 +164,33 @@ public class TUI implements View, ModelListener {
                                 }
                             }
                             break;
+                        case "/pick_building":
+                            if (tokens.length < 3) {
+                                statusMessage = "Usage: /pick_building <top/bottom> <card_id>";
+                            } else {
+                                switch (tokens[1].toLowerCase()) {
+                                    case "top":
+                                        try {
+                                            client.getServerConnection().pickBuildingFromTop(smallModel.getPlayer().getNickname(), Integer.parseInt(tokens[2]));
+                                        } catch (Exception e) {
+                                            smallModel.setSystemMessage(Style.RED + "An error occurred while trying to perform this action!" + Style.RESET);
+                                        }
+                                        smallModel.setSystemMessage("Picking building number " + tokens[2] + " from the top row");
+                                        break;
+                                    case "bottom":
+                                        try {
+                                            client.getServerConnection().pickBuildingFromBottom(smallModel.getPlayer().getNickname(), Integer.parseInt(tokens[2]));
+                                        } catch (Exception e) {
+                                            smallModel.setSystemMessage(Style.RED + "You cannot perform this action right now!" + Style.RESET);
+                                        }
+                                        statusMessage = "Picking building number " + tokens[2] + " from the bottom row";
+                                        break;
+                                    default:
+                                        statusMessage = Style.RED + "Invalid row type: " + tokens[1] + ". Use 'top' or 'bottom'." + Style.RESET;
+                                }
+                            }
+                            break;
+
                         case "/end_turn":
                             try {
                                 client.getServerConnection().handleSkip(smallModel.getPlayer().getNickname());
@@ -201,6 +230,8 @@ public class TUI implements View, ModelListener {
                                 showPlayerBoard(smallModel.getPlayer().getNickname());
                             }
                             break;
+                        case "/buildings":
+                            showBuildings();
                         case "/clear":
                             statusMessage = "";
                             smallModel.setSystemMessage("");
@@ -287,11 +318,38 @@ public class TUI implements View, ModelListener {
                     String row = words.get(1);
                     if ("top".equals(row)) {
                         for (int i = 0; i < smallModel.getTopRow().size(); i++) {
-                            candidates.add(new Candidate(String.valueOf(i), String.valueOf(i), null, smallModel.getTopRow().get(i).getClass().getSimpleName(), null, null, true));
+                            candidates.add(new Candidate(String.valueOf(i), String.valueOf(i), null, String.join(" ", smallModel.getTopRow().get(i).getClass().getSimpleName().split("(?=\\p{Upper})")), null, null, true));
                         }
                     } else if ("bottom".equals(row)) {
                         for (int i = 0; i < smallModel.getBottomRow().size(); i++) {
-                            candidates.add(new Candidate(String.valueOf(i), String.valueOf(i), null, smallModel.getBottomRow().get(i).getClass().getSimpleName(), null, null, true));
+                            candidates.add(new Candidate(String.valueOf(i), String.valueOf(i), null, String.join(" ", smallModel.getBottomRow().get(i).getClass().getSimpleName().split("(?=\\p{Upper})")), null, null, true));
+                        }
+                    }
+                }
+            }
+        };
+
+        Completer buildingCompleter = (reader, line, candidates) -> {
+            List<String> words = line.words();
+            int wordIndex = line.wordIndex();
+            if (!words.isEmpty() && "/pick_buildings".equals(words.get(0))) {
+                if (wordIndex == 1) {
+                    if (smallModel.getTopDrawNum() > 0) {
+                        candidates.add(new Candidate("top"));
+                    }
+                    if (smallModel.getBottomDrawNum() > 0) {
+                        candidates.add(new Candidate("bottom"));
+                    }
+                    // The user might have already typed in bottom/top, or it could've just been autocompleted
+                } else if (wordIndex == 2 && words.size() >= 2) {
+                    String row = words.get(1);
+                    if ("top".equals(row)) {
+                        for (int i = 0; i < smallModel.getTopBuildings().size(); i++) {
+                            candidates.add(new Candidate(String.valueOf(i), String.valueOf(i), null, String.join(" ", smallModel.getTopBuildings().get(i).getClass().getSimpleName().split("(?=\\p{Upper})")), null, null, true));
+                        }
+                    } else if ("bottom".equals(row)) {
+                        for (int i = 0; i < smallModel.getBottomBuildings().size(); i++) {
+                            candidates.add(new Candidate(String.valueOf(i), String.valueOf(i), null, String.join(" ", smallModel.getBottomBuildings().get(i).getClass().getSimpleName().split("(?=\\p{Upper})")), null, null, true));
                         }
                     }
                 }
@@ -329,17 +387,19 @@ public class TUI implements View, ModelListener {
         };
 
         return new AggregateCompleter(
-                new ArgumentCompleter(new StringsCompleter("/pick_card", "/end_turn", "/quit", "/clear", "/board"), NullCompleter.INSTANCE),
+                new ArgumentCompleter(new StringsCompleter("/pick_card", "/pick_buildings", "/end_turn", "/quit", "/clear", "/board", "/buildings"), NullCompleter.INSTANCE),
                 new ArgumentCompleter(new StringsCompleter("/help"), new StringsCompleter("place_totem", "pick_card", "end_turn", "clear", "cards"), NullCompleter.INSTANCE),
                 new ArgumentCompleter(new StringsCompleter("/place_totem"), totemCompleter, NullCompleter.INSTANCE),
                 cardCompleter,
-                boardCompleter
+                boardCompleter,
+                buildingCompleter
         );
     }
 
     // TODO Finire descrizione di tutte le carte, e anche di altro
 
     /**
+     *
      * Displays an interactive help screen containing character cards effects and explanations.
      */
     private void showCardHelp() {
@@ -447,6 +507,65 @@ public class TUI implements View, ModelListener {
             }
         }
 
+    }
+
+    private void showBuildings() {
+        terminal.puts(InfoCmp.Capability.clear_screen);
+        terminal.puts(InfoCmp.Capability.cursor_home);
+
+
+        String[] buildingsTitle = centerOnScreen(new String[]{"  === TOP BUILDINGS ===  "}, terminal);
+        terminal.writer().println("\n" + buildingsTitle[0] + "\n");
+        List<Card> topBuildings = smallModel.getTopBuildings();
+
+        TuiBuildingEffectVisitor effectVisitor = new TuiBuildingEffectVisitor();
+
+        for (int i = 0; i < topBuildings.size(); i++) {
+            Card b = topBuildings.get(i);
+            String name = String.join(" ", b.getClass().getSimpleName().split("(?=\\p{Upper})"));
+            String effect = effectVisitor.getEffect(b);
+
+            terminal.writer().println(i + ") " + Style.YELLOW + name + Style.RESET);
+            terminal.writer().println("     Effect: " + effect);
+
+            terminal.writer().println("");
+        }
+
+        buildingsTitle = centerOnScreen(new String[]{"  === BOTTOM BUILDINGS ===  "}, terminal);
+        terminal.writer().println("\n" + buildingsTitle[0] + "\n");
+        List<Card> bottomBuildings = smallModel.getBottomBuildings();
+        
+        for (int i = 0; i < bottomBuildings.size(); i++) {
+            Card b = bottomBuildings.get(i);
+            String name = String.join(" ", b.getClass().getSimpleName().split("(?=\\p{Upper})"));
+            String effect = effectVisitor.getEffect(b);
+
+            terminal.writer().println(i + ") " + Style.YELLOW + name + Style.RESET);
+            terminal.writer().println("     Effect: " + effect);
+
+            terminal.writer().println("");
+        }
+
+        terminal.writer().flush();
+
+
+        while (true) {
+            String input = lineReader.readLine("\nPress ENTER or type 'q' to return\n");
+
+            // Input sanitization
+            if (input == null) {
+                input = "";
+            }
+            input = input.trim().toLowerCase();
+
+            // Exit conditions
+            if (input.equals("q") || input.isEmpty()) {
+                break;
+            } else {
+                terminal.writer().println("Unrecognized command. Press ENTER or 'q' to return to the board.");
+                terminal.writer().flush();
+            }
+        }
     }
 
     /**
@@ -559,7 +678,7 @@ public class TUI implements View, ModelListener {
         players.addAll(smallModel.getOpponents());
 
         tuiBoardRenderer.printCardRow(smallModel.getTopRow(), smallModel.getTribeDeckSize());
-        tuiBoardRenderer.printOfferTrack(smallModel.getOfferTrack());
+        tuiBoardRenderer.printOfferTrackAndTurnOrder(smallModel.getTurnOrderTile(), smallModel.getOfferTrack());
         tuiBoardRenderer.printCardRow(smallModel.getBottomRow());
         tuiBoardRenderer.printPlayerInfo(players);
 
