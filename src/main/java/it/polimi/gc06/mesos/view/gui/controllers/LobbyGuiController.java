@@ -7,6 +7,8 @@ import it.polimi.gc06.mesos.view.gui.helpers.Totem;
 import it.polimi.gc06.mesos.view.smallModel.PlayerView;
 import javafx.animation.*;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.DoubleBinding;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -28,7 +30,7 @@ import java.util.List;
 import static it.polimi.gc06.mesos.view.gui.GUI.guidtovisitor;
 
 public class LobbyGuiController {
-    
+
     @FXML
     public StackPane lobbyRoot;
     @FXML
@@ -40,7 +42,9 @@ public class LobbyGuiController {
     @FXML
     public HBox totemSelectionBox;
     @FXML
-    public AnchorPane effectsLayer;
+    public StackPane bowlTray;
+    @FXML
+    public Pane effectsLayer;
 
     @FXML
     public ImageView smokeGifView;
@@ -53,8 +57,11 @@ public class LobbyGuiController {
     public Label playerCounterLabel;
 
     private boolean gameStarting = false;
-
     private boolean firstLoad = true;
+
+    private String cachedFontFamily = "System";
+    private DoubleBinding scaleBinding;
+    private DoubleBinding spacingBind;
 
     private static final String FONT_PATH = "/it/polimi/gc06/mesos/fonts/ArcadianG.ttf";
     private static final String IMG_BACKGROUND = "/imgs/background/lobby_background.png";
@@ -73,8 +80,8 @@ public class LobbyGuiController {
     private static final Color COLOR_TEXT_DEFAULT = Color.WHITE;
     private static final Color COLOR_TEXT_WAITING = Color.web("#a9a9a9");
 
-    private static final double LOBBY_MAX_WIDTH = 700.0;
-    private static final double SPACING_BOWLS = 20.0;
+    private static final double BASE_W = 1280.0;
+    private static final double BASE_H = 720.0;
 
     private static final double SMOKE_FIT_WIDTH = 350.0;
     private static final double FIRE_FIT_WIDTH = 280.0;
@@ -82,64 +89,122 @@ public class LobbyGuiController {
     private static final double FIRE_OPACITY = 0.85;
     private static final double BLUR_RADIUS = 18.0;
     private static final double SMOKE_BOTTOM_ANCHOR = 110.0;
-    private static final double SMOKE_LEFT_ANCHOR = 55.0;
+    private static final double SMOKE_LEFT_ANCHOR = 35.0;
     private static final double FIRE_BOTTOM_ANCHOR = 90.0;
-    private static final double FIRE_LEFT_ANCHOR = 65.0;
+    private static final double FIRE_LEFT_ANCHOR = 45.0;
 
     @FXML
     public void initialize() {
-        loadHeaderFonts();
+        initFontCache();
         setupArchitecturalLayout();
         guidtovisitor.setLobbyGuiController(this);
         refreshLobbyUI();
     }
 
-    private void loadHeaderFonts() {
-        titleLabel.setFont(loadFont(FONT_SIZE_TITLE));
-        playerCounterLabel.setFont(loadFont(FONT_SIZE_COUNTER));
+    private void initFontCache() {
+        try (InputStream fontStream = getClass().getResourceAsStream(FONT_PATH)) {
+            if (fontStream != null) {
+                Font f = Font.loadFont(fontStream, 10);
+                if (f != null) {
+                    cachedFontFamily = f.getFamily();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private Font loadFont(double size) {
+        return Font.font(cachedFontFamily, FontWeight.BOLD, size);
     }
 
     private void setupArchitecturalLayout() {
+        scaleBinding = Bindings.createDoubleBinding(() -> {
+            double wScale = lobbyRoot.getWidth() / BASE_W;
+            double hScale = lobbyRoot.getHeight() / BASE_H;
+            if (wScale <= 0 || hScale <= 0) return 1.0;
+            return Math.min(wScale, hScale);
+        }, lobbyRoot.widthProperty(), lobbyRoot.heightProperty());
+
         loadImage(backgroundImage, IMG_BACKGROUND);
         backgroundImage.fitWidthProperty().bind(lobbyRoot.widthProperty());
         backgroundImage.fitHeightProperty().bind(lobbyRoot.heightProperty());
-
-        mainContent.prefWidthProperty().bind(lobbyRoot.widthProperty());
-        mainContent.prefHeightProperty().bind(lobbyRoot.heightProperty());
 
         effectsLayer.prefWidthProperty().bind(lobbyRoot.widthProperty());
         effectsLayer.prefHeightProperty().bind(lobbyRoot.heightProperty());
 
         loadImage(smokeGifView, IMG_SMOKE);
         if (smokeGifView.getImage() != null) {
-            smokeGifView.setFitWidth(SMOKE_FIT_WIDTH);
-            smokeGifView.setPreserveRatio(true);
+            Image img = smokeGifView.getImage();
+            double origRatio = img.getHeight() / img.getWidth();
+            smokeGifView.setPreserveRatio(false);
             smokeGifView.setOpacity(SMOKE_OPACITY);
             smokeGifView.setBlendMode(BlendMode.SCREEN);
             smokeGifView.setEffect(new GaussianBlur(BLUR_RADIUS));
-            AnchorPane.setBottomAnchor(smokeGifView, SMOKE_BOTTOM_ANCHOR);
-            AnchorPane.setLeftAnchor(smokeGifView, SMOKE_LEFT_ANCHOR);
+            smokeGifView.fitWidthProperty().bind(lobbyRoot.widthProperty().multiply(SMOKE_FIT_WIDTH / BASE_W));
+            smokeGifView.fitHeightProperty().bind(lobbyRoot.heightProperty().multiply((SMOKE_FIT_WIDTH * origRatio) / BASE_H));
+            smokeGifView.layoutXProperty().bind(lobbyRoot.widthProperty().multiply(SMOKE_LEFT_ANCHOR / BASE_W));
+            smokeGifView.layoutYProperty().bind(lobbyRoot.heightProperty().subtract(
+                    lobbyRoot.heightProperty().multiply(SMOKE_BOTTOM_ANCHOR / BASE_H)
+            ).subtract(smokeGifView.fitHeightProperty()));
         }
 
         loadImage(fireGifView, IMG_FIRE);
         if (fireGifView.getImage() != null) {
-            fireGifView.setFitWidth(FIRE_FIT_WIDTH);
-            fireGifView.setPreserveRatio(true);
+            Image img = fireGifView.getImage();
+            double origRatio = img.getHeight() / img.getWidth();
+            fireGifView.setPreserveRatio(false);
             fireGifView.setOpacity(FIRE_OPACITY);
             fireGifView.setBlendMode(BlendMode.SCREEN);
             fireGifView.setEffect(new GaussianBlur(BLUR_RADIUS));
-            AnchorPane.setBottomAnchor(fireGifView, FIRE_BOTTOM_ANCHOR);
-            AnchorPane.setLeftAnchor(fireGifView, FIRE_LEFT_ANCHOR);
+            fireGifView.fitWidthProperty().bind(lobbyRoot.widthProperty().multiply(FIRE_FIT_WIDTH / BASE_W));
+            fireGifView.fitHeightProperty().bind(lobbyRoot.heightProperty().multiply((FIRE_FIT_WIDTH * origRatio) / BASE_H));
+            fireGifView.layoutXProperty().bind(lobbyRoot.widthProperty().multiply(FIRE_LEFT_ANCHOR / BASE_W));
+            fireGifView.layoutYProperty().bind(lobbyRoot.heightProperty().subtract(
+                    lobbyRoot.heightProperty().multiply(FIRE_BOTTOM_ANCHOR / BASE_H)
+            ).subtract(fireGifView.fitHeightProperty()));
         }
 
-        lobbyContainer.setMaxWidth(LOBBY_MAX_WIDTH);
-        lobbyContainer.setAlignment(Pos.CENTER);
+        mainContent.paddingProperty().bind(Bindings.createObjectBinding(() ->
+                        new Insets(lobbyRoot.getHeight() * 0.05, lobbyRoot.getWidth() * 0.05, lobbyRoot.getHeight() * 0.03, lobbyRoot.getWidth() * 0.05),
+                lobbyRoot.widthProperty(), lobbyRoot.heightProperty()
+        ));
 
-        VBox.setMargin(lobbyContainer, new Insets(60, 0, 0, 0));
+        mainContent.spacingProperty().bind(scaleBinding.multiply(BASE_H * 0.04));
 
-        lobbyContainer.prefHeightProperty().bind(mainContent.heightProperty().multiply(0.6));
-        totemSelectionBox.prefHeightProperty().bind(mainContent.heightProperty().multiply(0.3));
-        VBox.setVgrow(lobbyContainer, Priority.ALWAYS);
+        lobbyContainer.maxWidthProperty().bind(lobbyRoot.widthProperty().multiply(0.40));
+        lobbyContainer.prefWidthProperty().bind(lobbyContainer.maxWidthProperty());
+
+        spacingBind = scaleBinding.multiply(BASE_W * 0.015);
+        lobbyContainer.spacingProperty().bind(spacingBind);
+
+        bowlTray.maxWidthProperty().bind(lobbyRoot.widthProperty().multiply(0.65));
+        bowlTray.paddingProperty().bind(Bindings.createObjectBinding(() ->
+                        new Insets(lobbyRoot.getHeight() * 0.02, lobbyRoot.getWidth() * 0.02, lobbyRoot.getHeight() * 0.02, lobbyRoot.getWidth() * 0.02),
+                lobbyRoot.widthProperty(), lobbyRoot.heightProperty()
+        ));
+
+        totemSelectionBox.spacingProperty().bind(scaleBinding.multiply(BASE_W * 0.03));
+
+        Runnable updateMargin = () -> {
+            StackPane.setMargin(playerCounterLabel, new Insets(
+                    lobbyRoot.getHeight() * 0.04,
+                    lobbyRoot.getWidth() * 0.03,
+                    0, 0
+            ));
+        };
+        lobbyRoot.widthProperty().addListener(e -> updateMargin.run());
+        lobbyRoot.heightProperty().addListener(e -> updateMargin.run());
+
+        titleLabel.fontProperty().bind(Bindings.createObjectBinding(() ->
+                        loadFont(Math.max(20, FONT_SIZE_TITLE * scaleBinding.get())),
+                scaleBinding
+        ));
+
+        playerCounterLabel.fontProperty().bind(Bindings.createObjectBinding(() ->
+                        loadFont(Math.max(16, FONT_SIZE_COUNTER * scaleBinding.get())),
+                scaleBinding
+        ));
     }
 
     public void refreshLobbyUI() {
@@ -172,18 +237,16 @@ public class LobbyGuiController {
 
         int maxPlayers = GUI.smallModel.getMaxPlayers();
 
-        double dynamicSpacing = (LOBBY_MAX_WIDTH / maxPlayers) * 0.15;
-        lobbyContainer.setSpacing(dynamicSpacing);
-
-        double dynamicTotemHeight = 330.0 - (maxPlayers * 30.0);
-        double dynamicStainHeight = dynamicTotemHeight * 1.15;
+        DoubleBinding slotWidth = lobbyContainer.maxWidthProperty()
+                .subtract(spacingBind.multiply(Math.max(0, maxPlayers - 1)))
+                .divide(maxPlayers);
 
         double fontScale = maxPlayers > 3 ? 0.75 : 1.0;
         double nameSize = FONT_SIZE_PLAYER_NAME * fontScale;
         double readySize = FONT_SIZE_READY * fontScale;
 
         for (int i = 0; i < maxPlayers; i++) {
-            VBox slotBox = buildPlayerSlot(i, maxPlayers, currentPlayers, dynamicTotemHeight, dynamicStainHeight, nameSize, readySize);
+            VBox slotBox = buildPlayerSlot(i, maxPlayers, currentPlayers, nameSize, readySize, slotWidth);
             lobbyContainer.getChildren().add(slotBox);
 
             if (firstLoad) {
@@ -193,17 +256,28 @@ public class LobbyGuiController {
     }
 
     private VBox buildPlayerSlot(int index, int maxPlayers, List<PlayerView> currentPlayers,
-                                 double totemHeight, double stainHeight, double nameSize, double readySize) {
+                                 double nameSize, double readySize, DoubleBinding slotWidth) {
 
-        VBox slotBox = new VBox(5);
+        VBox slotBox = new VBox();
         slotBox.setAlignment(Pos.CENTER);
-        slotBox.setPrefWidth(LOBBY_MAX_WIDTH / maxPlayers);
+        slotBox.spacingProperty().bind(scaleBinding.multiply(BASE_H * 0.015));
+
+        slotBox.minWidthProperty().bind(slotWidth);
+        slotBox.maxWidthProperty().bind(slotWidth);
 
         StackPane graphicsStack = new StackPane();
-        graphicsStack.setAlignment(Pos.CENTER);
+        graphicsStack.setAlignment(Pos.BOTTOM_CENTER);
+
+        double baseTotemHeight = BASE_H * 0.40;
+        double baseStainHeight = baseTotemHeight * 1.15;
+
+        graphicsStack.minHeightProperty().bind(scaleBinding.multiply(baseStainHeight));
+        graphicsStack.maxHeightProperty().bind(scaleBinding.multiply(baseStainHeight));
 
         int totemId = (index % 3) + 1;
-        ImageView engravedTotemView = createTotemImageView(totemId, totemHeight);
+        ImageView engravedTotemView = createTotemImageView(totemId);
+        engravedTotemView.fitHeightProperty().bind(scaleBinding.multiply(baseTotemHeight));
+        engravedTotemView.fitWidthProperty().bind(slotWidth);
 
         if (index < currentPlayers.size()) {
             PlayerView p = currentPlayers.get(index);
@@ -213,8 +287,10 @@ public class LobbyGuiController {
                 Totem chosenTotem = mapColorToTotem(p.getColor());
                 int stainIndex = (index % 5) + 1;
 
-                ImageView stainView = createStainImageView(stainIndex, chosenTotem, stainHeight);
+                ImageView stainView = createStainImageView(stainIndex, chosenTotem);
                 if (stainView != null) {
+                    stainView.fitHeightProperty().bind(scaleBinding.multiply(baseStainHeight));
+                    stainView.fitWidthProperty().bind(slotWidth);
                     graphicsStack.getChildren().add(stainView);
 
                     if (!firstLoad) {
@@ -233,12 +309,14 @@ public class LobbyGuiController {
                 slotBox.getChildren().addAll(graphicsStack, nameLabel, readyLabel);
             } else {
                 graphicsStack.getChildren().add(engravedTotemView);
-                slotBox.getChildren().addAll(graphicsStack, nameLabel);
+                Label placeholderReady = createCustomLabel("READY", readySize, Color.TRANSPARENT, false);
+                slotBox.getChildren().addAll(graphicsStack, nameLabel, placeholderReady);
             }
         } else {
             graphicsStack.getChildren().add(engravedTotemView);
-            Label emptyLabel = createCustomLabel("Waiting...", readySize, COLOR_TEXT_WAITING, false);
-            slotBox.getChildren().addAll(graphicsStack, emptyLabel);
+            Label waitingLabel = createCustomLabel("Waiting...", nameSize, COLOR_TEXT_WAITING, false);
+            Label placeholderReady = createCustomLabel("READY", readySize, Color.TRANSPARENT, false);
+            slotBox.getChildren().addAll(graphicsStack, waitingLabel, placeholderReady);
         }
 
         return slotBox;
@@ -246,7 +324,6 @@ public class LobbyGuiController {
 
     public void drawTotemSelectionBox() {
         totemSelectionBox.getChildren().clear();
-        totemSelectionBox.setSpacing(SPACING_BOWLS);
 
         if (GUI.smallModel == null || GUI.smallModel.getOpponents() == null) return;
 
@@ -285,11 +362,15 @@ public class LobbyGuiController {
 
         HBox bowlBox = new HBox();
         bowlBox.setAlignment(Pos.CENTER);
-        bowlBox.setPadding(new Insets(5));
+
+        bowlBox.paddingProperty().bind(Bindings.createObjectBinding(() ->
+                new Insets(lobbyRoot.getHeight() * 0.005), lobbyRoot.heightProperty()
+        ));
+
         bowlBox.setCursor(Cursor.HAND);
 
         ImageView bowlImage = new ImageView(bowlImg);
-        bowlImage.fitHeightProperty().bind(totemSelectionBox.heightProperty().multiply(0.8));
+        bowlImage.fitHeightProperty().bind(scaleBinding.multiply(BASE_H * 0.10));
         bowlImage.setPreserveRatio(true);
         bowlImage.setEffect(new DropShadow(5, Color.BLACK));
 
@@ -309,32 +390,34 @@ public class LobbyGuiController {
         return bowlBox;
     }
 
-    private Label createCustomLabel(String text, double fontSize, Color textColor, boolean addShadow) {
+    private Label createCustomLabel(String text, double baseFontSize, Color textColor, boolean addShadow) {
         Label label = new Label(text);
-        label.setFont(loadFont(fontSize));
         label.setTextFill(textColor);
 
         if (addShadow) {
-            DropShadow shadow = new DropShadow(3, Color.BLACK);
-            label.setEffect(shadow);
+            label.setEffect(new DropShadow(3, Color.BLACK));
         }
+
+        label.fontProperty().bind(Bindings.createObjectBinding(() ->
+                        loadFont(Math.max(10, baseFontSize * scaleBinding.get())),
+                scaleBinding
+        ));
+
         return label;
     }
 
-    private ImageView createTotemImageView(int totemId, double height) {
+    private ImageView createTotemImageView(int totemId) {
         Image totemImg = getImage(PATH_TOTEMS + totemId + ".png");
         ImageView engravedTotemView = new ImageView(totemImg);
-        engravedTotemView.setFitHeight(height);
         engravedTotemView.setPreserveRatio(true);
         return engravedTotemView;
     }
 
-    private ImageView createStainImageView(int stainIndex, Totem chosenTotem, double height) {
+    private ImageView createStainImageView(int stainIndex, Totem chosenTotem) {
         Image stainImg = getImage(PATH_STAINS + stainIndex + ".png");
         if (stainImg == null) return null;
 
         ImageView stainView = new ImageView(stainImg);
-        stainView.setFitHeight(height);
         stainView.setPreserveRatio(true);
 
         Color fxColor = Color.web("rgb(" + chosenTotem.getTotemColorRGB() + ")");
@@ -343,15 +426,6 @@ public class LobbyGuiController {
         stainView.setEffect(lighting);
 
         return stainView;
-    }
-
-    private Font loadFont(double size) {
-        InputStream fontStream = getClass().getResourceAsStream(FONT_PATH);
-        if (fontStream != null) {
-            Font f = Font.loadFont(fontStream, size);
-            if (f != null) return f;
-        }
-        return Font.font("System", FontWeight.BOLD, size);
     }
 
     private Image getImage(String path) {
@@ -368,7 +442,6 @@ public class LobbyGuiController {
         Image img = getImage(path);
         if (img != null) imageView.setImage(img);
     }
-
 
     private void animateSlotEntrance(VBox slot, int delayMillis) {
         slot.setOpacity(0);
@@ -412,7 +485,6 @@ public class LobbyGuiController {
         });
     }
 
-
     private it.polimi.gc06.mesos.model.Color mapTotemToColor(Totem totem) {
         return switch (totem.name().toUpperCase()) {
             case "ORANGE" -> it.polimi.gc06.mesos.model.Color.ORANGE;
@@ -455,7 +527,6 @@ public class LobbyGuiController {
 
             } catch (Exception e) {
                 System.err.println("Error during game start transition: " + e.getMessage());
-                //e.printStackTrace();
             }
         });
     }

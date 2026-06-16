@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
@@ -15,26 +14,21 @@
 
     <ImageView fx:id="backgroundImage"/>
 
-    <AnchorPane fx:id="effectsLayer" mouseTransparent="true">
+    <Pane fx:id="effectsLayer" mouseTransparent="true">
         <ImageView fx:id="smokeGifView"/>
         <ImageView fx:id="fireGifView"/>
-    </AnchorPane>
+    </Pane>
 
-    <VBox fx:id="mainContent" alignment="CENTER" spacing="15">
-        <padding>
-            <Insets top="40" right="40" bottom="20" left="40"/>
-        </padding>
+    <VBox fx:id="mainContent" alignment="CENTER">
+        <Label fx:id="titleLabel" text="CHOOSE YOUR COLOR" style="-fx-text-fill: white;" />
 
-        <StackPane>
-            <Label fx:id="titleLabel" text="CHOOSE YOUR COLOR" style="-fx-text-fill: white;" StackPane.alignment="CENTER"/>
-            <Label fx:id="playerCounterLabel" style="-fx-text-fill: white;" StackPane.alignment="CENTER_RIGHT"/>
-        </StackPane>
+        <HBox fx:id="lobbyContainer" alignment="CENTER" VBox.vgrow="ALWAYS" />
 
-        <HBox fx:id="lobbyContainer" alignment="CENTER" spacing="40" VBox.vgrow="ALWAYS" />
-
-        <StackPane fx:id="bowlTray" maxWidth="800" style="-fx-background-color: rgba(255, 255, 255, 0.30); -fx-background-radius: 20; -fx-padding: 20;">
-            <HBox fx:id="totemSelectionBox" alignment="CENTER" spacing="40" />
+        <StackPane fx:id="bowlTray" style="-fx-background-color: rgba(255, 255, 255, 0.30); -fx-background-radius: 20;">
+            <HBox fx:id="totemSelectionBox" alignment="CENTER" />
         </StackPane>
     </VBox>
+
+    <Label fx:id="playerCounterLabel" style="-fx-text-fill: white;" StackPane.alignment="TOP_RIGHT"/>
 
 </StackPane>

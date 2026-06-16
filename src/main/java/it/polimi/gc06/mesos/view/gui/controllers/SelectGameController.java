@@ -209,6 +209,7 @@ public class SelectGameController {
         if (GUI.smallModel != null) GUI.smallModel.setMaxPlayers(numPlayers);
 
         try {
+            GUI.subscribeGUI();
             int currentMatchId = GUI.client.getServerConnection().createMatch(numPlayers, LoginController.getNickname());
             System.out.println("match " + (currentMatchId) + " created");
 
@@ -226,6 +227,7 @@ public class SelectGameController {
         rootPane.setDisable(true);
 
         try {
+            GUI.subscribeGUI();
             boolean joined = GUI.client.getServerConnection().joinMatch(matchId, LoginController.getNickname());
             if (joined) {
 
