@@ -41,6 +41,13 @@ public abstract class DTOVisitor {
      *
      * @param dto the patch getting visited.
      */
+    public void visit(PlayerJoinedLobbyDTO dto) { }
+
+    /**
+     * Overridable hook for generic DTO patches.
+     *
+     * @param dto the patch getting visited.
+     */
     public void visit(PickBottomRowDTO dto) {
         visit((SmallModelEditor) dto);
     }

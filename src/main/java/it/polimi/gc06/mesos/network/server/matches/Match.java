@@ -1,6 +1,7 @@
 package it.polimi.gc06.mesos.network.server.matches;
 
 import it.polimi.gc06.mesos.controller.GameController;
+import it.polimi.gc06.mesos.dtos.PlayerJoinedLobbyDTO;
 import it.polimi.gc06.mesos.dtos.snapshots.*;
 import it.polimi.gc06.mesos.controller.commands.ControllerCommand;
 import it.polimi.gc06.mesos.gameExceptions.IllegalGameActionException;
@@ -12,6 +13,7 @@ import it.polimi.gc06.mesos.network.server.VirtualClient;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.stream.Collectors;
@@ -36,6 +38,8 @@ public class Match {
 
     private GameModel model;
 
+    private final DTONotifier notifier;
+
     /**
      * Initializes a new match waiting for players to join.
      *
@@ -53,7 +57,7 @@ public class Match {
         model = null;
 
         actionQueue = new LinkedBlockingQueue<>();
-
+        notifier = new DTONotifier();
     }
 
     /**
@@ -64,22 +68,17 @@ public class Match {
      */
     protected synchronized void start() throws IOException {
         ArrayList<String> playerNames = new ArrayList<>(players.stream().map(VirtualClient::getNickname).collect(Collectors.toCollection(ArrayList::new)));
-        DTONotifier notifier = new DTONotifier();
-        model = new ModelInstancesManager(notifier).createGame(playerNames);
 
-        players.forEach(c -> c.subscribeToNotifier(notifier)); //adds all listeners
+        model = new ModelInstancesManager(notifier).createGame(playerNames);
         model.startGame();
 
         controller = new GameController(model, notifier);
         hasStarted = true;
         players.forEach(c -> c.setController(controller));
         players.forEach(c -> c.setActionQueue(actionQueue));
-        players.forEach(c -> playersThreads.add(new Thread(c, c.getNickname())));
-        playersThreads.forEach(Thread::start);
 
         matchExecutorThread = new Thread(this::matchLoop, "MatchExecutorThread-" + matchId);
         matchExecutorThread.start();
-
     }
 
     /**
@@ -108,7 +107,6 @@ public class Match {
 
                 } catch (IllegalGameActionException | IndexOutOfBoundsException e) {
                     System.err.println("An error occurred while trying to perform " + action.getNickname() + " action: ");
-                    //e.printStackTrace();
                     System.err.println("Faulty action: " + action.getRequest() + ", index: " + action.getIndex());
 
                     players.stream()
@@ -117,7 +115,6 @@ public class Match {
 
                 } catch (Exception e) {
                     System.err.println("Critical error stemming from: " + action.getNickname() + " action: " + e.getMessage());
-                    //e.printStackTrace();
                 }
 
             } catch (InterruptedException e) {
@@ -131,7 +128,6 @@ public class Match {
                     System.out.println("Leaderboard saved!");
             } catch (Exception e) {
                 System.err.println("Something went wrong with leaderboard saving request, please check if mySql server is online: " + e.getMessage());
-                //e.printStackTrace();
             }
         }
     }
@@ -156,6 +152,20 @@ public class Match {
     public synchronized boolean addPlayer(VirtualClient c) throws IllegalStateException, IOException {
         if (isFull() || hasStarted) throw new IllegalStateException();
         players.add(c);
+
+        Thread clientThread = new Thread(c, c.getNickname());
+        playersThreads.add(clientThread);
+        clientThread.start();
+
+        c.subscribeToNotifier(notifier);
+
+        List<String> currentPlayers = players.stream().map(VirtualClient::getNickname).toList();
+        PlayerJoinedLobbyDTO lobbyUpdate = new PlayerJoinedLobbyDTO(new ArrayList<>(currentPlayers));
+
+        for (VirtualClient player : players) {
+            notifier.notifyChangeToPlayer(player.getNickname(), lobbyUpdate);
+        }
+
         if (isFull()) start();
         return true;
     }

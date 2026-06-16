@@ -35,6 +35,19 @@ public class GUIDTOVisitor extends DTOVisitor {
     @Override
     public void visit(SmallModelEditor dto) {
         super.visit(dto);
+
+        if (lobbyGuiController != null) {
+            Platform.runLater(() -> {
+                lobbyGuiController.refreshLobbyUI();
+                lobbyGuiController.checkAndStartGame();
+            });
+        }
+
+        if (boardController != null) {
+            Platform.runLater(() -> {
+                boardController.drawEverything();
+            });
+        }
     }
 
     @Override
@@ -44,6 +57,19 @@ public class GUIDTOVisitor extends DTOVisitor {
             lobbyGuiController.refreshLobbyUI();
             lobbyGuiController.checkAndStartGame();
         });
+    }
+
+    @Override
+    public void visit(PlayerJoinedLobbyDTO dto) {
+        System.out.println("New player joined the lobby!");
+
+        dto.edit(GUI.smallModel);
+
+        if (lobbyGuiController != null) {
+            Platform.runLater(() -> {
+                lobbyGuiController.refreshLobbyUI();
+            });
+        }
     }
 
     @Override

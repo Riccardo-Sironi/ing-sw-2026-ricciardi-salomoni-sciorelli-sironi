@@ -88,6 +88,9 @@ public class LobbyInitializedDTO implements SmallModelEditor {
 
         tileEffects.forEach(e -> smallModel.getOfferTrack().add(new TileSlotView(e)));
 
+        smallModel.getOpponents().clear();
+        smallModel.getTurnOrderTile().clear();
+
         smallModel.setPlayer(nickname, colorMap.get(nickname));
         smallModel.setActive(isActive);
 
