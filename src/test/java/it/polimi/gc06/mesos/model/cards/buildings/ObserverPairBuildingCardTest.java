@@ -4,6 +4,8 @@ import it.polimi.gc06.mesos.model.Player;
 import it.polimi.gc06.mesos.model.cards.CardVisitor;
 import org.junit.jupiter.api.*;
 
+import java.util.ArrayList;
+
 import static org.mockito.Mockito.*;
 
 class ObserverPairBuildingCardTest {
@@ -24,24 +26,28 @@ class ObserverPairBuildingCardTest {
     }
 
     @BeforeEach
-    void setUp(TestInfo testInfo)  {
+    void setUp(TestInfo testInfo) {
         System.out.println("[START] " + testInfo.getDisplayName());
     }
 
     @Test
-    void testUpdateWhenPairCompleted(){
+    void testUpdateWhenPairCompleted() {
         ObserverPairBuildingCard observerPairBuildingCard = new ObserverPairBuildingCard();
         Player mockPlayer = mock(Player.class);
+        ArrayList<BuildingCard> buildingCards = new ArrayList<>();
+        buildingCards.add(observerPairBuildingCard);
+
+        when(mockPlayer.getBuildingCards()).thenReturn(buildingCards);
 
         when(mockPlayer.hasCompletedPair()).thenReturn(true);
         observerPairBuildingCard.update(mockPlayer);
 
-        verify(mockPlayer, times(1)).addFoodTokens(2);
+        verify(mockPlayer, times(1)).addFoodTokens(3);
         verify(mockPlayer, times(1)).decreaseInventorPair();
     }
 
     @Test
-    void testUpdateWhenPairNotCompleted(){
+    void testUpdateWhenPairNotCompleted() {
         ObserverPairBuildingCard observerPairBuildingCard = new ObserverPairBuildingCard();
         Player mockPlayer = mock(Player.class);
 
@@ -53,7 +59,7 @@ class ObserverPairBuildingCardTest {
     }
 
     @Test
-    void testAccept(){
+    void testAccept() {
         CardVisitor visitor = mock(CardVisitor.class);
         ObserverPairBuildingCard observerPairBuildingCard = new ObserverPairBuildingCard();
         observerPairBuildingCard.accept(visitor);

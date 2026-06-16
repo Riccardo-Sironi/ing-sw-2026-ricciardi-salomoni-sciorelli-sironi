@@ -15,7 +15,7 @@ public class ObserverPairBuildingCard extends BuildingCard implements DrawObserv
     public void update(Player player) {
         if (player.getBuildingCards().contains(this)) {
             if (player.hasCompletedPair()) {
-                player.addFoodTokens(2);
+                player.addFoodTokens(3);
                 player.decreaseInventorPair();
             }
         }
