@@ -122,48 +122,48 @@ public class Player {
             @Override
             public void visit(ArtistCard card) {
                 notifier.notifyChange(new PlayerRecapDTO(
-                        nickname,null,null, null,
-                        null,null,getArtistsCounter()
+                        nickname, null, null, null,
+                        null, null, getArtistsCounter()
                 ));
             }
 
             @Override
             public void visit(BuilderCard card) {
                 notifier.notifyChange(new PlayerRecapDTO(
-                        nickname,getBuildersDiscount(),null,null,null, null,
-                        null,characterDeck.get(CharacterType.BUILDER).size(),null,null
+                        nickname, getBuildersDiscount(), null, null, null, null,
+                        null, characterDeck.get(CharacterType.BUILDER).size(), null, null
                 ));
             }
 
             @Override
             public void visit(ShamanCard card) {
                 notifier.notifyChange(new PlayerRecapDTO(
-                        nickname,null,getShamanStars(),null,null, null,
-                        null,null,characterDeck.get(CharacterType.SHAMAN).size(),null
+                        nickname, null, getShamanStars(), null, null, null,
+                        null, null, characterDeck.get(CharacterType.SHAMAN).size(), null
                 ));
             }
 
             @Override
             public void visit(HunterCard card) {
                 notifier.notifyChange(new PlayerRecapDTO(
-                        nickname,null,null, getHuntersCounter(),
-                        null,null,null
+                        nickname, null, null, getHuntersCounter(),
+                        null, null, null
                 ));
             }
 
             @Override
             public void visit(InventorCard card) {
                 notifier.notifyChange(new PlayerRecapDTO(
-                        nickname,getBuildersDiscount(),null,null,null,null,
-                        null,getInventorsCounter(),null,getInventorIcons()
+                        nickname, getBuildersDiscount(), null, null, null, null,
+                        null, getInventorsCounter(), null, getInventorIcons()
                 ));
             }
 
             @Override
             public void visit(GathererCard card) {
                 notifier.notifyChange(new PlayerRecapDTO(
-                        nickname,null,null, null,
-                        getGatherersCounter(),null,null
+                        nickname, null, null, null,
+                        getGatherersCounter(), null, null
                 ));
             }
         };
@@ -264,7 +264,7 @@ public class Player {
         if (amount < 0) throw new IllegalArgumentException("Amount must be non-negative");
         this.foodTokens += amount;
         notifier.notifyChange(new PlayerResourcesChangeDTO(
-                nickname,null,null,foodTokens,null
+                nickname, null, null, foodTokens, null
         ));
     }
 
@@ -280,7 +280,7 @@ public class Player {
         if ((this.foodTokens - amount) < 0) throw new IllegalStateException("Not enough food tokens to remove");
         this.foodTokens -= amount;
         notifier.notifyChange(new PlayerResourcesChangeDTO(
-                nickname,null,null,foodTokens,null
+                nickname, null, null, foodTokens, null
         ));
     }
 
@@ -304,7 +304,7 @@ public class Player {
         if (amount < 0) throw new IllegalArgumentException("Amount must be non-negative");
         this.prestigeTokens += amount;
         notifier.notifyChange(new PlayerResourcesChangeDTO(
-                nickname,null,null,null,prestigeTokens
+                nickname, null, null, null, prestigeTokens
         ));
     }
 
@@ -319,7 +319,7 @@ public class Player {
         if (amount < 0) throw new IllegalArgumentException("Amount must be non-negative");
         this.prestigeTokens -= amount;
         notifier.notifyChange(new PlayerResourcesChangeDTO(
-                nickname,null,null,null,prestigeTokens
+                nickname, null, null, null, prestigeTokens
         ));
     }
 
@@ -408,7 +408,7 @@ public class Player {
         if (topDrawNum < 0) throw new IllegalArgumentException("Amount must be non-negative");
         this.topDrawNum = topDrawNum;
         notifier.notifyChange(new PlayerResourcesChangeDTO(
-                nickname,topDrawNum,null,null,null
+                nickname, topDrawNum, null, null, null
         ));
     }
 
@@ -420,7 +420,7 @@ public class Player {
         if (bottomDrawNum < 0) throw new IllegalArgumentException("Amount must be non-negative");
         this.bottomDrawNum = bottomDrawNum;
         notifier.notifyChange(new PlayerResourcesChangeDTO(
-                nickname,null,bottomDrawNum,null,null
+                nickname, null, bottomDrawNum, null, null
         ));
     }
 
@@ -522,7 +522,7 @@ public class Player {
      *
      * @throws IllegalStateException if the inventor pairs map has already been initialized
      */
-    protected void initInventorPairs() throws IllegalStateException {
+    public void initInventorPairs() throws IllegalStateException {
         if (inventorPairs != null) throw new IllegalStateException("Inventor pairs have already been initialized");
 
         inventorPairs = new EnumMap<>(InventionIcon.class);
@@ -626,7 +626,7 @@ public class Player {
      *
      * @return the {@link Set} containing all the collected inventor icons
      */
-    public Set<InventionIcon> getInventorIcons(){
+    public Set<InventionIcon> getInventorIcons() {
         InventorIconVisitor visitor = new InventorIconVisitor();
         Set<InventionIcon> iconSet = new HashSet<>();
         for (CharacterCard card : characterDeck.get(CharacterType.INVENTOR)) {

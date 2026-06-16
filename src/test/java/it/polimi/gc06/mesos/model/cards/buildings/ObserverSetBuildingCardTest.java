@@ -1,7 +1,10 @@
 package it.polimi.gc06.mesos.model.cards.buildings;
 
+import it.polimi.gc06.mesos.model.DTONotifier;
+import it.polimi.gc06.mesos.model.GameInfo;
 import it.polimi.gc06.mesos.model.Player;
 import it.polimi.gc06.mesos.model.cards.CardVisitor;
+import it.polimi.gc06.mesos.model.cards.characters.*;
 import org.junit.jupiter.api.*;
 
 import java.util.ArrayList;
@@ -66,6 +69,79 @@ class ObserverSetBuildingCardTest {
         observerSetBuildingCard.accept(visitor);
 
         verify(visitor, times(1)).visit(observerSetBuildingCard);
+    }
+
+    @Test
+    void testAcquiringFullSetTriggersFoodReward() {
+        GameInfo mockGameInfo = mock(GameInfo.class);
+        ModifierBuildingsRegistry mockRegistry = mock(ModifierBuildingsRegistry.class);
+        DTONotifier mockNotifier = mock(DTONotifier.class);
+
+        Player player = new Player("TestPlayer", null, mockRegistry, mockNotifier);
+        player.setEnvironment(mockGameInfo);
+
+        int initialFood = player.getFoodTokens();
+
+        ObserverSetBuildingCard buildingCard = new ObserverSetBuildingCard();
+        player.addBuildingCards(buildingCard);
+
+        // we mock the cards and define their accept() behavior to trigger the Visitor pattern without needing their real constructors.
+        ArtistCard artist = mock(ArtistCard.class);
+        doAnswer(i -> {
+            ((CardVisitor) i.getArgument(0)).visit(artist);
+            return null;
+        }).when(artist).accept(any());
+
+        BuilderCard builder = mock(BuilderCard.class);
+        doAnswer(i -> {
+            ((CardVisitor) i.getArgument(0)).visit(builder);
+            return null;
+        }).when(builder).accept(any());
+
+        GathererCard gatherer = mock(GathererCard.class);
+        doAnswer(i -> {
+            ((CardVisitor) i.getArgument(0)).visit(gatherer);
+            return null;
+        }).when(gatherer).accept(any());
+
+        HunterCard hunter = mock(HunterCard.class);
+        doAnswer(i -> {
+            ((CardVisitor) i.getArgument(0)).visit(hunter);
+            return null;
+        }).when(hunter).accept(any());
+
+        ShamanCard shaman = mock(ShamanCard.class);
+        doAnswer(i -> {
+            ((CardVisitor) i.getArgument(0)).visit(shaman);
+            return null;
+        }).when(shaman).accept(any());
+
+        InventorCard inventor = mock(InventorCard.class);
+        doAnswer(i -> {
+            ((CardVisitor) i.getArgument(0)).visit(inventor);
+            return null;
+        }).when(inventor).accept(any());
+
+        player.addCharacterCards(artist);
+        player.addCharacterCards(builder);
+        player.addCharacterCards(gatherer);
+        player.addCharacterCards(hunter);
+        player.addCharacterCards(shaman);
+
+        buildingCard.update(player);
+
+        Assertions.assertEquals(initialFood, player.getFoodTokens(),
+                "Food tokens should not increase with an incomplete set (5/6 characters)");
+
+        player.addCharacterCards(inventor);
+
+        buildingCard.update(player);
+
+        Assertions.assertEquals(initialFood + 5, player.getFoodTokens(),
+                "Food tokens should increase by 5 after completing a full character set");
+
+        Assertions.assertFalse(player.hasCompletedSet(),
+                "The completed set flag should be reset after the reward is claimed");
     }
 
 }

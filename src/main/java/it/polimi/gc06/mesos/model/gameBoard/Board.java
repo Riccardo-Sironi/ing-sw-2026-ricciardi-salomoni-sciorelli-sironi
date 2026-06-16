@@ -513,9 +513,9 @@ public class Board implements DrawSubject {
 
         int cardIndex = topRow.indexOf(card);
 
-        notifyObserverBuildings(player);
         topRow.remove(card);
         player.addCharacterCards(card);
+        notifyObserverBuildings(player);
 
         //notify clients via gateway
         notifier.notifyChange(new PickTopRowDTO(player.getNickname(), cardIndex));
@@ -551,9 +551,9 @@ public class Board implements DrawSubject {
 
         int cardIndex = bottomRow.indexOf(card);
 
-        notifyObserverBuildings(player);
         bottomRow.remove(card);
         player.addCharacterCards(card);
+        notifyObserverBuildings(player);
 
         //notify clients via gateway
         notifier.notifyChange(new PickBottomRowDTO(player.getNickname(), cardIndex));
