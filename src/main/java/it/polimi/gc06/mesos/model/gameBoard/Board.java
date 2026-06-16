@@ -322,7 +322,7 @@ public class Board implements DrawSubject {
         }
 
         notifier.notifyChange(new TopRowRefillDTO(new ArrayList<>(topRow),
-                new ArrayList<>(bottomRow), model.getTribeCardsDeck().values().stream().mapToInt(ArrayList::size).sum() + 2));
+                new ArrayList<>(bottomRow), model.getTribeCardsDeck().values().stream().mapToInt(ArrayList::size).sum() + (isEndGame ? 0 : 2)));
     }
 
     /**
@@ -592,7 +592,7 @@ public class Board implements DrawSubject {
         if (finalCost > player.getFoodTokens()) {
             throw new IllegalGameActionException("Player does not have enough food tokens to buy this building");
         }
-        
+
         int cardIndex = topBuildings.indexOf(building);
 
         player.removeFoodTokens(Math.max(0, finalCost));

@@ -39,6 +39,7 @@ import javafx.util.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 import static it.polimi.gc06.mesos.view.gui.GUI.*;
@@ -786,11 +787,14 @@ public class BoardController {
             cardView.setCard(card);
 
             cardView.setOnMouseClicked(e -> {
-                try {
-                    client.getServerConnection().pickCardFromTop(smallModel.getPlayer().getNickname(), cardIndex);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
+                cardView.setDisable(true);
+                CompletableFuture.runAsync(() -> {
+                    try {
+                        client.getServerConnection().pickCardFromTop(smallModel.getPlayer().getNickname(), cardIndex);
+                    } catch (Exception ex) {
+                        Platform.runLater(() -> cardView.setDisable(false));
+                    }
+                });
             });
 
             CardEffectVisitor visitor = new CardEffectVisitor(cardView, smallModel.getTopDrawNum());
@@ -814,11 +818,14 @@ public class BoardController {
             cardView.setCard(building);
 
             cardView.setOnMouseClicked(e -> {
-                try {
-                    client.getServerConnection().pickBuildingFromTop(smallModel.getPlayer().getNickname(), cardIndex);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
+                cardView.setDisable(true);
+                CompletableFuture.runAsync(() -> {
+                    try {
+                        client.getServerConnection().pickBuildingFromTop(smallModel.getPlayer().getNickname(), cardIndex);
+                    } catch (Exception ex) {
+                        Platform.runLater(() -> cardView.setDisable(false));
+                    }
+                });
             });
 
             CardEffectVisitor visitor = new CardEffectVisitor(cardView, smallModel.getTopDrawNum());
@@ -842,11 +849,14 @@ public class BoardController {
             cardView.setCard(card);
 
             cardView.setOnMouseClicked(e -> {
-                try {
-                    client.getServerConnection().pickCardFromBottom(smallModel.getPlayer().getNickname(), cardIndex);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
+                cardView.setDisable(true);
+                CompletableFuture.runAsync(() -> {
+                    try {
+                        client.getServerConnection().pickCardFromBottom(smallModel.getPlayer().getNickname(), cardIndex);
+                    } catch (Exception ex) {
+                        Platform.runLater(() -> cardView.setDisable(false));
+                    }
+                });
             });
 
             CardEffectVisitor visitor = new CardEffectVisitor(cardView, smallModel.getBottomDrawNum());
@@ -872,11 +882,14 @@ public class BoardController {
             cardView.setCard(building);
 
             cardView.setOnMouseClicked(e -> {
-                try {
-                    client.getServerConnection().pickBuildingFromBottom(smallModel.getPlayer().getNickname(), cardIndex);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
+                cardView.setDisable(true);
+                CompletableFuture.runAsync(() -> {
+                    try {
+                        client.getServerConnection().pickBuildingFromBottom(smallModel.getPlayer().getNickname(), cardIndex);
+                    } catch (Exception ex) {
+                        Platform.runLater(() -> cardView.setDisable(false));
+                    }
+                });
             });
 
             CardEffectVisitor visitor = new CardEffectVisitor(cardView, smallModel.getBottomDrawNum());
@@ -1384,12 +1397,9 @@ public class BoardController {
     }
 
     public void handleEndGame() {
-        // TODO : we should add some end game animation here, but for now we just clear the board and show the end game screen
-
         topCharactersContainer.getChildren().clear();
         bottomCharactersContainer.getChildren().clear();
         topBuildingsContainer.getChildren().clear();
         bottomBuildingsContainer.getChildren().clear();
-        // drawBottomRowCards();
     }
 }
