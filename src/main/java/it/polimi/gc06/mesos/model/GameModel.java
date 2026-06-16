@@ -22,6 +22,7 @@ import it.polimi.gc06.mesos.view.smallModel.TileSlotView;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class GameModel implements GameInfo {
 
@@ -157,6 +158,11 @@ public class GameModel implements GameInfo {
         board.moveFromTopToBottom();
 
         events.addAll(board.cleanBottomRow());
+
+        events = events.stream()
+                .sorted(Comparator.comparing(EventCard::isLastToBeResolved)
+                        .thenComparing(EventCard::getEra))
+                .collect(Collectors.toCollection(ArrayList::new));
 
         board.getBottomRow().addAll(events);
 
@@ -330,13 +336,13 @@ public class GameModel implements GameInfo {
      * Sends resume DTO to all clients (when a match is restored and the game should resume where left).
      *
      * @throws IllegalStateException if model configuration are inconsistent:
-     * 1. there are player in the turn orderTile not present in players board list.
+     *                               1. there are player in the turn orderTile not present in players board list.
      */
-    public void sendResumeInfo() throws IllegalStateException{
+    public void sendResumeInfo() throws IllegalStateException {
 
         List<SmallModel> models = new ArrayList<>();
 
-        for(Player p: getPlayers()){
+        for (Player p : getPlayers()) {
             SmallModel model = new SmallModel(p.getNickname());
             //setup model
             model.setTribeDeckSize(getTribeCardsDeck().values().stream().mapToInt(ArrayList::size).sum() + 2);
@@ -348,19 +354,20 @@ public class GameModel implements GameInfo {
             model.getTopBuildings().addAll(board.getTopBuildings());
             model.getBottomBuildings().addAll(board.getBottomBuildings());
             //setup player
-            model.setPlayer(p.getNickname(),p.getPlayerColor());
+            model.setPlayer(p.getNickname(), p.getPlayerColor());
             model.setBottomDrawNum(p.getBottomDrawNum());
             model.setTopDrawNum(p.getTopDrawNum());
             model.setBottomDrawNum(p.getBottomDrawNum());
             model.getPlayer().setNumFood(p.getFoodTokens());
             model.getPlayer().setNumPrestige(p.getPrestigeTokens());
-            p.getCharacterDeck().forEach((t,l)-> model.getPlayer().getCharacters().addAll(l));
+            p.getCharacterDeck().forEach((t, l) -> model.getPlayer().getCharacters().addAll(l));
             model.getPlayer().getBuildings().addAll(p.getBuildingCards());
             model.setActive(turnManager.getActivePlayer().getNickname().equals(p.getNickname()));
             boolean canSkip = false;
-            try{
-                canSkip = turnManager.getPhase().checkForRightToSkip(p,board);
-            }catch(IllegalGameActionException e) {}
+            try {
+                canSkip = turnManager.getPhase().checkForRightToSkip(p, board);
+            } catch (IllegalGameActionException e) {
+            }
             model.setCanSkip(canSkip);
             //player recap info
             model.getPlayer().setShamanStar(p.getShamanStars());
@@ -375,9 +382,9 @@ public class GameModel implements GameInfo {
             models.add(model);
         }
         //setup turn order tile
-        for(TileSlot tile : board.getTurnOrderTile().slots()){
-            if(tile.getPlayer() == null) models.forEach(m -> m.getTurnOrderTile().add(null));
-            else{
+        for (TileSlot tile : board.getTurnOrderTile().slots()) {
+            if (tile.getPlayer() == null) models.forEach(m -> m.getTurnOrderTile().add(null));
+            else {
                 PlayerView pv = models.stream().map(SmallModel::getPlayer)
                         .filter(p -> p.getNickname().equals(tile.getPlayer().getNickname())).findFirst()
                         .orElseThrow(IllegalStateException::new);
@@ -385,9 +392,9 @@ public class GameModel implements GameInfo {
             }
         }
         //setup offer track
-        for(TileSlot tile : board.getOfferTrack()){
+        for (TileSlot tile : board.getOfferTrack()) {
             TileSlotView tv = new TileSlotView(tile.getTileEffect());
-            if(tile.getPlayer() != null){
+            if (tile.getPlayer() != null) {
                 PlayerView pv = models.stream().map(SmallModel::getPlayer)
                         .filter(p -> p.getNickname().equals(tile.getPlayer().getNickname())).findFirst()
                         .orElseThrow(IllegalStateException::new);
@@ -396,7 +403,7 @@ public class GameModel implements GameInfo {
             models.forEach(m -> m.getOfferTrack().add(tv));
         }
         //setup opponents
-        for(SmallModel m : models){
+        for (SmallModel m : models) {
             List<PlayerView> ops = models.stream().map(SmallModel::getPlayer)
                     .filter(p -> !p.getNickname().equals(m.getPlayer().getNickname()))
                     .toList();

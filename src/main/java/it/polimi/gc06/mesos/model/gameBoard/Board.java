@@ -592,17 +592,10 @@ public class Board implements DrawSubject {
         if (finalCost > player.getFoodTokens()) {
             throw new IllegalGameActionException("Player does not have enough food tokens to buy this building");
         }
-
-
-        /*
-         * The try-catch block catches IllegalStateException from operations that modify player and board state.
-         * If removeFoodTokens succeeds but addBuildingCards throws an exception, the building is removed from
-         * topBuildings but not added to the player, leaving the game state inconsistent. Consider implementing
-         * proper transaction semantics or rollback mechanisms to ensure atomicity of this operation.*/
-
+        
         int cardIndex = topBuildings.indexOf(building);
 
-        player.removeFoodTokens(finalCost);
+        player.removeFoodTokens(Math.max(0, finalCost));
         topBuildings.remove(building);
         building.accept(new AddToBuildingsVisitor(player));
 
@@ -642,7 +635,7 @@ public class Board implements DrawSubject {
 
         int cardIndex = bottomBuildings.indexOf(building);
 
-        player.removeFoodTokens(finalCost);
+        player.removeFoodTokens(Math.max(0, finalCost));
         bottomBuildings.remove(building);
         building.accept(new AddToBuildingsVisitor(player));
 
