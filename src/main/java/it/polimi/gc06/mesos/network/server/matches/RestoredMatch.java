@@ -28,20 +28,20 @@ import java.util.stream.Collectors;
 
 public class RestoredMatch extends Match {
 
-    private final Map<String,Boolean> previousPlayers;
+    private final Map<String, Boolean> previousPlayers;
     private final GameModel restoredModel;
 
     /**
      * Initializes a new match waiting for players to join.
      *
-     * @param matchId the unique identifier for this match.
+     * @param matchId       the unique identifier for this match.
      * @param restoredModel the model of the match.
      */
     public RestoredMatch(int matchId, GameModel restoredModel) {
         super(matchId, restoredModel.getPlayers().size());
         previousPlayers = new HashMap<>();
         List<String> players = restoredModel.getPlayers().stream().map(Player::getNickname).toList();
-        for(String p : players) previousPlayers.put(p,false);
+        for (String p : players) previousPlayers.put(p, false);
         this.restoredModel = restoredModel;
     }
 
@@ -50,14 +50,13 @@ public class RestoredMatch extends Match {
      * If the match reaches its target capacity with this new player, the game will start automatically!
      *
      * @param c the client trying to join
+     * @return true only if the player was connected before server crashed.
      * @throws IllegalStateException if the match is full or has already started
      * @throws IOException           if there is an issue establishing the initial game model for the clients
-     *
-     * @return true only if the player was connected before server crashed.
      */
     @Override
     public synchronized boolean addPlayer(VirtualClient c) throws IllegalStateException, IOException {
-        if(!previousPlayers.containsKey(c.getNickname())) return false;
+        if (!previousPlayers.containsKey(c.getNickname())) return false;
         return super.addPlayer(c);
     }
 
@@ -66,7 +65,7 @@ public class RestoredMatch extends Match {
      * to begin processing player actions.
      */
     @Override
-    protected synchronized void start(){
+    protected synchronized void start() {
         ArrayList<String> playerNames = players.stream().map(VirtualClient::getNickname).collect(Collectors.toCollection(ArrayList::new));
         DTONotifier notifier = new DTONotifier();
         restoredModel.setNotifier(notifier);
@@ -78,14 +77,16 @@ public class RestoredMatch extends Match {
         hasStarted = true;
         players.forEach(c -> c.setController(controller));
         players.forEach(c -> c.setActionQueue(actionQueue));
-        players.forEach(c -> playersThreads.add(new Thread(c, c.getNickname())));
-        playersThreads.forEach(Thread::start);
+
+        // TODO : Manuel look here!
+//        players.forEach(c -> playersThreads.add(new Thread(c, c.getNickname())));
+//        playersThreads.forEach(Thread::start);
 
         matchExecutorThread = new Thread(this::matchLoop, "MatchExecutorThread-" + getMatchId());
         matchExecutorThread.start();
     }
 
-    public static GameModel restoreGame(GameSnapshot snapshot, ModifierBuildingsRegistry registry){
+    public static GameModel restoreGame(GameSnapshot snapshot, ModifierBuildingsRegistry registry) {
 
         Map<String, Player> livePlayersMap = new HashMap<>();
         List<Player> orderedPlayers = new ArrayList<>();
@@ -181,7 +182,7 @@ public class RestoredMatch extends Match {
             }
         };
         cardRegistryInjector.setResult(registry);
-        model.getTribeCardsDeck().forEach((e,l) -> l.forEach(t -> t.accept(cardRegistryInjector)));
+        model.getTribeCardsDeck().forEach((e, l) -> l.forEach(t -> t.accept(cardRegistryInjector)));
         board.getTopRow().forEach(t -> t.accept(cardRegistryInjector));
         board.getBottomRow().forEach(t -> t.accept(cardRegistryInjector));
         model.getFinalEventCards()[0].accept(cardRegistryInjector);
@@ -192,6 +193,7 @@ public class RestoredMatch extends Match {
             public void visit(ObserverSetBuildingCard building) {
                 board.addObserver(building);
             }
+
             public void visit(ObserverPairBuildingCard building) {
                 board.addObserver(building);
             }
@@ -204,7 +206,7 @@ public class RestoredMatch extends Match {
     }
 
     @Override
-    public void accept(MatchVisitor mv){
+    public void accept(MatchVisitor mv) {
         mv.visit(this);
     }
 
