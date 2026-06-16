@@ -6,7 +6,12 @@ import it.polimi.gc06.mesos.view.gui.helpers.Totem;
 import it.polimi.gc06.mesos.view.smallModel.PlayerView;
 import javafx.animation.*;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.DoubleBinding;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.effect.*;
@@ -39,8 +44,13 @@ public class LeaderboardController {
     @FXML
     private AnchorPane totemsContainer;
 
+    private DoubleBinding scaleBinding;
+    private String cachedFontFamily = "System";
+    private String cachedTitleFontFamily = "System";
+
     private static final String FONT_PATH = "/it/polimi/gc06/mesos/fonts/KidKnowledge.otf";
-    private static final String IMG_STELE = "/imgs/background/lobby_background.png"; // Usa lo sfondo corretto se ne hai un altro
+    private static final String FONT_PATH_TITLE = "/it/polimi/gc06/mesos/fonts/ArcadianG.ttf";
+    private static final String IMG_STELE = "/imgs/background/lobby_background.png";
     private static final String IMG_FIRE = "/imgs/effect/flames.gif";
     private static final String IMG_SMOKE = "/imgs/effect/smoke.gif";
 
@@ -58,10 +68,23 @@ public class LeaderboardController {
             "/imgs/totems/stain_5.png"
     };
 
-    private static final double LEADERBOARD_MAX_WIDTH = 200.0;
-    private static final double DISTANCE_FROM_BOTTOM = 80.0;
-    private static final double PIXELS_PER_POINT = 2.0;
+    private static final double BASE_W = 1280.0;
+    private static final double BASE_H = 720.0;
 
+    private static final double SMOKE_FIT_WIDTH = 350.0;
+    private static final double FIRE_FIT_WIDTH = 280.0;
+    private static final double SMOKE_OPACITY = 0.65;
+    private static final double FIRE_OPACITY = 0.85;
+    private static final double BLUR_RADIUS = 18.0;
+    private static final double SMOKE_BOTTOM_ANCHOR = 110.0;
+    private static final double SMOKE_LEFT_ANCHOR = 35.0;
+    private static final double FIRE_BOTTOM_ANCHOR = 90.0;
+    private static final double FIRE_LEFT_ANCHOR = 45.0;
+
+    private static final double DISTANCE_FROM_BOTTOM = 80.0;
+    private static final double MAX_BAR_HEIGHT = 250.0;
+
+    private static final double FONT_SIZE_TITLE = 54.0;
     private static final double FONT_SIZE_NAME = 24.0;
     private static final double FONT_SIZE_SCORE = 36.0;
 
@@ -71,91 +94,211 @@ public class LeaderboardController {
 
     @FXML
     public void initialize() {
+        initFontCache();
+
+        scaleBinding = Bindings.createDoubleBinding(() -> {
+            double wScale = rootPane.getWidth() / BASE_W;
+            double hScale = rootPane.getHeight() / BASE_H;
+            if (wScale <= 0 || hScale <= 0) return 1.0;
+            return Math.min(wScale, hScale);
+        }, rootPane.widthProperty(), rootPane.heightProperty());
+
         loadImage(steleBackground, IMG_STELE);
         steleBackground.fitWidthProperty().bind(rootPane.widthProperty());
         steleBackground.fitHeightProperty().bind(rootPane.heightProperty());
 
         setupAtmosphere();
+        setupTitle();
 
         Platform.runLater(() -> {
             if (GUI.smallModel != null && GUI.smallModel.getLeaderboard() != null && !GUI.smallModel.getLeaderboard().isEmpty()) {
-
                 setupStaticLeaderboard(GUI.smallModel.getLeaderboard());
-
             } else {
-                System.out.println("Error: Leaderboard empty or not found. Using mock data.");
                 List<Score> mockScores = new ArrayList<>();
-                mockScores.add(new Score("A", 110, 10));
-                mockScores.add(new Score("B", 85, 8));
-                mockScores.add(new Score("C", 65, 12));
-                mockScores.add(new Score("D", 45, 5));
-                mockScores.add(new Score("E", 20, 2));
+                mockScores.add(new Score("A", 47, 10));
+                mockScores.add(new Score("B", 25, 8));
+                mockScores.add(new Score("C", 35, 12));
+                mockScores.add(new Score("D", 56, 3));
+                mockScores.add(new Score("E", 70, 2));
 
                 setupStaticLeaderboard(mockScores);
             }
         });
     }
 
+    private void initFontCache() {
+        try (InputStream fontStream = getClass().getResourceAsStream(FONT_PATH)) {
+            if (fontStream != null) {
+                Font f = Font.loadFont(fontStream, 10);
+                if (f != null) {
+                    cachedFontFamily = f.getFamily();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try (InputStream titleFontStream = getClass().getResourceAsStream(FONT_PATH_TITLE)) {
+            if (titleFontStream != null) {
+                Font f = Font.loadFont(titleFontStream, 10);
+                if (f != null) {
+                    cachedTitleFontFamily = f.getFamily();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private Font loadFont(double size) {
+        return Font.font(cachedFontFamily, FontWeight.BOLD, size);
+    }
+
+    private void setupTitle() {
+        Label titleLabel = new Label("LEADERBOARD");
+        titleLabel.setTextFill(Color.WHITE);
+        titleLabel.setEffect(new DropShadow(3, Color.BLACK));
+
+        titleLabel.fontProperty().bind(Bindings.createObjectBinding(() ->
+                        Font.font(cachedTitleFontFamily, FontWeight.BOLD, Math.max(20, FONT_SIZE_TITLE * scaleBinding.get())),
+                scaleBinding
+        ));
+
+        StackPane.setAlignment(titleLabel, Pos.TOP_CENTER);
+        titleLabel.translateYProperty().bind(scaleBinding.multiply(BASE_H * 0.08));
+
+        rootPane.getChildren().add(titleLabel);
+    }
+
     private void setupAtmosphere() {
         loadImage(smokeGifView, IMG_SMOKE);
+        if (smokeGifView.getImage() != null) {
+            Image img = smokeGifView.getImage();
+            double origRatio = img.getHeight() / img.getWidth();
+            smokeGifView.setPreserveRatio(false);
+            smokeGifView.setOpacity(SMOKE_OPACITY);
+            smokeGifView.setBlendMode(BlendMode.SCREEN);
+            smokeGifView.setEffect(new GaussianBlur(BLUR_RADIUS));
+            smokeGifView.setManaged(false);
+
+            smokeGifView.fitWidthProperty().bind(rootPane.widthProperty().multiply(SMOKE_FIT_WIDTH / BASE_W));
+            smokeGifView.fitHeightProperty().bind(rootPane.heightProperty().multiply((SMOKE_FIT_WIDTH * origRatio) / BASE_H));
+            smokeGifView.layoutXProperty().bind(rootPane.widthProperty().multiply(SMOKE_LEFT_ANCHOR / BASE_W));
+            smokeGifView.layoutYProperty().bind(rootPane.heightProperty().subtract(
+                    rootPane.heightProperty().multiply(SMOKE_BOTTOM_ANCHOR / BASE_H)
+            ).subtract(smokeGifView.fitHeightProperty()));
+        }
+
         loadImage(fireGifView, IMG_FIRE);
+        if (fireGifView.getImage() != null) {
+            Image img = fireGifView.getImage();
+            double origRatio = img.getHeight() / img.getWidth();
+            fireGifView.setPreserveRatio(false);
+            fireGifView.setOpacity(FIRE_OPACITY);
+            fireGifView.setBlendMode(BlendMode.SCREEN);
+            fireGifView.setEffect(new GaussianBlur(BLUR_RADIUS));
+            fireGifView.setManaged(false);
 
-        fireGifView.setFitWidth(450.0);
-        fireGifView.setPreserveRatio(true);
-        fireGifView.setBlendMode(BlendMode.SCREEN);
-        fireGifView.setEffect(new GaussianBlur(18.0));
-        AnchorPane.setLeftAnchor(fireGifView, 0.0);
-        AnchorPane.setBottomAnchor(fireGifView, 140.0);
-
-        smokeGifView.setFitWidth(450.0);
-        smokeGifView.setPreserveRatio(true);
-        smokeGifView.setBlendMode(BlendMode.SCREEN);
-        smokeGifView.setEffect(new GaussianBlur(18.0));
-        AnchorPane.setLeftAnchor(smokeGifView, -5.0);
-        AnchorPane.setBottomAnchor(smokeGifView, 200.0);
+            fireGifView.fitWidthProperty().bind(rootPane.widthProperty().multiply(FIRE_FIT_WIDTH / BASE_W));
+            fireGifView.fitHeightProperty().bind(rootPane.heightProperty().multiply((FIRE_FIT_WIDTH * origRatio) / BASE_H));
+            fireGifView.layoutXProperty().bind(rootPane.widthProperty().multiply(FIRE_LEFT_ANCHOR / BASE_W));
+            fireGifView.layoutYProperty().bind(rootPane.heightProperty().subtract(
+                    rootPane.heightProperty().multiply(FIRE_BOTTOM_ANCHOR / BASE_H)
+            ).subtract(fireGifView.fitHeightProperty()));
+        }
     }
 
     public void setupStaticLeaderboard(List<Score> finalScores) {
         totemsContainer.getChildren().clear();
-        int maxPlayers = finalScores.size();
+
+        List<Score> displayScores = new ArrayList<>();
+
+        if (GUI.smallModel != null && GUI.smallModel.getPlayer() != null) {
+            String localNickname = GUI.smallModel.getPlayer().getNickname();
+
+            finalScores.stream()
+                    .filter(s -> s.getNickname().equals(localNickname))
+                    .findFirst()
+                    .ifPresent(displayScores::add);
+
+            for (PlayerView opp : GUI.smallModel.getOpponents()) {
+                finalScores.stream()
+                        .filter(s -> s.getNickname().equals(opp.getNickname()))
+                        .findFirst()
+                        .ifPresent(displayScores::add);
+            }
+        } else {
+            displayScores.addAll(finalScores);
+            Collections.shuffle(displayScores, random);
+        }
+
+        int maxPlayers = displayScores.size();
+
+        int maxScore = displayScores.stream()
+                .mapToInt(s -> Math.max(0, s.getPrestigeScore() + s.getFoodScore()))
+                .max()
+                .orElse(1);
+
+        if (maxScore == 0) maxScore = 1;
+
+        StackPane wrapperPane = new StackPane();
+        AnchorPane.setTopAnchor(wrapperPane, 0.0);
+        AnchorPane.setBottomAnchor(wrapperPane, 0.0);
+        AnchorPane.setLeftAnchor(wrapperPane, 0.0);
+        AnchorPane.setRightAnchor(wrapperPane, 0.0);
 
         HBox playersRow = new HBox();
         playersRow.setAlignment(Pos.BOTTOM_CENTER);
-        playersRow.setPrefHeight(800);
 
-        AnchorPane.setBottomAnchor(playersRow, DISTANCE_FROM_BOTTOM);
-        AnchorPane.setLeftAnchor(playersRow, 0.0);
-        AnchorPane.setRightAnchor(playersRow, 0.0);
+        DoubleBinding containerMaxWidth = scaleBinding.multiply(BASE_W * 0.40);
+        playersRow.maxWidthProperty().bind(containerMaxWidth);
+        playersRow.prefWidthProperty().bind(containerMaxWidth);
 
-        double dynamicSpacing = (LEADERBOARD_MAX_WIDTH / maxPlayers) * 0.15;
-        playersRow.setSpacing(dynamicSpacing);
+        playersRow.paddingProperty().bind(Bindings.createObjectBinding(() ->
+                        new Insets(0, 0, rootPane.getHeight() * (DISTANCE_FROM_BOTTOM / BASE_H), 0),
+                rootPane.heightProperty()
+        ));
 
-        double dynamicTotemHeight = 350.0 - (maxPlayers * 25.0);
-        double dynamicStainHeight = dynamicTotemHeight * 1.25;
-        double fontScale = maxPlayers > 3 ? 0.8 : 1.0;
+        DoubleBinding spacingBind = scaleBinding.multiply(BASE_W * 0.015);
+        playersRow.spacingProperty().bind(spacingBind);
+
+        int FIXED_SLOTS = 5;
+        DoubleBinding slotWidth = containerMaxWidth
+                .subtract(spacingBind.multiply(FIXED_SLOTS - 1))
+                .divide(FIXED_SLOTS);
+
+        double baseTotemHeight = BASE_H * 0.35;
+        double baseStainHeight = baseTotemHeight * 1.25;
+        double fontScale = 0.75;
 
         List<String> availableStains = new ArrayList<>(Arrays.asList(STAIN_ASSETS));
         Collections.shuffle(availableStains, random);
 
         for (int i = 0; i < maxPlayers; i++) {
-            Score score = finalScores.get(i);
+            Score score = displayScores.get(i);
             String assignedStain = availableStains.get(i % availableStains.size());
 
-            VBox playerSlot = createPlayerSlot(score, assignedStain, i + 1, dynamicTotemHeight, dynamicStainHeight, fontScale);
+            VBox playerSlot = createPlayerSlot(score, assignedStain, i + 1, baseTotemHeight, baseStainHeight, fontScale, slotWidth, maxScore);
             playersRow.getChildren().add(playerSlot);
         }
 
-        totemsContainer.getChildren().add(playersRow);
+        wrapperPane.getChildren().add(playersRow);
+        totemsContainer.getChildren().add(wrapperPane);
     }
 
-    private VBox createPlayerSlot(Score score, String stainAssetPath, int rank, double totemHeight, double stainHeight, double fontScale) {
-        VBox playerSlot = new VBox(5);
+    private VBox createPlayerSlot(Score score, String stainAssetPath, int rank, double totemHeight, double stainHeight, double fontScale, DoubleBinding slotWidth, int maxScore) {
+        VBox playerSlot = new VBox();
         playerSlot.setAlignment(Pos.BOTTOM_CENTER);
+        playerSlot.spacingProperty().bind(scaleBinding.multiply(5));
+
+        playerSlot.minWidthProperty().bind(slotWidth);
+        playerSlot.maxWidthProperty().bind(slotWidth);
 
         String targetColorHex = getColorHexFromModel(score.getNickname(), rank);
 
         Label scoreValueLabel = new Label("0");
-        scoreValueLabel.setFont(loadFont(FONT_SIZE_SCORE * fontScale));
+        scoreValueLabel.fontProperty().bind(Bindings.createObjectBinding(() ->
+                loadFont(FONT_SIZE_SCORE * fontScale * scaleBinding.get()), scaleBinding));
         scoreValueLabel.setTextFill(Color.WHITE);
         scoreValueLabel.setEffect(new DropShadow(5, Color.BLACK));
         scoreValueLabel.setOpacity(0);
@@ -163,23 +306,24 @@ public class LeaderboardController {
         Region scoreBar = new Region();
         scoreBar.setStyle("-fx-background-color: " + targetColorHex + "; -fx-border-color: white; -fx-border-width: 2; -fx-background-radius: 5; -fx-border-radius: 5;");
         scoreBar.setMaxWidth(Region.USE_PREF_SIZE);
-        scoreBar.setPrefWidth(45.0 * fontScale);
-        scoreBar.setMinHeight(0);
-        scoreBar.setPrefHeight(0);
+        scoreBar.prefWidthProperty().bind(slotWidth.multiply(0.35));
 
-        StackPane totemStack = createTotemWithStain(targetColorHex, stainAssetPath, totemHeight, stainHeight);
+        DoubleProperty animatedBaseHeight = new SimpleDoubleProperty(0);
+        scoreBar.prefHeightProperty().bind(animatedBaseHeight.multiply(scaleBinding));
+        scoreBar.minHeightProperty().bind(scoreBar.prefHeightProperty());
+
+        StackPane totemStack = createTotemWithStain(targetColorHex, stainAssetPath, totemHeight, stainHeight, slotWidth);
 
         Label nameLabel = new Label(score.getNickname().toUpperCase());
-        nameLabel.setFont(loadFont(FONT_SIZE_NAME * fontScale));
+        nameLabel.fontProperty().bind(Bindings.createObjectBinding(() ->
+                loadFont(FONT_SIZE_NAME * fontScale * scaleBinding.get()), scaleBinding));
         nameLabel.setTextFill(Color.WHITE);
         nameLabel.setEffect(new DropShadow(5, Color.BLACK));
 
         playerSlot.getChildren().addAll(scoreValueLabel, scoreBar, totemStack, nameLabel);
 
-        int finalScorePoints = score.getPrestigeScore() + score.getFoodScore();
-        double targetH = Math.max(0, finalScorePoints * PIXELS_PER_POINT);
-
-        double duration = Math.max(0.1, Math.max(0, finalScorePoints) / POINTS_PER_SECOND);
+        int finalScorePoints = Math.max(0, score.getPrestigeScore() + score.getFoodScore());
+        double duration = Math.max(0.1, finalScorePoints / POINTS_PER_SECOND);
 
         Transition climb = new Transition() {
             {
@@ -189,7 +333,8 @@ public class LeaderboardController {
 
             @Override
             protected void interpolate(double frac) {
-                scoreBar.setPrefHeight(targetH * frac);
+                double targetH = ((double) finalScorePoints / maxScore) * MAX_BAR_HEIGHT;
+                animatedBaseHeight.set(targetH * frac);
                 scoreValueLabel.setText(String.valueOf((int) (finalScorePoints * frac)));
             }
         };
@@ -220,12 +365,13 @@ public class LeaderboardController {
         return playerSlot;
     }
 
-    private StackPane createTotemWithStain(String colorHex, String stainPath, double totemHeight, double stainHeight) {
+    private StackPane createTotemWithStain(String colorHex, String stainPath, double totemHeight, double stainHeight, DoubleBinding slotWidth) {
         StackPane stack = new StackPane();
-        stack.setAlignment(Pos.CENTER);
+        stack.setAlignment(Pos.BOTTOM_CENTER);
 
         ImageView stainView = new ImageView(getImage(stainPath));
-        stainView.setFitHeight(stainHeight);
+        stainView.fitHeightProperty().bind(scaleBinding.multiply(stainHeight));
+        stainView.fitWidthProperty().bind(slotWidth);
         stainView.setPreserveRatio(true);
         stainView.setOpacity(0.8);
 
@@ -235,7 +381,8 @@ public class LeaderboardController {
 
         String randomAsset = TOTEM_ASSETS[random.nextInt(TOTEM_ASSETS.length)];
         ImageView totemView = new ImageView(getImage(randomAsset));
-        totemView.setFitHeight(totemHeight);
+        totemView.fitHeightProperty().bind(scaleBinding.multiply(totemHeight));
+        totemView.fitWidthProperty().bind(slotWidth);
         totemView.setPreserveRatio(true);
 
         ColorAdjust stone = new ColorAdjust();
@@ -264,12 +411,6 @@ public class LeaderboardController {
             case 5 -> Totem.PURPLE.getTotemColorHex();
             default -> "#FFFFFF";
         };
-    }
-
-    private Font loadFont(double size) {
-        InputStream is = getClass().getResourceAsStream(FONT_PATH);
-        if (is != null) return Font.loadFont(is, size);
-        return Font.font("System", FontWeight.BOLD, size);
     }
 
     private void loadImage(ImageView iv, String path) {
