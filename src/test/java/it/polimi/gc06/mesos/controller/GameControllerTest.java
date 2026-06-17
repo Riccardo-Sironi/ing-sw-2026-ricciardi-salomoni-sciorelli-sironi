@@ -2,6 +2,7 @@ package it.polimi.gc06.mesos.controller;
 
 import it.polimi.gc06.mesos.gameExceptions.IllegalGameActionException;
 import it.polimi.gc06.mesos.gameExceptions.IllegalPhaseActionException;
+import it.polimi.gc06.mesos.model.Color;
 import it.polimi.gc06.mesos.model.DTONotifier;
 import it.polimi.gc06.mesos.model.GameModel;
 import it.polimi.gc06.mesos.model.Player;
@@ -73,6 +74,7 @@ class GameControllerTest {
         when(turnManagerMock.getPhase()).thenReturn(phaseMock);
         when(activePlayerMock.getNickname()).thenReturn(activeNickname);
 
+        // Manteniamo esattamente la tua inizializzazione originale
         controller = new GameController(modelMock, new DTONotifier());
 
         System.out.println("[START] " + testInfo.getDisplayName() + " DONE");
@@ -198,5 +200,59 @@ class GameControllerTest {
         controller.handleBuildingPickTopRow(activeNickname, 0);
 
         verify(phaseMock).pickCardFromTop(turnManagerMock, activePlayerMock, buildingCardMock, boardMock);
+    }
+
+    @Test
+    void handlePickSkip_WrongPlayer_ThrowsException() {
+        IllegalPhaseActionException ex = assertThrows(IllegalPhaseActionException.class, () ->
+                controller.handlePickSkip("WrongPlayer")
+        );
+        assertEquals("It's not WrongPlayer's turn !", ex.getMessage());
+    }
+
+    @Test
+    void handlePickSkip_Success() throws IllegalGameActionException {
+        controller.handlePickSkip(activeNickname);
+        verify(phaseMock).skipPick(turnManagerMock, activePlayerMock);
+    }
+
+    @Test
+    void handleChooseTotemColor_PlayersNotAllReady() {
+        Player player1 = mock(Player.class);
+        Player player2 = mock(Player.class);
+
+        when(player1.getNickname()).thenReturn(activeNickname);
+        when(player2.getNickname()).thenReturn("OtherPlayer");
+
+        when(player1.getPlayerColor()).thenReturn(Color.TURQUOISE);
+        when(player2.getPlayerColor()).thenReturn(null);
+
+        ArrayList<Player> mockPlayersList = new ArrayList<>(List.of(player1, player2));
+        when(modelMock.getPlayers()).thenReturn(mockPlayersList);
+
+        controller.handleChooseTotemColor(activeNickname, Color.TURQUOISE);
+
+        verify(player1).setPlayerColor(Color.TURQUOISE);
+        verify(modelMock, never()).saveSnapshot();
+    }
+
+    @Test
+    void handleChooseTotemColor_AllPlayersReady() {
+        Player player1 = mock(Player.class);
+        Player player2 = mock(Player.class);
+
+        when(player1.getNickname()).thenReturn(activeNickname);
+        when(player2.getNickname()).thenReturn("OtherPlayer");
+
+        when(player1.getPlayerColor()).thenReturn(Color.TURQUOISE);
+        when(player2.getPlayerColor()).thenReturn(Color.ORANGE);
+
+        ArrayList<Player> mockPlayersList = new ArrayList<>(List.of(player1, player2));
+        when(modelMock.getPlayers()).thenReturn(mockPlayersList);
+
+        controller.handleChooseTotemColor(activeNickname, Color.TURQUOISE);
+        
+        verify(player1).setPlayerColor(Color.TURQUOISE);
+        verify(modelMock, times(1)).saveSnapshot();
     }
 }
