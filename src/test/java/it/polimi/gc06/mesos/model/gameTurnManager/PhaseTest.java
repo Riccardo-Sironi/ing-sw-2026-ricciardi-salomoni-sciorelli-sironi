@@ -136,5 +136,20 @@ class PhaseTest {
 
         assertEquals("You can't pick Event Cards during the Offer Resolution Phase!", exception.getMessage());
     }
-}
 
+    @Test
+    void testSkipPickThrowsException() {
+        IllegalPhaseActionException exception = assertThrows(IllegalPhaseActionException.class, () ->
+                phase.skipPick(turnManager, player));
+
+        assertEquals("You can't skip top pick in this phase!", exception.getMessage());
+    }
+
+    @Test
+    void testCheckForRightToSkipThrowsException() {
+        IllegalPhaseActionException exception = assertThrows(IllegalPhaseActionException.class, () ->
+                phase.checkForRightToSkip(player, board));
+
+        assertEquals("You can't skip top pick in this phase!", exception.getMessage());
+    }
+}
