@@ -50,6 +50,16 @@ class FoodTileEffectTest {
     }
 
     @Test
+    void testGettersAndSetters() {
+        FoodTileEffect e1 = new FoodTileEffect(5);
+        assertEquals(5, e1.getNumFood());
+
+        FoodTileEffect e2 = new FoodTileEffect();
+        e2.setNumFood(3);
+        assertEquals(3, e2.getNumFood());
+    }
+
+    @Test
     void testExecuteAddsNormalFood() {
         when(mockPlayer.getBuildingCards()).thenReturn(new ArrayList<>());
 
@@ -79,5 +89,21 @@ class FoodTileEffectTest {
         TileEffectVisitor mockVisitor = mock(TileEffectVisitor.class);
         effect.accept(mockVisitor);
         verify(mockVisitor, times(1)).visit(effect);
+    }
+
+    @Test
+    void testEqualsAndHashCode() {
+        FoodTileEffect e1 = new FoodTileEffect(2);
+        FoodTileEffect e2 = new FoodTileEffect(2);
+        FoodTileEffect e3 = new FoodTileEffect(3);
+
+        assertEquals(e1, e1);
+        assertEquals(e1, e2);
+        assertNotEquals(e1, e3);
+        assertNotEquals(e1, null);
+        assertNotEquals(e1, new Object());
+
+        assertEquals(e1.hashCode(), e2.hashCode());
+        assertNotEquals(e1.hashCode(), e3.hashCode());
     }
 }

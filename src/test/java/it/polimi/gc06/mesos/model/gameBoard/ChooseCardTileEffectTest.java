@@ -27,10 +27,15 @@ class ChooseCardTileEffectTest {
 
     @BeforeEach
     void setUp(TestInfo testInfo) {
-
         mockPlayer = mock(Player.class);
-
         System.out.println("[START] " + testInfo.getDisplayName());
+    }
+
+    @Test
+    void testGetters() {
+        ChooseCardTileEffect effect = new ChooseCardTileEffect(2, 3);
+        assertEquals(2, effect.getNumOfTopCards());
+        assertEquals(3, effect.getNumOfBottomCards());
     }
 
     @Test
@@ -67,5 +72,27 @@ class ChooseCardTileEffectTest {
         TileEffectVisitor mockVisitor = mock(TileEffectVisitor.class);
         effect.accept(mockVisitor);
         verify(mockVisitor, times(1)).visit(effect);
+    }
+
+    @Test
+    void testEqualsAndHashCode() {
+        ChooseCardTileEffect e1 = new ChooseCardTileEffect(2, 1);
+        ChooseCardTileEffect e2 = new ChooseCardTileEffect(2, 1);
+
+        ChooseCardTileEffect e3 = new ChooseCardTileEffect(1, 1);
+        ChooseCardTileEffect e4 = new ChooseCardTileEffect(2, 5);
+
+        assertEquals(e1, e1);
+        assertEquals(e1, e2);
+
+        assertNotEquals(e1, e3);
+        assertNotEquals(e1, e4);
+
+        assertNotEquals(e1, null);
+        assertNotEquals(e1, new Object());
+
+        assertEquals(e1.hashCode(), e2.hashCode());
+        assertNotEquals(e1.hashCode(), e3.hashCode());
+        assertNotEquals(e1.hashCode(), e4.hashCode());
     }
 }

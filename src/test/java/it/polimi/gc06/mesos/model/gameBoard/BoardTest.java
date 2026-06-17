@@ -14,6 +14,7 @@ import it.polimi.gc06.mesos.model.cards.events.EventCard;
 import it.polimi.gc06.mesos.model.cards.events.PaintingsEvent;
 import it.polimi.gc06.mesos.model.cards.events.RitualEvent;
 import it.polimi.gc06.mesos.model.cards.events.SustenanceEvent;
+import it.polimi.gc06.mesos.model.gameTurnManager.DrawObserver;
 import org.junit.jupiter.api.*;
 
 import java.util.*;
@@ -21,13 +22,11 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-
 class BoardTest {
 
     private Board board;
     private GameModel modelMock;
 
-    // Supporto per i dati finti
     private ArrayList<Player> players;
     private EnumMap<Era, ArrayList<TribeCard>> tribeDecks;
     private EnumMap<Era, ArrayList<BuildingCard>> buildingDecks;
@@ -49,7 +48,7 @@ class BoardTest {
     }
 
     @BeforeEach
-    void setUp(TestInfo testInfo)  {
+    void setUp(TestInfo testInfo) {
         board = new Board(null, null, new DTONotifier());
         modelMock = mock(GameModel.class);
 
@@ -62,7 +61,6 @@ class BoardTest {
         tribeDecks = new EnumMap<>(Era.class);
         for (Era era : Era.values()) {
             ArrayList<TribeCard> deck = new ArrayList<>();
-            // Aggiungiamo un numero sufficiente di carte mockate
             for (int i = 0; i < 84; i++) {
                 deck.add(new GathererCard(era));
             }
@@ -95,41 +93,6 @@ class BoardTest {
         System.out.println("[START] " + testInfo.getDisplayName());
     }
 
-
-
-    /*
-    @Test
-    void testGetOfferTrackPlayerSlotSuccess() {
-        board.initBoard(modelMock);
-
-        Player p1 = mock(Player.class);
-        int p1Index = 2;
-        board.getOfferTrack().get(p1Index).setPlayer(p1);
-
-        assertEquals(board.getOfferTrackPlayerSlot(p1), board.getOfferTrack().get(p1Index),
-                "it should return the offer track slot occupied by the player");
-    }
-
-    @Test
-    void testGetOfferTrackPlayerSlotPlayerNotInTrack() {
-        board.initBoard(modelMock);
-
-        Player p1 = mock(Player.class);
-        assertNull(board.getOfferTrackPlayerSlot(p1), "it should return null if the player is not in the offer track");
-    }
-
-    @Test
-    void testIsOfferTrackEmptyReturnFalseWhenPlayerPresent() {
-        board.initBoard(modelMock);
-
-        Player p = mock(Player.class);
-        board.getOfferTrack().getFirst().setPlayer(p);
-
-        assertFalse(board.isOfferTrackEmpty(), "it should return false if there is at least one player in the offer track");
-    }
-
-    */
-
     @Test
     void testInitBoardSuccess() {
         assertDoesNotThrow(() -> board.initBoard(modelMock));
@@ -147,8 +110,6 @@ class BoardTest {
         assertTrue(board.getBuildingsDecks().get(board.getCurrentEra()).isEmpty(), "There should be a building deck for each era");
 
         assertEquals(Era.ERA_I, board.getCurrentEra());
-
-        //assertTrue(board.isOfferTrackEmpty(), "Offer track should be empty after initialization");
     }
 
     @Test
@@ -241,40 +202,10 @@ class BoardTest {
 
         assertThrows(IllegalArgumentException.class, () -> board.initBoard(modelMock));
 
-        // Setup con eventi finali insufficienti
         when(modelMock.getFinalEventCards()).thenReturn(new EventCard[]{mock(EventCard.class)});
 
         assertThrows(IllegalArgumentException.class, () -> board.initBoard(modelMock));
     }
-
-    /*
-    @Test
-    void testInitBoardOfferTrackInitParameterized() {
-        int[][] mtx = {{2, 4}, {3, 5}, {4, 6}, {5, 7}};
-
-        for (int[] ints : mtx) {
-            int numberOfPlayers = ints[0];
-            int expectedTrackSize = ints[1];
-            testOfferTrackSizeForPlayers(numberOfPlayers, expectedTrackSize);
-        }
-    }
-
-    private void testOfferTrackSizeForPlayers(int numberOfPlayers, int expectedTrackSize) {
-        board = new Board(mock(ModifierBuildingCard.class));
-
-        ArrayList<Player> customPlayers = new ArrayList<>();
-        for (int j = 0; j < numberOfPlayers; j++) {
-            customPlayers.add(mock(Player.class));
-        }
-        when(modelMock.getPlayers()).thenReturn(customPlayers);
-
-        board.initBoard(modelMock);
-
-        assertEquals(expectedTrackSize, board.getOfferTrack().size(),
-                "Dimensione errata per " + numberOfPlayers + " giocatori");
-    }
-    */
-
 
     @Test
     void populateTopRowCardCount() {
@@ -337,11 +268,9 @@ class BoardTest {
 
     @Test
     void testPopulateTopRowThrowExceptionWhenTopRowFilled() {
-        // we fill the top row with more cards than expected to trigger the exception
         for (int i = 0; i < modelMock.getPlayers().size() + 5; i++) {
             board.getTopRow().add(mock(TribeCard.class));
         }
-
         assertThrows(IllegalStateException.class, () -> board.populateTopRow(modelMock));
     }
 
@@ -350,7 +279,6 @@ class BoardTest {
         board.initBoard(modelMock);
         board.getTopRow().clear();
 
-        // add just one card per deck to avoid exceptions and trigger end game condition
         for (Era era : Era.values()) {
             ArrayList<TribeCard> deck = new ArrayList<>();
             deck.add(mock(HunterCard.class));
@@ -403,7 +331,7 @@ class BoardTest {
     }
 
     @Test
-    void testPopulateTopRowEndGameCondition(){
+    void testPopulateTopRowEndGameCondition() {
         for (Era era : Era.values()) {
             board.getBuildingsDecks().get(era).add(mock(BuildingCard.class));
         }
@@ -429,8 +357,8 @@ class BoardTest {
 
         assertEquals(4, board.getTopRow().size(), "Top row should be populated with final event cards when end game condition is met");
 
-        assertEquals(finalEvents[0],  board.getTopRow().get(2), "should have been added the first FINAL EVENT");
-        assertEquals(finalEvents[1],  board.getTopRow().get(3), "should have been added the second FINAL EVENT");
+        assertEquals(finalEvents[0], board.getTopRow().get(2), "should have been added the first FINAL EVENT");
+        assertEquals(finalEvents[1], board.getTopRow().get(3), "should have been added the second FINAL EVENT");
     }
 
     @Test
@@ -512,7 +440,6 @@ class BoardTest {
                 "bottom row should have its card plus the ones moved from top row");
         assertEquals(expectedTopSize, board.getTopRow().size(),
                 "top row should be empty after moving all cards to bottom row");
-
     }
 
     @Test
@@ -586,7 +513,6 @@ class BoardTest {
 
     @Test
     void testPopulateTopBuildingsThrowExceptionCurrentEraDeckNull() {
-        // we are missing the initialization of the board, which is the situation in which this method is expected to be called, so the current era deck will be empty
         assertThrows(IllegalStateException.class, () -> board.populateTopBuildings());
     }
 
@@ -603,7 +529,6 @@ class BoardTest {
 
         assertEquals(initialTopRowSize - 1, board.getTopRow().size(),
                 "Picking a card from the top row should decrease its size by one");
-        // we know that the card is a HunterCard, so it should be added to the player's character deck
         assertTrue(p.getCharacterDeck().get(CharacterType.HUNTER).contains(card), " The picked card should be added to the player's character deck");
     }
 
@@ -650,7 +575,6 @@ class BoardTest {
 
         assertEquals(initialBottomRowSize - 1, board.getBottomRow().size(),
                 "Picking a card from the bottom row should decrease its size by one");
-        // we know that the card is a HunterCard, so it should be added to the player's character deck
         assertTrue(p.getCharacterDeck().get(CharacterType.HUNTER).contains(card), "The picked card should be added to the player's character deck");
     }
 
@@ -892,5 +816,40 @@ class BoardTest {
         assertEquals(slot1, trackBoard.getOfferTrackPlayerSlot(player1), "Offer track should return player1");
 
         assertNull(trackBoard.getOfferTrackPlayerSlot(player2), "should return null for another player not in any slot");
+    }
+
+    @Test
+    void testNotifyObserverBuildings() {
+        DrawObserver mockObserver = mock(DrawObserver.class);
+        Player mockPlayer = mock(Player.class);
+
+        board.addObserver(mockObserver);
+        board.notifyObserverBuildings(mockPlayer);
+
+        verify(mockObserver, times(1)).update(mockPlayer);
+    }
+
+    @Test
+    void testSetNotifier() {
+        DTONotifier mockNotifier = mock(DTONotifier.class);
+        assertDoesNotThrow(() -> board.setNotifier(mockNotifier));
+    }
+
+    @Test
+    void testForceState() {
+        List<TribeCard> topRow = new ArrayList<>();
+        List<TribeCard> bottomRow = new ArrayList<>();
+        List<BuildingCard> topBuildings = new ArrayList<>();
+        List<BuildingCard> bottomBuildings = new ArrayList<>();
+
+        Map<Era, List<BuildingCard>> decks = new EnumMap<>(Era.class);
+        decks.put(Era.ERA_I, new ArrayList<>());
+        decks.put(Era.ERA_II, new ArrayList<>());
+        decks.put(Era.ERA_III, new ArrayList<>());
+
+        board.forceState(Era.ERA_II, true, topRow, bottomRow, topBuildings, bottomBuildings, decks);
+
+        assertEquals(Era.ERA_II, board.getCurrentEra());
+        assertTrue(board.isEndGame());
     }
 }
