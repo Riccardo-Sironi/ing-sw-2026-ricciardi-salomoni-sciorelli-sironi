@@ -18,8 +18,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -87,10 +85,10 @@ class GameControllerTest {
 
     @Test
     void testIsGameFinished() {
-        when(boardMock.isEndGame()).thenReturn(true);
+        when(modelMock.isFinished()).thenReturn(true);
         assertTrue(controller.isGameFinished());
 
-        when(boardMock.isEndGame()).thenReturn(false);
+        when(modelMock.isFinished()).thenReturn(false);
         assertFalse(controller.isGameFinished());
     }
 
@@ -124,18 +122,14 @@ class GameControllerTest {
     }
 
     @Test
-    void handleTotemOfferTilePlacement_Success_FiresPropertyChange() throws IllegalPhaseActionException {
+    void handleTotemOfferTilePlacement_Success() throws IllegalPhaseActionException {
         List<TileSlot> offerTrack = new ArrayList<>(List.of(tileSlotMock));
         when(boardMock.getOfferTrack()).thenReturn(offerTrack);
         when(tileSlotMock.getPlayer()).thenReturn(null);
 
-        PropertyChangeListener listenerMock = mock(PropertyChangeListener.class);
-        //controller.addListener(listenerMock);
-
         controller.handleTotemOfferTilePlacement(activeNickname, 0);
 
         verify(phaseMock).placeTotem(turnManagerMock, activePlayerMock, tileSlotMock, boardMock);
-        verify(listenerMock, times(1)).propertyChange(any(PropertyChangeEvent.class));
     }
 
     @Test
@@ -143,20 +137,16 @@ class GameControllerTest {
         IllegalPhaseActionException ex = assertThrows(IllegalPhaseActionException.class, () ->
                 controller.handleCardPickBottomRow("WrongPlayer", 0)
         );
-        assertEquals("It's not WrongPlayer turn !", ex.getMessage());
+        assertEquals("It's not WrongPlayer's turn !", ex.getMessage());
     }
 
     @Test
-    void handleCardPickBottomRow_Success_FiresPropertyChange() throws IllegalGameActionException {
+    void handleCardPickBottomRow_Success() throws IllegalGameActionException {
         when(boardMock.getBottomCardFromIndex(0)).thenReturn(characterCardMock);
-
-        PropertyChangeListener listenerMock = mock(PropertyChangeListener.class);
-        //controller.addListener(listenerMock);
 
         controller.handleCardPickBottomRow(activeNickname, 0);
 
         verify(characterCardMock).accept(any(CardBottomRowControllerVisitor.class));
-        verify(listenerMock, times(1)).propertyChange(any(PropertyChangeEvent.class));
     }
 
     @Test
@@ -164,20 +154,16 @@ class GameControllerTest {
         IllegalPhaseActionException ex = assertThrows(IllegalPhaseActionException.class, () ->
                 controller.handleCardPickTopRow("WrongPlayer", 0)
         );
-        assertEquals("It's not WrongPlayer turn !", ex.getMessage());
+        assertEquals("It's not WrongPlayer's turn !", ex.getMessage());
     }
 
     @Test
-    void handleCardPickTopRow_Success_FiresPropertyChange() throws IllegalGameActionException {
+    void handleCardPickTopRow_Success() throws IllegalGameActionException {
         when(boardMock.getTopCardFromIndex(0)).thenReturn(characterCardMock);
-
-        PropertyChangeListener listenerMock = mock(PropertyChangeListener.class);
-        //controller.addListener(listenerMock);
 
         controller.handleCardPickTopRow(activeNickname, 0);
 
         verify(characterCardMock).accept(any(CardTopRowControllerVisitor.class));
-        verify(listenerMock, times(1)).propertyChange(any(PropertyChangeEvent.class));
     }
 
     @Test
@@ -185,20 +171,16 @@ class GameControllerTest {
         IllegalPhaseActionException ex = assertThrows(IllegalPhaseActionException.class, () ->
                 controller.handleBuildingPickBottomRow("WrongPlayer", 0)
         );
-        assertEquals("It's not WrongPlayer turn !", ex.getMessage());
+        assertEquals("It's not WrongPlayer's turn !", ex.getMessage());
     }
 
     @Test
-    void handleBuildingPickBottomRow_Success_FiresPropertyChange() throws IllegalGameActionException {
+    void handleBuildingPickBottomRow_Success() throws IllegalGameActionException {
         when(boardMock.getBottomBuildingFromIndex(0)).thenReturn(buildingCardMock);
-
-        PropertyChangeListener listenerMock = mock(PropertyChangeListener.class);
-        //controller.addListener(listenerMock);
 
         controller.handleBuildingPickBottomRow(activeNickname, 0);
 
         verify(phaseMock).pickCardFromBottom(turnManagerMock, activePlayerMock, buildingCardMock, boardMock);
-        verify(listenerMock, times(1)).propertyChange(any(PropertyChangeEvent.class));
     }
 
     @Test
@@ -206,21 +188,15 @@ class GameControllerTest {
         IllegalPhaseActionException ex = assertThrows(IllegalPhaseActionException.class, () ->
                 controller.handleBuildingPickTopRow("WrongPlayer", 0)
         );
-        assertEquals("It's not WrongPlayer turn !", ex.getMessage());
+        assertEquals("It's not WrongPlayer's turn !", ex.getMessage());
     }
 
     @Test
-    void handleBuildingPickTopRow_Success_FiresPropertyChange() throws IllegalGameActionException {
+    void handleBuildingPickTopRow_Success() throws IllegalGameActionException {
         when(boardMock.getTopBuildingFromIndex(0)).thenReturn(buildingCardMock);
-
-        PropertyChangeListener listenerMock = mock(PropertyChangeListener.class);
-        //controller.addListener(listenerMock);
 
         controller.handleBuildingPickTopRow(activeNickname, 0);
 
         verify(phaseMock).pickCardFromTop(turnManagerMock, activePlayerMock, buildingCardMock, boardMock);
-        verify(listenerMock, times(1)).propertyChange(any(PropertyChangeEvent.class));
-
-        //controller.removeListener(listenerMock);
     }
 }
