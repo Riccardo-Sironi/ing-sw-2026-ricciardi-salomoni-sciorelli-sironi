@@ -14,8 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class TurnManagerTest {
@@ -28,6 +27,9 @@ class TurnManagerTest {
     private final Player player2 = mock(Player.class);
     private final GameModel gameModelMock = mock(GameModel.class);
     private final Phase phaseMock = mock(Phase.class);
+    private final DTONotifier notifierMock = mock(DTONotifier.class);
+
+    private List<Player> players;
 
     @BeforeAll
     static void whichTest() {
@@ -43,8 +45,8 @@ class TurnManagerTest {
     void setUp(TestInfo testInfo) {
         when(registryMock.get(ModifierBuildingRegistryKey.PICK_FROM_TOP)).thenReturn(modifierCardMock);
 
-        List<Player> players = new ArrayList<>(List.of(player1, player2));
-        turnManager = new TurnManager(players, registryMock, new DTONotifier());
+        players = new ArrayList<>(List.of(player1, player2));
+        turnManager = new TurnManager(players, registryMock, notifierMock);
 
         System.out.println("[START] " + testInfo.getDisplayName() + " DONE");
     }
@@ -62,7 +64,7 @@ class TurnManagerTest {
         assertNotNull(turnManager.getPhase());
         assertInstanceOf(PlacingTotemPhase.class, turnManager.getPhase());
 
-        assertEquals(0, turnManager.getRound());
+        assertEquals(1, turnManager.getRound());
         assertNull(turnManager.getGameModel());
         assertEquals(modifierCardMock, turnManager.getPickFromTopCard());
 
@@ -85,8 +87,10 @@ class TurnManagerTest {
     @Test
     @DisplayName("setRound and getRound work correctly")
     void setAndGetRound() {
+        turnManager.setGameModel(gameModelMock);
         turnManager.setRound(5);
         assertEquals(5, turnManager.getRound());
+        verify(gameModelMock, times(1)).saveSnapshot();
     }
 
     @Test
@@ -96,6 +100,7 @@ class TurnManagerTest {
 
         turnManager.setActivePlayerIndex(1);
 
+        assertEquals(1, turnManager.getActivePlayerIndex());
         assertEquals(expectedPlayer, turnManager.getActivePlayer());
     }
 
@@ -104,5 +109,36 @@ class TurnManagerTest {
     void setAndGetGameModel() {
         turnManager.setGameModel(gameModelMock);
         assertEquals(gameModelMock, turnManager.getGameModel());
+    }
+
+    @Test
+    @DisplayName("getNotifier returns the correct notifier instance")
+    void testGetNotifier() {
+        assertEquals(notifierMock, turnManager.getNotifier());
+    }
+
+    @Test
+    @DisplayName("getPlayersOrder returns the exact list of players")
+    void testGetPlayersOrder() {
+        assertEquals(players, turnManager.getPlayersOrder());
+    }
+
+    @Test
+    @DisplayName("setNotifier updates the notifier instance correctly")
+    void testSetNotifier() {
+        DTONotifier newNotifierMock = mock(DTONotifier.class);
+        turnManager.setNotifier(newNotifierMock);
+        assertEquals(newNotifierMock, turnManager.getNotifier());
+    }
+
+    @Test
+    @DisplayName("forceState correctly overrides round, activePlayerIndex and phase")
+    void testForceState() {
+        turnManager.forceState(10, 1, phaseMock);
+
+        assertEquals(10, turnManager.getRound());
+        assertEquals(1, turnManager.getActivePlayerIndex());
+        assertEquals(phaseMock, turnManager.getPhase());
+        assertEquals(player2, turnManager.getActivePlayer());
     }
 }
