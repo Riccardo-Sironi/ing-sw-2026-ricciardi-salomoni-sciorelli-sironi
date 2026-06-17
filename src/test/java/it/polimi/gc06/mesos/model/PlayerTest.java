@@ -5,7 +5,10 @@ import it.polimi.gc06.mesos.model.cards.characters.*;
 import org.junit.jupiter.api.*;
 import org.mockito.MockedConstruction;
 
+import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -593,7 +596,7 @@ class PlayerTest {
     }
 
     @Test
-    void testGetNumOfIcon(){
+    void testGetNumOfIcon() {
         List<CharacterCard> inventorDeck = player.getCharacterDeck().get(CharacterType.INVENTOR);
         inventorDeck.clear();
 
@@ -620,7 +623,7 @@ class PlayerTest {
     }
 
     @Test
-    void testGetNumOfIconAdd(){
+    void testGetNumOfIconAdd() {
         List<CharacterCard> inventorDeck = player.getCharacterDeck().get(CharacterType.INVENTOR);
         inventorDeck.clear();
 
@@ -640,9 +643,85 @@ class PlayerTest {
                             .thenReturn(null)
                             .thenReturn(InventionIcon.BOAT);
                 }
-                )){
+        )) {
 
             assertEquals(1, player.getNumOfIcon(), "Inventor should have 1 icon BOAT");
         }
+    }
+
+    @Test
+    void testSetPlayerColor() {
+        player.setPlayerColor(Color.TURQUOISE);
+        assertEquals(Color.TURQUOISE, player.getPlayerColor(), "Player color should be TURQUOISE");
+    }
+
+    @Test
+    void testSetNotifier() {
+        Player p = new Player("TestUser", Color.ORANGE, mockModifierRegistry, null);
+        DTONotifier notifier = mock(DTONotifier.class);
+        assertThrows(NullPointerException.class, () -> p.addFoodTokens(1));
+        player.setNotifier(notifier);
+        assertDoesNotThrow(() -> player.addFoodTokens(1));
+    }
+
+    @Test
+    @DisplayName("forceState correctly overrides all primitive values, lists, and tracking structures")
+    void testForceState() {
+        int expectedPrestige = 45;
+        int expectedFood = 12;
+        int expectedShamanStars = 4;
+        int expectedTopDraw = 2;
+        int expectedBottomDraw = 1;
+
+        CharacterCard mockHunter = mock(CharacterCard.class);
+        CharacterCard mockArtist = mock(CharacterCard.class);
+        Map<CharacterType, List<CharacterCard>> savedCharacterDeck = new EnumMap<>(CharacterType.class);
+        for (CharacterType type : CharacterType.values()) {
+            savedCharacterDeck.put(type, new ArrayList<>());
+        }
+        savedCharacterDeck.get(CharacterType.HUNTER).add(mockHunter);
+        savedCharacterDeck.get(CharacterType.ARTIST).add(mockArtist);
+
+        BuildingCard mockBuilding = mock(BuildingCard.class);
+        List<BuildingCard> savedBuildingDeck = new ArrayList<>(List.of(mockBuilding));
+
+        Map<CharacterType, Integer> savedCharactersSets = new EnumMap<>(CharacterType.class);
+        savedCharactersSets.put(CharacterType.HUNTER, 2);
+
+        Map<InventionIcon, Integer> savedInventorPairs = new EnumMap<>(InventionIcon.class);
+        savedInventorPairs.put(InventionIcon.BOAT, 1);
+
+        player.forceState(
+                expectedPrestige, expectedFood, expectedShamanStars,
+                expectedTopDraw, expectedBottomDraw,
+                savedCharacterDeck, savedBuildingDeck,
+                savedCharactersSets, savedInventorPairs
+        );
+
+        assertEquals(expectedPrestige, player.getPrestigeTokens());
+        assertEquals(expectedFood, player.getFoodTokens());
+        assertEquals(expectedShamanStars, player.getShamanStars());
+        assertEquals(expectedTopDraw, player.getTopDrawNum());
+        assertEquals(expectedBottomDraw, player.getBottomDrawNum());
+
+        assertEquals(1, player.getCharacterDeck().get(CharacterType.HUNTER).size());
+        assertEquals(mockHunter, player.getCharacterDeck().get(CharacterType.HUNTER).get(0));
+        assertEquals(1, player.getBuildingCards().size());
+        assertEquals(mockBuilding, player.getBuildingCards().get(0));
+
+        assertNotNull(player.getCharactersSets());
+        assertEquals(2, player.getCharactersSets().get(CharacterType.HUNTER));
+        assertNotNull(player.getInventorPairs());
+        assertEquals(1, player.getInventorPairs().get(InventionIcon.BOAT));
+
+        player.forceState(
+                expectedPrestige, expectedFood, expectedShamanStars,
+                expectedTopDraw, expectedBottomDraw,
+                savedCharacterDeck, savedBuildingDeck,
+                null, null
+        );
+
+        assertNull(player.getCharactersSets(), "charactersSets should remain null if forced with null");
+        assertNull(player.getInventorPairs(), "inventorPairs should remain null if forced with null");
     }
 }

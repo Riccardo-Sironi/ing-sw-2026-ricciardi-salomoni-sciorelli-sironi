@@ -78,7 +78,7 @@ class EndOfRoundPhaseTest {
     @Test
     void givenNoSpecialBuilding_whenEndOfRound_thenShiftBoardAndAdvanceRound() throws IllegalPhaseActionException {
         when(turnManager.getPlayersOrder()).thenReturn(players);
-        when(turnManager.getPickFromTopCard()).thenReturn(specialBuildingCard); // Nessun cast necessario
+        when(turnManager.getPickFromTopCard()).thenReturn(specialBuildingCard);
         when(turnManager.getGameModel()).thenReturn(gameModel);
 
         when(player0.getBuildingCards()).thenReturn(new ArrayList<>());
@@ -107,8 +107,8 @@ class EndOfRoundPhaseTest {
 
         endOfRoundPhase.endOfRound(turnManager, board, gameModel);
 
-        verify(board, times(1)).moveFromTopToBottom();
-        verify(board, times(1)).populateTopRow(gameModel);
+        verify(board, never()).moveFromTopToBottom();
+        verify(board, never()).populateTopRow(gameModel);
         verify(gameModel, times(1)).endGame();
         verify(turnManager, never()).setPhase(any(PlacingTotemPhase.class));
     }
@@ -149,6 +149,7 @@ class EndOfRoundPhaseTest {
         when(player1.getTopDrawNum()).thenReturn(1);
         when(board.isEndGame()).thenReturn(false);
         when(turnManager.getRound()).thenReturn(1);
+        when(turnManager.getActivePlayer()).thenReturn(player1);
 
         endOfRoundPhase.pickCardFromTop(turnManager, player1, characterCardToPick, board);
 
@@ -165,6 +166,7 @@ class EndOfRoundPhaseTest {
         when(player0.getTopDrawNum()).thenReturn(1);
         when(board.isEndGame()).thenReturn(false);
         when(turnManager.getRound()).thenReturn(1);
+        when(turnManager.getActivePlayer()).thenReturn(player0);
 
         endOfRoundPhase.pickCardFromTop(turnManager, player0, buildingCardToPick, board);
 
@@ -218,6 +220,7 @@ class EndOfRoundPhaseTest {
         when(turnManager.getPickFromTopCard()).thenReturn(specialBuildingCard);
 
         for (Player p : players) {
+            when(p.getNickname()).thenReturn(p == player0 ? "Player0" : "Player1");
             if (p == playerWithCard) {
                 when(p.getBuildingCards()).thenReturn(new ArrayList<>(List.of(specialBuildingCard)));
             } else {
@@ -230,6 +233,63 @@ class EndOfRoundPhaseTest {
         reset(board);
         reset(turnManager);
         reset(playerWithCard);
+
         when(turnManager.getGameModel()).thenReturn(gameModel);
+        when(turnManager.getNotifier()).thenReturn(notifier);
+        when(player0.getNickname()).thenReturn("Player0");
+        when(player1.getNickname()).thenReturn("Player1");
+    }
+
+    @Test
+    void givenPhaseJustStarted_whenSkipPick_thenThrowException() {
+        IllegalPhaseActionException exception = assertThrows(IllegalPhaseActionException.class, () -> {
+            endOfRoundPhase.skipPick(turnManager, player0);
+        });
+        assertEquals("You have to start the end of round phase first!", exception.getMessage());
+    }
+
+    @Test
+    void givenPlayerHasRightToSkip_whenSkipPick_thenResetDrawsAndTriggerEndOfRound() throws IllegalPhaseActionException {
+        triggerSpecialPickStateForPlayer(player0);
+
+        when(turnManager.getActivePlayer()).thenReturn(player0);
+        when(player0.getBuildingCards()).thenReturn(new ArrayList<>(List.of(specialBuildingCard)));
+        when(turnManager.getPickFromTopCard()).thenReturn(specialBuildingCard);
+
+        when(board.isEndGame()).thenReturn(false);
+        when(turnManager.getRound()).thenReturn(1);
+
+        endOfRoundPhase.skipPick(turnManager, player0);
+
+        verify(player0, times(1)).setTopDrawNum(0);
+        verify(turnManager, times(1)).setActivePlayerIndex(0);
+        verify(board, times(1)).moveFromTopToBottom();
+    }
+
+    @Test
+    void testSkipPickRefused() throws IllegalGameActionException {
+        EndOfRoundPhase phaseSpy = spy(endOfRoundPhase);
+
+        when(turnManager.getPlayersOrder()).thenReturn(players);
+        when(turnManager.getPickFromTopCard()).thenReturn(specialBuildingCard);
+        when(player0.getBuildingCards()).thenReturn(new ArrayList<>());
+        when(player1.getBuildingCards()).thenReturn(new ArrayList<>());
+        when(board.isEndGame()).thenReturn(false);
+        when(turnManager.getRound()).thenReturn(1);
+
+        phaseSpy.endOfRound(turnManager, board, gameModel);
+
+        doReturn(false).when(phaseSpy).checkForRightToSkip(any(), any()); // force this because we hard code the condition in the model
+
+        IllegalPhaseActionException exception = assertThrows(IllegalPhaseActionException.class, () -> {
+            phaseSpy.skipPick(turnManager, player0);
+        });
+
+        assertEquals("You can't skip top pick in this phase!", exception.getMessage());
+    }
+
+    @Test
+    void testToString() {
+        assertEquals("end_of_round", endOfRoundPhase.toString());
     }
 }

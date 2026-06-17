@@ -1,12 +1,19 @@
 package it.polimi.gc06.mesos.model;
 
+import it.polimi.gc06.mesos.dtos.SmallModelEditor;
+import it.polimi.gc06.mesos.gameExceptions.IllegalGameActionException;
 import it.polimi.gc06.mesos.model.cards.TribeCard;
 import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
+import it.polimi.gc06.mesos.model.cards.characters.CharacterCard;
+import it.polimi.gc06.mesos.model.cards.characters.CharacterType;
+import it.polimi.gc06.mesos.model.cards.characters.InventionIcon;
 import it.polimi.gc06.mesos.model.cards.events.EventCard;
 import it.polimi.gc06.mesos.model.gameBoard.Board;
+import it.polimi.gc06.mesos.model.gameBoard.TileEffect;
 import it.polimi.gc06.mesos.model.gameBoard.TileSlot;
 import it.polimi.gc06.mesos.model.gameBoard.TurnOrderTile;
 import it.polimi.gc06.mesos.model.gameTurnManager.DrawObserver;
+import it.polimi.gc06.mesos.model.gameTurnManager.Phase;
 import it.polimi.gc06.mesos.model.gameTurnManager.TurnManager;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -64,7 +71,7 @@ class GameModelTest {
         }
         finalEventCards = new EventCard[2];
         players = new ArrayList<>();
-        notifier = new DTONotifier();
+        notifier = mock(DTONotifier.class);
 
         System.out.println("[START] " + testInfo.getDisplayName() + " DONE");
     }
@@ -112,6 +119,13 @@ class GameModelTest {
         Player p3 = mock(Player.class);
         Player p4 = mock(Player.class);
         Player p5 = mock(Player.class);
+
+        when(p1.getNickname()).thenReturn("P1");
+        when(p2.getNickname()).thenReturn("P2");
+        when(p3.getNickname()).thenReturn("P3");
+        when(p4.getNickname()).thenReturn("P4");
+        when(p5.getNickname()).thenReturn("P5");
+        when(turnManagerMock.getActivePlayer()).thenReturn(p1);
 
         ArrayList<Player> playersOrder = new ArrayList<>(List.of(p1, p2, p3, p4, p5));
         players.addAll(playersOrder);
@@ -169,6 +183,18 @@ class GameModelTest {
         when(p3.getPrestigeTokens()).thenReturn(20);
         when(p3.getFoodTokens()).thenReturn(8);
 
+        EventCard e1 = mock(EventCard.class);
+        when(e1.isLastToBeResolved()).thenReturn(true);
+        when(e1.getEra()).thenReturn(Era.ERA_I);
+
+        EventCard e2 = mock(EventCard.class);
+        when(e2.isLastToBeResolved()).thenReturn(false);
+        when(e2.getEra()).thenReturn(Era.ERA_II);
+
+        when(boardMock.cleanBottomRow()).thenReturn(new ArrayList<>(List.of(e1)), new ArrayList<>(List.of(e2)));
+        when(turnManagerMock.getPlayersOrder()).thenReturn(players);
+        when(boardMock.getBottomRow()).thenReturn(new ArrayList<>());
+
         GameModel model = new GameModel(boardMock, buildingCardsDecks, tribeCardsDeck, finalEventCards, players, turnManagerMock, notifier);
         model.endGame();
 
@@ -176,6 +202,8 @@ class GameModelTest {
         verify(p1).addPrestigeTokens(4);
         verify(p1).addPrestigeTokens(10);
         verify(p1).addPrestigeTokens(5);
+        verify(e1, times(3)).resolveEvent(any(Player.class));
+        verify(e2, times(3)).resolveEvent(any(Player.class));
 
         assertEquals(p3, model.getPlayers().get(0));
         assertEquals(p2, model.getPlayers().get(1));
@@ -237,6 +265,14 @@ class GameModelTest {
         Player p3 = mock(Player.class);
         Player p4 = mock(Player.class);
         Player p5 = mock(Player.class);
+
+        when(p1.getNickname()).thenReturn("P1");
+        when(p2.getNickname()).thenReturn("P2");
+        when(p3.getNickname()).thenReturn("P3");
+        when(p4.getNickname()).thenReturn("P4");
+        when(p5.getNickname()).thenReturn("P5");
+        when(turnManagerMock.getActivePlayer()).thenReturn(p1);
+
         players.addAll(List.of(p1, p2, p3, p4, p5));
 
         buildingCardsDecks.get(Era.ERA_I).add(mock(BuildingCard.class));
@@ -259,5 +295,179 @@ class GameModelTest {
         verify(players.get(2)).addFoodTokens(3);
         verify(players.get(3)).addFoodTokens(4);
         verify(players.get(4)).addFoodTokens(4);
+    }
+
+    @Test
+    void testGetLeaderboard_ThrowsException() {
+        GameModel model = new GameModel(boardMock, buildingCardsDecks, tribeCardsDeck, finalEventCards, players, turnManagerMock, notifier);
+        assertThrows(IllegalStateException.class, model::getLeaderboard);
+    }
+
+    @Test
+    void testIsFinishedAndGetLeaderboard() {
+        Player p1 = mock(Player.class);
+        when(p1.getNickname()).thenReturn("P1");
+        when(p1.getPrestigeTokens()).thenReturn(10);
+        when(p1.getFoodTokens()).thenReturn(5);
+        players.add(p1);
+
+        GameModel model = new GameModel(boardMock, buildingCardsDecks, tribeCardsDeck, finalEventCards, players, turnManagerMock, notifier);
+        assertFalse(model.isFinished());
+
+        when(boardMock.cleanBottomRow()).thenReturn(new ArrayList<>());
+        when(boardMock.getBottomRow()).thenReturn(new ArrayList<>());
+        when(turnManagerMock.getPlayersOrder()).thenReturn(players);
+
+        model.endGame();
+
+        assertTrue(model.isFinished());
+        assertNotNull(model.getLeaderboard());
+        assertEquals(1, model.getLeaderboard().getScores().size());
+    }
+
+    @Test
+    void testSetNotifier() {
+        Player p1 = mock(Player.class);
+        players.add(p1);
+        DTONotifier newNotifier = mock(DTONotifier.class);
+        GameModel model = new GameModel(boardMock, buildingCardsDecks, tribeCardsDeck, finalEventCards, players, turnManagerMock, notifier);
+
+        model.setNotifier(newNotifier);
+
+        verify(boardMock).setNotifier(newNotifier);
+        verify(turnManagerMock).setNotifier(newNotifier);
+        verify(p1).setNotifier(newNotifier);
+    }
+
+    @Test
+    void testSaveAndGetSnapshot() {
+        Player p1 = mock(Player.class);
+        when(p1.getNickname()).thenReturn("P1");
+        when(p1.getPlayerColor()).thenReturn(Color.TURQUOISE);
+        EnumMap<CharacterType, ArrayList<CharacterCard>> cDeck = new EnumMap<>(CharacterType.class);
+        when(p1.getCharacterDeck()).thenReturn(cDeck);
+        when(p1.getBuildingCards()).thenReturn(new ArrayList<>());
+        when(p1.hasSetBuildingCard()).thenReturn(true);
+        when(p1.getCharactersSets()).thenReturn(new EnumMap<>(CharacterType.class));
+        when(p1.hasPairBuildingCard()).thenReturn(true);
+        when(p1.getInventorPairs()).thenReturn(new EnumMap<>(InventionIcon.class));
+
+        Player p2 = mock(Player.class);
+        when(p2.getNickname()).thenReturn("P2");
+        when(p2.getPlayerColor()).thenReturn(Color.ORANGE);
+        when(p2.getCharacterDeck()).thenReturn(cDeck);
+        when(p2.getBuildingCards()).thenReturn(new ArrayList<>());
+        when(p2.hasSetBuildingCard()).thenReturn(false);
+        when(p2.hasPairBuildingCard()).thenReturn(false);
+
+        players.addAll(List.of(p1, p2));
+
+        when(turnOrderTileMock.slots()).thenReturn(new ArrayList<>());
+        when(boardMock.getTurnOrderTile()).thenReturn(turnOrderTileMock);
+        when(boardMock.getOfferTrack()).thenReturn(new ArrayList<>());
+        when(boardMock.getTopRow()).thenReturn(new ArrayList<>());
+        when(boardMock.getBottomRow()).thenReturn(new ArrayList<>());
+        when(boardMock.getTopBuildings()).thenReturn(new ArrayList<>());
+        when(boardMock.getBottomBuildings()).thenReturn(new ArrayList<>());
+        when(boardMock.getBuildingsDecks()).thenReturn(new EnumMap<>(Era.class));
+        when(boardMock.getCurrentEra()).thenReturn(Era.ERA_I);
+
+        when(turnManagerMock.getRound()).thenReturn(1);
+        when(turnManagerMock.getActivePlayerIndex()).thenReturn(0);
+        when(turnManagerMock.getPlayersOrder()).thenReturn(players);
+
+        GameModel model = new GameModel(boardMock, buildingCardsDecks, tribeCardsDeck, finalEventCards, players, turnManagerMock, notifier);
+
+        assertNull(model.getLatestSnapshot());
+        model.saveSnapshot();
+        assertNotNull(model.getLatestSnapshot());
+    }
+
+    @Test
+    void testSendResumeInfo() throws Exception {
+        Player p1 = mock(Player.class);
+        when(p1.getNickname()).thenReturn("P1");
+        when(p1.getPlayerColor()).thenReturn(Color.TURQUOISE);
+
+        Player p2 = mock(Player.class);
+        when(p2.getNickname()).thenReturn("P2");
+        when(p2.getPlayerColor()).thenReturn(Color.ORANGE);
+
+        EnumMap<CharacterType, ArrayList<CharacterCard>> cDeck = new EnumMap<>(CharacterType.class);
+        for (CharacterType ct : CharacterType.values()) {
+            cDeck.put(ct, new ArrayList<>());
+        }
+        when(p1.getCharacterDeck()).thenReturn(cDeck);
+        when(p1.getBuildingCards()).thenReturn(new ArrayList<>());
+        when(p2.getCharacterDeck()).thenReturn(cDeck);
+        when(p2.getBuildingCards()).thenReturn(new ArrayList<>());
+
+        players.addAll(List.of(p1, p2));
+
+        when(boardMock.getCurrentEra()).thenReturn(Era.ERA_I);
+        when(turnManagerMock.getRound()).thenReturn(1);
+        Phase phaseMock = mock(Phase.class);
+        when(turnManagerMock.getPhase()).thenReturn(phaseMock);
+        when(turnManagerMock.getActivePlayer()).thenReturn(p1);
+        when(phaseMock.toString()).thenReturn("Phase1");
+
+        when(phaseMock.checkForRightToSkip(p1, boardMock)).thenReturn(true);
+        when(phaseMock.checkForRightToSkip(p2, boardMock)).thenThrow(new IllegalGameActionException("Test Exception"));
+
+        TileSlot t1 = mock(TileSlot.class);
+        when(t1.getPlayer()).thenReturn(p1);
+        when(t1.getTileEffect()).thenReturn(mock(TileEffect.class));
+        TileSlot t2 = mock(TileSlot.class);
+        when(t2.getPlayer()).thenReturn(null);
+        TileSlot t5 = mock(TileSlot.class);
+        when(t5.getPlayer()).thenReturn(p2);
+        when(t5.getTileEffect()).thenReturn(mock(TileEffect.class));
+
+        when(turnOrderTileMock.slots()).thenReturn(new ArrayList<>(List.of(t1, t2, t5)));
+        when(boardMock.getTurnOrderTile()).thenReturn(turnOrderTileMock);
+
+        TileSlot t3 = mock(TileSlot.class);
+        when(t3.getPlayer()).thenReturn(p1);
+        when(t3.getTileEffect()).thenReturn(mock(TileEffect.class));
+        TileSlot t4 = mock(TileSlot.class);
+        when(t4.getPlayer()).thenReturn(null);
+        when(t4.getTileEffect()).thenReturn(mock(TileEffect.class));
+
+        when(boardMock.getOfferTrack()).thenReturn(new ArrayList<>(List.of(t3, t4)));
+
+        GameModel model = new GameModel(boardMock, buildingCardsDecks, tribeCardsDeck, finalEventCards, players, turnManagerMock, notifier);
+
+        assertDoesNotThrow(() -> model.sendResumeInfo());
+    }
+
+    @Test
+    void testGetStartingStateAsDTO() {
+        Player p1 = mock(Player.class);
+        when(p1.getNickname()).thenReturn("P1");
+        when(p1.getFoodTokens()).thenReturn(2);
+        when(p1.getPlayerColor()).thenReturn(Color.TURQUOISE);
+        when(p1.getTopDrawNum()).thenReturn(1);
+        when(p1.getBottomDrawNum()).thenReturn(2);
+        players.add(p1);
+
+        when(turnManagerMock.getActivePlayer()).thenReturn(p1);
+        when(turnManagerMock.getPlayersOrder()).thenReturn(players);
+
+        TileSlot t1 = mock(TileSlot.class);
+        when(t1.getTileEffect()).thenReturn(mock(TileEffect.class));
+        when(boardMock.getOfferTrack()).thenReturn(new ArrayList<>(List.of(t1)));
+        when(boardMock.getTopRow()).thenReturn(new ArrayList<>());
+        when(boardMock.getTopBuildings()).thenReturn(new ArrayList<>());
+        when(boardMock.getBottomRow()).thenReturn(new ArrayList<>());
+        when(boardMock.getBottomBuildings()).thenReturn(new ArrayList<>());
+
+        GameModel model = new GameModel(boardMock, buildingCardsDecks, tribeCardsDeck, finalEventCards, players, turnManagerMock, notifier);
+
+        SmallModelEditor dto = model.getStartingStateAsDTO("P1");
+        assertNotNull(dto);
+
+        GameModel modelNullDeck = new GameModel(boardMock, buildingCardsDecks, null, finalEventCards, players, turnManagerMock, notifier);
+        SmallModelEditor dtoNullDeck = modelNullDeck.getStartingStateAsDTO("P1");
+        assertNotNull(dtoNullDeck);
     }
 }

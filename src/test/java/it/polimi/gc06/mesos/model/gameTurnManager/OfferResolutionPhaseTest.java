@@ -3,9 +3,12 @@ package it.polimi.gc06.mesos.model.gameTurnManager;
 import it.polimi.gc06.mesos.gameExceptions.IllegalGameActionException;
 import it.polimi.gc06.mesos.gameExceptions.IllegalPhaseActionException;
 import it.polimi.gc06.mesos.model.DTONotifier;
+import it.polimi.gc06.mesos.model.Era;
 import it.polimi.gc06.mesos.model.GameModel;
 import it.polimi.gc06.mesos.model.Player;
+import it.polimi.gc06.mesos.model.cards.TribeCard;
 import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
+import it.polimi.gc06.mesos.model.cards.characters.ArtistCard;
 import it.polimi.gc06.mesos.model.cards.characters.CharacterCard;
 import it.polimi.gc06.mesos.model.cards.events.EventCard;
 import it.polimi.gc06.mesos.model.gameBoard.Board;
@@ -17,8 +20,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class OfferResolutionPhaseTest {
@@ -68,6 +70,7 @@ class OfferResolutionPhaseTest {
         when(turnManagerMock.getNotifier()).thenReturn(notifierMock);
         when(turnManagerMock.getGameModel()).thenReturn(gameModelMock);
         when(turnManagerMock.getGameModel().getBoard()).thenReturn(boardMock);
+        boardMock = turnManagerMock.getGameModel().getBoard();
         when(boardMock.getOfferTrackPlayerSlot(any())).thenReturn(tileSlotMock);
         when(boardMock.getTurnOrderTile()).thenReturn(turnOrderTileMock);
 
@@ -77,6 +80,11 @@ class OfferResolutionPhaseTest {
         System.out.println("[START] " + testInfo.getDisplayName() + " DONE");
     }
 
+    @Test
+    @DisplayName("placeTotem throws IllegalPhaseActionException")
+    void placeTotem_ThrowsException() {
+        assertThrows(IllegalPhaseActionException.class, () -> phase.placeTotem(turnManagerMock, playerMock, tileSlotMock, boardMock));
+    }
 
     @Test
     @DisplayName("startPlayerOfferResolution throws an exception if it's not that player's turn")
@@ -105,8 +113,6 @@ class OfferResolutionPhaseTest {
         verify(tileSlotMock, times(1)).applyEffect();
     }
 
-    // --- EXCEPTIONS WHEN PHASE NOT STARTED ---
-
     @Test
     @DisplayName("pickCardFromTop throws if phase is not started")
     void pickCardFromTop_NotStarted_ThrowsException() {
@@ -130,8 +136,6 @@ class OfferResolutionPhaseTest {
     void pickBuildingFromBottom_NotStarted_ThrowsException() {
         assertThrows(IllegalPhaseActionException.class, () -> phase.pickCardFromBottom(turnManagerMock, playerMock, buildingCardMock, boardMock));
     }
-
-    // --- EXCEPTIONS WHEN DRAWS ARE 0 ---
 
     @Test
     @DisplayName("pickCardFromTop throws if no draws left")
@@ -168,8 +172,6 @@ class OfferResolutionPhaseTest {
 
         assertThrows(IllegalPhaseActionException.class, () -> phase.pickCardFromBottom(turnManagerMock, playerMock, buildingCardMock, boardMock));
     }
-
-    // --- SUCCESSFUL PICKS (WITHOUT ENDING PHASE) ---
 
     @Test
     @DisplayName("pickCardFromTop (BuildingCard) succeeds")
@@ -235,8 +237,6 @@ class OfferResolutionPhaseTest {
         verify(playerMock).setBottomDrawNum(0);
     }
 
-    // --- ERROR PROPAGATION ---
-
     @Test
     @DisplayName("pickCardFromTop (Building) propagates IllegalGameActionException from board and does NOT consume draw")
     void pickCardFromTop_BuildingCard_PropagatesException_DoesNotConsumeDraw() throws Exception {
@@ -283,6 +283,12 @@ class OfferResolutionPhaseTest {
 
         LinkedList<Player> turnQueue = new LinkedList<>();
         turnQueue.add(playerMock);
+
+        Player secondPlayerInQueue = mock(Player.class);
+        when(secondPlayerInQueue.getNickname()).thenReturn("Aldo");
+        turnQueue.add(secondPlayerInQueue);
+        when(turnManagerMock.getActivePlayer()).thenReturn(secondPlayerInQueue);
+
         when(turnManagerMock.getPlayersOrder()).thenReturn(turnQueue);
 
         TurnOrderTile turnOrderTileMock = mock(TurnOrderTile.class);
@@ -318,7 +324,7 @@ class OfferResolutionPhaseTest {
         verify(playerSlotMock, times(1)).removePlayer();
         verify(emptyOrderSlot, times(1)).setPlayer(playerMock);
 
-        assertEquals(0, turnQueue.size());
+        assertEquals(1, turnQueue.size());
 
         verify(turnManagerMock, times(1)).setPhase(any(OfferResolutionPhase.class));
         verify(newPhaseMock, times(1)).startPlayerOfferResolution(eq(turnManagerMock), eq(nextPlayerMock), any(TileSlot.class));
@@ -331,6 +337,7 @@ class OfferResolutionPhaseTest {
 
         when(playerMock.getTopDrawNum()).thenReturn(0);
         when(playerMock.getBottomDrawNum()).thenReturn(0);
+        when(playerMock.getNickname()).thenReturn("P1");
 
         TileSlot playerSlotMock = mock(TileSlot.class);
         when(boardMock.getOfferTrackPlayerSlot(playerMock)).thenReturn(playerSlotMock);
@@ -341,9 +348,14 @@ class OfferResolutionPhaseTest {
         TurnOrderTile turnOrderTileMock = mock(TurnOrderTile.class);
         when(boardMock.getTurnOrderTile()).thenReturn(turnOrderTileMock);
 
+        TileSlot alreadyOccupiedOrderSlot = mock(TileSlot.class);
+        Player existingPlayer = mock(Player.class);
+        when(alreadyOccupiedOrderSlot.getPlayer()).thenReturn(existingPlayer);
+
         TileSlot emptyOrderSlot = mock(TileSlot.class);
         when(emptyOrderSlot.getPlayer()).thenReturn(null);
-        ArrayList<TileSlot> orderSlots = new ArrayList<>(List.of(emptyOrderSlot));
+
+        ArrayList<TileSlot> orderSlots = new ArrayList<>(List.of(alreadyOccupiedOrderSlot, emptyOrderSlot));
         when(turnOrderTileMock.slots()).thenReturn(orderSlots);
 
         when(boardMock.getOfferTrack()).thenReturn(new ArrayList<>());
@@ -359,8 +371,9 @@ class OfferResolutionPhaseTest {
 
         verify(turnManagerMock, times(1)).setPhase(any(EventResolutionPhase.class));
         verify(eventPhaseMock, times(1)).resolveEvent(turnManagerMock, boardMock);
-    }
 
+        assertTrue(turnQueue.contains(existingPlayer));
+    }
 
     @Test
     @DisplayName("Branch coverage: Bottom is 0 but Top is 1 -> skips finishing logic")
@@ -422,5 +435,151 @@ class OfferResolutionPhaseTest {
         verify(occupiedOrderSlot2, never()).setPlayer(any());
 
         verify(turnManagerMock, times(1)).setPhase(any(OfferResolutionPhase.class));
+    }
+
+    @Test
+    @DisplayName("skipPick throws exception if phase not started")
+    void phaseNotStartedThrowSkipPick() {
+        assertThrows(IllegalPhaseActionException.class, () -> phase.skipPick(turnManagerMock, playerMock));
+    }
+
+    @Test
+    @DisplayName("skipPick throws exception if player cannot skip")
+    void CannotSkipThrowsExceptionSkipPick() throws Exception {
+        phase.startPlayerOfferResolution(turnManagerMock, playerMock, tileSlotMock);
+
+        when(playerMock.getTopDrawNum()).thenReturn(1);
+        when(playerMock.getBottomDrawNum()).thenReturn(0);
+
+        ArtistCard artistCard = new ArtistCard(Era.ERA_I);
+        ArrayList<TribeCard> mockTopRow = new ArrayList<>(List.of(artistCard));
+        when(boardMock.getTopRow()).thenReturn(mockTopRow);
+
+        assertThrows(IllegalPhaseActionException.class, () -> phase.skipPick(turnManagerMock, playerMock));
+    }
+
+    @Test
+    @DisplayName("skipPick succeeds if player can skip")
+    void CanSkipSuccess() throws Exception {
+        phase.startPlayerOfferResolution(turnManagerMock, playerMock, tileSlotMock);
+
+        when(playerMock.getTopDrawNum()).thenReturn(1);
+        when(playerMock.getBottomDrawNum()).thenReturn(1);
+
+        ArrayList<TribeCard> emptyRow = new ArrayList<>();
+
+        when(boardMock.getTopRow()).thenReturn(emptyRow);
+        when(boardMock.getBottomRow()).thenReturn(emptyRow);
+
+        TileSlot playerSlotMock = mock(TileSlot.class);
+        when(boardMock.getOfferTrackPlayerSlot(playerMock)).thenReturn(playerSlotMock);
+        LinkedList<Player> turnQueue = new LinkedList<>();
+        when(turnManagerMock.getPlayersOrder()).thenReturn(turnQueue);
+        TurnOrderTile turnOrderTileMock = mock(TurnOrderTile.class);
+        when(boardMock.getTurnOrderTile()).thenReturn(turnOrderTileMock);
+        TileSlot emptyOrderSlot = mock(TileSlot.class);
+        when(turnOrderTileMock.slots()).thenReturn(new ArrayList<>(List.of(emptyOrderSlot)));
+        when(boardMock.getOfferTrack()).thenReturn(new ArrayList<>());
+        when(boardMock.isOfferTrackEmpty()).thenReturn(true);
+        Phase eventPhaseMock = mock(EventResolutionPhase.class);
+        when(turnManagerMock.getPhase()).thenReturn(eventPhaseMock);
+
+        phase.skipPick(turnManagerMock, playerMock);
+
+        verify(playerMock).setTopDrawNum(0);
+        verify(playerMock).setBottomDrawNum(0);
+    }
+
+    @Test
+    @DisplayName("checkForRightToSkip returns false if top draw > 0 and characters present")
+    void cannotSkipIfCharacterPresentAtTop() {
+        when(playerMock.getTopDrawNum()).thenReturn(1);
+        when(playerMock.getBottomDrawNum()).thenReturn(0);
+
+        ArtistCard artistCard = new ArtistCard(Era.ERA_I);
+        ArrayList<TribeCard> mockTopRow = new ArrayList<>(List.of(artistCard));
+        when(boardMock.getTopRow()).thenReturn(mockTopRow);
+
+        assertFalse(phase.checkForRightToSkip(playerMock, boardMock));
+    }
+
+    @Test
+    @DisplayName("checkForRightToSkip returns false if bottom draw > 0 and characters present")
+    void cannotSkipIfCharacterPresentAtBottom() {
+        when(playerMock.getTopDrawNum()).thenReturn(0);
+        when(playerMock.getBottomDrawNum()).thenReturn(1);
+
+        ArtistCard artistCard = new ArtistCard(Era.ERA_I);
+        ArrayList<TribeCard> mockBottomRow = new ArrayList<>(List.of(artistCard));
+        when(boardMock.getBottomRow()).thenReturn(mockBottomRow);
+        when(boardMock.getTopRow()).thenReturn(new ArrayList<>());
+
+        assertFalse(phase.checkForRightToSkip(playerMock, boardMock));
+    }
+
+    @Test
+    @DisplayName("checkForRightToSkip returns true if draws > 0 but no characters")
+    void canSkipIfNoCharactersPresentAtTop() {
+        when(playerMock.getTopDrawNum()).thenReturn(1);
+        when(playerMock.getBottomDrawNum()).thenReturn(1);
+
+        ArrayList<TribeCard> emptyRow = new ArrayList<>();
+
+        when(boardMock.getTopRow()).thenReturn(emptyRow);
+        when(boardMock.getBottomRow()).thenReturn(emptyRow);
+
+        assertTrue(phase.checkForRightToSkip(playerMock, boardMock));
+    }
+
+    @Test
+    @DisplayName("checkForRightToSkip returns true if zero draws")
+    void canSkipIfZeroDraws() {
+        when(playerMock.getTopDrawNum()).thenReturn(0);
+        when(playerMock.getBottomDrawNum()).thenReturn(0);
+
+        assertTrue(phase.checkForRightToSkip(playerMock, boardMock));
+    }
+
+    @Test
+    @DisplayName("toString returns offer_resolution")
+    void toStringTest() {
+        assertEquals("offer_resolution", phase.toString());
+    }
+
+    @Test
+    @DisplayName("skipPick: branch 1 - Both true, succeeds")
+    void bothTrueSKipPickBranch() {
+        phase.startPlayerOfferResolution(turnManagerMock, playerMock, tileSlotMock);
+        when(playerMock.getTopDrawNum()).thenReturn(0);
+        when(playerMock.getBottomDrawNum()).thenReturn(0);
+
+        phase.skipPick(turnManagerMock, playerMock);
+        verify(playerMock).setTopDrawNum(0);
+        verify(playerMock).setBottomDrawNum(0);
+    }
+
+    @Test
+    @DisplayName("skipPick: branch 2 - Top true, Bottom false, throws exception")
+    void topTrueBottomFalseSkipPickBranch() {
+        phase.startPlayerOfferResolution(turnManagerMock, playerMock, tileSlotMock);
+
+        when(playerMock.getTopDrawNum()).thenReturn(0);
+        when(playerMock.getBottomDrawNum()).thenReturn(1);
+        ArtistCard artist = new ArtistCard(Era.ERA_I);
+        when(boardMock.getBottomRow()).thenReturn(new ArrayList<>(List.of(artist)));
+
+        assertThrows(IllegalPhaseActionException.class, () -> phase.skipPick(turnManagerMock, playerMock));
+    }
+
+    @Test
+    @DisplayName("skipPick: branch 3 - Top false, (Bottom not evaluated), throws exception")
+    void topFalseSkipPickBranch() {
+        phase.startPlayerOfferResolution(turnManagerMock, playerMock, tileSlotMock);
+
+        when(playerMock.getTopDrawNum()).thenReturn(1);
+        ArtistCard artist = new ArtistCard(Era.ERA_I);
+        when(boardMock.getTopRow()).thenReturn(new ArrayList<>(List.of(artist)));
+
+        assertThrows(IllegalPhaseActionException.class, () -> phase.skipPick(turnManagerMock, playerMock));
     }
 }
