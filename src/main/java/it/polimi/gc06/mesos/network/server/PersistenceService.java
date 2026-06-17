@@ -24,6 +24,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 public class PersistenceService implements Runnable {
@@ -121,22 +122,24 @@ public class PersistenceService implements Runnable {
                 mapper.enable(SerializationFeature.INDENT_OUTPUT); //to make JSON file more readable for debugging
                 mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS); //for phase correct save
                 Map<Integer, GameSnapshot> matchMap = new HashMap<>();
-                //add all non closed active restored matches present in backup file
-                for(int id : lastSaveSnapshots.keySet()){
-                    if(matchManager.getUnfinishedRestoredMatches().stream().anyMatch(m -> m.getMatchId() == id)){
-                        matchMap.put(id, lastSaveSnapshots.get(id));
+                //add all active matches with snapshot and all active without snapshot matches previously saved
+                for (Match m : matchManager.getActiveMatches()) {
+                    GameSnapshot newSnapshot = m.getSnapshot();
+                    if (newSnapshot != null) {
+                        //If the match has a valid snapshot, save it
+                        System.out.println("Match "+m.getMatchId()+" had an update. Saving...");
+                        matchMap.put(m.getMatchId(), newSnapshot);
+                    } else if (lastSaveSnapshots.containsKey(m.getMatchId())) {
+                        //If it was already present save it
+                        System.out.println("Match "+m.getMatchId()+" had no update. Preserving...");
+                        matchMap.put(m.getMatchId(), lastSaveSnapshots.get(m.getMatchId()));
                     }
-                }
-                //add all new active matches (if not already present)
-                for (Match m : matchManager.getActiveMatches()) if(!matchMap.containsKey(m.getMatchId())){
-                    GameSnapshot gs = m.getSnapshot();
-                    if (gs != null) matchMap.put(m.getMatchId(), gs);
                 }
                 if (!matchMap.isEmpty()) {
                     //first writes to tmp file then ask SO to move all content to backupFile to avoid corruption due to crash
                     mapper.writeValue(tmpFile, matchMap);
                     Files.move(tmpFile.toPath(), backupFile.toPath(), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
-                    System.out.println("Persistence service saved matches successfully (" + matchMap.keySet().stream().map(String::valueOf)
+                    System.out.println("[Persistence service] saved/preserved matches successfully (" + matchMap.keySet().stream().map(String::valueOf)
                             .collect(Collectors.joining(", ")) + ")");
                     //update last save map accordingly
                     lastSaveSnapshots.clear();

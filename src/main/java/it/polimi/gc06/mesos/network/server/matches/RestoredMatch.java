@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 public class RestoredMatch extends Match {
 
     private final Map<String, Boolean> previousPlayers;
-    private final GameModel restoredModel;
 
     /**
      * Initializes a new match waiting for players to join.
@@ -42,7 +41,7 @@ public class RestoredMatch extends Match {
         previousPlayers = new HashMap<>();
         List<String> players = restoredModel.getPlayers().stream().map(Player::getNickname).toList();
         for (String p : players) previousPlayers.put(p, false);
-        this.restoredModel = restoredModel;
+        super.model = restoredModel;
     }
 
     /**
@@ -66,21 +65,16 @@ public class RestoredMatch extends Match {
      */
     @Override
     protected synchronized void start() {
-        ArrayList<String> playerNames = players.stream().map(VirtualClient::getNickname).collect(Collectors.toCollection(ArrayList::new));
         DTONotifier notifier = new DTONotifier();
-        restoredModel.setNotifier(notifier);
+        model.setNotifier(notifier);
 
         players.forEach(c -> c.subscribeToNotifier(notifier)); //adds all listeners
-        restoredModel.sendResumeInfo();
+        model.sendResumeInfo();
 
-        controller = new GameController(restoredModel, notifier);
+        controller = new GameController(model, notifier);
         hasStarted = true;
         players.forEach(c -> c.setController(controller));
         players.forEach(c -> c.setActionQueue(actionQueue));
-
-        // TODO : Manuel look here!
-//        players.forEach(c -> playersThreads.add(new Thread(c, c.getNickname())));
-//        playersThreads.forEach(Thread::start);
 
         matchExecutorThread = new Thread(this::matchLoop, "MatchExecutorThread-" + getMatchId());
         matchExecutorThread.start();

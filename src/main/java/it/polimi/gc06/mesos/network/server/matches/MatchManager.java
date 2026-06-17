@@ -123,35 +123,13 @@ public class MatchManager {
     }
 
     /**
-     * Returns all started but not ended matches
+     * Returns all not ended matches
      *
      * @return an {@link Collection} view of active matches.
      */
     public synchronized Collection<Match> getActiveMatches() {
         removeClosedMatches();
         return activeMatches.values();
-    }
-
-    public synchronized Collection<Match> getUnfinishedRestoredMatches(){
-        removeClosedMatches();
-        List<Match> result = new ArrayList<>();
-        AtomicBoolean isNotFinished = new AtomicBoolean();
-        MatchVisitor unfinishedFinder = new MatchVisitor() {
-            @Override
-            public void visit(RestoredMatch match) {
-                isNotFinished.set(!match.hasEnded());
-            }
-
-            @Override
-            public void visit(Match match) {
-                isNotFinished.set(false);
-            }
-        };
-        for(Match m : activeMatches.values()){
-            m.accept(unfinishedFinder);
-            if(isNotFinished.get()) result.add(m);
-        }
-        return result;
     }
 
     /**

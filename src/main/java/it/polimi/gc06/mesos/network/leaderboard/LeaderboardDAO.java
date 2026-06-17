@@ -74,12 +74,12 @@ public class LeaderboardDAO {
      */
     public synchronized static List<Leaderboard> getLeaderboards() throws SQLException {
 
-        if(dbName == null) return null;
+        if(dbUser == null) return null;
         if(connection == null) init();
 
         //only if current list is empty it calls the DB to request the leaderboards
         if(leaderboards.isEmpty()){
-            String query = "SELECT l.id AS id, numOfPlayers, tstamp, nickname, score " +
+            String query = "SELECT l.id AS id, numOfPlayers, tstamp, nickname, foodScore, prestigeScore " +
                     "FROM leaderboards AS l JOIN scores AS s ON l.id = s.leaderboardId " +
                     "ORDER BY l.id";
             ResultSet result = connection.prepareStatement(query).executeQuery();
@@ -119,7 +119,7 @@ public class LeaderboardDAO {
      */
     public synchronized static boolean saveLeaderboard(Leaderboard l) throws SQLException {
 
-        if(dbName == null) return false;
+        if(dbUser == null) return false;
         if(connection == null) init();
 
         //request to save the leaderboard to DB
@@ -151,6 +151,7 @@ public class LeaderboardDAO {
             }
             else{
                 connection.rollback();
+                return false;
             }
             connection.commit();
 

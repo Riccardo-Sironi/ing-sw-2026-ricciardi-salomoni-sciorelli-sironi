@@ -36,7 +36,7 @@ public class Match {
     private volatile boolean hasBeenForcefullyEnded;
     protected GameController controller;
 
-    private GameModel model;
+    protected GameModel model;
 
     private final DTONotifier notifier;
 
@@ -124,8 +124,8 @@ public class Match {
         }
         if (controller != null && controller.isGameFinished()) {
             try {
-                if (LeaderboardDAO.saveLeaderboard(controller.getModel().getLeaderboard()))
-                    System.out.println("Leaderboard saved!");
+                if (LeaderboardDAO.saveLeaderboard(model.getLeaderboard()))
+                    System.out.println("Successfully saved Leaderboard on db!");
             } catch (Exception e) {
                 System.err.println("Something went wrong with leaderboard saving request, please check if mySql server is online: " + e.getMessage());
             }

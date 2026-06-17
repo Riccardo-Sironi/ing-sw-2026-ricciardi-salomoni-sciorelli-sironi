@@ -9,6 +9,8 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.Random;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 public class DAOTest {
 
     final int SAVES_BEFORE_PRINT = 10;
@@ -38,6 +40,9 @@ public class DAOTest {
 
     @Test
     void testSaveLeaderboard(){
+
+        LeaderboardDAO.setDbInfo("clanker", "1234", "TestMesos", null);
+
         Random r = new Random();
         Leaderboard l = new Leaderboard();
         int nPlayers = r.nextInt(2,6);
@@ -52,12 +57,15 @@ public class DAOTest {
         try {
             LeaderboardDAO.saveLeaderboard(l);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            fail(e.getMessage());
+            e.printStackTrace();
         }
     }
 
     @Test
     void testGetLeaderboards(){
+
+        LeaderboardDAO.setDbInfo("clanker", "1234", "TestMesos", null);
 
         for(int i=0;i< SAVES_BEFORE_PRINT;i++) testSaveLeaderboard();
         try {
@@ -71,7 +79,8 @@ public class DAOTest {
                 }
             }
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            fail(e.getMessage());
+            e.printStackTrace();
         }
     }
 
