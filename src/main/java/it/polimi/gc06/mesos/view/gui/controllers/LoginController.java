@@ -14,7 +14,9 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.TextField;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
@@ -28,7 +30,13 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
 
 public class LoginController {
 
@@ -70,6 +78,8 @@ public class LoginController {
     @FXML
     private TextField portField;
     @FXML
+    private ComboBox<String> networkInterfaceBox;
+    @FXML
     private Button okButton;
 
     private String connectionType = "RMI";
@@ -78,13 +88,14 @@ public class LoginController {
 
     private static final String FONT_PATH = "/it/polimi/gc06/mesos/fonts/ArcadianG.ttf";
 
+    // Modificati leggermente gli stili per mantenere il font-size e font-weight integrati con le nuove direttive FXML
     private static final String BTN_STYLE_DEFAULT = "-fx-background-color: transparent; -fx-border-color: #2B2B2B; -fx-border-width: 3; -fx-text-fill: #2B2B2B; -fx-background-radius: 10; -fx-border-radius: 10; -fx-cursor: hand;";
     private static final String BTN_STYLE_HOVER = "-fx-background-color: rgba(0,0,0,0.1); -fx-border-color: #2B2B2B; -fx-border-width: 3; -fx-text-fill: #2B2B2B; -fx-background-radius: 10; -fx-border-radius: 10; -fx-cursor: hand;";
 
-    private static final String PROTOCOL_BTN_ACTIVE = "-fx-background-color: #2B2B2B; -fx-border-color: #2B2B2B; -fx-border-width: 3; -fx-text-fill: white; -fx-background-radius: 10; -fx-border-radius: 10; -fx-cursor: hand;";
+    private static final String PROTOCOL_BTN_ACTIVE = "-fx-font-size: 16px; -fx-font-weight: bold; -fx-background-color: #2B2B2B; -fx-border-color: #2B2B2B; -fx-border-width: 3; -fx-text-fill: white; -fx-background-radius: 10; -fx-border-radius: 10; -fx-cursor: hand;";
 
-    private static final String MODAL_BTN_DEFAULT = "-fx-background-color: transparent; -fx-border-color: #E0E0E0; -fx-border-width: 3; -fx-text-fill: #E0E0E0; -fx-background-radius: 10; -fx-border-radius: 10; -fx-cursor: hand;";
-    private static final String MODAL_BTN_HOVER = "-fx-background-color: rgba(255,255,255,0.1); -fx-border-color: #E0E0E0; -fx-border-width: 3; -fx-text-fill: #E0E0E0; -fx-background-radius: 10; -fx-border-radius: 10; -fx-cursor: hand;";
+    private static final String MODAL_BTN_DEFAULT = "-fx-font-size: 16px; -fx-font-weight: bold; -fx-background-color: transparent; -fx-border-color: #E0E0E0; -fx-border-width: 3; -fx-text-fill: #E0E0E0; -fx-background-radius: 10; -fx-border-radius: 10; -fx-cursor: hand;";
+    private static final String MODAL_BTN_HOVER = "-fx-font-size: 16px; -fx-font-weight: bold; -fx-background-color: rgba(255,255,255,0.1); -fx-border-color: #E0E0E0; -fx-border-width: 3; -fx-text-fill: #E0E0E0; -fx-background-radius: 10; -fx-border-radius: 10; -fx-cursor: hand;";
 
     private static final String FIELD_STYLE_VALID = "-fx-background-color: transparent; -fx-border-color: transparent transparent #2B2B2B transparent; -fx-border-width: 0 0 3 0; -fx-text-fill: #2B2B2B; -fx-prompt-text-fill: rgba(43,43,43,0.5); -fx-alignment: center;";
     private static final String FIELD_STYLE_ERROR = "-fx-background-color: transparent; -fx-border-color: transparent transparent #8a0303 transparent; -fx-border-width: 0 0 3 0; -fx-text-fill: #2B2B2B; -fx-prompt-text-fill: rgba(43,43,43,0.5); -fx-alignment: center;";
@@ -100,8 +111,41 @@ public class LoginController {
         setupDynamicLayout();
         setupGlowAnimation();
         setupButtonInteractions();
+        populateNetworkInterfaces();
 
         Platform.runLater(nicknameField::requestFocus);
+    }
+
+    private void populateNetworkInterfaces() {
+        List<String> validIps = new ArrayList<>();
+        try {
+            Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+            while (interfaces.hasMoreElements()) {
+                NetworkInterface networkInterface = interfaces.nextElement();
+
+                if (!networkInterface.isUp() || networkInterface.isLoopback() || networkInterface.isVirtual()) {
+                    continue;
+                }
+
+                Enumeration<InetAddress> addresses = networkInterface.getInetAddresses();
+                while (addresses.hasMoreElements()) {
+                    InetAddress addr = addresses.nextElement();
+                    byte[] ipBytes = addr.getAddress();
+
+                    if (ipBytes.length == 4 && !addr.isLinkLocalAddress()) {
+                        validIps.add(addr.getHostAddress());
+                    }
+                }
+            }
+        } catch (SocketException e) {
+            System.err.println("Error reading the local network interfaces: " + e.getMessage());
+        }
+
+        if (validIps.isEmpty()) {
+            validIps.add("127.0.0.1");
+        }
+
+        networkInterfaceBox.getItems().addAll(validIps);
     }
 
     private void setupProtocolButtons() {
@@ -238,19 +282,61 @@ public class LoginController {
 
     private void loadFonts() {
         try {
+            // Assegniamo ArcadianG solo agli elementi della schermata base
+            // e al titolo delle impostazioni avanzate
             setFontIfValid(promptLabel, 50);
             setFontIfValid(nicknameField, 35);
             setFontIfValid(joinButton, 30);
-            setFontIfValid(rmiButton, 20);
-            setFontIfValid(tcpButton, 20);
             setFontIfValid(advancedSettingsLabel, 20);
             setFontIfValid(advancedSettingsTitle, 30);
-            setFontIfValid(ipField, 25);
-            setFontIfValid(portField, 25);
-            setFontIfValid(okButton, 20);
+
+            // Stile per la comboBox (colori e hover) usando il font di base
+            styleComboBox(networkInterfaceBox);
+
         } catch (Exception e) {
             System.err.println("Font Loading Error: " + e.getMessage());
         }
+    }
+
+    private void styleComboBox(ComboBox<String> comboBox) {
+        // Modifica l'aspetto della cella principale (il rettangolo visibile quando chiuso)
+        comboBox.setButtonCell(new ListCell<String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(comboBox.getPromptText());
+                    setTextFill(Color.web("rgba(224,224,224,0.6)")); // Grigio per il prompt in modo che ricordi un placeholder
+                } else {
+                    setText(item);
+                    setTextFill(Color.WHITE);
+                }
+                // Usa il font di default con size a 16px
+                setStyle("-fx-background-color: transparent; -fx-font-size: 16px;");
+            }
+        });
+
+        // Modifica l'aspetto delle celle nella tendina (quando viene aperto il menu)
+        comboBox.setCellFactory(lv -> new ListCell<String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                    setStyle("-fx-background-color: #2B2B2B;"); // Sfondo menu scuro
+                    setOnMouseEntered(null);
+                    setOnMouseExited(null);
+                } else {
+                    setText(item);
+                    setTextFill(Color.WHITE);
+                    setStyle("-fx-background-color: #2B2B2B; -fx-padding: 8 10 8 10; -fx-font-size: 14px;");
+
+                    // Personalizziamo l'effetto HOVER per rimpiazzare l'orrido blu nativo di JavaFX
+                    setOnMouseEntered(e -> setStyle("-fx-background-color: #444444; -fx-padding: 8 10 8 10; -fx-font-size: 14px; -fx-cursor: hand;"));
+                    setOnMouseExited(e -> setStyle("-fx-background-color: #2B2B2B; -fx-padding: 8 10 8 10; -fx-font-size: 14px;"));
+                }
+            }
+        });
     }
 
     private void setFontIfValid(Region node, double size) {
@@ -275,8 +361,9 @@ public class LoginController {
         joinButton.setOnMousePressed(e -> applyButtonPressEffect(joinButton, buttonShadow, 0.5, 0.5));
         joinButton.setOnMouseReleased(e -> applyButtonPressEffect(joinButton, buttonShadow, 0, 2.5));
 
-        okButton.setOnMouseEntered(e -> okButton.setStyle(MODAL_BTN_HOVER));
-        okButton.setOnMouseExited(e -> okButton.setStyle(MODAL_BTN_DEFAULT));
+        // Aggiorniamo gli stili di default per non perdere i nuovi font-size
+        okButton.setOnMouseEntered(e -> okButton.setStyle(MODAL_BTN_HOVER + " -fx-font-size: 18px; -fx-font-weight: bold;"));
+        okButton.setOnMouseExited(e -> okButton.setStyle("-fx-background-color: transparent; -fx-border-color: #E0E0E0; -fx-border-width: 3; -fx-text-fill: #E0E0E0; -fx-background-radius: 10; -fx-border-radius: 10; -fx-cursor: hand; -fx-font-size: 18px; -fx-font-weight: bold;"));
 
         rmiButton.setOnMouseEntered(e -> {
             if (!"RMI".equals(connectionType)) rmiButton.setStyle(MODAL_BTN_HOVER);
@@ -353,8 +440,19 @@ public class LoginController {
             }
         }
 
+        // Se l'utente non seleziona nulla (prompt visibile), facciamo un fallback sicuro sul primo IP valido disponibile
+        String selectedLocalIp = networkInterfaceBox.getValue();
+        if (selectedLocalIp == null) {
+            selectedLocalIp = networkInterfaceBox.getItems().isEmpty() ? "127.0.0.1" : networkInterfaceBox.getItems().get(0);
+        }
+
+        if ("RMI".equals(connectionType)) {
+            System.setProperty("java.rmi.server.hostname", selectedLocalIp);
+        }
+
         try {
-            GUI.client.connect(networkTech, ip, port);
+            // Using 0 as local port to let the OS assign an ephemeral port automatically
+            GUI.client.connect(networkTech, ip, port, selectedLocalIp, 0);
             GUI.subscribeGUI();
         } catch (Exception e) {
             System.err.println("Failed to connect to server: " + e.getMessage());
