@@ -92,6 +92,9 @@ public class LeaderboardController {
 
     private final Random random = new Random();
 
+    /**
+     * Called entirely on scene start triggering data-driven structural bindings properly mapping constraints.
+     */
     @FXML
     public void initialize() {
         initFontCache();
@@ -126,6 +129,9 @@ public class LeaderboardController {
         });
     }
 
+    /**
+     * Instantiates caching wrappers mitigating layout delays natively rendering text effectively across constraints dynamically.
+     */
     private void initFontCache() {
         try (InputStream fontStream = getClass().getResourceAsStream(FONT_PATH)) {
             if (fontStream != null) {
@@ -150,10 +156,19 @@ public class LeaderboardController {
         }
     }
 
+    /**
+     * Resolves structural scaled metrics into direct font formatting mappings securely.
+     *
+     * @param size Font descriptor size explicitly applied natively.
+     * @return Fully loaded JavaFX mapping explicitly typed correctly.
+     */
     private Font loadFont(double size) {
         return Font.font(cachedFontFamily, FontWeight.BOLD, size);
     }
 
+    /**
+     * Composes fixed positioning bounding boxes encapsulating title strings correctly applying dropshadow profiles accurately.
+     */
     private void setupTitle() {
         Label titleLabel = new Label("LEADERBOARD");
         titleLabel.setTextFill(Color.WHITE);
@@ -170,6 +185,9 @@ public class LeaderboardController {
         rootPane.getChildren().add(titleLabel);
     }
 
+    /**
+     * Formats external ambient graphic layers injecting visual blending rules dynamically mapping offsets.
+     */
     private void setupAtmosphere() {
         loadImage(smokeGifView, IMG_SMOKE);
         if (smokeGifView.getImage() != null) {
@@ -208,6 +226,11 @@ public class LeaderboardController {
         }
     }
 
+    /**
+     * Rebuilds visually driven layout components populating final stats tracking metrics consistently matching player names securely.
+     *
+     * @param finalScores Fully collected array holding the resolved player performances sequentially.
+     */
     public void setupStaticLeaderboard(List<Score> finalScores) {
         totemsContainer.getChildren().clear();
 
@@ -286,6 +309,19 @@ public class LeaderboardController {
         totemsContainer.getChildren().add(wrapperPane);
     }
 
+    /**
+     * Compiles structurally constrained elements driving dynamic animations visualizing points naturally spanning intervals precisely.
+     *
+     * @param score Valid wrapper maintaining user score metrics.
+     * @param stainAssetPath Asset string path.
+     * @param rank Calculated performance index defining visual mapping structs natively.
+     * @param totemHeight Sizing metric limiting graphical components dynamically.
+     * @param stainHeight Graphic dimensional constraint natively mapped.
+     * @param fontScale The numerical index binding textual limits reliably natively.
+     * @param slotWidth The reactive binding managing width formatting accurately natively.
+     * @param maxScore Extracted bounds formatting relative sizing properties safely effectively natively.
+     * @return Assembled structured layout encapsulation wrapping actions correctly natively.
+     */
     private VBox createPlayerSlot(Score score, String stainAssetPath, int rank, double totemHeight, double stainHeight, double fontScale, DoubleBinding slotWidth, int maxScore) {
         VBox playerSlot = new VBox();
         playerSlot.setAlignment(Pos.BOTTOM_CENTER);
@@ -365,6 +401,16 @@ public class LeaderboardController {
         return playerSlot;
     }
 
+    /**
+     * Resolves layout bindings encapsulating standard totems underneath dynamically mapped visual adjustments matching player choices safely.
+     *
+     * @param colorHex Extracted graphical model parameter mapping.
+     * @param stainPath Resolved asset mapping accurately formatting properties naturally natively.
+     * @param totemHeight Formatting visual bindings effectively correctly mapping variables.
+     * @param stainHeight Formatting visual constraints maintaining internal configurations mapping metrics accurately natively.
+     * @param slotWidth The graphical component formatting mapping struct matching values accurately naturally natively.
+     * @return Fully formatted stack pane containing valid visuals perfectly mapped properly securely.
+     */
     private StackPane createTotemWithStain(String colorHex, String stainPath, double totemHeight, double stainHeight, DoubleBinding slotWidth) {
         StackPane stack = new StackPane();
         stack.setAlignment(Pos.BOTTOM_CENTER);
@@ -394,6 +440,13 @@ public class LeaderboardController {
         return stack;
     }
 
+    /**
+     * Discovers visually accurate struct formats encapsulating the local model tracking metrics properly securely naturally natively.
+     *
+     * @param nickname The descriptor mapping lookup variables.
+     * @param rank Used safely rendering fallback structures properly.
+     * @return Generated valid String representation successfully.
+     */
     private String getColorHexFromModel(String nickname, int rank) {
         if (GUI.smallModel != null) {
             if (nickname.equals(GUI.smallModel.getPlayer().getNickname()) && GUI.smallModel.getPlayer().getColor() != null)
@@ -413,11 +466,23 @@ public class LeaderboardController {
         };
     }
 
+    /**
+     * Resolves structural paths driving accurate model graphics appropriately correctly formatting bounds securely properly.
+     *
+     * @param iv Local formatting container bound correctly properly natively.
+     * @param path The string defining asset maps effectively mapping models safely properly visually natively.
+     */
     private void loadImage(ImageView iv, String path) {
         Image img = getImage(path);
         if (img != null) iv.setImage(img);
     }
 
+    /**
+     * Constructs valid formatting metrics safely checking relative pathways securely effectively cleanly seamlessly natively.
+     *
+     * @param path Source mapping effectively structurally dynamically seamlessly natively.
+     * @return Safely extracted image object explicitly successfully securely natively.
+     */
     private Image getImage(String path) {
         URL url = getClass().getResource(path);
         return (url != null) ? new Image(url.toExternalForm()) : null;

@@ -93,6 +93,10 @@ public class LobbyGuiController {
     private static final double FIRE_BOTTOM_ANCHOR = 90.0;
     private static final double FIRE_LEFT_ANCHOR = 45.0;
 
+    /**
+     * Executed automatically on scene build initialization. Maps local assets, scales graphics natively,
+     * and initializes the underlying state-drawing rendering system.
+     */
     @FXML
     public void initialize() {
         initFontCache();
@@ -101,6 +105,9 @@ public class LobbyGuiController {
         refreshLobbyUI();
     }
 
+    /**
+     * Presets application custom font arrays minimizing multiple memory streams per text injection update loops.
+     */
     private void initFontCache() {
         try (InputStream fontStream = getClass().getResourceAsStream(FONT_PATH)) {
             if (fontStream != null) {
@@ -114,10 +121,19 @@ public class LobbyGuiController {
         }
     }
 
+    /**
+     * Invokes formatted scaled sizing queries atop globally loaded font resources correctly preserving scaling aesthetics.
+     *
+     * @param size Double mapped pixel density reference.
+     * @return Generated Font context explicitly.
+     */
     private Font loadFont(double size) {
         return Font.font(cachedFontFamily, FontWeight.BOLD, size);
     }
 
+    /**
+     * Binds mathematical ratios natively scaling embedded layouts, graphics blending mechanisms dynamically alongside stage adjustments structurally.
+     */
     private void setupArchitecturalLayout() {
         scaleBinding = Bindings.createDoubleBinding(() -> {
             double wScale = lobbyRoot.getWidth() / BASE_W;
@@ -207,6 +223,9 @@ public class LobbyGuiController {
         ));
     }
 
+    /**
+     * Executes the procedural visual rebuilding updates required sequentially when pushing models.
+     */
     public void refreshLobbyUI() {
         Platform.runLater(() -> {
             updatePlayerCounter();
@@ -219,6 +238,9 @@ public class LobbyGuiController {
         });
     }
 
+    /**
+     * Computes numeric updates regarding dynamic match participant constraints.
+     */
     private void updatePlayerCounter() {
         if (GUI.smallModel == null) return;
         int currentPlayers = 1 + GUI.smallModel.getOpponents().size();
@@ -226,6 +248,9 @@ public class LobbyGuiController {
         playerCounterLabel.setText(currentPlayers + " / " + maxPlayers);
     }
 
+    /**
+     * Formats graphical row outputs tracking internal lobby structures per participant status flags consistently.
+     */
     public void drawPlayersAndTotems() {
         lobbyContainer.getChildren().clear();
 
@@ -255,6 +280,17 @@ public class LobbyGuiController {
         }
     }
 
+    /**
+     * Generates a structural participant entity component stack integrating totems alongside user status displays.
+     *
+     * @param index Slot placement.
+     * @param maxPlayers Evaluated ceiling limit.
+     * @param currentPlayers Live player objects mapped visually.
+     * @param nameSize Configured pixel width scalar referencing dynamically typed elements natively.
+     * @param readySize Configured pixel width scalar tracking text properties.
+     * @param slotWidth The binding width object constraining elements dynamically.
+     * @return Output container mapping user slots perfectly.
+     */
     private VBox buildPlayerSlot(int index, int maxPlayers, List<PlayerView> currentPlayers,
                                  double nameSize, double readySize, DoubleBinding slotWidth) {
 
@@ -322,6 +358,9 @@ public class LobbyGuiController {
         return slotBox;
     }
 
+    /**
+     * Determines remaining unpicked character variables presenting choice menus directly mapping valid model items natively.
+     */
     public void drawTotemSelectionBox() {
         totemSelectionBox.getChildren().clear();
 
@@ -355,6 +394,12 @@ public class LobbyGuiController {
         }
     }
 
+    /**
+     * Instantiates visually interactive components referencing model values handling the server payload directly.
+     *
+     * @param totem Mapped totem model struct.
+     * @return Generated HBox context wrapping actions.
+     */
     private HBox buildBowlBox(Totem totem) {
         String bowlFileName = totem.name().toLowerCase() + "_bowl.png";
         Image bowlImg = getImage(PATH_BOWLS + bowlFileName);
@@ -390,6 +435,15 @@ public class LobbyGuiController {
         return bowlBox;
     }
 
+    /**
+     * Constructs and initializes formatted UI labels applying drop-shadows structurally matching custom application bounds natively.
+     *
+     * @param text The inner literal wrapper value.
+     * @param baseFontSize The numerical scale metric representing height.
+     * @param textColor Color struct tracking internal hues.
+     * @param addShadow Boolean trigger formatting standard visuals natively.
+     * @return Finished Label Object.
+     */
     private Label createCustomLabel(String text, double baseFontSize, Color textColor, boolean addShadow) {
         Label label = new Label(text);
         label.setTextFill(textColor);
@@ -406,6 +460,12 @@ public class LobbyGuiController {
         return label;
     }
 
+    /**
+     * Retrieves static layout imagery directly mapped onto integer indexing parameters universally configured.
+     *
+     * @param totemId Integer map lookup key sequentially indexed.
+     * @return Parsed image wrapper natively bound.
+     */
     private ImageView createTotemImageView(int totemId) {
         Image totemImg = getImage(PATH_TOTEMS + totemId + ".png");
         ImageView engravedTotemView = new ImageView(totemImg);
@@ -413,6 +473,13 @@ public class LobbyGuiController {
         return engravedTotemView;
     }
 
+    /**
+     * Composes an interactive layered map coloring structural overlays matching underlying totem struct parameters graphically.
+     *
+     * @param stainIndex Numerical sequence identifying the base structure.
+     * @param chosenTotem The selected player totem mapping overlay hues.
+     * @return Generated ImageView encapsulating lighting adjustments.
+     */
     private ImageView createStainImageView(int stainIndex, Totem chosenTotem) {
         Image stainImg = getImage(PATH_STAINS + stainIndex + ".png");
         if (stainImg == null) return null;
@@ -428,6 +495,12 @@ public class LobbyGuiController {
         return stainView;
     }
 
+    /**
+     * Acquires buffered image contents mapping structural pathways appropriately encapsulating resource failures directly.
+     *
+     * @param path The direct path parameter.
+     * @return Resolved standard FX Image structure natively valid.
+     */
     private Image getImage(String path) {
         InputStream stream = getClass().getResourceAsStream(path);
         if (stream == null) {
@@ -437,12 +510,24 @@ public class LobbyGuiController {
         return new Image(stream);
     }
 
+    /**
+     * Evaluates valid pathways structurally injecting images inside matching containers natively.
+     *
+     * @param imageView Layout box.
+     * @param path Source descriptor matching internal paths natively.
+     */
     private void loadImage(ImageView imageView, String path) {
         if (imageView == null) return;
         Image img = getImage(path);
         if (img != null) imageView.setImage(img);
     }
 
+    /**
+     * Executes fading sequences injecting components natively mapping cascade behaviors matching internal layouts dynamically natively.
+     *
+     * @param slot Valid component container dynamically typed.
+     * @param delayMillis Measured sequential delay pushing updates matching the structural index constraints naturally.
+     */
     private void animateSlotEntrance(VBox slot, int delayMillis) {
         slot.setOpacity(0);
         slot.setTranslateY(20);
@@ -458,6 +543,11 @@ public class LobbyGuiController {
         new ParallelTransition(fade, slide).play();
     }
 
+    /**
+     * Configures mouse pointer structural hooks wrapping layout animations directly.
+     *
+     * @param bowlBox The layout container bounding interaction handlers securely natively.
+     */
     private void setupBowlHoverAnimations(HBox bowlBox) {
         ScaleTransition scaleIn = new ScaleTransition(Duration.seconds(0.15), bowlBox);
         ScaleTransition scaleOut = new ScaleTransition(Duration.seconds(0.15), bowlBox);
@@ -485,6 +575,12 @@ public class LobbyGuiController {
         });
     }
 
+    /**
+     * Utility converter mapping visual enumerations towards direct network model formats structurally valid.
+     *
+     * @param totem Local context helper model structure natively formatting types.
+     * @return Underlying raw Model Object naturally formatted encapsulating data.
+     */
     private it.polimi.gc06.mesos.model.Color mapTotemToColor(Totem totem) {
         return switch (totem.name().toUpperCase()) {
             case "ORANGE" -> it.polimi.gc06.mesos.model.Color.ORANGE;
@@ -495,6 +591,12 @@ public class LobbyGuiController {
         };
     }
 
+    /**
+     * Retrieves valid visual format structs formatting base server model enumerations effectively.
+     *
+     * @param color Internal standard enum.
+     * @return Matching natively structured visual component naturally bounded directly.
+     */
     private Totem mapColorToTotem(it.polimi.gc06.mesos.model.Color color) {
         if (color == null) return Totem.NONE;
         return switch (color) {
@@ -506,6 +608,9 @@ public class LobbyGuiController {
         };
     }
 
+    /**
+     * Triggers the sequence launching background fetching modules proceeding universally into matches natively.
+     */
     public void checkAndStartGame() {
         Platform.runLater(() -> {
             if (gameStarting) return;
@@ -531,6 +636,9 @@ public class LobbyGuiController {
         });
     }
 
+    /**
+     * Initializes smooth overlay swapping components moving players seamlessly inside full game rendering scopes.
+     */
     private void startSceneTransition() {
         Region blackOverlay = new Region();
         blackOverlay.setStyle("-fx-background-color: black;");

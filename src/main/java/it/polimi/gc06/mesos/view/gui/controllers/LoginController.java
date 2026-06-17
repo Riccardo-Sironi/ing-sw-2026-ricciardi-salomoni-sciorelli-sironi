@@ -99,6 +99,9 @@ public class LoginController {
     private static final String FIELD_STYLE_VALID = "-fx-background-color: transparent; -fx-border-color: transparent transparent #2B2B2B transparent; -fx-border-width: 0 0 3 0; -fx-text-fill: #2B2B2B; -fx-prompt-text-fill: rgba(43,43,43,0.5); -fx-alignment: center;";
     private static final String FIELD_STYLE_ERROR = "-fx-background-color: transparent; -fx-border-color: transparent transparent #8a0303 transparent; -fx-border-width: 0 0 3 0; -fx-text-fill: #2B2B2B; -fx-prompt-text-fill: rgba(43,43,43,0.5); -fx-alignment: center;";
 
+    /**
+     * Initializes the view elements, configures dynamic bindings, and sets up input handlers.
+     */
     @FXML
     public void initialize() {
         loadImage(backgroundImageView, "/imgs/background/login_background.png");
@@ -115,6 +118,9 @@ public class LoginController {
         Platform.runLater(nicknameField::requestFocus);
     }
 
+    /**
+     * Reads all available network interfaces on the local machine to populate the combo box.
+     */
     private void populateNetworkInterfaces() {
         List<String> validIps = new ArrayList<>();
         try {
@@ -147,6 +153,9 @@ public class LoginController {
         networkInterfaceBox.getItems().addAll(validIps);
     }
 
+    /**
+     * Configures the protocol selection buttons.
+     */
     private void setupProtocolButtons() {
         if (rmiButton != null && tcpButton != null) {
             rmiButton.setOnAction(e -> selectProtocol("RMI"));
@@ -156,6 +165,11 @@ public class LoginController {
         }
     }
 
+    /**
+     * Sets the active protocol to connect to the server and updates UI styles.
+     *
+     * @param protocol The selected protocol string.
+     */
     private void selectProtocol(String protocol) {
         connectionType = protocol;
         if ("RMI".equals(protocol)) {
@@ -169,6 +183,9 @@ public class LoginController {
         }
     }
 
+    /**
+     * Configures behavior and layout of the advanced settings modal.
+     */
     private void setupAdvancedSettingsModal() {
         if (advancedSettingsOverlay != null) {
             advancedSettingsOverlay.setVisible(false);
@@ -211,6 +228,9 @@ public class LoginController {
         }
     }
 
+    /**
+     * Opens the advanced settings modal overlay with a fade-in animation.
+     */
     private void openAdvancedSettings() {
         joinButton.setDefaultButton(false);
 
@@ -225,6 +245,9 @@ public class LoginController {
         fadeIn.play();
     }
 
+    /**
+     * Closes the advanced settings modal overlay with a fade-out animation.
+     */
     @FXML
     private void closeAdvancedSettings() {
         FadeTransition fadeOut = new FadeTransition(Duration.millis(200), advancedSettingsOverlay);
@@ -245,6 +268,9 @@ public class LoginController {
         fadeOut.play();
     }
 
+    /**
+     * Establishes scale bindings to keep the layout responsive relative to window size.
+     */
     private void setupDynamicLayout() {
         NumberBinding scale = Bindings.min(
                 rootPane.widthProperty().divide(1920.0),
@@ -268,6 +294,9 @@ public class LoginController {
         }
     }
 
+    /**
+     * Prepares and starts a cyclic animation for bottom glow visual effect.
+     */
     private void setupGlowAnimation() {
         if (bottomGlow != null) {
             FadeTransition glowPulse = new FadeTransition(Duration.seconds(0.25), bottomGlow);
@@ -279,6 +308,9 @@ public class LoginController {
         }
     }
 
+    /**
+     * Attempts to load external font files and sets them onto UI components.
+     */
     private void loadFonts() {
         try {
             setFontIfValid(promptLabel, 50);
@@ -294,6 +326,11 @@ public class LoginController {
         }
     }
 
+    /**
+     * Applies styling rules to customize the appearance of the ComboBox interface items.
+     *
+     * @param comboBox The ComboBox to style.
+     */
     private void styleComboBox(ComboBox<String> comboBox) {
         comboBox.setButtonCell(new ListCell<String>() {
             @Override
@@ -331,6 +368,12 @@ public class LoginController {
         });
     }
 
+    /**
+     * Sets a custom font to the given region element if the font file is valid.
+     *
+     * @param node The UI component.
+     * @param size The font size point.
+     */
     private void setFontIfValid(Region node, double size) {
         if (node == null) return;
         Font font = Font.loadFont(getClass().getResourceAsStream(FONT_PATH), size);
@@ -341,12 +384,21 @@ public class LoginController {
         else if (node instanceof Button) ((Button) node).setFont(font);
     }
 
+    /**
+     * Loads an image to a targeted ImageView from the specified resource string.
+     *
+     * @param imageView The container for the graphic.
+     * @param path The resource path.
+     */
     private void loadImage(ImageView imageView, String path) {
         if (imageView == null) return;
         URL url = getClass().getResource(path);
         if (url != null) imageView.setImage(new Image(url.toExternalForm()));
     }
 
+    /**
+     * Assigns stylistic effects and interactive transition behaviors to UI buttons.
+     */
     private void setupButtonInteractions() {
         joinButton.setOnMouseEntered(e -> joinButton.setStyle(BTN_STYLE_HOVER));
         joinButton.setOnMouseExited(e -> joinButton.setStyle(BTN_STYLE_DEFAULT));
@@ -371,11 +423,24 @@ public class LoginController {
         });
     }
 
+    /**
+     * Applies displacement effects visually mimicking a physical button press.
+     *
+     * @param button The button to animate.
+     * @param shadow The button's shadow effect structure to be modified.
+     * @param translateY The Y-axis translation value.
+     * @param shadowOffsetY The Y-axis shadow offset.
+     */
     private void applyButtonPressEffect(Button button, DropShadow shadow, double translateY, double shadowOffsetY) {
         button.setTranslateY(translateY);
         if (shadow != null) shadow.setOffsetY(shadowOffsetY);
     }
 
+    /**
+     * Event handler to execute the server connection sequence upon pressing "Join".
+     *
+     * @param event The triggered ActionEvent.
+     */
     @FXML
     public void handleLogin(ActionEvent event) {
         if (transitionStarted) return;
@@ -399,20 +464,34 @@ public class LoginController {
         performSceneTransition();
     }
 
+    /**
+     * Activates visual indicators to signal an error during the login attempt.
+     */
     private void handleLoginError() {
         nicknameField.setStyle(FIELD_STYLE_ERROR);
     }
 
+    /**
+     * Disables the main pane interactions to prevent multiple attempts while transitioning.
+     */
     private void lockUIForTransition() {
         transitionStarted = true;
         rootPane.setDisable(true);
     }
 
+    /**
+     * Re-enables the UI layout interactions, effectively aborting a transition lock.
+     */
     private void unlockUI() {
         transitionStarted = false;
         rootPane.setDisable(false);
     }
 
+    /**
+     * Initiates the connection phase with the specified server parameters and attempts a user login.
+     *
+     * @return True if the connection and login phase executed successfully, otherwise false.
+     */
     private boolean connectToServer() {
         GUI.client = new Client();
 
@@ -463,6 +542,9 @@ public class LoginController {
         return true;
     }
 
+    /**
+     * Loads the "Select Game" scene layout and fades it into the application stage.
+     */
     private void performSceneTransition() {
         try {
             URL selectGameUrl = getClass().getResource(GameScene.SELECT.getPath());
@@ -484,6 +566,11 @@ public class LoginController {
         }
     }
 
+    /**
+     * Sets the specified layout as the active scene root and applies fade-in properties.
+     *
+     * @param newRoot The Parent layout to present.
+     */
     private void swapSceneAndFadeIn(Parent newRoot) {
         Stage stage = GUI.primaryStage;
 
@@ -505,6 +592,11 @@ public class LoginController {
         fadeIn.play();
     }
 
+    /**
+     * Returns the finalized valid user nickname instance.
+     *
+     * @return The active player's nickname.
+     */
     public static String getNickname() {
         return nickname;
     }

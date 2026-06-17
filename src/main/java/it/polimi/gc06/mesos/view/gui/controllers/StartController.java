@@ -57,6 +57,10 @@ public class StartController {
     private static final double TIME_WAIT_IN_DARK = 200;
     private static final double TIME_FADE_IN_LOGIN = 500;
 
+    /**
+     * Initializes the start screen layout, loads resources, sets up animations,
+     * and registers event listeners for user interaction.
+     */
     @FXML
     public void initialize() {
         loadImage(backgroundImageView, "/imgs/background/mesos.png");
@@ -76,6 +80,9 @@ public class StartController {
         });
     }
 
+    /**
+     * Sets up dynamic bindings to ensure the layout scales properly with the window size.
+     */
     private void setupDynamicLayout() {
         backgroundImageView.fitWidthProperty().bind(rootPane.widthProperty());
         backgroundImageView.fitHeightProperty().bind(rootPane.heightProperty());
@@ -102,6 +109,9 @@ public class StartController {
         pressKeyLabel.translateYProperty().bind(rootPane.heightProperty().multiply(0.07));
     }
 
+    /**
+     * Initializes and starts the pulsing fade animations for visual effects.
+     */
     private void setupPulseAnimations() {
         createPulse(pressKeyLabel, 2.0, 0.7, 0.0);
         glowPulse = createPulse(bottomGlow, 0.25, 0.3, 0.9);
@@ -110,6 +120,15 @@ public class StartController {
         createPulse(rightVignette, 0.6, 0.9, 0.8);
     }
 
+    /**
+     * Creates and starts an indefinite fade transition for a specified node.
+     *
+     * @param node The JavaFX Node to animate.
+     * @param durationSeconds The duration of a single cycle in seconds.
+     * @param fromValue The starting opacity value.
+     * @param toValue The target opacity value.
+     * @return The configured FadeTransition instance.
+     */
     private FadeTransition createPulse(Node node, double durationSeconds, double fromValue, double toValue) {
         if (node == null) return null;
         FadeTransition pulse = new FadeTransition(Duration.seconds(durationSeconds), node);
@@ -121,11 +140,20 @@ public class StartController {
         return pulse;
     }
 
+    /**
+     * Loads an image from the provided path into the specified ImageView.
+     *
+     * @param imageView The ImageView to populate.
+     * @param path The resource path of the image.
+     */
     private void loadImage(ImageView imageView, String path) {
         URL url = getClass().getResource(path);
         if (url != null) imageView.setImage(new Image(url.toExternalForm()));
     }
 
+    /**
+     * Loads custom fonts and applies them to the view elements.
+     */
     private void loadFonts() {
         try {
             Font titleFont = Font.loadFont(getClass().getResourceAsStream("/it/polimi/gc06/mesos/fonts/Cave-Stone.ttf"), 200);
@@ -136,10 +164,14 @@ public class StartController {
 
         } catch (Exception e) {
             System.err.println("Error: Loading Fonts failed");
-            //e.printStackTrace();
         }
     }
 
+    /**
+     * Handles the start event triggered by user interaction to transition to the login scene.
+     *
+     * @param event The triggered input event.
+     */
     @FXML
     public void handleStart(Event event) {
         if (transitionStarted) return;
@@ -172,10 +204,14 @@ public class StartController {
 
         } catch (IOException e) {
             System.err.println("Error I/O in loading Login.fxml");
-            //e.printStackTrace();
         }
     }
 
+    /**
+     * Builds the shutdown animation sequence prior to swapping scenes.
+     *
+     * @return The combined ParallelTransition containing the outgoing animations.
+     */
     private ParallelTransition buildShutdownAnimation() {
         ParallelTransition shutdown = new ParallelTransition();
 
@@ -199,6 +235,14 @@ public class StartController {
         return shutdown;
     }
 
+    /**
+     * Adds a fade transition element to the given ParallelTransition.
+     *
+     * @param pt The ParallelTransition manager.
+     * @param node The node to fade out.
+     * @param durationMillis The duration of the fade in milliseconds.
+     * @param toValue The target opacity value.
+     */
     private void addFadeToShutdown(ParallelTransition pt, Node node, double durationMillis, double toValue) {
         if (node != null) {
             FadeTransition fade = new FadeTransition(Duration.millis(durationMillis), node);
@@ -207,6 +251,11 @@ public class StartController {
         }
     }
 
+    /**
+     * Swaps the current scene root with the newly loaded one and fades it in.
+     *
+     * @param newRoot The Parent root of the incoming scene.
+     */
     private void swapSceneAndFadeIn(Parent newRoot) {
         Stage stage = (Stage) rootPane.getScene().getWindow();
 
