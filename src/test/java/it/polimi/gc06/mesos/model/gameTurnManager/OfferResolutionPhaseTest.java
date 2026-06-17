@@ -64,11 +64,15 @@ class OfferResolutionPhaseTest {
         turnOrderTileMock = mock(TurnOrderTile.class);
 
         when(turnManagerMock.getActivePlayer()).thenReturn(playerMock);
+        when(turnManagerMock.getPhase()).thenReturn(phase);
         when(turnManagerMock.getNotifier()).thenReturn(notifierMock);
         when(turnManagerMock.getGameModel()).thenReturn(gameModelMock);
         when(turnManagerMock.getGameModel().getBoard()).thenReturn(boardMock);
         when(boardMock.getOfferTrackPlayerSlot(any())).thenReturn(tileSlotMock);
         when(boardMock.getTurnOrderTile()).thenReturn(turnOrderTileMock);
+
+        when(playerMock.getTopDrawNum()).thenReturn(1);
+        when(playerMock.getBottomDrawNum()).thenReturn(1);
 
         System.out.println("[START] " + testInfo.getDisplayName() + " DONE");
     }
@@ -172,7 +176,6 @@ class OfferResolutionPhaseTest {
     void pickCardFromTop_BuildingCard_Success() throws Exception {
         phase.startPlayerOfferResolution(turnManagerMock, playerMock, tileSlotMock);
 
-        // Il giocatore ha ancora pescate sotto, quindi NON scatena la fine del turno
         when(playerMock.getTopDrawNum()).thenReturn(1);
         when(playerMock.getBottomDrawNum()).thenReturn(1);
         when(boardMock.isOfferTrackEmpty()).thenReturn(false);
@@ -181,7 +184,6 @@ class OfferResolutionPhaseTest {
 
         verify(boardMock).buyBuildingFromTopRow(playerMock, buildingCardMock);
         verify(boardMock, never()).getOfferTrackPlayerSlot(any());
-        // Simula player.setTopDrawNum(player.getTopDrawNum() - 1);
         verify(playerMock).setTopDrawNum(0);
     }
 
@@ -268,7 +270,6 @@ class OfferResolutionPhaseTest {
         assertThrows(IllegalPhaseActionException.class, () -> unstartedPhase.checkIfPlayerIsFinished(turnManagerMock, playerMock, boardMock));
     }
 
-
     @Test
     @DisplayName("Player finishes: is placed on TurnOrderTile, and next player is triggered from OfferTrack")
     void test_checkIfPlayerIsFinished_NextPlayerInOfferTrack() throws Exception {
@@ -281,6 +282,7 @@ class OfferResolutionPhaseTest {
         when(boardMock.getOfferTrackPlayerSlot(playerMock)).thenReturn(playerSlotMock);
 
         LinkedList<Player> turnQueue = new LinkedList<>();
+        turnQueue.add(playerMock);
         when(turnManagerMock.getPlayersOrder()).thenReturn(turnQueue);
 
         TurnOrderTile turnOrderTileMock = mock(TurnOrderTile.class);
@@ -315,7 +317,8 @@ class OfferResolutionPhaseTest {
 
         verify(playerSlotMock, times(1)).removePlayer();
         verify(emptyOrderSlot, times(1)).setPlayer(playerMock);
-        assertEquals(1, turnQueue.size());
+
+        assertEquals(0, turnQueue.size());
 
         verify(turnManagerMock, times(1)).setPhase(any(OfferResolutionPhase.class));
         verify(newPhaseMock, times(1)).startPlayerOfferResolution(eq(turnManagerMock), eq(nextPlayerMock), any(TileSlot.class));
