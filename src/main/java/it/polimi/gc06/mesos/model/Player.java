@@ -667,10 +667,15 @@ public class Player {
         if (savedCharactersSets != null) {
             this.charactersSets = new EnumMap<>(CharacterType.class);
             this.charactersSets.putAll(savedCharactersSets);
+        } else {
+            this.charactersSets = null;
         }
+
         if (savedInventorPairs != null) {
             this.inventorPairs = new EnumMap<>(InventionIcon.class);
             this.inventorPairs.putAll(savedInventorPairs);
+        } else {
+            this.inventorPairs = null;
         }
     }
 }
