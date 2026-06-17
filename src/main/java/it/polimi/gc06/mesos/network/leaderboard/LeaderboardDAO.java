@@ -151,7 +151,7 @@ public class LeaderboardDAO {
             }
             else{
                 connection.rollback();
-                return false;
+                throw new IllegalStateException("Query did not generate a valid key.");
             }
             connection.commit();
 
