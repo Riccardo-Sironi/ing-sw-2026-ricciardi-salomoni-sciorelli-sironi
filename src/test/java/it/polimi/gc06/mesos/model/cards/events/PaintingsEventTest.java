@@ -10,6 +10,7 @@ import org.junit.jupiter.api.*;
 
 import java.util.ArrayList;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class PaintingsEventTest {
@@ -50,6 +51,21 @@ public class PaintingsEventTest {
         System.out.println("[START] " + testInfo.getDisplayName());
     }
 
+    @Test
+    void testSettersAndGetters() {
+        PaintingsEvent event = new PaintingsEvent();
+        assertEquals(-1, event.getPrestigeGain());
+        assertEquals(-1, event.getPrestigeLoss());
+        assertEquals(-1, event.getMinNumberOfArtists());
+
+        event.setPrestigeGain(3);
+        event.setPrestigeLoss(2);
+        event.setMinNumberOfArtists(4);
+
+        assertEquals(3, event.getPrestigeGain());
+        assertEquals(2, event.getPrestigeLoss());
+        assertEquals(4, event.getMinNumberOfArtists());
+    }
 
     @Test
     void testResolveEvent_ArtistsBelowMin_LosesPrestige() {
@@ -123,5 +139,25 @@ public class PaintingsEventTest {
         CardVisitor visitor = mock(CardVisitor.class);
         event.accept(visitor);
         verify(visitor).visit(event);
+    }
+
+    @Test
+    void testEqualsAndHashCode() {
+        PaintingsEvent e1 = new PaintingsEvent(Era.ERA_I, 2, 3, 2);
+        PaintingsEvent e2 = new PaintingsEvent(Era.ERA_I, 2, 3, 2);
+        PaintingsEvent e3 = new PaintingsEvent(Era.ERA_I, 1, 3, 2);
+        PaintingsEvent e4 = new PaintingsEvent(Era.ERA_I, 2, 1, 2);
+        PaintingsEvent e5 = new PaintingsEvent(Era.ERA_I, 2, 3, 1);
+
+        assertEquals(e1, e1);
+        assertEquals(e1, e2);
+        assertNotEquals(e1, e3);
+        assertNotEquals(e1, e4);
+        assertNotEquals(e1, e5);
+        assertNotEquals(e1, null);
+        assertNotEquals(e1, new Object());
+
+        assertEquals(e1.hashCode(), e2.hashCode());
+        assertNotEquals(e1.hashCode(), e3.hashCode());
     }
 }

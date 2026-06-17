@@ -12,8 +12,7 @@ import java.util.ArrayList;
 import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingsRegistry;
 import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingRegistryKey;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class RitualEventTest {
@@ -66,6 +65,18 @@ public class RitualEventTest {
         System.out.println("[START] " + testInfo.getDisplayName());
     }
 
+    @Test
+    void testSettersAndGetters() {
+        RitualEvent event = new RitualEvent();
+        assertEquals(-1, event.getPrestigeGain());
+        assertEquals(-1, event.getPrestigeLoss());
+
+        event.setPrestigeGain(5);
+        event.setPrestigeLoss(2);
+
+        assertEquals(5, event.getPrestigeGain());
+        assertEquals(2, event.getPrestigeLoss());
+    }
 
     @Test
     void testIsLastToBeResolvedIsFalse() {
@@ -236,5 +247,23 @@ public class RitualEventTest {
 
         verify(player).addPrestigeTokens(4);
         verify(player, never()).removePrestigeTokens(anyInt());
+    }
+
+    @Test
+    void testEqualsAndHashCode() {
+        RitualEvent e1 = new RitualEvent(Era.ERA_I, 3, 2);
+        RitualEvent e2 = new RitualEvent(Era.ERA_I, 3, 2);
+        RitualEvent e3 = new RitualEvent(Era.ERA_I, 1, 2);
+        RitualEvent e4 = new RitualEvent(Era.ERA_I, 3, 1);
+
+        assertEquals(e1, e1);
+        assertEquals(e1, e2);
+        assertNotEquals(e1, e3);
+        assertNotEquals(e1, e4);
+        assertNotEquals(e1, null);
+        assertNotEquals(e1, new Object());
+
+        assertEquals(e1.hashCode(), e2.hashCode());
+        assertNotEquals(e1.hashCode(), e3.hashCode());
     }
 }

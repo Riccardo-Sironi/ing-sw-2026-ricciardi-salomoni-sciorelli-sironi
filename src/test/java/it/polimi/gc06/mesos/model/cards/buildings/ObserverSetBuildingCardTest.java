@@ -9,6 +9,7 @@ import org.junit.jupiter.api.*;
 
 import java.util.ArrayList;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class ObserverSetBuildingCardTest {
@@ -85,7 +86,6 @@ class ObserverSetBuildingCardTest {
         ObserverSetBuildingCard buildingCard = new ObserverSetBuildingCard();
         player.addBuildingCards(buildingCard);
 
-        // we mock the cards and define their accept() behavior to trigger the Visitor pattern without needing their real constructors.
         ArtistCard artist = mock(ArtistCard.class);
         doAnswer(i -> {
             ((CardVisitor) i.getArgument(0)).visit(artist);
@@ -130,18 +130,29 @@ class ObserverSetBuildingCardTest {
 
         buildingCard.update(player);
 
-        Assertions.assertEquals(initialFood, player.getFoodTokens(),
+        assertEquals(initialFood, player.getFoodTokens(),
                 "Food tokens should not increase with an incomplete set (5/6 characters)");
 
         player.addCharacterCards(inventor);
 
         buildingCard.update(player);
 
-        Assertions.assertEquals(initialFood + 5, player.getFoodTokens(),
+        assertEquals(initialFood + 5, player.getFoodTokens(),
                 "Food tokens should increase by 5 after completing a full character set");
 
-        Assertions.assertFalse(player.hasCompletedSet(),
+        assertFalse(player.hasCompletedSet(),
                 "The completed set flag should be reset after the reward is claimed");
     }
 
+    @Test
+    void testEquals() {
+        ObserverSetBuildingCard card1 = new ObserverSetBuildingCard();
+        ObserverSetBuildingCard card2 = new ObserverSetBuildingCard();
+        ObserverPairBuildingCard differentCard = new ObserverPairBuildingCard();
+
+        assertEquals(card1, card1);
+        assertEquals(card1, card2);
+        assertNotEquals(card1, differentCard);
+        assertNotEquals(card1, null);
+    }
 }

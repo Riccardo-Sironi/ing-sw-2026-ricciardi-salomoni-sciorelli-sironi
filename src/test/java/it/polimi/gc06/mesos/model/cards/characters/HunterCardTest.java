@@ -39,10 +39,35 @@ class HunterCardTest {
     }
 
     @Test
+    void testDefaultConstructorAndSetters() {
+        HunterCard card = new HunterCard();
+        assertFalse(card.hasFoodIcon());
+
+        card.setHasFoodIcon(true);
+        assertTrue(card.hasFoodIcon());
+    }
+
+    @Test
     void testAccept() {
         HunterCard card = new HunterCard(Era.ERA_I, true);
         HunterFoodIconVisitor visitor = mock(HunterFoodIconVisitor.class);
         card.accept(visitor);
         verify(visitor, times(1)).visit(card);
+    }
+
+    @Test
+    void testEqualsAndHashCode() {
+        HunterCard card1 = new HunterCard(Era.ERA_I, true);
+        HunterCard card2 = new HunterCard(Era.ERA_II, true);
+        HunterCard card3 = new HunterCard(Era.ERA_I, false);
+
+        assertEquals(card1, card1);
+        assertEquals(card1, card2);
+        assertNotEquals(card1, card3);
+        assertNotEquals(card1, null);
+        assertNotEquals(card1, new Object());
+
+        assertEquals(card1.hashCode(), card2.hashCode());
+        assertNotEquals(card1.hashCode(), card3.hashCode());
     }
 }

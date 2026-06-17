@@ -43,10 +43,41 @@ class BuilderCardTest {
     }
 
     @Test
+    void testDefaultConstructorAndSetters() {
+        BuilderCard card = new BuilderCard();
+        assertEquals(-1, card.getPrestige());
+        assertEquals(-1, card.getFoodDiscount());
+
+        card.setPrestige(5);
+        card.setFoodDiscount(3);
+
+        assertEquals(5, card.getPrestige());
+        assertEquals(3, card.getFoodDiscount());
+    }
+
+    @Test
     void testAccept() {
         BuilderCard card = new BuilderCard(Era.ERA_I, 3, 2);
         CharactersSetsVisitor visitor = Mockito.mock(CharactersSetsVisitor.class);
         card.accept(visitor);
         verify(visitor, times(1)).visit(card);
+    }
+
+    @Test
+    void testEqualsAndHashCode() {
+        BuilderCard card1 = new BuilderCard(Era.ERA_I, 3, 2);
+        BuilderCard card2 = new BuilderCard(Era.ERA_I, 3, 2);
+        BuilderCard card3 = new BuilderCard(Era.ERA_I, 5, 2);
+        BuilderCard card4 = new BuilderCard(Era.ERA_I, 3, 1);
+
+        assertEquals(card1, card1);
+        assertEquals(card1, card2);
+        assertNotEquals(card1, card3);
+        assertNotEquals(card1, card4);
+        assertNotEquals(card1, null);
+        assertNotEquals(card1, new Object());
+
+        assertEquals(card1.hashCode(), card2.hashCode());
+        assertNotEquals(card1.hashCode(), card3.hashCode());
     }
 }

@@ -5,8 +5,6 @@ import it.polimi.gc06.mesos.model.Player;
 import it.polimi.gc06.mesos.model.cards.CardVisitor;
 import org.junit.jupiter.api.*;
 
-import java.util.function.ToIntFunction;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -30,6 +28,19 @@ class EndGameBuildingCardTest {
     @BeforeEach
     void setUp(TestInfo testInfo)  {
         System.out.println("[START] " + testInfo.getDisplayName());
+    }
+
+    @Test
+    void testConstructorsAndGetters(){
+        EndGameBuildingCard card1 = new EndGameBuildingCard(Era.ERA_III, 5, 2, EndGameBuildingFunction.FIXED_25);
+        assertEquals(Era.ERA_III, card1.getEra());
+        assertEquals(2, card1.getFoodCost());
+        assertEquals(EndGameBuildingFunction.FIXED_25, card1.getPrestigeEffect());
+
+        EndGameBuildingCard card2 = new EndGameBuildingCard();
+        assertNull(card2.getEra());
+        assertNull(card2.getPrestigeEffect());
+        assertEquals(-1, card2.getFoodCost());
     }
 
     @Test
@@ -60,4 +71,19 @@ class EndGameBuildingCardTest {
         verify(visitor, times(1)).visit(endGameBuildingCard);
     }
 
+    @Test
+    void testEqualsAndHashCode(){
+        EndGameBuildingCard card1 = new EndGameBuildingCard(Era.ERA_III, 5, 2, EndGameBuildingFunction.FIXED_25);
+        EndGameBuildingCard card2 = new EndGameBuildingCard(Era.ERA_III, 5, 2, EndGameBuildingFunction.FIXED_25);
+        EndGameBuildingCard card3 = new EndGameBuildingCard(Era.ERA_III, 5, 2, EndGameBuildingFunction.COUNT_ARTISTS);
+
+        assertEquals(card1, card1);
+        assertEquals(card1, card2);
+        assertNotEquals(card1, card3);
+        assertNotEquals(card1, null);
+        assertNotEquals(card1, new Object());
+
+        assertEquals(card1.hashCode(), card2.hashCode());
+        assertNotEquals(card1.hashCode(), card3.hashCode());
+    }
 }

@@ -88,7 +88,6 @@ public class LoginController {
 
     private static final String FONT_PATH = "/it/polimi/gc06/mesos/fonts/ArcadianG.ttf";
 
-    // Modificati leggermente gli stili per mantenere il font-size e font-weight integrati con le nuove direttive FXML
     private static final String BTN_STYLE_DEFAULT = "-fx-background-color: transparent; -fx-border-color: #2B2B2B; -fx-border-width: 3; -fx-text-fill: #2B2B2B; -fx-background-radius: 10; -fx-border-radius: 10; -fx-cursor: hand;";
     private static final String BTN_STYLE_HOVER = "-fx-background-color: rgba(0,0,0,0.1); -fx-border-color: #2B2B2B; -fx-border-width: 3; -fx-text-fill: #2B2B2B; -fx-background-radius: 10; -fx-border-radius: 10; -fx-cursor: hand;";
 
@@ -282,15 +281,12 @@ public class LoginController {
 
     private void loadFonts() {
         try {
-            // Assegniamo ArcadianG solo agli elementi della schermata base
-            // e al titolo delle impostazioni avanzate
             setFontIfValid(promptLabel, 50);
             setFontIfValid(nicknameField, 35);
             setFontIfValid(joinButton, 30);
             setFontIfValid(advancedSettingsLabel, 20);
             setFontIfValid(advancedSettingsTitle, 30);
 
-            // Stile per la comboBox (colori e hover) usando il font di base
             styleComboBox(networkInterfaceBox);
 
         } catch (Exception e) {
@@ -299,31 +295,28 @@ public class LoginController {
     }
 
     private void styleComboBox(ComboBox<String> comboBox) {
-        // Modifica l'aspetto della cella principale (il rettangolo visibile quando chiuso)
         comboBox.setButtonCell(new ListCell<String>() {
             @Override
             protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || item == null) {
                     setText(comboBox.getPromptText());
-                    setTextFill(Color.web("rgba(224,224,224,0.6)")); // Grigio per il prompt in modo che ricordi un placeholder
+                    setTextFill(Color.web("rgba(224,224,224,0.6)"));
                 } else {
                     setText(item);
                     setTextFill(Color.WHITE);
                 }
-                // Usa il font di default con size a 16px
                 setStyle("-fx-background-color: transparent; -fx-font-size: 16px;");
             }
         });
 
-        // Modifica l'aspetto delle celle nella tendina (quando viene aperto il menu)
         comboBox.setCellFactory(lv -> new ListCell<String>() {
             @Override
             protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || item == null) {
                     setText(null);
-                    setStyle("-fx-background-color: #2B2B2B;"); // Sfondo menu scuro
+                    setStyle("-fx-background-color: #2B2B2B;");
                     setOnMouseEntered(null);
                     setOnMouseExited(null);
                 } else {
@@ -331,7 +324,6 @@ public class LoginController {
                     setTextFill(Color.WHITE);
                     setStyle("-fx-background-color: #2B2B2B; -fx-padding: 8 10 8 10; -fx-font-size: 14px;");
 
-                    // Personalizziamo l'effetto HOVER per rimpiazzare l'orrido blu nativo di JavaFX
                     setOnMouseEntered(e -> setStyle("-fx-background-color: #444444; -fx-padding: 8 10 8 10; -fx-font-size: 14px; -fx-cursor: hand;"));
                     setOnMouseExited(e -> setStyle("-fx-background-color: #2B2B2B; -fx-padding: 8 10 8 10; -fx-font-size: 14px;"));
                 }
@@ -361,7 +353,6 @@ public class LoginController {
         joinButton.setOnMousePressed(e -> applyButtonPressEffect(joinButton, buttonShadow, 0.5, 0.5));
         joinButton.setOnMouseReleased(e -> applyButtonPressEffect(joinButton, buttonShadow, 0, 2.5));
 
-        // Aggiorniamo gli stili di default per non perdere i nuovi font-size
         okButton.setOnMouseEntered(e -> okButton.setStyle(MODAL_BTN_HOVER + " -fx-font-size: 18px; -fx-font-weight: bold;"));
         okButton.setOnMouseExited(e -> okButton.setStyle("-fx-background-color: transparent; -fx-border-color: #E0E0E0; -fx-border-width: 3; -fx-text-fill: #E0E0E0; -fx-background-radius: 10; -fx-border-radius: 10; -fx-cursor: hand; -fx-font-size: 18px; -fx-font-weight: bold;"));
 
@@ -440,7 +431,6 @@ public class LoginController {
             }
         }
 
-        // Se l'utente non seleziona nulla (prompt visibile), facciamo un fallback sicuro sul primo IP valido disponibile
         String selectedLocalIp = networkInterfaceBox.getValue();
         if (selectedLocalIp == null) {
             selectedLocalIp = networkInterfaceBox.getItems().isEmpty() ? "127.0.0.1" : networkInterfaceBox.getItems().get(0);
@@ -451,7 +441,6 @@ public class LoginController {
         }
 
         try {
-            // Using 0 as local port to let the OS assign an ephemeral port automatically
             GUI.client.connect(networkTech, ip, port, selectedLocalIp, 0);
             GUI.subscribeGUI();
         } catch (Exception e) {

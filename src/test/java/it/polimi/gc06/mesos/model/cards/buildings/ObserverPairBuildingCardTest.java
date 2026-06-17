@@ -1,7 +1,6 @@
 package it.polimi.gc06.mesos.model.cards.buildings;
 
 import it.polimi.gc06.mesos.model.DTONotifier;
-import it.polimi.gc06.mesos.model.Era;
 import it.polimi.gc06.mesos.model.GameInfo;
 import it.polimi.gc06.mesos.model.Player;
 import it.polimi.gc06.mesos.model.cards.CardVisitor;
@@ -11,6 +10,7 @@ import org.junit.jupiter.api.*;
 
 import java.util.ArrayList;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class ObserverPairBuildingCardTest {
@@ -86,28 +86,40 @@ class ObserverPairBuildingCardTest {
         ObserverPairBuildingCard buildingCard = new ObserverPairBuildingCard();
         player.addBuildingCards(buildingCard);
 
-        InventorCard firstInventor = new InventorCard(Era.ERA_I, InventionIcon.ROPE);
-        InventorCard secondInventor = new InventorCard(Era.ERA_I, InventionIcon.ROPE);
+        InventorCard firstInventor = new InventorCard(it.polimi.gc06.mesos.model.Era.ERA_I, InventionIcon.ROPE);
+        InventorCard secondInventor = new InventorCard(it.polimi.gc06.mesos.model.Era.ERA_I, InventionIcon.ROPE);
 
         player.addCharacterCards(firstInventor);
         buildingCard.update(player); // force this that should be done by the board
 
-        Assertions.assertEquals(initialFood, player.getFoodTokens(),
+        assertEquals(initialFood, player.getFoodTokens(),
                 "Food tokens should not increase with only one inventor");
 
         player.addCharacterCards(secondInventor);
         buildingCard.update(player); // force this that should be done by the board
 
-        Assertions.assertEquals(initialFood + 3, player.getFoodTokens(),
+        assertEquals(initialFood + 3, player.getFoodTokens(),
                 "Food tokens should increase by 3 after completing an inventor pair");
 
-        Assertions.assertFalse(player.hasCompletedPair(),
+        assertFalse(player.hasCompletedPair(),
                 "The completed pair flag should be reset after the reward is claimed");
 
-        player.addCharacterCards(new InventorCard(Era.ERA_I, InventionIcon.FIGURE));
+        player.addCharacterCards(new InventorCard(it.polimi.gc06.mesos.model.Era.ERA_I, InventionIcon.FIGURE));
         buildingCard.update(player);
 
-        Assertions.assertFalse(player.hasCompletedPair(),
+        assertFalse(player.hasCompletedPair(),
                 "Adding a different inventor should not trigger the pair completion");
+    }
+
+    @Test
+    void testEquals() {
+        ObserverPairBuildingCard card1 = new ObserverPairBuildingCard();
+        ObserverPairBuildingCard card2 = new ObserverPairBuildingCard();
+        ObserverSetBuildingCard differentCard = new ObserverSetBuildingCard();
+
+        assertEquals(card1, card1);
+        assertEquals(card1, card2);
+        assertNotEquals(card1, differentCard);
+        assertNotEquals(card1, null);
     }
 }

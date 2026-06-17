@@ -48,10 +48,12 @@ class BuildingCardTest {
     void testConstructorAndGetters() {
         assertNull(emptyCard.getEra());
         assertEquals(-1, emptyCard.getPrestigeGain(mock(Player.class)));
+        assertEquals(-1, emptyCard.getBasePrestigeGain());
         assertEquals(-1, emptyCard.getFoodCost());
 
         assertEquals(Era.ERA_I, completeCard.getEra());
         assertEquals(10, completeCard.getPrestigeGain(mock(Player.class)));
+        assertEquals(10, completeCard.getBasePrestigeGain());
         assertEquals(5, completeCard.getFoodCost());
     }
 

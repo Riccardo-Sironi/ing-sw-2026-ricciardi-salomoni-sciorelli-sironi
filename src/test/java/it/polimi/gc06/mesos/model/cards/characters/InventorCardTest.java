@@ -3,8 +3,7 @@ package it.polimi.gc06.mesos.model.cards.characters;
 import it.polimi.gc06.mesos.model.Era;
 import org.junit.jupiter.api.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class InventorCardTest {
@@ -41,10 +40,35 @@ class InventorCardTest {
     }
 
     @Test
+    void testDefaultConstructorAndSetters() {
+        InventorCard card = new InventorCard();
+        assertNull(card.getIcon());
+
+        card.setIcon(InventionIcon.ROPE);
+        assertEquals(InventionIcon.ROPE, card.getIcon());
+    }
+
+    @Test
     void testAccept() {
         InventorCard card = new InventorCard(Era.ERA_I, InventionIcon.BOAT);
         InventorPairsVisitor visitor = mock(InventorPairsVisitor.class);
         card.accept(visitor);
         verify(visitor, times(1)).visit(card);
+    }
+
+    @Test
+    void testEqualsAndHashCode() {
+        InventorCard card1 = new InventorCard(Era.ERA_I, InventionIcon.BOAT);
+        InventorCard card2 = new InventorCard(Era.ERA_I, InventionIcon.BOAT);
+        InventorCard card3 = new InventorCard(Era.ERA_I, InventionIcon.ROPE);
+
+        assertEquals(card1, card1);
+        assertEquals(card1, card2);
+        assertNotEquals(card1, card3);
+        assertNotEquals(card1, null);
+        assertNotEquals(card1, new Object());
+
+        assertEquals(card1.hashCode(), card2.hashCode());
+        assertNotEquals(card1.hashCode(), card3.hashCode());
     }
 }

@@ -49,4 +49,25 @@ class ModifierBuildingCardTest {
 
         verify(visitor, times(1)).visit(modifierBuildingCard);
     }
+
+    @Test
+    void testEqualsAndHashCode() {
+        ModifierBuildingCard card1 = new ModifierBuildingCard();
+        card1.setCardKey(ModifierBuildingRegistryKey.PICK_FROM_TOP);
+
+        ModifierBuildingCard card2 = new ModifierBuildingCard();
+        card2.setCardKey(ModifierBuildingRegistryKey.PICK_FROM_TOP);
+
+        ModifierBuildingCard card3 = new ModifierBuildingCard();
+        card3.setCardKey(ModifierBuildingRegistryKey.TILE_FOOD_BONUS);
+
+        assertEquals(card1, card1);
+        assertEquals(card1, card2);
+        assertNotEquals(card1, card3);
+        assertNotEquals(card1, null);
+        assertNotEquals(card1, new Object());
+
+        assertEquals(card1.hashCode(), card2.hashCode());
+        assertNotEquals(card1.hashCode(), card3.hashCode());
+    }
 }

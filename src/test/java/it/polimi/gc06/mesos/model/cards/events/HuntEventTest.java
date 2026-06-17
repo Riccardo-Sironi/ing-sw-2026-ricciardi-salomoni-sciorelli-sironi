@@ -11,8 +11,7 @@ import java.util.ArrayList;
 import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingsRegistry;
 import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingRegistryKey;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class HuntEventTest {
@@ -56,6 +55,13 @@ public class HuntEventTest {
         System.out.println("[START] " + testInfo.getDisplayName());
     }
 
+    @Test
+    void testSettersAndGetters() {
+        HuntEvent event = new HuntEvent();
+        assertEquals(-1, event.getPrestigeGain());
+        event.setPrestigeGain(5);
+        assertEquals(5, event.getPrestigeGain());
+    }
 
     @Test
     void testIsLastToBeResolvedIsFalse() {
@@ -169,10 +175,24 @@ public class HuntEventTest {
 
     @Test
     void testAccept_With_NullVisitor() {
-        // The visitor should not be null, thus, a NullPointerException is expected when trying to accept a null visitor
-        // In order to enforce this, the parameter is marked as @NotNull, throwing a compile warning if a null visitor is passed.
         assertThrows(NullPointerException.class, () -> {
             huntEvent.accept(null);
         });
+    }
+
+    @Test
+    void testEqualsAndHashCode() {
+        HuntEvent e1 = new HuntEvent(Era.ERA_I, 2);
+        HuntEvent e2 = new HuntEvent(Era.ERA_I, 2);
+        HuntEvent e3 = new HuntEvent(Era.ERA_I, 3);
+
+        assertEquals(e1, e1);
+        assertEquals(e1, e2);
+        assertNotEquals(e1, e3);
+        assertNotEquals(e1, null);
+        assertNotEquals(e1, new Object());
+
+        assertEquals(e1.hashCode(), e2.hashCode());
+        assertNotEquals(e1.hashCode(), e3.hashCode());
     }
 }
