@@ -36,7 +36,7 @@
 
                 </HBox>
                 <HBox fx:id="skipButtonContainer">
-                    <Button fx:id="skipButton" text="Skip"/>
+                    <ImageView fx:id="skipButton" preserveRatio="true"/>
                 </HBox>
             </HBox>
 

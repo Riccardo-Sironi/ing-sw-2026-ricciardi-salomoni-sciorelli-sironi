@@ -8,17 +8,6 @@
     -fx-background-color: transparent;
 }
 
-#skipButton {
-    -fx-background-color: transparent;
-    -fx-background-insets: 0;
-    -fx-padding: 20 35;
-    -fx-background-image: url('../../../../../imgs/overlay/skip_button_overlay.png');
-    -fx-background-size: cover;
-    -fx-background-position: center;
-    -fx-background-repeat: no-repeat;
-    -fx-text-fill: #151010;
-}
-
 /* ==========================INVENTORY=============================== */
 
 #inventoryBox {;

@@ -49,6 +49,8 @@ public class ImageFetcher {
     private final ArrayList<CardImagesInfo> cardInfos;
     private final ArrayList<OfferTileInfo> tileInfos;
 
+    private final Image skipButtonImage;
+
     public ImageFetcher(int numOfPlayers) throws IOException {
         Random r = new Random();
         this(numOfPlayers, r.nextLong());
@@ -118,6 +120,8 @@ public class ImageFetcher {
 
         positivePrestigeTokenImage = loadImage("imgs/tokens/prestige_token.png");
         negativePrestigeTokenImage = loadImage("imgs/tokens/negative_prestige_token.png");
+
+        skipButtonImage = loadImage("imgs/skip_button_image.png");
     }
 
     /**
@@ -222,6 +226,10 @@ public class ImageFetcher {
             System.err.println("image not found: " + path);
             return null;
         }
+    }
+
+    public Image getSkipButtonImage() {
+        return skipButtonImage;
     }
 
     public static class CardImagesInfo {
