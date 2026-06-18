@@ -17,12 +17,9 @@ public class PlayerJoinedLobbyDTO implements SmallModelEditor {
 
     @Override
     public void edit(SmallModel smallModel) throws IllegalStateException {
-        // Intervento nucleare: svuotiamo la lista avversari e la ricostruiamo da zero
-        // con i dati freschi appena arrivati dal server.
         smallModel.getOpponents().clear();
 
         for (String pName : currentPlayers) {
-            // Aggiungiamo tutti tranne noi stessi
             if (!pName.equals(smallModel.getPlayer().getNickname())) {
                 PlayerView opponent = new PlayerView(pName, null);
                 smallModel.addOpponent(opponent);
