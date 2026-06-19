@@ -2,212 +2,227 @@ package it.polimi.gc06.mesos.network_and_db.tcp;
 
 import it.polimi.gc06.mesos.controller.commands.ControllerCommand;
 import it.polimi.gc06.mesos.controller.commands.Request;
-import it.polimi.gc06.mesos.dtos.ErrorDTO;
-import it.polimi.gc06.mesos.dtos.LobbyInitializedDTO;
-import it.polimi.gc06.mesos.dtos.SmallModelEditor;
 import it.polimi.gc06.mesos.model.gameTurnManager.PlacingTotemPhase;
+import it.polimi.gc06.mesos.network.client.Client;
+import it.polimi.gc06.mesos.network.client.ServerConnection;
 import it.polimi.gc06.mesos.network.server.ServerMain;
+import it.polimi.gc06.mesos.network.server.TCPClientManager;
 import it.polimi.gc06.mesos.view.smallModel.SmallModel;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
-import java.io.*;
-import java.net.Socket;
-import java.util.HashMap;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map.Entry;
-import java.util.NoSuchElementException;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TCPClientManagerTest {
 
-    private final HashMap<String, Client> clients = new HashMap<>();
+    private static final int TCP_PORT = 45165;
+    private static final int RMI_PORT = 1105;
 
-    @BeforeEach
-    void setup() {
-        clients.clear();
+    private static final AtomicInteger clientCounter = new AtomicInteger(1);
+    private final List<Client> activeClients = new ArrayList<>();
 
+    @BeforeAll
+    static void setup() {
         Thread serverThread = new Thread(() -> {
-            ServerMain.main(new String[]{"1234", "1099"});
+            ServerMain.main(new String[]{"--tcp=" + TCP_PORT, "--rmi=" + RMI_PORT});
         });
         serverThread.start();
         try {
-            Thread.sleep(1000);
-        } catch (InterruptedException _) {
+            Thread.sleep(3000);
+        } catch (InterruptedException ignored) {
         }
     }
 
-    private void connect(String nickname) {
-        try {
-            Socket socket = new Socket("localhost", 1234);
-            ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
-            ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
-            out.writeObject("LOGIN" + nickname);
-            assertEquals("OK", (String) in.readObject(), "Nickname login failed");
-
-            clients.put(nickname, new Client(socket, in, out, new SmallModel(nickname)));
-
-        } catch (IOException | ClassNotFoundException e) {
-            fail("Error during communication setup for " + nickname);
+    @AfterEach
+    void teardown() {
+        for (Client c : activeClients) {
+            try {
+                if (c.getModel() != null && c.getModel().getPlayer() != null) {
+                    c.getServerConnection().logout(c.getModel().getPlayer().getNickname());
+                }
+            } catch (Exception ignored) {
+            }
         }
+        activeClients.clear();
     }
 
-    private void createMatch(String nickname, int numOfPlayers) {
-        try {
-            ObjectInputStream in = clients.get(nickname).in;
-            ObjectOutputStream out = clients.get(nickname).out;
-            out.writeObject("CREATE" + numOfPlayers);
-            assertNotEquals("KO", (String) in.readObject(), "CREATE request failed");
-            System.out.println("Match created successfully by " + nickname);
-        } catch (ClassNotFoundException | IOException e) {
-            fail("Error during match creation");
-        }
-    }
-
-    private void joinMatch(String nickname, int id) {
-        try {
-            ObjectInputStream in = clients.get(nickname).in;
-            ObjectOutputStream out = clients.get(nickname).out;
-            out.writeObject("JOIN" + id);
-            assertEquals("OK", (String) in.readObject(), "JOIN request failed");
-        } catch (ClassNotFoundException | IOException e) {
-            fail("Error during match join");
-        }
-    }
-
-    private void startSimpleMatch(List<String> names) {
-        for (String name : names) {
-            connect(name);
-        }
-        createMatch(names.getFirst(), names.size());
-        for (int i = 1; i < names.size(); i++) {
-            joinMatch(names.get(i), 0);
-        }
-        try {
-            Thread.sleep(800);
-        } catch (InterruptedException _) {
-        }
-        assertTrue(ServerMain.getMatchManager().hasMatchStarted(0), "Match started check");
-    }
-
-    @Test
-    public void testGameStart() {
-        String[] names = {"Alice", "Bob", "Carl"};
-        startSimpleMatch(List.of(names));
-        try {
-            Client c = clients.get(names[0]);
-            SmallModelEditor editor = (SmallModelEditor) c.in.readObject();
-            assertInstanceOf(LobbyInitializedDTO.class, editor, "First DTO should be GameStartedDTO");
-        } catch (ClassNotFoundException | IOException e) {
-            fail("Unexpected exception while reading dto: " + e.getMessage());
-        }
-    }
-
-    private String getActivePlayer() throws NoSuchElementException {
-        return clients.entrySet().stream().filter(e -> e.getValue().model.isActive())
-                .map(Entry::getKey).findFirst().orElseThrow(() -> new NoSuchElementException("Can't find active player"));
-    }
-
-    private List<String> getInactivePLayers() throws NoSuchElementException {
-        List<String> r = clients.entrySet().stream().filter(e -> !e.getValue().model.isActive())
-                .map(Entry::getKey).toList();
-        if (r.isEmpty()) throw new NoSuchElementException("Cant get inactive player");
-        return r;
-    }
-
-    @Test
-    public void testReceiveErrorDTO() {
-        String[] names = {"Alice", "Bob", "Carl"};
-        // Avvia una partita standard a 3 giocatori
-        startSimpleMatch(List.of(names));
+    private List<Client> startSimpleMatch(int n, String testName) {
+        String hostNick = "Host_" + testName + "_" + clientCounter.getAndIncrement();
+        ArrayList<Client> clients = new ArrayList<>();
 
         try {
-            for (String name : names) {
-                SmallModelEditor firstDto = (SmallModelEditor) clients.get(name).in().readObject();
-                assertInstanceOf(LobbyInitializedDTO.class, firstDto, "First dto should be GameStartedDTO");
-                firstDto.edit(clients.get(name).model);
+            Client hostClient = new Client();
+            hostClient.setSmallModel(new SmallModel(hostNick));
+            clients.add(hostClient);
+            activeClients.add(hostClient);
+            hostClient.connect("TCP", "localhost", TCP_PORT);
+
+            ServerConnection hostConn = hostClient.getServerConnection();
+            assertTrue(hostConn.login(hostNick));
+            int matchId = hostConn.createMatch(n, hostNick);
+
+            for (int i = 0; i < n - 1; i++) {
+                String joinerNick = "Joiner_" + testName + "_" + clientCounter.getAndIncrement();
+                Client joinerClient = new Client();
+                joinerClient.setSmallModel(new SmallModel(joinerNick));
+                clients.add(joinerClient);
+                activeClients.add(joinerClient);
+                joinerClient.connect("TCP", "localhost", TCP_PORT);
+
+                ServerConnection joinerConn = joinerClient.getServerConnection();
+                assertTrue(joinerConn.login(joinerNick));
+                assertTrue(joinerConn.joinMatch(matchId, joinerNick));
             }
 
-            String active = getActivePlayer();
-            List<String> inactive = getInactivePLayers();
-            Client activeC = clients.get(active);
-            List<Client> inactiveC = inactive.stream().map(clients::get).toList();
+            Thread.sleep(1500);
 
-            //null action (from active player)
-            activeC.out().writeObject(null);
-            Object responseDto = activeC.in().readObject();
-            assertInstanceOf(ErrorDTO.class, responseDto, "Server should have answered with an ErrorDTO");
-
-            //invalid action (from active player)
-            ControllerCommand invalidCommand = new ControllerCommand(active, 0, Request.SKIP_REQUEST);
-            activeC.out().writeObject(invalidCommand);
-            responseDto = activeC.in().readObject();
-            assertInstanceOf(ErrorDTO.class, responseDto, "Server should have answered with an ErrorDTO");
-
-            //valid action from inactive player
-            ControllerCommand validCommand = new ControllerCommand(inactive.getFirst(), 0, Request.OFFER_TRACK_REQUEST);
-            inactiveC.getFirst().out().writeObject(validCommand);
-            responseDto = inactiveC.getFirst().in().readObject();
-            assertInstanceOf(ErrorDTO.class, responseDto, "Server should have answered with an ErrorDTO");
-
-        } catch (ClassNotFoundException | IOException e) {
-            fail("Unexpected exception while reading dto: " + e.getMessage());
-        } catch (NoSuchElementException e) {
-            fail("Unexpected error: " + e.getMessage());
+        } catch (Exception e) {
+            fail("Match creation failed: " + e.getMessage());
         }
+
+        return clients;
+    }
+
+    private Client getActiveClient(List<Client> clients) {
+        return clients.stream().filter(c -> c.getModel().isActive()).findFirst().orElse(null);
+    }
+
+    private Client getInactiveClient(List<Client> clients) {
+        return clients.stream().filter(c -> !c.getModel().isActive()).findFirst().orElse(null);
     }
 
     @Test
-    public void testReceiveCorrectDTO() {
-        String[] names = {"Alice", "Bob", "Carl"};
-        startSimpleMatch(List.of(names));
-
-        try {
-            for (String name : names) {
-                SmallModelEditor firstDto = (SmallModelEditor) clients.get(name).in().readObject();
-                assertInstanceOf(LobbyInitializedDTO.class, firstDto, "First dto should be GameStartedDTO");
-                firstDto.edit(clients.get(name).model);
-            }
-
-            String active = getActivePlayer();
-            Client activeC = clients.get(active);
-
-            int pos = 0;
-            activeC.out.writeObject(new ControllerCommand(active, pos, Request.OFFER_TRACK_REQUEST));
-            SmallModelEditor dto = (SmallModelEditor) activeC.in.readObject();
-            dto.edit(activeC.model);
-            assertEquals(activeC.model.getOfferTrack().get(pos).getPlayer().getNickname(), active, "Dto didnt modify the model correctly.");
-
-        } catch (ClassNotFoundException | IOException e) {
-            fail("Unexpected exception while reading dto: " + e.getMessage());
-        } catch (NoSuchElementException e) {
-            fail("Unexpected error: " + e.getMessage());
-        }
-    }
-
-    @Test
+    @Order(1)
+    @DisplayName("Game initialization broadcasts correct state and phase to all players")
     public void testFirstDtoSetsPhase() {
-        String[] names = {"Alice", "Bob", "Carl"};
-        // Avvia una partita standard a 3 giocatori
-        startSimpleMatch(List.of(names));
+        List<Client> clients = startSimpleMatch(3, "Init");
+        String expectedPhase = new PlacingTotemPhase().toString();
 
-        try {
-            for (String name : names) {
-                SmallModelEditor firstDto = (SmallModelEditor) clients.get(name).in().readObject();
-                assertInstanceOf(LobbyInitializedDTO.class, firstDto, "First dto should be GameStartedDTO");
-                firstDto.edit(clients.get(name).model);
-                assertEquals(clients.get(name).model.getPhase(), (new PlacingTotemPhase()).toString());
-            }
-
-        } catch (ClassNotFoundException | IOException e) {
-            fail("Unexpected exception while reading dto: " + e.getMessage());
-        } catch (NoSuchElementException e) {
-            fail("Unexpected error: " + e.getMessage());
+        for (Client client : clients) {
+            assertNotNull(client.getModel(), "SmallModel should be initialized");
+            assertEquals(expectedPhase, client.getModel().getPhase(), "Phase didn't change correctly");
+            assertFalse(client.getModel().getOfferTrack().isEmpty(), "Offer track should be populated");
         }
     }
 
+    @Test
+    @Order(2)
+    @DisplayName("Valid controller command correctly updates the SmallModel state across clients")
+    public void testReceiveCorrectDTO() {
+        List<Client> clients = startSimpleMatch(3, "ValidCmd");
+        Client activeClient = getActiveClient(clients);
+        assertNotNull(activeClient, "No active player found");
 
-    record Client(Socket socket, ObjectInputStream in, ObjectOutputStream out, SmallModel model) {
+        String activeNick = activeClient.getModel().getPlayer().getNickname();
+        try {
+            activeClient.getServerConnection().placeTotem(activeNick, 0);
+            Thread.sleep(1000);
+
+            for (Client client : clients) {
+                assertEquals(activeNick, client.getModel().getOfferTrack().get(0).getPlayer().getNickname(),
+                        "All clients should see the totem placed by the active player");
+            }
+        } catch (Exception e) {
+            fail("Action execution failed: " + e.getMessage());
+        }
+    }
+
+    @Test
+    @Order(3)
+    @DisplayName("Commands from inactive players are rejected and model remains untampered")
+    public void testReceiveErrorDTOInactivePlayer() {
+        List<Client> clients = startSimpleMatch(3, "InactiveErr");
+        Client inactiveClient = getInactiveClient(clients);
+        assertNotNull(inactiveClient, "No inactive player found");
+
+        String inactiveNick = inactiveClient.getModel().getPlayer().getNickname();
+        try {
+            inactiveClient.getServerConnection().placeTotem(inactiveNick, 0);
+            Thread.sleep(1000);
+
+            for (Client client : clients) {
+                assertNull(client.getModel().getOfferTrack().get(0).getPlayer(),
+                        "Offer track should remain empty since the action was rejected");
+            }
+        } catch (Exception e) {
+            fail("Action execution failed: " + e.getMessage());
+        }
+    }
+
+    @Test
+    @Order(4)
+    @DisplayName("Commands out of bounds are rejected without crashing the connection")
+    public void testReceiveErrorDTOOutOfBounds() {
+        List<Client> clients = startSimpleMatch(3, "OOB_Err");
+        Client activeClient = getActiveClient(clients);
+        assertNotNull(activeClient, "No active player found");
+
+        String activeNick = activeClient.getModel().getPlayer().getNickname();
+        try {
+            activeClient.getServerConnection().placeTotem(activeNick, 999);
+            Thread.sleep(1000);
+
+            activeClient.getServerConnection().placeTotem(activeNick, 0);
+            Thread.sleep(1000);
+
+            assertEquals(activeNick, activeClient.getModel().getOfferTrack().get(0).getPlayer().getNickname(),
+                    "Client should still be able to send valid commands after an invalid one");
+        } catch (Exception e) {
+            fail("Action execution failed: " + e.getMessage());
+        }
+    }
+
+    @Test
+    @Order(5)
+    @DisplayName("Multiple simultaneous matches do not interfere with each other's DTOs")
+    public void testParallelMatchesIsolation() {
+        List<Client> matchA = startSimpleMatch(2, "Parallel_A");
+        List<Client> matchB = startSimpleMatch(2, "Parallel_B");
+
+        Client activeA = getActiveClient(matchA);
+        Client activeB = getActiveClient(matchB);
+
+        assertNotNull(activeA, "Active player not found in Match A");
+        assertNotNull(activeB, "Active player not found in Match B");
+
+        String nickA = activeA.getModel().getPlayer().getNickname();
+        try {
+            activeA.getServerConnection().placeTotem(nickA, 1);
+            Thread.sleep(1000);
+
+            assertEquals(nickA, activeA.getModel().getOfferTrack().get(1).getPlayer().getNickname());
+
+            for (Client clientB : matchB) {
+                assertNull(clientB.getModel().getOfferTrack().get(1).getPlayer(),
+                        "Match B should not receive DTOs from Match A");
+            }
+        } catch (Exception e) {
+            fail("Action execution failed: " + e.getMessage());
+        }
+    }
+
+    @Test
+    @Order(6)
+    @DisplayName("enqueueCommand successfully adds to queue when queue is set")
+    public void testEnqueueCommandSuccess() throws Exception {
+        ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+        ObjectOutputStream outStream = new ObjectOutputStream(byteStream);
+        TCPClientManager localManager = new TCPClientManager("TestPlayer", outStream);
+
+        BlockingQueue<ControllerCommand> queue = new LinkedBlockingQueue<>();
+        localManager.setActionQueue(queue);
+
+        ControllerCommand cmd = new ControllerCommand("TestPlayer", 0, Request.SKIP_REQUEST);
+        localManager.enqueueCommand(cmd);
+
+        assertEquals(1, queue.size(), "Queue should contain exactly one element");
+        assertEquals(cmd, queue.poll(), "The command retrieved should be the one enqueued");
     }
 }

@@ -1,22 +1,23 @@
-/*package it.polimi.gc06.mesos.network_and_db.rmi;
+package it.polimi.gc06.mesos.network_and_db.rmi;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import it.polimi.gc06.mesos.controller.GameController;
 import it.polimi.gc06.mesos.controller.commands.ControllerCommand;
+import it.polimi.gc06.mesos.dtos.ErrorDTO;
+import it.polimi.gc06.mesos.dtos.SmallModelEditor;
 import it.polimi.gc06.mesos.network.client.ServerConnection;
-import it.polimi.gc06.mesos.network.server.matches.MatchManager;
 import it.polimi.gc06.mesos.network.server.RMIClientManager;
+import it.polimi.gc06.mesos.network.server.matches.MatchManager;
 import org.junit.jupiter.api.*;
 
 import java.beans.PropertyChangeEvent;
 import java.lang.reflect.Field;
-import java.rmi.RemoteException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class RMIClientManagerTest {
 
     private ServerConnection rmiClientMock = mock(ServerConnection.class);
@@ -28,208 +29,105 @@ class RMIClientManagerTest {
     private RMIClientManager clientManager;
     private final String testNickname = "testUser";
 
-    @BeforeAll
-    static void whichTest() {
-        System.out.println("--- Starting RMIClientManagerTest ---");
-    }
-
-    @AfterAll
-    static void endTest() {
-        System.out.println("--- Ending RMIClientManagerTest ---");
-    }
-
-    @AfterEach
-    void tearDown(TestInfo testInfo) {
-        System.out.println("[END] " + testInfo.getDisplayName() + " DONE");
-    }
-
     @BeforeEach
-    void setUp(TestInfo testInfo) {
+    void setUp() {
         clientManager = new RMIClientManager(testNickname, rmiClientMock, sharedManagerMock);
-
-        System.out.println("[START] " + testInfo.getDisplayName());
     }
-
 
     @Test
-    @DisplayName("Initialization and getters")
+    @Order(1)
+    @DisplayName("Initialization and getters check")
     void testInitAndGetters() {
         assertEquals(testNickname, clientManager.getNickname());
         assertNull(clientManager.getController());
     }
 
     @Test
-    @DisplayName("Set Controller links the listener")
+    @Order(2)
+    @DisplayName("Set and get controller correctly")
     void testSetController() {
         clientManager.setController(controllerMock);
-
         assertEquals(controllerMock, clientManager.getController());
-        verify(controllerMock, times(1)).addListener(clientManager);
     }
 
     @Test
-    @DisplayName("Enqueue Command successfully when ActionQueue is set")
+    @Order(3)
+    @DisplayName("Enqueue Command succeeds when ActionQueue is provided")
     void testEnqueueCommandSuccess() throws InterruptedException {
         clientManager.setActionQueue(actionQueueMock);
         clientManager.enqueueCommand(commandMock);
-
         verify(actionQueueMock, times(1)).put(commandMock);
     }
 
     @Test
-    @DisplayName("Enqueue Command fails and sends Error Message when ActionQueue is null")
-    void testEnqueueCommandWhenQueueIsNull() {
-        clientManager.enqueueCommand(commandMock);
+    @Order(4)
+    @DisplayName("Enqueue command throws exception if queue is not set")
+    void testEnqueueCommandWithoutQueue() {
+        ControllerCommand cmd = mock(ControllerCommand.class);
 
-        BlockingQueue<PropertyChangeEvent> noticeQueue = getPrivateField(clientManager);
-        assertEquals(1, noticeQueue.size());
+        clientManager.enqueueCommand(cmd);
 
-        PropertyChangeEvent event = noticeQueue.peek();
-        assertNotNull(event);
-        assertEquals("ACTION_ERROR", event.getPropertyName());
-        assertEquals("The match hasn't started yet!", event.getNewValue());
-    }
-
-    private <T> T getPrivateField(Object target) {
-        try {
-            Field field = target.getClass().getDeclaredField("noticeQueue");
-            field.setAccessible(true);
-            return (T) field.get(target);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            throw new RuntimeException("Failed to get private field", e);
-        }
+        BlockingQueue<SmallModelEditor> noticeQueue = getPrivateField(clientManager, "noticeQueue");
+        assertFalse(noticeQueue.isEmpty(), "An error message should have been queued");
+        assertEquals(ErrorDTO.class, noticeQueue.peek().getClass());
     }
 
     @Test
-    @DisplayName("Enqueue Command handles InterruptedException properly")
+    @Order(5)
+    @DisplayName("Enqueue Command handles InterruptedException")
     void testEnqueueCommandWhenInterrupted() throws InterruptedException {
         clientManager.setActionQueue(actionQueueMock);
         doThrow(new InterruptedException()).when(actionQueueMock).put(any(ControllerCommand.class));
         clientManager.enqueueCommand(commandMock);
-
         assertTrue(Thread.currentThread().isInterrupted());
         Thread.interrupted();
     }
 
     @Test
-    @DisplayName("Send error message handles InterruptedException properly")
-    void testErrorMessageInterrupted() throws InterruptedException {
-        BlockingQueue noticeQueueMock = mock(BlockingQueue.class);
-        setPrivateField(clientManager, noticeQueueMock);
-        doThrow(new InterruptedException()).when(noticeQueueMock).put(any(PropertyChangeEvent.class));
-
-        clientManager.sendErrorMessage("Test error");
-
-        assertTrue(Thread.currentThread().isInterrupted());
-        Thread.interrupted();
-    }
-
-    private void setPrivateField(Object target, Object value) {
-        try {
-            Field field = target.getClass().getDeclaredField("noticeQueue");
-            field.setAccessible(true);
-            field.set(target, value);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            throw new RuntimeException("Failed to set private field", e);
-        }
-    }
-
-    @Test
-    @DisplayName("PropertyChange adds events to noticeQueue")
-    void testPropertyChange() {
-        PropertyChangeEvent event = new PropertyChangeEvent(this, "TEST", "old", "new");
-        clientManager.propertyChange(event);
-
-        BlockingQueue<PropertyChangeEvent> noticeQueue = getPrivateField(clientManager);
-        assertTrue(noticeQueue.contains(event));
-    }
-
-    @Test
-    @DisplayName("Close Connection performs cleanup")
+    @Order(6)
+    @DisplayName("Close connection calls logout on MatchManager")
     void testCloseConnection() {
-        clientManager.setController(controllerMock);
-
         clientManager.closeConnection();
         verify(sharedManagerMock, times(1)).logout(testNickname);
-        verify(controllerMock, times(1)).removeListener(clientManager);
-
-        clientManager.closeConnection();
-        verify(sharedManagerMock, times(1)).logout(testNickname);
-        verify(controllerMock, times(1)).removeListener(clientManager);
     }
 
-    @Test
-    @DisplayName("Close connection handles null controller")
-    void testCloseConnectionWhenControllerIsNull() {
-        assertDoesNotThrow(() -> clientManager.closeConnection());
-        verify(sharedManagerMock, times(1)).logout(testNickname);
-    }
 
     @Test
-    @DisplayName("Run method processes messages and sends them via RMI")
-    void testRunProcessesMessages() throws Exception {
-        PropertyChangeEvent event = new PropertyChangeEvent("MockSource", "TEST_EVENT", null, "TEST_VALUE");
-        clientManager.propertyChange(event);
-
-        doAnswer(invocation -> {
-            clientManager.closeConnection();
-            return null;
-        }).when(rmiClientMock).receiveMessage(anyString());
-
-        clientManager.run();
-
-        ObjectMapper mapper = new ObjectMapper();
-        String expectedJson = mapper.writeValueAsString(event);
-        verify(rmiClientMock, times(1)).receiveMessage(expectedJson);
-    }
-
-    @Test
-    @DisplayName("Run method pings the client when the queue is empty")
+    @Order(7)
+    @DisplayName("Run method performs ping when idle")
     void testRunPingsWhenIdle() throws Exception {
         BlockingQueue<PropertyChangeEvent> noticeQueueMock = mock(BlockingQueue.class);
-        setPrivateField(clientManager, noticeQueueMock);
+        setPrivateField(clientManager, "noticeQueue", noticeQueueMock);
         when(noticeQueueMock.poll(5, TimeUnit.SECONDS)).thenReturn(null);
-
         doAnswer(invocation -> {
             clientManager.closeConnection();
             return null;
-        }).when(rmiClientMock).ping();
+        })
+                .when(rmiClientMock).ping();
 
         clientManager.run();
-
         verify(rmiClientMock, times(1)).ping();
     }
 
-    @Test
-    @DisplayName("Run method handles InterruptedException on poll")
-    void testRunHandlesInterruptedException() throws Exception {
-        BlockingQueue<PropertyChangeEvent> noticeQueueMock = mock(BlockingQueue.class);
-        setPrivateField(clientManager, noticeQueueMock);
-        when(noticeQueueMock.poll(5, TimeUnit.SECONDS)).thenThrow(new InterruptedException());
-
-        assertDoesNotThrow(() -> clientManager.run());
+    // Helper methods for reflection
+    @SuppressWarnings("unchecked")
+    private <T> T getPrivateField(Object target, String fieldName) {
+        try {
+            Field field = target.getClass().getDeclaredField(fieldName);
+            field.setAccessible(true);
+            return (T) field.get(target);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    @Test
-    @DisplayName("Run method handles connection loss (Exception) gracefully")
-    void testRunHandlesConnectionLoss() throws Exception {
-        PropertyChangeEvent evt = new PropertyChangeEvent(this, "TEST", null, "TEST");
-        clientManager.propertyChange(evt);
-
-        doThrow(new RemoteException("Connection Lost")).when(rmiClientMock).receiveMessage(anyString());
-
-        clientManager.run();
-
-        verify(sharedManagerMock, times(1)).logout(testNickname);
+    private void setPrivateField(Object target, String fieldName, Object value) {
+        try {
+            Field field = target.getClass().getDeclaredField(fieldName);
+            field.setAccessible(true);
+            field.set(target, value);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
-
-    @Test
-    @DisplayName("Close Connection handles null nickname gracefully")
-    void testCloseConnectionWithNullNickname() {
-        RMIClientManager nullNicknameManager = new RMIClientManager(null, rmiClientMock, sharedManagerMock);
-
-        assertDoesNotThrow(() -> nullNicknameManager.closeConnection());
-
-        verify(sharedManagerMock, never()).logout(any());
-    }
-}*/
+}

@@ -3,13 +3,15 @@ package it.polimi.gc06.mesos.network_and_db;
 import it.polimi.gc06.mesos.network.leaderboard.Leaderboard;
 import it.polimi.gc06.mesos.network.leaderboard.LeaderboardDAO;
 import it.polimi.gc06.mesos.network.leaderboard.Score;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Random;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 public class DAOTest {
 
@@ -27,31 +29,30 @@ public class DAOTest {
             "Michele", "Patrizia", "Roberta", "Stefano", "Veridiana"
     };
 
-    @Test
-    void testInit(){
-
+    @BeforeAll
+    static void testInit() {
         try {
             LeaderboardDAO.init();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            assumeTrue(false, "Database unavailable, Skip test");
         }
 
     }
 
     @Test
-    void testSaveLeaderboard(){
+    void testSaveLeaderboard() {
 
         LeaderboardDAO.setDbInfo("clanker", "1234", "TestMesos", null);
 
         Random r = new Random();
         Leaderboard l = new Leaderboard();
-        int nPlayers = r.nextInt(2,6);
+        int nPlayers = r.nextInt(2, 6);
         l.setTimestamp(new Timestamp(r.nextLong(0L, (long) 10e10)));
-        for(int i=0; i < nPlayers ;i++){
+        for (int i = 0; i < nPlayers; i++) {
             Score s = new Score();
-            s.setNickname(names[r.nextInt(0,50)]);
-            s.setPrestigeScore(r.nextInt(0,401)-200);
-            s.setFoodScore(r.nextInt(0,30));
+            s.setNickname(names[r.nextInt(0, 50)]);
+            s.setPrestigeScore(r.nextInt(0, 401) - 200);
+            s.setFoodScore(r.nextInt(0, 30));
             l.addScore(s);
         }
         try {
@@ -63,11 +64,11 @@ public class DAOTest {
     }
 
     @Test
-    void testGetLeaderboards(){
+    void testGetLeaderboards() {
 
         LeaderboardDAO.setDbInfo("clanker", "1234", "TestMesos", null);
 
-        for(int i=0;i< SAVES_BEFORE_PRINT;i++) testSaveLeaderboard();
+        for (int i = 0; i < SAVES_BEFORE_PRINT; i++) testSaveLeaderboard();
         try {
             List<Leaderboard> ls = LeaderboardDAO.getLeaderboards();
             for (Leaderboard l : ls) {
