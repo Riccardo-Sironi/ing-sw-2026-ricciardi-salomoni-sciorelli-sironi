@@ -12,6 +12,9 @@ public class SoundManager {
     private static SoundManager instance;
     private boolean isMuted = false;
     private final double TARGET_VOLUME = 0.15;
+    private static final double VOLUME_SCALING_FACTOR = 0.5;
+
+    private double userVolume = TARGET_VOLUME;
 
     private final AudioClip clickSound;
     private final AudioClip errorSound;
@@ -130,7 +133,7 @@ public class SoundManager {
         currentMusicPlayer.play();
 
         Timeline fadeIn = new Timeline(
-                new KeyFrame(Duration.seconds(2.0), new KeyValue(currentMusicPlayer.volumeProperty(), TARGET_VOLUME))
+                new KeyFrame(Duration.seconds(2.0), new KeyValue(currentMusicPlayer.volumeProperty(), userVolume * VOLUME_SCALING_FACTOR))
         );
         fadeIn.play();
     }
@@ -146,6 +149,36 @@ public class SoundManager {
             currentMusicPlayer.stop();
             currentMusicPlayer = null;
         }
+    }
+
+    public void raiseVolume(double increment) {
+        userVolume += increment;
+        if (userVolume > 1.0) {
+            userVolume = 1.0;
+        }
+
+        if (currentMusicPlayer != null && !isMuted) {
+            currentMusicPlayer.setVolume(userVolume * VOLUME_SCALING_FACTOR);
+        }
+    }
+
+    public void lowerVolume(double increment) {
+        userVolume -= increment;
+        if (userVolume < 0.0) {
+            userVolume = 0.0;
+        }
+
+        if (currentMusicPlayer != null && !isMuted) {
+            currentMusicPlayer.setVolume(userVolume * VOLUME_SCALING_FACTOR);
+        }
+    }
+
+    public double getVolume() {
+        return userVolume;
+    }
+
+    public boolean isMuted() {
+        return isMuted;
     }
 
     public void toggleMute() {

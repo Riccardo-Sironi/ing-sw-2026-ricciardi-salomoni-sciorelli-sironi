@@ -166,7 +166,8 @@ public class BoardController {
 
     private HashMap<String, OpponentBox> opponentsBoxes;
 
-    private HBox helpOverlay = null;
+    private VBox helpOverlay = null;
+    private Text volumeText = null;
 
     private static final PseudoClass DISABLED_STYLE = PseudoClass.getPseudoClass("skip-disabled");
 
@@ -206,15 +207,27 @@ public class BoardController {
                         if (e.getCode() == KeyCode.H) {
                             toggleHelpOverlay();
                         }
-                        if (e.getCode() == KeyCode.DIGIT8) {
+                        if (e.getCode() == KeyCode.DIGIT1) {
                             currentLayout = LayoutConfiguration.CAVE_COLORS;
                             drawInventoryTheme();
                             drawOpponentsTheme();
                         }
-                        if (e.getCode() == KeyCode.DIGIT9) {
+                        if (e.getCode() == KeyCode.DIGIT2) {
                             currentLayout = LayoutConfiguration.CAVE;
                             drawInventoryTheme();
                             drawOpponentsTheme();
+                        }
+                        if (e.getCode() == KeyCode.M) {
+                            SoundManager.getInstance().toggleMute();
+                            updateVolumeDisplay();
+                        }
+                        if (e.getCode() == KeyCode.MINUS) {
+                            SoundManager.getInstance().lowerVolume(0.05);
+                            updateVolumeDisplay();
+                        }
+                        if (e.getCode() == KeyCode.PLUS) {
+                            SoundManager.getInstance().raiseVolume(0.05);
+                            updateVolumeDisplay();
                         }
 
                         // TODO : this could be a greate feature but sometimes animations broke because of it, we'll fix later
@@ -1158,34 +1171,105 @@ public class BoardController {
     }
 
     private void toggleHelpOverlay() {
-        // TODO : we could add even more help information in the future ...
-
         Pane root = (Pane) mainRoot.getParent();
+
         if (helpOverlay == null) {
-            helpOverlay = new HBox();
-            helpOverlay.setStyle("-fx-background-color: rgba(0, 0, 0, 0.7);");
+            helpOverlay = new VBox();
+            helpOverlay.setStyle("-fx-background-color: rgba(0, 0, 0, 0.85);");
             helpOverlay.prefWidthProperty().bind(root.widthProperty());
             helpOverlay.prefHeightProperty().bind(root.heightProperty());
             helpOverlay.setAlignment(Pos.CENTER);
-            helpOverlay.setSpacing(50);
+            helpOverlay.setSpacing(40);
+
+            HBox cardsBox = new HBox();
+            cardsBox.setAlignment(Pos.CENTER);
+            cardsBox.setSpacing(50);
 
             ImageView helpImage1 = new ImageView(loadImage("/cards/info_card_front.png"));
-            helpImage1.fitHeightProperty().bind(root.heightProperty().multiply(0.5));
+            helpImage1.fitHeightProperty().bind(root.heightProperty().multiply(0.45));
             helpImage1.setPreserveRatio(true);
 
             ImageView helpImage2 = new ImageView(loadImage("/cards/info_card_back.png"));
-            helpImage2.fitHeightProperty().bind(root.heightProperty().multiply(0.5));
+            helpImage2.fitHeightProperty().bind(root.heightProperty().multiply(0.45));
             helpImage2.setPreserveRatio(true);
 
-            helpOverlay.getChildren().addAll(helpImage1, helpImage2);
+            cardsBox.getChildren().addAll(helpImage1, helpImage2);
+
+            VBox shortcutsBox = new VBox(15);
+            shortcutsBox.setAlignment(Pos.CENTER);
+
+            Text shortcutsTitle = new Text("Keyboard Shortcuts");
+            shortcutsTitle.setFont(Font.font(mesosFont.getFamily(), 35));
+            shortcutsTitle.setFill(Color.WHITE);
+
+            VBox commandsListContainer = new VBox(10);
+            commandsListContainer.setAlignment(Pos.CENTER_LEFT);
+
+            String[][] commandsList = {
+                    {"H", "Toggle Help Menu"},
+                    {"M", "Mute / Unmute Music"},
+                    {"-", "Raise Volume"},
+                    {"+", "Lower Volume"},
+                    {"1", "Set 'Colored' Theme"},
+                    {"2", "Set 'Darker' Theme"}
+            };
+
+            for (String[] command : commandsList) {
+                HBox row = new HBox(20);
+                row.setAlignment(Pos.CENTER_LEFT);
+
+                Text keyNode = new Text(String.format("[%s]", command[0]));
+                keyNode.setFont(Font.font(mesosFont.getFamily(), 25));
+                keyNode.setFill(Color.WHITE);
+
+                Region spacer = new Region();
+                HBox.setHgrow(spacer, Priority.NEVER);
+
+                Text actionNode = new Text(command[1]);
+                actionNode.setFont(Font.font(mesosFont.getFamily(), 20));
+                actionNode.setFill(Color.LIGHTGRAY);
+
+                HBox keyWrapper = new HBox(keyNode);
+                keyWrapper.setPrefWidth(130);
+                keyWrapper.setAlignment(Pos.CENTER);
+
+                row.getChildren().addAll(keyWrapper, actionNode);
+                commandsListContainer.getChildren().add(row);
+            }
+
+            HBox centerWrapper = new HBox(commandsListContainer);
+            centerWrapper.setAlignment(Pos.CENTER);
+
+            volumeText = new Text();
+            volumeText.setFont(Font.font(mesosFont.getFamily(), 28));
+            updateVolumeDisplay();
+
+            shortcutsBox.getChildren().addAll(shortcutsTitle, centerWrapper, volumeText);
+
+            helpOverlay.getChildren().addAll(cardsBox, shortcutsBox);
 
             helpOverlay.setOnMouseClicked(event -> root.getChildren().remove(helpOverlay));
         }
+
+        updateVolumeDisplay();
 
         if (root.getChildren().contains(helpOverlay)) {
             root.getChildren().remove(helpOverlay);
         } else {
             root.getChildren().add(helpOverlay);
+        }
+    }
+
+    private void updateVolumeDisplay() {
+        if (volumeText != null) {
+            if (SoundManager.getInstance().isMuted()) {
+                volumeText.setText("Volume: MUTED");
+                volumeText.setFill(Color.RED);
+            } else {
+                int volPct = (int) Math.round(SoundManager.getInstance().getVolume() * 100);
+                volumeText.setText("Volume: " + volPct + "%");
+                volumeText.setFill(Color.LIGHTGREEN);
+            }
         }
     }
 
