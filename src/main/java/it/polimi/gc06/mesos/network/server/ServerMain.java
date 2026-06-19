@@ -21,7 +21,7 @@ import java.util.regex.PatternSyntaxException;
 public class ServerMain {
 
     private static MatchManager sharedManager;
-    public static final Path appDirectory = Paths.get(System.getProperty("user.home"),"Mesos");
+    public static final Path appDirectory = Paths.get(System.getProperty("user.home"), "Mesos");
 
     /**
      * Main method to start the server.
@@ -80,14 +80,14 @@ public class ServerMain {
 
             //tries to restore matches
             sharedManager = new MatchManager();
-            try{
+            try {
                 PersistenceService persistenceService = new PersistenceService();
                 sharedManager = new MatchManager(persistenceService.getBiggestBackupMatchId()); //overwrites previous instance
                 persistenceService.setMatchManager(sharedManager);
                 persistenceService.restoreMatches();
                 new Thread(persistenceService).start();
                 System.out.println("Persistence service started...");
-            }catch (IOException e){
+            } catch (IOException e) {
                 System.err.println("Failed to restore matches due to error: ");
                 e.printStackTrace();
             }
@@ -118,8 +118,7 @@ public class ServerMain {
             //tries to start TCP protocol (socket)
             try {
                 TCPServer tcpServer;
-                if (ipAddress == null) tcpServer = new TCPServer(tcpPortNumber, sharedManager);
-                else tcpServer = new TCPServer(tcpPortNumber, sharedManager, ipAddress);
+                tcpServer = new TCPServer(tcpPortNumber, sharedManager);
                 Thread tcpServerThread = new Thread(tcpServer);
                 tcpServerThread.start();
             } catch (Exception e) {

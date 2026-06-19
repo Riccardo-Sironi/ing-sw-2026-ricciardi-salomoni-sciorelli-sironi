@@ -8,6 +8,7 @@ import it.polimi.gc06.mesos.model.DTONotifier;
 import it.polimi.gc06.mesos.network.client.ServerConnection;
 import it.polimi.gc06.mesos.network.server.matches.MatchManager;
 
+import java.rmi.RemoteException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -122,7 +123,7 @@ public class RMIClientManager implements VirtualClient {
         while (!closed) {
             try {
                 // Wait for max 5 sec
-                SmallModelEditor notice = noticeQueue.poll(5, TimeUnit.SECONDS);
+                SmallModelEditor notice = noticeQueue.poll(60, TimeUnit.SECONDS);
                 if (notice != null) {
                     rmiClient.receiveDTO(notice);
                 } else {
@@ -131,6 +132,10 @@ public class RMIClientManager implements VirtualClient {
                     rmiClient.ping();
                 }
             } catch (InterruptedException e) {
+                return;
+            } catch (RemoteException e) {
+                System.err.println("Couldn't contact the client '" + nickname + "' for more than 60 seconds. It is probably dead. Closing connection");
+                closeConnection();
                 return;
             } catch (Exception e) {
                 System.err.println("Lost connection with RMI Client '" + nickname + "'.");

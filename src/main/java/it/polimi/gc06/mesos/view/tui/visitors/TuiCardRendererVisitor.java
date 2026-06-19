@@ -170,7 +170,7 @@ public class TuiCardRendererVisitor extends CardVisitor implements TuiRenderer<C
     public void visit(RitualEvent card) {
         eraStr = card.getEra().name().replace("ERA_", "");
         center = "[RITUAL]";
-        bottomRight = "\uD83E\uDD47" + "+" + card.getPrestigeGain();
+        bottomRight = "\uD83E\uDD47" + card.getPrestigeGain();
         bottomLeft = "\uD83E\uDD47" + "-" + card.getPrestigeLoss();
     }
 
@@ -184,7 +184,7 @@ public class TuiCardRendererVisitor extends CardVisitor implements TuiRenderer<C
         eraStr = card.getEra().name().replace("ERA_", "");
         center = "[PAINT]";
         topRight = card.getMinNumberOfArtists() + "\uD83D\uDC64";
-        bottomRight = "\uD83E\uDD47" + "+" + card.getPrestigeGain();
+        bottomRight = "\uD83E\uDD47" + card.getPrestigeGain();
         bottomLeft = "\uD83E\uDD47" + "-" + card.getPrestigeLoss();
     }
 

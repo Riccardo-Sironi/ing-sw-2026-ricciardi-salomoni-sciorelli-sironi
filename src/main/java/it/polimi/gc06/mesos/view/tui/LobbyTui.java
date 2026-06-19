@@ -2,6 +2,7 @@ package it.polimi.gc06.mesos.view.tui;
 
 import it.polimi.gc06.mesos.model.Color;
 import it.polimi.gc06.mesos.network.ConnectionDetails;
+import it.polimi.gc06.mesos.network.NetworkUtils;
 import it.polimi.gc06.mesos.network.client.Client;
 import it.polimi.gc06.mesos.view.LobbyView;
 import it.polimi.gc06.mesos.view.smallModel.SmallModel;
@@ -21,8 +22,6 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import static it.polimi.gc06.mesos.network.NetworkUtils.getIpAddress;
 
 /**
  * Text-based User Interface for the game lobby phase.
@@ -368,12 +367,34 @@ public class LobbyTui implements LobbyView {
     }
 
     private void setupClientConnection(Client client, ConnectionDetails det) throws IllegalStateException, ConnectException {
-        String playerIp = getIpAddress();
+        //String playerIp = getIpAddress();
+        String playerIp = "127.0.0.1";
 
         if ("RMI".equals(det.tech())) {
+            System.out.println("\n--- NETWORK CONFIGURATION (RMI) ---");
+            System.out.println("1) LAN or VPN (ZeroTier, Hamachi, Hotspot - Recommended)");
+            System.out.println("2) WAN / Direct Internet (ADVANCED - Requires Port 1101 Forwarding)");
+            System.out.print("Select your network mode (1/2): ");
+
+            Scanner scanner = new Scanner(System.in);
+            String choice = scanner.nextLine().trim();
+
+            if ("2".equals(choice)) {
+                System.out.print("Fetching Public IP... ");
+                try {
+                    playerIp = NetworkUtils.getPublicIpAddress();
+                    System.out.println("Success: " + playerIp);
+                } catch (Exception e) {
+                    throw new ConnectException("Could not retrieve Public IP. Check your internet connection.");
+                }
+            } else {
+                playerIp = NetworkUtils.getLocalIpAddress();
+                System.out.println("Local interface selected: " + playerIp);
+            }
+            // Set the RMI Hostname for RMI Callbacks
             System.setProperty("java.rmi.server.hostname", playerIp);
         }
-        client.connect(det.tech(), det.ip(), det.port(), playerIp, this.clientPort);
+        client.connect(det.tech(), det.ip(), det.port(), this.clientPort);
     }
 
     private String performLogin(Client client, String initialNickname, Scanner scanner) throws Exception {

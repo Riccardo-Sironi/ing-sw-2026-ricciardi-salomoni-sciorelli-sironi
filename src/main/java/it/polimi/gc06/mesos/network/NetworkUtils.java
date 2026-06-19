@@ -1,8 +1,8 @@
 package it.polimi.gc06.mesos.network;
 
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.*;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -10,7 +10,23 @@ import java.util.Scanner;
 
 public class NetworkUtils {
 
-    public static String getIpAddress() {
+    public static String getPublicIpAddress() throws Exception {
+        URL url = new URI("https://api.ipify.org").toURL();
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
+        connection.setConnectTimeout(3000);
+        connection.setReadTimeout(3000);
+
+        try (BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+            String ip = in.readLine();
+            if (ip != null && !ip.trim().isEmpty()) {
+                return ip.trim();
+            }
+        }
+        return "";
+    }
+
+    public static String getLocalIpAddress() {
         List<String> validIps = new ArrayList<>();
         List<String> displayNames = new ArrayList<>();
 

@@ -39,13 +39,12 @@ public class Client implements ModelListener {
         }
     }
 
-    public void connect(String tech, String host, int hostPort, String clientIp, int clientPort) throws IllegalStateException, ConnectException {
+    public void connect(String tech, String host, int hostPort, int clientPort) throws IllegalStateException, ConnectException {
         if (serverConnection != null) {
             throw new IllegalStateException("Already connected to a server");
         }
 
         try {
-            System.setProperty("java.rmi.server.hostname", clientIp);
             serverConnection = tech.equals("RMI") ? new RMIServerConnection(host, hostPort, clientPort) :
                     new TCPServerConnection(host, hostPort);
             serverConnection.prioritizedSubscribe(this);
@@ -66,46 +65,47 @@ public class Client implements ModelListener {
      * @param dto the dto that the notification stemmed from.
      */
     @Override
-    public synchronized void update(SmallModelEditor dto){
-        if(dto.getSequenceNumber() == null){
+    public synchronized void update(SmallModelEditor dto) {
+        if (dto.getSequenceNumber() == null) {
             //non-sequenced DTO
-            try{
+            try {
                 dto.edit(smallModel);
-            }catch (Error _) {} //if it's an error DTO an Error will be thrown
-            catch(Exception e) {
+            } catch (Error _) {
+            } //if it's an error DTO an Error will be thrown
+            catch (Exception e) {
                 System.err.println("Error during dto client edit:");
                 e.printStackTrace();
             }
             listeners.forEach(l -> l.update(dto));
-        }
-        else if(nextSequenceNumber.equals(dto.getSequenceNumber())){
+        } else if (nextSequenceNumber.equals(dto.getSequenceNumber())) {
             //correct DTO
             nextSequenceNumber++;
-            try{
+            try {
                 dto.edit(smallModel);
-            }catch (Error _) {} //if it's an error DTO an Error will be thrown
-            catch(Exception e) {
+            } catch (Error _) {
+            } //if it's an error DTO an Error will be thrown
+            catch (Exception e) {
                 System.err.println("Error during dto client edit:");
                 e.printStackTrace();
             }
             listeners.forEach(l -> l.update(dto));
             //takes all correct early dto
-            while(earlyDto.containsKey(nextSequenceNumber)){
+            while (earlyDto.containsKey(nextSequenceNumber)) {
                 SmallModelEditor nextDTO = earlyDto.remove(nextSequenceNumber);
                 nextSequenceNumber++;
-                try{
+                try {
                     nextDTO.edit(smallModel);
-                }catch (Error _) {} //if it's an error DTO an Error will be thrown
-                catch(Exception e) {
+                } catch (Error _) {
+                } //if it's an error DTO an Error will be thrown
+                catch (Exception e) {
                     System.err.println("Error during dto client edit:");
                     e.printStackTrace();
                 }
                 listeners.forEach(l -> l.update(nextDTO));
             }
-        }
-        else{
+        } else {
             //out of sequence DTO
-            earlyDto.put(dto.getSequenceNumber(),dto);
+            earlyDto.put(dto.getSequenceNumber(), dto);
         }
     }
 
