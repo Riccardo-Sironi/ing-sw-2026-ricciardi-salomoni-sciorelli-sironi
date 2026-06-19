@@ -4,8 +4,8 @@ import it.polimi.gc06.mesos.controller.GameController;
 import it.polimi.gc06.mesos.controller.commands.ControllerCommand;
 import it.polimi.gc06.mesos.network.client.ServerConnection;
 import it.polimi.gc06.mesos.network.rmi.RMIServerInterfaceImpl;
-import it.polimi.gc06.mesos.network.server.matches.MatchManager;
 import it.polimi.gc06.mesos.network.server.RMIClientManager;
+import it.polimi.gc06.mesos.network.server.matches.MatchManager;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
@@ -69,11 +69,11 @@ class RMIServerInterfaceImplTest {
     @Test
     @DisplayName("Get available matches queries the MatchManager")
     void testGetAvailableMatches() throws RemoteException {
-        String expectedString = "Match1, Match2";
-        when(serverManagerMock.getAvailableMatchesString()).thenReturn(expectedString);
+        String expectedString = "Match 1: 1/2, Match 2: 0/2";
+        when(serverManagerMock.getAvailableMatchesString(anyString())).thenReturn(expectedString);
 
         assertEquals(expectedString, serverImpl.getAvailableMatches(""));
-        verify(serverManagerMock, times(1)).getAvailableMatchesString();
+        verify(serverManagerMock, times(1)).getAvailableMatchesString(anyString());
     }
 
     @Test

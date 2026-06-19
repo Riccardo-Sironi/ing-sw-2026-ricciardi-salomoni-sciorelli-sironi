@@ -553,6 +553,9 @@ class OfferResolutionPhaseTest {
         when(playerMock.getTopDrawNum()).thenReturn(0);
         when(playerMock.getBottomDrawNum()).thenReturn(0);
 
+        Phase mockPhase = mock(Phase.class);
+        when(turnManagerMock.getPhase()).thenReturn(mockPhase);
+
         phase.skipPick(turnManagerMock, playerMock);
         verify(playerMock).setTopDrawNum(0);
         verify(playerMock).setBottomDrawNum(0);
