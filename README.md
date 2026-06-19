@@ -1,4 +1,4 @@
-# Mesos - Software Engineering Final Project 2025/2026
+# Mesos - Software Engineering Final Project 2026 - GC06
 
 <div align="center">
   <img src="https://img.shields.io/badge/Java-25-blue" alt="Java"/>
@@ -8,13 +8,16 @@
   <img src="https://img.shields.io/badge/JavaFX-FF0000?style=for-the-badge&logo=openjdk&logoColor=white" alt="JavaFX"/>
 </div>
 
-<div>
+<br>
 
-<img alt="Codex Naturalis game logo" src="/src/main/resources/imgs/readme/mesos%20box.webp" width=300px height=300 px align="right" />
+<div>
+  <img align="right" width="300" height="300" src="/src/main/resources/imgs/readme/mesos%20box.webp" alt="Mesos game logo">
 
 This repository contains a full digital adaptation of the board game **Mesos**, developed entirely in Java using Maven
 and JavaFX. The project implements a robust Client-Server architecture allowing multiple players to connect and play
 together over a network.
+
+<br>
 
 The codebase has been designed from scratch following strict **SOLID** principles, clean code guidelines, and
 *OOP/Functional* paradigms. The structural backbone of the application relies on the **MVC (Model-View-Controller)**
@@ -35,19 +38,32 @@ ensure high cohesion and low coupling.
 | **Persistence**      |   🟢   | Server-side persistance on crashes, allowing players to restart from where they had left                                              |
 | **Database**         |   🟢   | Seamless database integration for a full leaderboard of the matches                                                                   |
 
+# How to Build
+
+Ensure you have **Java 21+** and **Maven** installed on your machine. To compile the project and build the executable JAR files, navigate to the root directory of the repository and run:
+
+```bash
+mvn clean package
+```
+The compiled .jar files will be generated inside the target/ directory.
+
+
 # Server configuration
 
-* Run the .jar file for the server with the following command ```java -jar MesosServer.jar```;
+* Run the .jar file for the server with the following command:
 
-**IMPORTANT** : If you aim to play with different devices over the net, you can achieve this by using a third-party
-software such
-as [Hamachi](https://vpn.net/), [ZeroTier](https://www.zerotier.com/), [Wireguard](https://www.wireguard.com/) or
-properly set
-forward rules on the router where the
-server is located.
+```bash
+java -jar MesosServer.jar
+```
 
-Remember to launch the jar with the command
-```java --ip=SERVER_PUBLIC_IP_ADDRESS -jar MesosServer.jar```
+> [!TIP]
+> If you aim to play with different devices over the net, you can achieve this by using a third-party software such as [Hamachi](https://vpn.net/), [ZeroTier](https://www.zerotier.com/), [Wireguard](https://www.wireguard.com/) or properly set forward rules on the router where the server is located.
+> 
+> Remember to launch the jar with the command:
+>
+> ```bash
+> java --ip=SERVER_PUBLIC_IP_ADDRESS -jar MesosServer.jar
+> ```
 
 ## Available arguments
 
@@ -64,22 +80,28 @@ Remember to launch the jar with the command
 # Client configuration
 
 * Run the .jar inside your own operating systems' **Command Prompt** for the client with the following command
-  ```java -jar MesosClient.jar```
+
+  ```bash
+  java -jar MesosClient.jar
+  ```
 * Follow the instructions that appear on the screen to start a game (make sure to enter the correct Server IP).
 
-**IMPORTANT** : If you aim to play with different devices over the net, you can achieve this by using a third-party
-software such
-as [Hamachi](https://vpn.net/), [ZeroTier](https://www.zerotier.com/), [Wireguard](https://www.wireguard.com/) or
-properly set
-forward rules on the router where the
-server is located.
+> [!TIP]
+> If you aim to play with different devices over the net, you can achieve this by using a third-party software such as [Hamachi](https://vpn.net/), [ZeroTier](https://www.zerotier.com/), [Wireguard](https://www.wireguard.com/) or properly set forward rules on the router where the server is located.
+> 
+> In case you want to play with RMI over the Internet, remember to launch the jar with the command:
+>
+> ```bash
+> java --ip=YOUR_PUBLIC_IP_ADDRESS -jar MesosClient.jar
+> ```
 
-In case you want to play with RMI over the Internet, remember to launch the jar with the command
-```java --ip=YOUR_PUBLIC_IP_ADDRESS -jar MesosClient.jar```
-
-# Group GC06
-
-- Manuel Ricciardi  : manuel.ricciardi@mail.polimi.it
-- Tommaso Salomoni  : tommaso.salomoni@mail.polimi.it
-- Filippo Sciorelli : filippo.sciorelli@mail.polimi.it
-- Riccardo Sironi   : riccardo1.sironi@mail.polimi.it
+# Testing
+ -- add test coverage photos --
+ # Group GC06
+ 
+ | Studente | Email | GitHub |
+ | :--- | :--- | :--- |
+ | **Manuel Ricciardi** | [manuel.ricciardi@mail.polimi.it](mailto:manuel.ricciardi@mail.polimi.it) | https://github.com/manuel2487 |
+ | **Tommaso Salomoni** | [tommaso.salomoni@mail.polimi.it](mailto:tommaso.salomoni@mail.polimi.it) | https://github.com/salotom |
+ | **Filippo Sciorelli** | [filippo.sciorelli@mail.polimi.it](mailto:filippo.sciorelli@mail.polimi.it) | https://github.com/fsciorelli |
+ | **Riccardo Sironi** | [riccardo1.sironi@mail.polimi.it](mailto:riccardo1.sironi@mail.polimi.it) | https://github.com/Riccardo-Sironi |
