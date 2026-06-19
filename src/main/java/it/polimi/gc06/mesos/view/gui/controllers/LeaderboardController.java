@@ -117,6 +117,8 @@ public class LeaderboardController {
             if (GUI.smallModel != null && GUI.smallModel.getLeaderboard() != null && !GUI.smallModel.getLeaderboard().isEmpty()) {
                 setupStaticLeaderboard(GUI.smallModel.getLeaderboard());
             } else {
+
+                // TODO Attenzione! Servono ancora questi??
                 List<Score> mockScores = new ArrayList<>();
                 mockScores.add(new Score("A", 47, 10));
                 mockScores.add(new Score("B", 25, 8));

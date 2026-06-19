@@ -2,6 +2,7 @@ package it.polimi.gc06.mesos.view.gui.controllers;
 
 import it.polimi.gc06.mesos.model.Era;
 import it.polimi.gc06.mesos.view.gui.GameScene;
+import it.polimi.gc06.mesos.view.gui.helpers.SoundManager;
 import javafx.animation.FadeTransition;
 import javafx.animation.ScaleTransition;
 import javafx.animation.SequentialTransition;
@@ -37,6 +38,8 @@ public class GameViewController {
     public void initialize() {
 
         guidtovisitor.setGameViewController(this);
+
+        SoundManager.getInstance().playGameMusic();
 
         if (board != null) {
             board.prefWidthProperty().bind(root.widthProperty());

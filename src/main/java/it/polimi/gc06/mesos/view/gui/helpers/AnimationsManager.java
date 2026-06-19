@@ -108,6 +108,8 @@ public class AnimationsManager {
         TranslateTransition transition = EffectsManager.createCardMoveTransition(card, deltaX, deltaY, durationMs);
         transition.setInterpolator(Interpolator.EASE_OUT);
 
+        SoundManager.getInstance().playPickCard();
+
         transition.setOnFinished(e -> {
             overlayPane.getChildren().remove(card);
             root.getChildren().remove(overlayPane);
@@ -209,6 +211,8 @@ public class AnimationsManager {
             transition.setToY(deltaY);
             transition.setInterpolator(Interpolator.EASE_OUT);
 
+            SoundManager.getInstance().playTotem();
+
             transition.setOnFinished(ev -> {
                 root.getChildren().remove(overlayPane);
                 if (onEndAction != null) onEndAction.run();
@@ -273,7 +277,7 @@ public class AnimationsManager {
             if (onEndAction != null) onEndAction.run();
             return;
         }
-        
+
         // we find the original card and we hide it
         if (index < sourceBox.getChildren().size()) {
 
@@ -305,6 +309,8 @@ public class AnimationsManager {
         moveTransition.setByX(deltaX);
         moveTransition.setByY(deltaY);
         moveTransition.setInterpolator(Interpolator.EASE_OUT);
+
+        SoundManager.getInstance().playPickCard();
 
         moveTransition.setOnFinished(ev -> {
             overlayPane.getChildren().remove(droppingCard);
@@ -400,6 +406,8 @@ public class AnimationsManager {
 
         ParallelTransition flyAndFlip = new ParallelTransition(moveTransition, flipTransition);
 
+        SoundManager.getInstance().playCardFlip();
+
         flyAndFlip.setOnFinished(ev -> {
             overlayPane.getChildren().remove(flyingCard);
             flyingCard.setTranslateX(0);
@@ -458,6 +466,7 @@ public class AnimationsManager {
         ParallelTransition parallel = new ParallelTransition(fadeIn, land);
         parallel.setOnFinished(ev -> animateBuildingsList(index + 1, cards, targetBox, onListEnd));
 
+        SoundManager.getInstance().playPickCard();
         parallel.play();
     }
 

@@ -1,8 +1,10 @@
 package it.polimi.gc06.mesos.view.gui.controllers;
 
+import it.polimi.gc06.mesos.network.NetworkUtils;
 import it.polimi.gc06.mesos.network.client.Client;
 import it.polimi.gc06.mesos.view.gui.GUI;
 import it.polimi.gc06.mesos.view.gui.GameScene;
+import it.polimi.gc06.mesos.view.gui.helpers.SoundManager;
 import it.polimi.gc06.mesos.view.smallModel.SmallModel;
 import javafx.animation.Animation;
 import javafx.animation.FadeTransition;
@@ -13,11 +15,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -146,10 +144,15 @@ public class LoginController {
             System.err.println("Error reading the local network interfaces: " + e.getMessage());
         }
 
-        if (validIps.isEmpty()) {
-            validIps.add("127.0.0.1");
+
+        // Try adding the public IP address to the list
+        try {
+            validIps.add(NetworkUtils.getPublicIpAddress());
+        } catch (Exception e) {
+            System.err.println("Failed to retrieve public IP address: " + e.getMessage());
         }
 
+        validIps.add("127.0.0.1");
         networkInterfaceBox.getItems().addAll(validIps);
     }
 
@@ -205,7 +208,10 @@ public class LoginController {
             }
 
             if (advancedSettingsLabel != null) {
-                advancedSettingsLabel.setOnMouseClicked(e -> openAdvancedSettings());
+                advancedSettingsLabel.setOnMouseClicked(e -> {
+                    openAdvancedSettings();
+                    SoundManager.getInstance().playClick();
+                });
 
                 advancedSettingsLabel.setOnMouseEntered(e -> {
                     advancedSettingsLabel.setTextFill(Color.WHITE);
@@ -388,7 +394,7 @@ public class LoginController {
      * Loads an image to a targeted ImageView from the specified resource string.
      *
      * @param imageView The container for the graphic.
-     * @param path The resource path.
+     * @param path      The resource path.
      */
     private void loadImage(ImageView imageView, String path) {
         if (imageView == null) return;
@@ -402,11 +408,15 @@ public class LoginController {
     private void setupButtonInteractions() {
         joinButton.setOnMouseEntered(e -> joinButton.setStyle(BTN_STYLE_HOVER));
         joinButton.setOnMouseExited(e -> joinButton.setStyle(BTN_STYLE_DEFAULT));
-        joinButton.setOnMousePressed(e -> applyButtonPressEffect(joinButton, buttonShadow, 0.5, 0.5));
+        joinButton.setOnMousePressed(e -> {
+            applyButtonPressEffect(joinButton, buttonShadow, 0.5, 0.5);
+            SoundManager.getInstance().playClick();
+        });
         joinButton.setOnMouseReleased(e -> applyButtonPressEffect(joinButton, buttonShadow, 0, 2.5));
 
         okButton.setOnMouseEntered(e -> okButton.setStyle(MODAL_BTN_HOVER + " -fx-font-size: 18px; -fx-font-weight: bold;"));
         okButton.setOnMouseExited(e -> okButton.setStyle("-fx-background-color: transparent; -fx-border-color: #E0E0E0; -fx-border-width: 3; -fx-text-fill: #E0E0E0; -fx-background-radius: 10; -fx-border-radius: 10; -fx-cursor: hand; -fx-font-size: 18px; -fx-font-weight: bold;"));
+        okButton.setOnMousePressed(e -> SoundManager.getInstance().playClick());
 
         rmiButton.setOnMouseEntered(e -> {
             if (!"RMI".equals(connectionType)) rmiButton.setStyle(MODAL_BTN_HOVER);
@@ -414,6 +424,7 @@ public class LoginController {
         rmiButton.setOnMouseExited(e -> {
             if (!"RMI".equals(connectionType)) rmiButton.setStyle(MODAL_BTN_DEFAULT);
         });
+        rmiButton.setOnMousePressed(e -> SoundManager.getInstance().playClick());
 
         tcpButton.setOnMouseEntered(e -> {
             if (!"TCP".equals(connectionType)) tcpButton.setStyle(MODAL_BTN_HOVER);
@@ -421,14 +432,15 @@ public class LoginController {
         tcpButton.setOnMouseExited(e -> {
             if (!"TCP".equals(connectionType)) tcpButton.setStyle(MODAL_BTN_DEFAULT);
         });
+        tcpButton.setOnMousePressed(e -> SoundManager.getInstance().playClick());
     }
 
     /**
      * Applies displacement effects visually mimicking a physical button press.
      *
-     * @param button The button to animate.
-     * @param shadow The button's shadow effect structure to be modified.
-     * @param translateY The Y-axis translation value.
+     * @param button        The button to animate.
+     * @param shadow        The button's shadow effect structure to be modified.
+     * @param translateY    The Y-axis translation value.
      * @param shadowOffsetY The Y-axis shadow offset.
      */
     private void applyButtonPressEffect(Button button, DropShadow shadow, double translateY, double shadowOffsetY) {
@@ -468,6 +480,7 @@ public class LoginController {
      * Activates visual indicators to signal an error during the login attempt.
      */
     private void handleLoginError() {
+        SoundManager.getInstance().playError();
         nicknameField.setStyle(FIELD_STYLE_ERROR);
     }
 
@@ -512,7 +525,7 @@ public class LoginController {
 
         String selectedLocalIp = networkInterfaceBox.getValue();
         if (selectedLocalIp == null) {
-            selectedLocalIp = networkInterfaceBox.getItems().isEmpty() ? "127.0.0.1" : networkInterfaceBox.getItems().get(0);
+            selectedLocalIp = networkInterfaceBox.getItems().isEmpty() ? "127.0.0.1" : networkInterfaceBox.getItems().getFirst();
         }
 
         if ("RMI".equals(connectionType)) {
@@ -520,7 +533,7 @@ public class LoginController {
         }
 
         try {
-            GUI.client.connect(networkTech, ip, port, selectedLocalIp, 0);
+            GUI.client.connect(networkTech, ip, port, 0);
             GUI.subscribeGUI();
         } catch (Exception e) {
             System.err.println("Failed to connect to server: " + e.getMessage());

@@ -1,6 +1,7 @@
 module it.polimi.gc06.mesos {
     requires javafx.controls;
     requires javafx.fxml;
+    requires javafx.media;
 
     requires org.kordamp.ikonli.javafx;
     requires org.kordamp.bootstrapfx.core;

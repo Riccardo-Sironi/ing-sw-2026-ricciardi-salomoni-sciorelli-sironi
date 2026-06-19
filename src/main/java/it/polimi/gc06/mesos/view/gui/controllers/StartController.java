@@ -1,5 +1,6 @@
 package it.polimi.gc06.mesos.view.gui.controllers;
 
+import it.polimi.gc06.mesos.view.gui.helpers.SoundManager;
 import javafx.animation.*;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.NumberBinding;
@@ -180,6 +181,8 @@ public class StartController {
         rootPane.setDisable(true);
 
         System.out.println("Start game");
+
+        SoundManager.getInstance().playLobbyMusic();
 
         try {
             URL loginUrl = getClass().getResource("/it/polimi/gc06/mesos/fxml/Login.fxml");

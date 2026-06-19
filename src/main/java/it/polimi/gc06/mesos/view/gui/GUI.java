@@ -4,6 +4,7 @@ import it.polimi.gc06.mesos.controller.ModelListener;
 import it.polimi.gc06.mesos.dtos.SmallModelEditor;
 import it.polimi.gc06.mesos.network.client.Client;
 import it.polimi.gc06.mesos.view.View;
+import it.polimi.gc06.mesos.view.gui.helpers.SoundManager;
 import it.polimi.gc06.mesos.view.gui.visitors.GUIDTOVisitor;
 import it.polimi.gc06.mesos.view.smallModel.SmallModel;
 import javafx.application.Application;
@@ -42,6 +43,8 @@ public class GUI extends Application implements View, ModelListener {
         guiEventsManager = new GuiEventsManager();
 
         primaryStage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/imgs/game_icon.png"))));
+
+        SoundManager.getInstance().playStartMusic();
 
         changeScene(GameScene.START.getPath());
     }

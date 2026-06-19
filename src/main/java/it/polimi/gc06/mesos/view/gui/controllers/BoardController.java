@@ -1,14 +1,12 @@
 package it.polimi.gc06.mesos.view.gui.controllers;
 
 import it.polimi.gc06.mesos.dtos.*;
+import it.polimi.gc06.mesos.model.Era;
 import it.polimi.gc06.mesos.model.cards.Card;
 import it.polimi.gc06.mesos.model.gameTurnManager.EventResolutionPhase;
 import it.polimi.gc06.mesos.model.gameTurnManager.PlacingTotemPhase;
 import it.polimi.gc06.mesos.view.gui.elements.*;
-import it.polimi.gc06.mesos.view.gui.helpers.AnimationsManager;
-import it.polimi.gc06.mesos.view.gui.helpers.EffectsManager;
-import it.polimi.gc06.mesos.view.gui.helpers.LayoutConfiguration;
-import it.polimi.gc06.mesos.view.gui.helpers.Totem;
+import it.polimi.gc06.mesos.view.gui.helpers.*;
 import it.polimi.gc06.mesos.view.gui.visitors.CardEffectVisitor;
 import it.polimi.gc06.mesos.view.smallModel.PlayerView;
 import it.polimi.gc06.mesos.view.smallModel.TileSlotView;
@@ -1155,6 +1153,7 @@ public class BoardController {
             });
             skipButton.setOnMouseExited(event -> {
             });
+            skipButton.setOnMousePressed(event -> SoundManager.getInstance().playClick());
         }
     }
 
@@ -1385,6 +1384,9 @@ public class BoardController {
     }
 
     public void handleEraChanged() {
+        if (smallModel.getEra() == Era.ERA_III) {
+            SoundManager.getInstance().playEraIIIMusic();
+        }
         drawEraText();
     }
 
