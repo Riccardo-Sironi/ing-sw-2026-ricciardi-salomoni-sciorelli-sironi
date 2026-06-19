@@ -1,7 +1,8 @@
 package it.polimi.gc06.mesos.network_and_db.tcp;
 
 import it.polimi.gc06.mesos.network.server.ServerMain;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -16,19 +17,23 @@ public class ServerIntegrationTest {
     @BeforeAll
     static void setup() {
         serverThread = new Thread(() -> {
-            ServerMain.main(new String[]{"1234", "1099"});
+            ServerMain.main(new String[]{"45161", "1099"});
         });
         serverThread.start();
-        try { Thread.sleep(1000); } catch (InterruptedException e) {}
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 
     @Test
     void testTCPConnection() {
-        try (Socket socket = new Socket("localhost", 1234)) {
+        try (Socket socket = new Socket("localhost", 45161)) {
             assertTrue(socket.isConnected());
 
         } catch (IOException e) {
-            fail("Impossible connecting to TCP server");
+            fail("Cannot connect to TCP server");
         }
     }
 
@@ -38,7 +43,7 @@ public class ServerIntegrationTest {
             Registry registry = LocateRegistry.getRegistry("localhost", 1099);
             assertNotNull(registry.lookup("MesosRMIServer"));
         } catch (Exception e) {
-            fail("Impossible connecting to RMI server");
+            fail("Cannot connect to RMI server");
         }
     }
 }
