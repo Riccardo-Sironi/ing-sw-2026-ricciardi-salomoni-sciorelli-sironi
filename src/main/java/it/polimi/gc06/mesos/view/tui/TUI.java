@@ -2,11 +2,13 @@ package it.polimi.gc06.mesos.view.tui;
 
 import it.polimi.gc06.mesos.controller.ModelListener;
 import it.polimi.gc06.mesos.dtos.DTOVisitor;
+import it.polimi.gc06.mesos.dtos.EndGameDTO;
 import it.polimi.gc06.mesos.dtos.EventResolvedDTO;
 import it.polimi.gc06.mesos.dtos.SmallModelEditor;
 import it.polimi.gc06.mesos.model.cards.Card;
 import it.polimi.gc06.mesos.model.cards.events.EventCard;
 import it.polimi.gc06.mesos.network.client.Client;
+import it.polimi.gc06.mesos.network.leaderboard.Score;
 import it.polimi.gc06.mesos.view.View;
 import it.polimi.gc06.mesos.view.smallModel.PlayerView;
 import it.polimi.gc06.mesos.view.smallModel.SmallModel;
@@ -45,6 +47,7 @@ public class TUI implements View, ModelListener {
 
     private final BlockingQueue<EventCard> eventDisplayQueue = new LinkedBlockingQueue<>();
     private EventCard currentlyDisplayingEvent = null;
+    private boolean hasGameEnded = false;
 
     /**
      * Constructs a new TUI.
@@ -106,6 +109,11 @@ public class TUI implements View, ModelListener {
 
                 try {
                     String input = lineReader.readLine("mesos> ");
+
+                    if (hasGameEnded) {
+                        System.exit(0);
+                    }
+
                     if (input == null || input.trim().isEmpty()) {
                         statusMessage = "";
                         continue;
@@ -332,7 +340,7 @@ public class TUI implements View, ModelListener {
         Completer buildingCompleter = (reader, line, candidates) -> {
             List<String> words = line.words();
             int wordIndex = line.wordIndex();
-            if (!words.isEmpty() && "/pick_buildings".equals(words.get(0))) {
+            if (!words.isEmpty() && "/pick_building".equals(words.get(0))) {
                 if (wordIndex == 1) {
                     if (smallModel.getTopDrawNum() > 0) {
                         candidates.add(new Candidate("top"));
@@ -387,7 +395,7 @@ public class TUI implements View, ModelListener {
         };
 
         return new AggregateCompleter(
-                new ArgumentCompleter(new StringsCompleter("/pick_card", "/pick_buildings", "/end_turn", "/quit", "/clear", "/board", "/buildings"), NullCompleter.INSTANCE),
+                new ArgumentCompleter(new StringsCompleter("/pick_card", "/pick_building", "/end_turn", "/quit", "/clear", "/board", "/buildings"), NullCompleter.INSTANCE),
                 new ArgumentCompleter(new StringsCompleter("/help"), new StringsCompleter("place_totem", "pick_card", "end_turn", "clear", "cards"), NullCompleter.INSTANCE),
                 new ArgumentCompleter(new StringsCompleter("/place_totem"), totemCompleter, NullCompleter.INSTANCE),
                 cardCompleter,
@@ -534,7 +542,7 @@ public class TUI implements View, ModelListener {
         buildingsTitle = centerOnScreen(new String[]{"  === BOTTOM BUILDINGS ===  "}, terminal);
         terminal.writer().println("\n" + buildingsTitle[0] + "\n");
         List<Card> bottomBuildings = smallModel.getBottomBuildings();
-        
+
         for (int i = 0; i < bottomBuildings.size(); i++) {
             Card b = bottomBuildings.get(i);
             String name = String.join(" ", b.getClass().getSimpleName().split("(?=\\p{Upper})"));
@@ -566,6 +574,68 @@ public class TUI implements View, ModelListener {
                 terminal.writer().flush();
             }
         }
+    }
+
+    /**
+     * Clears the screen and displays the final leaderboard.
+     */
+    public void showLeaderboard(List<Score> finalScores) {
+
+        terminal.puts(InfoCmp.Capability.clear_screen);
+        String[] divider = TUI.centerOnScreen(new String[]{"========================================================"}, terminal);
+        String[] title = TUI.centerOnScreen(new String[]{"🏆 LEADERBOARD 🏆"}, terminal);
+
+        terminal.writer().println(Style.YELLOW + divider[0] + Style.RESET);
+        terminal.writer().println(Style.YELLOW + title[0] + Style.RESET);
+        terminal.writer().println(Style.YELLOW + divider[0] + Style.RESET);
+
+        if (finalScores == null || finalScores.isEmpty()) {
+            terminal.writer().println("   No scores available to display.");
+            terminal.writer().flush();
+            return;
+        }
+
+        // Make sure the data is sorted
+        finalScores.sort((s1, s2) -> Integer.compare(s2.getPrestigeScore(), s1.getPrestigeScore()));
+
+        for (int i = 0; i < finalScores.size(); i++) {
+            Score s = finalScores.get(i);
+            String name = s.getNickname();
+            int prestige = s.getPrestigeScore();
+
+            String prefix;
+            String color;
+            String suffix;
+
+            if (i == 0) {
+                prefix = " 1st Place ";
+                color = Style.YELLOW;
+                suffix = " 🥇 WINNER!";
+            } else if (i == 1) {
+                prefix = " 2nd Place ";
+                color = Style.BLUE;
+                suffix = " 🥈";
+            } else if (i == 2) {
+                prefix = " 3rd Place ";
+                color = Style.RED;
+                suffix = " 🥉";
+            } else {
+                prefix = String.format(" %dth Place ", i + 1);
+                color = Style.RESET;
+                suffix = "";
+            }
+
+            String line = String.format("   %s | %-15s | %3d Points %s", prefix, name, prestige, suffix);
+
+            terminal.writer().println(color + line + Style.RESET);
+            terminal.writer().println("");
+        }
+
+        terminal.writer().println(Style.YELLOW + divider[0] + Style.RESET);
+        terminal.writer().println("\n   " + Style.YELLOW + "Game Over. Thank you for playing Mesos!" + Style.RESET);
+        terminal.writer().flush();
+        terminal.writer().println("\nPress [ENTER] to exit...\n");
+
     }
 
     /**
@@ -626,6 +696,11 @@ public class TUI implements View, ModelListener {
             eventDisplayQueue.offer(dto.getEventCard());
         }
 
+        @Override
+        public void visit(EndGameDTO dto) {
+            hasGameEnded = true;
+        }
+
         /**
          * If the dto we received is a generic small model update, we should just flag the interface to be redrawn, so that the new state gets rendered.
          *
@@ -661,6 +736,7 @@ public class TUI implements View, ModelListener {
         terminal.puts(InfoCmp.Capability.clear_screen);
         terminal.puts(InfoCmp.Capability.cursor_home);
 
+
         if (currentlyDisplayingEvent != null) {
             drawEventAsciiArt(currentlyDisplayingEvent);
 
@@ -671,6 +747,10 @@ public class TUI implements View, ModelListener {
             terminal.writer().flush();
             needsRedraw = false;
             return;
+        }
+
+        if (hasGameEnded) {
+            showLeaderboard(smallModel.getLeaderboard());
         }
 
         List<PlayerView> players = new ArrayList<>();
