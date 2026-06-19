@@ -1,9 +1,10 @@
-package it.polimi.gc06.mesos.network_and_db.tcp;
+package it.polimi.gc06.mesos.network_and_db.rmi;
 
 import it.polimi.gc06.mesos.model.gameTurnManager.OfferResolutionPhase;
 import it.polimi.gc06.mesos.model.gameTurnManager.PlacingTotemPhase;
 import it.polimi.gc06.mesos.network.client.Client;
 import it.polimi.gc06.mesos.network.client.ServerConnection;
+import it.polimi.gc06.mesos.network.rmi.RMIServerInterface;
 import it.polimi.gc06.mesos.network.server.ServerMain;
 import it.polimi.gc06.mesos.view.smallModel.SmallModel;
 import org.junit.jupiter.api.AfterEach;
@@ -19,13 +20,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class TCPServerConnectionTest {
+public class RMIServerConnectionTest {
 
-    private static final int TCP_PORT = 45167;
-    private static final int RMI_PORT = 1107;
-
+    private static final int TCP_PORT = 45177;
+    private static final int RMI_PORT = 1119;
+    private static RMIServerInterface rmiStub;
     private List<Client> activeClients = new ArrayList<>();
+
     private static final AtomicInteger clientCounter = new AtomicInteger(1);
+
 
     @BeforeAll
     static void setup() {
@@ -53,74 +56,85 @@ public class TCPServerConnectionTest {
     }
 
     @Test
-    public void testLogin() throws ConnectException {
-        String nickname = "Alice_" + clientCounter.getAndIncrement();
+    public void testLoginRMI() {
+        String nickname = "Alice_RMI_" + clientCounter.getAndIncrement();
         Client c = new Client();
         c.setSmallModel(new SmallModel(nickname));
-        c.connect("TCP", "localhost", TCP_PORT);
-        activeClients.add(c);
-        ServerConnection conn = c.getServerConnection();
+
         try {
-            assertTrue(conn.login(nickname), "Login failed");
+            c.connect("RMI", "localhost", RMI_PORT);
         } catch (Exception e) {
-            fail("Login failed due to exception: " + e.getMessage());
+            fail("Failed to connect to RMI server: " + e.getMessage());
+        }
+
+        activeClients.add(c);
+
+        try {
+            assertTrue(c.getServerConnection().login(nickname), "RMI Login failed");
+        } catch (Exception e) {
+            fail("Login failed: " + e.getMessage());
         }
     }
 
     @Test
-    public void testMatchCreation() throws ConnectException {
-        String nickname = "Alice_" + clientCounter.getAndIncrement();
+    public void testMatchCreationRMI() {
+        String nickname = "Alice_RMI_" + clientCounter.getAndIncrement();
         Client c = new Client();
         c.setSmallModel(new SmallModel(nickname));
-        c.connect("TCP", "localhost", TCP_PORT);
-        activeClients.add(c);
-        ServerConnection conn = c.getServerConnection();
         try {
-            assertTrue(conn.login(nickname), "Login failed");
-            conn.createMatch(5, nickname);
+            c.connect("RMI", "localhost", RMI_PORT);
         } catch (Exception e) {
-            e.printStackTrace();
-            fail("Match creation failed due to exception: ");
+            fail("Failed to connect to RMI server: " + e.getMessage());
+        }
+        activeClients.add(c);
+
+        try {
+            c.getServerConnection().login(nickname);
+            c.getServerConnection().createMatch(5, nickname);
+        } catch (Exception e) {
+            fail("RMI Match creation failed: " + e.getMessage());
         }
     }
 
     @Test
-    public void testMatchJoin() throws ConnectException {
-        String nickname = "Alice_" + clientCounter.getAndIncrement();
-        Client c = new Client();
-        c.setSmallModel(new SmallModel(nickname));
-        c.connect("TCP", "localhost", TCP_PORT);
-        activeClients.add(c);
-        ServerConnection conn = c.getServerConnection();
-
-        int matchId = -1;
+    public void testMatchJoinRMI() {
+        // Host
+        Client c1 = new Client();
+        c1.setSmallModel(new SmallModel("Host_" + clientCounter.getAndIncrement()));
         try {
-            assertTrue(conn.login(nickname), "Login failed");
-            matchId = conn.createMatch(5, nickname);
+            c1.connect("RMI", "localhost", RMI_PORT);
         } catch (Exception e) {
-            fail("Match creation failed due to exception: " + e.getMessage());
+            fail("Failed to connect to RMI server: " + e.getMessage());
         }
+        activeClients.add(c1);
 
-        String nickname2 = "Bob_" + clientCounter.getAndIncrement();
+        // Joiner
         Client c2 = new Client();
-        c2.setSmallModel(new SmallModel(nickname2));
-        c2.connect("TCP", "localhost", TCP_PORT);
-        activeClients.add(c2);
-        ServerConnection conn2 = c2.getServerConnection();
+        c2.setSmallModel(new SmallModel("Joiner_" + clientCounter.getAndIncrement()));
         try {
-            assertTrue(conn2.login(nickname2), "Login failed");
-            assertTrue(conn2.joinMatch(matchId, nickname2));
+            c2.connect("RMI", "localhost", RMI_PORT);
         } catch (Exception e) {
-            fail("Match join failed due to exception: " + e.getMessage());
+            fail("Failed to connect to RMI server: " + e.getMessage());
+        }
+        activeClients.add(c2);
+
+        try {
+            c1.getServerConnection().login("Host_" + clientCounter.getAndIncrement());
+            int matchId = c1.getServerConnection().createMatch(5, "Host_" + clientCounter.getAndIncrement());
+
+            c2.getServerConnection().login("Joiner_" + clientCounter.getAndIncrement());
+            assertTrue(c2.getServerConnection().joinMatch(matchId, "Joiner_" + clientCounter.getAndIncrement()), "RMI Join failed");
+        } catch (Exception e) {
+            fail("Match join failed: " + e.getMessage());
         }
     }
 
     @Test
-    public void testMatchStart() throws ConnectException {
-        createMatchAndStart(3);
+    public void testMatchStartRMI() throws ConnectException {
+        createMatchAndStartRMI(3);
     }
 
-    private List<Client> createMatchAndStart(int n) throws ConnectException {
+    private List<Client> createMatchAndStartRMI(int n) throws ConnectException {
         String nickname = "Alice_" + clientCounter.getAndIncrement();
         ArrayList<Client> clients = new ArrayList<>();
 
@@ -172,31 +186,29 @@ public class TCPServerConnectionTest {
         return clients;
     }
 
-    private Client getActiveClient(List<Client> clients) {
-        return clients.stream().filter(c -> c.getModel().isActive()).findFirst().orElse(null);
-    }
-
     @ParameterizedTest
-    @ValueSource(ints = {500})
-    public void testFirstPhase(int timeout) throws Exception {
+    @ValueSource(ints = {1000})
+    public void testFirstPhaseRMI(int timeout) throws Exception {
         int n = 3;
-        List<Client> clients = createMatchAndStart(n);
+        List<Client> clients = createMatchAndStartRMI(n);
+        Thread.sleep(1000);
 
+        for (Client c : clients) {
+            assertEquals(new PlacingTotemPhase().toString(), c.getModel().getPhase());
+        }
         for (int i = 0; i < n; i++) {
-            Client active = getActiveClient(clients);
-            if (active == null) fail("Active player not found.");
+            Client active = clients.stream().filter(c -> c.getModel().isActive()).findFirst().orElseThrow();
             try {
                 active.getServerConnection().placeTotem(active.getModel().getPlayer().getNickname(), i);
-                Thread.sleep(timeout);
             } catch (Exception e) {
-                e.printStackTrace();
                 fail("Unexpected exception during placing totem phase");
             }
+            Thread.sleep(timeout);
         }
 
-        Thread.sleep(timeout);
         assertTrue(clients.stream().map(c -> c.getModel().getPhase())
                         .allMatch(p -> p != null && p.equals(new OfferResolutionPhase().toString())),
-                "Phase didn't change in specified time requirements");
+                "RMI: Phase didn't change");
     }
 }
+
