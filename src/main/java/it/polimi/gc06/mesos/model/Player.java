@@ -2,7 +2,6 @@ package it.polimi.gc06.mesos.model;
 
 import it.polimi.gc06.mesos.dtos.PlayerRecapDTO;
 import it.polimi.gc06.mesos.dtos.PlayerResourcesChangeDTO;
-import it.polimi.gc06.mesos.gameExceptions.GameObjectNotFoundException;
 import it.polimi.gc06.mesos.model.cards.CardVisitor;
 import it.polimi.gc06.mesos.model.cards.buildings.*;
 import it.polimi.gc06.mesos.model.cards.characters.*;
@@ -198,7 +197,7 @@ public class Player {
      * @param card the set building card to be added to the player's building deck
      * @throws IllegalArgumentException if the card is null
      */
-    public void addBuildingCards(ObserverSetBuildingCard card) throws IllegalArgumentException, GameObjectNotFoundException {
+    public void addBuildingCards(ObserverSetBuildingCard card) throws IllegalArgumentException {
 
         if (card == null) throw new IllegalArgumentException("Card cannot be null");
         gameInfo.addObserver(card);
@@ -215,7 +214,7 @@ public class Player {
      * @param card the pair building card to be added to the player's building deck
      * @throws IllegalArgumentException if the card is null
      */
-    public void addBuildingCards(ObserverPairBuildingCard card) throws IllegalArgumentException, GameObjectNotFoundException {
+    public void addBuildingCards(ObserverPairBuildingCard card) throws IllegalArgumentException {
 
         if (card == null) throw new IllegalArgumentException("Card cannot be null");
         gameInfo.addObserver(card);

@@ -66,7 +66,9 @@ public class TCPClientManagerTest {
 
             ServerConnection hostConn = hostClient.getServerConnection();
             assertTrue(hostConn.login(hostNick));
+            Thread.sleep(300);
             int matchId = hostConn.createMatch(n, hostNick);
+            Thread.sleep(300);
 
             for (int i = 0; i < n - 1; i++) {
                 String joinerNick = "Joiner_" + testName + "_" + clientCounter.getAndIncrement();
@@ -78,7 +80,9 @@ public class TCPClientManagerTest {
 
                 ServerConnection joinerConn = joinerClient.getServerConnection();
                 assertTrue(joinerConn.login(joinerNick));
+                Thread.sleep(300);
                 assertTrue(joinerConn.joinMatch(matchId, joinerNick));
+                Thread.sleep(300);
             }
 
             Thread.sleep(1500);
