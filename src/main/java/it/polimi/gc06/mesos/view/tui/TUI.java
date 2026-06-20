@@ -534,7 +534,9 @@ public class TUI implements View, ModelListener {
             String effect = effectVisitor.getEffect(b);
 
             terminal.writer().println(i + ") " + Style.YELLOW + name + Style.RESET);
-            terminal.writer().println("     Effect: " + effect);
+            terminal.writer().println("\tEffect: " + effect);
+            terminal.writer().println("\tCost: " + effectVisitor.getCost() + " Food");
+            terminal.writer().println("\tPrestige: " + effectVisitor.getPrestige() + " Points");
 
             terminal.writer().println("");
         }
@@ -549,7 +551,10 @@ public class TUI implements View, ModelListener {
             String effect = effectVisitor.getEffect(b);
 
             terminal.writer().println(i + ") " + Style.YELLOW + name + Style.RESET);
-            terminal.writer().println("     Effect: " + effect);
+            terminal.writer().println("\tEffect: " + effect);
+            terminal.writer().println("\tCost: " + effectVisitor.getCost() + " Food");
+            terminal.writer().println("\tPrestige: " + effectVisitor.getPrestige() + " Points");
+
 
             terminal.writer().println("");
         }

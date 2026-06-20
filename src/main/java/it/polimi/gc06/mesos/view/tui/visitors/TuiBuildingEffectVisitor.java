@@ -10,6 +10,8 @@ import it.polimi.gc06.mesos.model.cards.buildings.ObserverSetBuildingCard;
 public class TuiBuildingEffectVisitor extends CardVisitor {
 
     private String effectText;
+    private int cost;
+    private int prestige;
 
     public String getEffect(Card card) {
         this.effectText = "No special effect";
@@ -17,15 +19,26 @@ public class TuiBuildingEffectVisitor extends CardVisitor {
         return effectText;
     }
 
+    public int getCost() {
+        return cost;
+    }
+
+    public int getPrestige() {
+        return prestige;
+    }
 
     @Override
     public void visit(ObserverSetBuildingCard card) {
         effectText = "Grants +5 Food whenever you complete a Character Set (one of each type).";
+        cost = card.getFoodCost();
+        prestige = card.getBasePrestigeGain();
     }
 
     @Override
     public void visit(ObserverPairBuildingCard card) {
         effectText = "Grants +2 Food whenever you complete a pair of Inventors.";
+        cost = card.getFoodCost();
+        prestige = card.getBasePrestigeGain();
     }
 
 
@@ -71,6 +84,8 @@ public class TuiBuildingEffectVisitor extends CardVisitor {
                 effectText = "Special effect: " + card.getCardKey().name();
                 break;
         }
+        cost = card.getFoodCost();
+        prestige = card.getBasePrestigeGain();
     }
 
     @Override
@@ -112,5 +127,7 @@ public class TuiBuildingEffectVisitor extends CardVisitor {
                 effectText = "End Game prestige based on: " + card.getPrestigeEffect().name();
                 break;
         }
+        cost = card.getFoodCost();
+        prestige = card.getBasePrestigeGain();
     }
 }
