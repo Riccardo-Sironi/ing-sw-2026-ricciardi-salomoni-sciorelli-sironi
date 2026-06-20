@@ -45,7 +45,11 @@ Ensure you have **Java 21+** and **Maven** installed on your machine. To compile
 ```bash
 mvn clean package
 ```
-The compiled .jar files will be generated inside the target/ directory.
+The compiled .jar files will be generated inside the target/ directory, ```cd``` into it and run the .jar files as described in the next section.
+
+```bash
+cd target/
+```
 
 
 # Server configuration
@@ -53,7 +57,7 @@ The compiled .jar files will be generated inside the target/ directory.
 * Run the .jar file for the server with the following command:
 
 ```bash
-java -jar MesosServer.jar
+java -jar mesos-1.0-server.jar
 ```
 
 > [!TIP]
@@ -62,7 +66,7 @@ java -jar MesosServer.jar
 > Remember to launch the jar with the command:
 >
 > ```bash
-> java --ip=SERVER_PUBLIC_IP_ADDRESS -jar MesosServer.jar
+> java --ip=SERVER_PUBLIC_IP_ADDRESS -jar mesos-1.0-server.jar
 > ```
 
 ## Available arguments
@@ -82,7 +86,7 @@ java -jar MesosServer.jar
 * Run the .jar inside your own operating systems' **Command Prompt** for the client with the following command
 
   ```bash
-  java -jar MesosClient.jar
+  java -jar mesos-1.0-client.jar
   ```
 * Follow the instructions that appear on the screen to start a game (make sure to enter the correct Server IP).
 
@@ -92,7 +96,7 @@ java -jar MesosServer.jar
 > In case you want to play with RMI over the Internet, remember to launch the jar with the command:
 >
 > ```bash
-> java --ip=YOUR_PUBLIC_IP_ADDRESS -jar MesosClient.jar
+> java --ip=YOUR_PUBLIC_IP_ADDRESS -jar mesos-1.0-client.jar
 > ```
 
 # Testing
