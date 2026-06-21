@@ -130,7 +130,7 @@ public class TCPClientManagerTest {
             Thread.sleep(1000);
 
             for (Client client : clients) {
-                assertEquals(activeNick, client.getModel().getOfferTrack().get(0).getPlayer().getNickname(),
+                assertEquals(activeNick, client.getModel().getOfferTrack().getFirst().getPlayer().getNickname(),
                         "All clients should see the totem placed by the active player");
             }
         } catch (Exception e) {
@@ -152,7 +152,7 @@ public class TCPClientManagerTest {
             Thread.sleep(1000);
 
             for (Client client : clients) {
-                assertNull(client.getModel().getOfferTrack().get(0).getPlayer(),
+                assertNull(client.getModel().getOfferTrack().getFirst().getPlayer(),
                         "Offer track should remain empty since the action was rejected");
             }
         } catch (Exception e) {
@@ -176,7 +176,7 @@ public class TCPClientManagerTest {
             activeClient.getServerConnection().placeTotem(activeNick, 0);
             Thread.sleep(1000);
 
-            assertEquals(activeNick, activeClient.getModel().getOfferTrack().get(0).getPlayer().getNickname(),
+            assertEquals(activeNick, activeClient.getModel().getOfferTrack().getFirst().getPlayer().getNickname(),
                     "Client should still be able to send valid commands after an invalid one");
         } catch (Exception e) {
             fail("Action execution failed: " + e.getMessage());

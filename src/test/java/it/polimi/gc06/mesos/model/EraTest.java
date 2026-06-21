@@ -38,6 +38,6 @@ class EraTest {
 
     @Test
     void testERAIII() {
-        assertThrows(IllegalStateException.class, () -> Era.ERA_III.nextEra());
+        assertThrows(IllegalStateException.class, Era.ERA_III::nextEra);
     }
 }

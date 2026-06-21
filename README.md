@@ -40,17 +40,19 @@ ensure high cohesion and low coupling.
 
 # How to Build
 
-Ensure you have **Java 21+** and **Maven** installed on your machine. To compile the project and build the executable JAR files, navigate to the root directory of the repository and run:
+Ensure you have **Java 21+** and **Maven** installed on your machine. To compile the project and build the executable
+JAR files, navigate to the root directory of the repository and run:
 
 ```bash
 mvn clean package
 ```
-The compiled .jar files will be generated inside the target/ directory, ```cd``` into it and run the .jar files as described in the next section.
+
+The compiled .jar files will be generated inside the target/ directory, ```cd``` into it and run the .jar files as
+described in the next section.
 
 ```bash
 cd target/
 ```
-
 
 # Server configuration
 
@@ -61,8 +63,10 @@ java -jar mesos-1.0-server.jar
 ```
 
 > [!TIP]
-> If you aim to play with different devices over the net, you can achieve this by using a third-party software such as [Hamachi](https://vpn.net/), [ZeroTier](https://www.zerotier.com/), [Wireguard](https://www.wireguard.com/) or properly set forward rules on the router where the server is located.
-> 
+> If you aim to play with different devices over the net, you can achieve this by using a third-party software such
+> as [Hamachi](https://vpn.net/), [ZeroTier](https://www.zerotier.com/), [Wireguard](https://www.wireguard.com/) or
+> properly set forward rules on the router where the server is located.
+>
 > Remember to launch the jar with the command:
 >
 > ```bash
@@ -91,8 +95,10 @@ java -jar mesos-1.0-server.jar
 * Follow the instructions that appear on the screen to start a game (make sure to enter the correct Server IP).
 
 > [!TIP]
-> If you aim to play with different devices over the net, you can achieve this by using a third-party software such as [Hamachi](https://vpn.net/), [ZeroTier](https://www.zerotier.com/), [Wireguard](https://www.wireguard.com/) or properly set forward rules on the router where the server is located.
-> 
+> If you aim to play with different devices over the net, you can achieve this by using a third-party software such
+> as [Hamachi](https://vpn.net/), [ZeroTier](https://www.zerotier.com/), [Wireguard](https://www.wireguard.com/) or
+> properly set forward rules on the router where the server is located.
+>
 > In case you want to play with RMI over the Internet, remember to launch the jar with the command:
 >
 > ```bash
@@ -100,12 +106,14 @@ java -jar mesos-1.0-server.jar
 > ```
 
 # Testing
- -- add test coverage photos --
- # Group GC06
- 
- | Studente | Email | GitHub |
- | :--- | :--- | :--- |
- | **Manuel Ricciardi** | [manuel.ricciardi@mail.polimi.it](mailto:manuel.ricciardi@mail.polimi.it) | https://github.com/manuel2487 |
- | **Tommaso Salomoni** | [tommaso.salomoni@mail.polimi.it](mailto:tommaso.salomoni@mail.polimi.it) | https://github.com/salotom |
- | **Filippo Sciorelli** | [filippo.sciorelli@mail.polimi.it](mailto:filippo.sciorelli@mail.polimi.it) | https://github.com/fsciorelli |
- | **Riccardo Sironi** | [riccardo1.sironi@mail.polimi.it](mailto:riccardo1.sironi@mail.polimi.it) | https://github.com/Riccardo-Sironi |
+
+-- add test coverage photos --
+
+# Group GC06
+
+| Studente              | Email                                                                       | GitHub                             |
+ |:----------------------|:----------------------------------------------------------------------------|:-----------------------------------|
+| **Manuel Ricciardi**  | [manuel.ricciardi@mail.polimi.it](mailto:manuel.ricciardi@mail.polimi.it)   | https://github.com/manuel2487      |
+| **Tommaso Salomoni**  | [tommaso.salomoni@mail.polimi.it](mailto:tommaso.salomoni@mail.polimi.it)   | https://github.com/salotom         |
+| **Filippo Sciorelli** | [filippo.sciorelli@mail.polimi.it](mailto:filippo.sciorelli@mail.polimi.it) | https://github.com/fsciorelli      |
+| **Riccardo Sironi**   | [riccardo1.sironi@mail.polimi.it](mailto:riccardo1.sironi@mail.polimi.it)   | https://github.com/Riccardo-Sironi |

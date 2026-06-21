@@ -14,6 +14,13 @@ module it.polimi.gc06.mesos {
 
     opens it.polimi.gc06.mesos to javafx.fxml;
     exports it.polimi.gc06.mesos.model;
+    exports it.polimi.gc06.mesos.dtos;
+    exports it.polimi.gc06.mesos.controller;
+    exports it.polimi.gc06.mesos.network.leaderboard;
+    exports it.polimi.gc06.mesos.dtos.snapshots;
+    exports it.polimi.gc06.mesos.view.gui.visitors;
+    exports it.polimi.gc06.mesos.controller.commands;
+
     opens it.polimi.gc06.mesos.model to javafx.fxml, com.fasterxml.jackson.databind;
     exports it.polimi.gc06.mesos.model.cards;
     opens it.polimi.gc06.mesos.model.cards to javafx.fxml, com.fasterxml.jackson.databind;

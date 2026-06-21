@@ -707,7 +707,7 @@ class PlayerTest {
         assertEquals(1, player.getCharacterDeck().get(CharacterType.HUNTER).size());
         assertEquals(mockHunter, player.getCharacterDeck().get(CharacterType.HUNTER).get(0));
         assertEquals(1, player.getBuildingCards().size());
-        assertEquals(mockBuilding, player.getBuildingCards().get(0));
+        assertEquals(mockBuilding, player.getBuildingCards().getFirst());
 
         assertNotNull(player.getCharactersSets());
         assertEquals(2, player.getCharactersSets().get(CharacterType.HUNTER));

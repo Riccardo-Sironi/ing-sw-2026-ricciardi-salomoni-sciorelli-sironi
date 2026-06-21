@@ -1,9 +1,7 @@
 package it.polimi.gc06.mesos.model;
 
-import it.polimi.gc06.mesos.dtos.*;
-import it.polimi.gc06.mesos.dtos.snapshots.*;
+import it.polimi.gc06.mesos.dtos.SmallModelEditor;
 import it.polimi.gc06.mesos.gameExceptions.IllegalPhaseActionException;
-import it.polimi.gc06.mesos.model.Color;
 import it.polimi.gc06.mesos.model.cards.TribeCard;
 import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
 import it.polimi.gc06.mesos.model.cards.characters.CharacterCard;
@@ -472,7 +470,7 @@ class GameModelTest {
 
         GameModel model = new GameModel(boardMock, buildingCardsDecks, tribeCardsDeck, finalEventCards, players, turnManagerMock, notifier);
 
-        assertDoesNotThrow(() -> model.sendResumeInfo());
+        assertDoesNotThrow(model::sendResumeInfo);
     }
 
     @Test

@@ -74,7 +74,7 @@ public class Client implements ModelListener {
             } //if it's an error DTO an Error will be thrown
             catch (Exception e) {
                 System.err.println("Error during dto client edit:");
-                e.printStackTrace();
+                //e.printStackTrace();
             }
             listeners.forEach(l -> l.update(dto));
         } else if (nextSequenceNumber.equals(dto.getSequenceNumber())) {
@@ -86,7 +86,7 @@ public class Client implements ModelListener {
             } //if it's an error DTO an Error will be thrown
             catch (Exception e) {
                 System.err.println("Error during dto client edit:");
-                e.printStackTrace();
+                //e.printStackTrace();
             }
             listeners.forEach(l -> l.update(dto));
             //takes all correct early dto
@@ -99,7 +99,7 @@ public class Client implements ModelListener {
                 } //if it's an error DTO an Error will be thrown
                 catch (Exception e) {
                     System.err.println("Error during dto client edit:");
-                    e.printStackTrace();
+                    //e.printStackTrace();
                 }
                 listeners.forEach(l -> l.update(nextDTO));
             }

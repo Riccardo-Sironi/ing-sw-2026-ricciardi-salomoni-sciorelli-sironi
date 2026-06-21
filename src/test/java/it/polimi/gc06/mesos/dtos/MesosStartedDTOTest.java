@@ -1,12 +1,7 @@
 package it.polimi.gc06.mesos.dtos;
 
-import it.polimi.gc06.mesos.model.cards.Card;
-import it.polimi.gc06.mesos.model.gameBoard.TileEffect;
 import it.polimi.gc06.mesos.view.smallModel.SmallModel;
 import org.junit.jupiter.api.*;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;

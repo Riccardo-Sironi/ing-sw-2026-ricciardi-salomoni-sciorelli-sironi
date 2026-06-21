@@ -96,8 +96,8 @@ public class SmallModel implements Serializable {
         turnOrderTile.addAll(other.turnOrderTile);
         offerTrack.clear();
         offerTrack.addAll(other.offerTrack);
-        if(other.era != null) this.era = other.era;
-        if(other.phase != null) this.phase = other.phase;
+        if (other.era != null) this.era = other.era;
+        if (other.phase != null) this.phase = other.phase;
         this.tribeDeckSize = other.tribeDeckSize;
         this.round = other.round;
         this.topDrawNum = other.topDrawNum;
@@ -106,19 +106,19 @@ public class SmallModel implements Serializable {
         this.canSkip = other.canSkip;
         this.maxPlayers = other.maxPlayers;
         this.player = null;
-        if(other.player != null){
-            PlayerView pv = new PlayerView(other.player.getNickname(),other.getPlayer().getColor());
+        if (other.player != null) {
+            PlayerView pv = new PlayerView(other.player.getNickname(), other.getPlayer().getColor());
             pv.copy(other.player);
             this.player = pv;
         }
         opponents.clear();
         for (PlayerView op : other.opponents) {
-            PlayerView pv = new PlayerView(op.getNickname(),op.getColor());
+            PlayerView pv = new PlayerView(op.getNickname(), op.getColor());
             pv.copy(op);
             this.opponents.add(pv);
         }
         this.leaderboard.clear();
-        if(other.leaderboard != null) this.leaderboard.addAll(other.leaderboard);
+        if (other.leaderboard != null) this.leaderboard.addAll(other.leaderboard);
         this.listener = null;
     }
 
@@ -463,13 +463,13 @@ public class SmallModel implements Serializable {
                 ", canSkip=" + canSkip + ",\n" +
                 ", maxPlayers=" + maxPlayers + ",\n" +
                 ", player=" + player + ",\n" +
-                ", opponents=" + opponents.toString() + ",\n" +
-                "  topRow=" + topRow.toString() + ",\n" +
-                "  bottomRow=" + bottomRow.toString() + ",\n" +
-                ", topBuildings=" + topBuildings.toString() + ",\n" +
-                ", bottomBuildings=" + bottomBuildings.toString() + ",\n" +
-                ", turnOrderTile=" + turnOrderTile.toString() + ",\n" +
-                ", offerTrack=" + offerTrack.toString() + "\n" +
+                ", opponents=" + opponents + ",\n" +
+                "  topRow=" + topRow + ",\n" +
+                "  bottomRow=" + bottomRow + ",\n" +
+                ", topBuildings=" + topBuildings + ",\n" +
+                ", bottomBuildings=" + bottomBuildings + ",\n" +
+                ", turnOrderTile=" + turnOrderTile + ",\n" +
+                ", offerTrack=" + offerTrack + "\n" +
                 '}';
     }
 }

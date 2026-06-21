@@ -177,7 +177,10 @@ public class InstanceSorterCardVisitorTest {
 
         boolean contains = false;
         for (EventCard card : visitor.getFinalEvents()) {
-            if (card == mockCard) contains = true;
+            if (card == mockCard) {
+                contains = true;
+                break;
+            }
         }
         assertFalse(contains);
     }
@@ -193,7 +196,10 @@ public class InstanceSorterCardVisitorTest {
 
         boolean contains = false;
         for (EventCard card : visitor.getFinalEvents()) {
-            if (card == mockCard) contains = true;
+            if (card == mockCard) {
+                contains = true;
+                break;
+            }
         }
         assertTrue(contains);
         assertFalse(visitor.getTribeCards().get(Era.ERA_III).contains(mockCard));
@@ -221,7 +227,10 @@ public class InstanceSorterCardVisitorTest {
 
         boolean contains = false;
         for (EventCard card : visitor.getFinalEvents()) {
-            if (card == mockCard) contains = true;
+            if (card == mockCard) {
+                contains = true;
+                break;
+            }
         }
         assertTrue(contains);
     }

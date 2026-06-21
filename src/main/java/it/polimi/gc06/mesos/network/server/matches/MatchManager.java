@@ -6,7 +6,6 @@ import it.polimi.gc06.mesos.network.server.VirtualClient;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -22,13 +21,13 @@ public class MatchManager {
     private final Set<String> loggedUsers;
     private final AtomicInteger idGenerator;
 
-    public MatchManager(int largestResumedMatchId){
+    public MatchManager(int largestResumedMatchId) {
         activeMatches = new ConcurrentHashMap<>();
         loggedUsers = ConcurrentHashMap.newKeySet();
-        idGenerator = new AtomicInteger(largestResumedMatchId+1);
+        idGenerator = new AtomicInteger(largestResumedMatchId + 1);
     }
 
-    public MatchManager(){
+    public MatchManager() {
         activeMatches = new ConcurrentHashMap<>();
         loggedUsers = ConcurrentHashMap.newKeySet();
         idGenerator = new AtomicInteger();
@@ -78,7 +77,7 @@ public class MatchManager {
     /**
      * removes from the list all closed matches
      */
-    private void removeClosedMatches(){
+    private void removeClosedMatches() {
         //check if a match should be removed (memory leak handling)
         List<Match> removables = activeMatches.values().stream().filter(Match::hasEnded).toList();
         activeMatches.values().removeAll(removables);
@@ -107,11 +106,11 @@ public class MatchManager {
     public String getAvailableMatchesString(String nickname) {
         removeClosedMatches();
         //saves only visible matches
-        List <Match> playerActiveMatches = new ArrayList<>();
+        List<Match> playerActiveMatches = new ArrayList<>();
         PreviousPlayerMatchVisitor visitor = new PreviousPlayerMatchVisitor(nickname);
-        for(Match m : activeMatches.values()){
+        for (Match m : activeMatches.values()) {
             m.accept(visitor);
-            if(visitor.canEnter()) playerActiveMatches.add(m);
+            if (visitor.canEnter()) playerActiveMatches.add(m);
         }
         //excludes all started or ended matches
         return playerActiveMatches.stream()
@@ -190,12 +189,12 @@ public class MatchManager {
      * Create a match identical to the one lost due to server crash.
      *
      * @param matchId the previous match id.
-     * @param model the game model representing the previous game state.
+     * @param model   the game model representing the previous game state.
      */
-    public void restoreMatch(int matchId, GameModel model){
-        RestoredMatch match = new RestoredMatch(matchId,model);
-        activeMatches.put(matchId,match);
-        System.out.println("Restored match: "+matchId);
+    public void restoreMatch(int matchId, GameModel model) {
+        RestoredMatch match = new RestoredMatch(matchId, model);
+        activeMatches.put(matchId, match);
+        System.out.println("Restored match: " + matchId);
     }
 
     /**
@@ -238,7 +237,7 @@ public class MatchManager {
      * @param id the id of {@link Match} that will be checked.
      * @return if the match is running.
      */
-    public boolean isMatchRunning(int id){
+    public boolean isMatchRunning(int id) {
         removeClosedMatches();
         return hasMatchStarted(id) && !hasMatchEnded(id);
     }

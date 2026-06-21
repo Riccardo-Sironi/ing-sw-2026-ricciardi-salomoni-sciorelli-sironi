@@ -1,14 +1,14 @@
 package it.polimi.gc06.mesos.dtos.snapshots;
 
 import it.polimi.gc06.mesos.model.cards.buildings.BuildingCard;
-import it.polimi.gc06.mesos.model.cards.characters.CharacterCard;
 import org.junit.jupiter.api.*;
 
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.Mockito.mock;
 
 class PlayerSnapshotTest {
 

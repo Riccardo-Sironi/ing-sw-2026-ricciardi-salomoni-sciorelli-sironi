@@ -485,7 +485,7 @@ class BoardTest {
         ArrayList<EventCard> eventCards = board.cleanBottomRow();
 
         assertInstanceOf(SustenanceEvent.class, eventCards.get(eventCards.size() - 2), "The 'eventCards.size() - 2' event card should be the SustenanceEvent");
-        assertInstanceOf(SustenanceEvent.class, eventCards.get(eventCards.size() - 1), "The 'eventCards.size() - 1' event card should be the SustenanceEvent");
+        assertInstanceOf(SustenanceEvent.class, eventCards.getLast(), "The last event card should be the SustenanceEvent");
     }
 
     @Test

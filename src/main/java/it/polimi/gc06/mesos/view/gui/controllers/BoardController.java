@@ -920,11 +920,7 @@ public class BoardController {
         } else {
             skipButton.setVisible(true);
 
-            if (smallModel.isActive() && smallModel.isCanSkip()) {
-                toggleSkipButton(true);
-            } else {
-                toggleSkipButton(false);
-            }
+            toggleSkipButton(smallModel.isActive() && smallModel.isCanSkip());
         }
     }
 

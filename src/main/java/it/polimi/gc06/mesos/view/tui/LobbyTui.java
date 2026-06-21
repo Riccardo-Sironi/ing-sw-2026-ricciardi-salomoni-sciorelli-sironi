@@ -23,6 +23,8 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static it.polimi.gc06.mesos.view.tui.TUI.centerOnScreen;
+
 /**
  * Text-based User Interface for the game lobby phase.
  * It handles gathering connection credentials from the user and allows
@@ -36,8 +38,6 @@ public class LobbyTui implements LobbyView {
     private static String nickname;
 
     private static final String[] frames = {".  ", ".. ", "..."}; // 3 frames
-
-    // TODO Forse switchare con Terminal di Jline?
 
     /**
      * Constructs a new LobbyTui instance
@@ -194,8 +194,30 @@ public class LobbyTui implements LobbyView {
                     .build();
 
             boolean inMatch = false;
-            // TODO Aggiornare con un bel ART
-            terminal.writer().println("\n=== LOBBY ===");
+            String[] lobbyAscii = {
+                    " ___       ________  ________  ________      ___    ___ ",
+                    "|\\  \\     |\\   __  \\|\\   __  \\|\\   __  \\    |\\  \\  /  /|",
+                    "\\ \\  \\    \\ \\  \\|\\  \\ \\  \\|\\ /\\ \\  \\|\\ /_   \\ \\  \\/  / /",
+                    " \\ \\  \\    \\ \\  \\\\\\  \\ \\   __  \\ \\   __  \\   \\ \\    / / ",
+                    "  \\ \\  \\____\\ \\  \\\\\\  \\ \\  \\|\\  \\ \\  \\|\\  \\   \\/   / /  ",
+                    "   \\ \\_______\\ \\_______\\ \\_______\\ \\_______\\__/   / /   ",
+                    "    \\|_______|\\|_______|\\|_______|\\|_______|\\____/ /    ",
+                    "                                           \\|____|/     "
+
+            };
+
+            terminal.puts(InfoCmp.Capability.clear_screen);
+            terminal.puts(InfoCmp.Capability.cursor_home);
+
+            int bannerHeight = lobbyAscii.length;
+
+            String[] centeredTitle = centerOnScreen(lobbyAscii, terminal);
+
+            // Print the entire array with a color gradient from Red to Yellow, using ANSI escape codes for true color
+            for (int i = 0; i < bannerHeight; i++) {
+                terminal.writer().println(centeredTitle[i]);
+            }
+            terminal.writer().flush();
 
             while (!inMatch) {
                 String line;
@@ -341,7 +363,7 @@ public class LobbyTui implements LobbyView {
     private static Completer getCompleter(SmallModel smallModel) {
         Completer colorCompleter = (reader, line, candidates) -> {
             List<String> words = line.words();
-            if (!words.isEmpty() && "/set_color".equals(words.get(0))) {
+            if (!words.isEmpty() && "/set_color".equals(words.getFirst())) {
                 if (words.size() == 2) {
                     List<String> allColors = Arrays.stream(Color.values())
                             .map(Enum::toString)

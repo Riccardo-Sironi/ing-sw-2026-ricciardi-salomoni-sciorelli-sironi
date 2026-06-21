@@ -1,7 +1,5 @@
 package it.polimi.gc06.mesos.model.gameBoard;
 
-import it.polimi.gc06.mesos.model.Player;
-
 import java.util.ArrayList;
 
 public record TurnOrderTile(ArrayList<TileSlot> slots) {
@@ -20,30 +18,4 @@ public record TurnOrderTile(ArrayList<TileSlot> slots) {
         slots.add(index, slot);
     }
 
-
-    // TODO : this methods are not used at all (just in the tests)
-
-    /**
-     * Returns the player on the nth tile.
-     *
-     * @param n index of the element to return
-     * @return the player on the nth position
-     * @throws IllegalArgumentException {@inheritDoc}
-     */
-    public Player getPlayerOnNthTile(int n) throws IllegalArgumentException {
-        if (n < 0 || n >= slots.size()) throw new IllegalArgumentException();
-        return slots.get(n).getPlayer();
-    }
-
-    /**
-     * Sets the player on the nth tile.
-     *
-     * @param player the player to add to the nth tile.
-     * @param n      index of the element to return.
-     * @throws IllegalArgumentException {@inheritDoc}
-     */
-    public void setPlayerOnNthTile(Player player, int n) throws IllegalArgumentException {
-        if (n < 0 || n >= slots.size() || player == null) throw new IllegalArgumentException();
-        slots.get(n).setPlayer(player);
-    }
 }

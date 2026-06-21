@@ -1,9 +1,9 @@
 package it.polimi.gc06.mesos.network.server.matches;
 
 import it.polimi.gc06.mesos.controller.GameController;
-import it.polimi.gc06.mesos.dtos.PlayerJoinedLobbyDTO;
-import it.polimi.gc06.mesos.dtos.snapshots.*;
 import it.polimi.gc06.mesos.controller.commands.ControllerCommand;
+import it.polimi.gc06.mesos.dtos.PlayerJoinedLobbyDTO;
+import it.polimi.gc06.mesos.dtos.snapshots.GameSnapshot;
 import it.polimi.gc06.mesos.gameExceptions.IllegalGameActionException;
 import it.polimi.gc06.mesos.model.DTONotifier;
 import it.polimi.gc06.mesos.model.GameModel;
@@ -67,7 +67,7 @@ public class Match {
      * @throws IOException if there's an error during the creation of the match components
      */
     protected synchronized void start() throws IOException {
-        ArrayList<String> playerNames = new ArrayList<>(players.stream().map(VirtualClient::getNickname).collect(Collectors.toCollection(ArrayList::new)));
+        ArrayList<String> playerNames = players.stream().map(VirtualClient::getNickname).collect(Collectors.toCollection(ArrayList::new));
 
         model = new ModelInstancesManager(notifier).createGame(playerNames);
         model.startGame();
@@ -144,10 +144,9 @@ public class Match {
      * If the match reaches its target capacity with this new player, the game will start automatically!
      *
      * @param c the client trying to join
+     * @return always true
      * @throws IllegalStateException if the match is full or has already started
      * @throws IOException           if there is an issue establishing the initial game model for the clients
-     *
-     * @return always true
      */
     public synchronized boolean addPlayer(VirtualClient c) throws IllegalStateException, IOException {
         if (isFull() || hasStarted) throw new IllegalStateException();
@@ -243,12 +242,12 @@ public class Match {
      *
      * @return the gameSnapshot
      */
-    public GameSnapshot getSnapshot(){
-        if(model == null) return null;
+    public GameSnapshot getSnapshot() {
+        if (model == null) return null;
         return model.getLatestSnapshot();
     }
 
-    public void accept(MatchVisitor mv){
+    public void accept(MatchVisitor mv) {
         mv.visit(this);
     }
 }

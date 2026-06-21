@@ -69,8 +69,8 @@ public class ServerMain {
                     LeaderboardDAO.init();
                     System.out.println("Connected to db correctly.");
                 } catch (SQLException e) {
-                    System.err.println("Connection to db failed.");
-                    e.printStackTrace();
+                    System.err.println("Connection to db failed: " + e.getMessage() + " " + e.getSQLState());
+                    //e.printStackTrace();
                 }
             } else if (dbLocation != null || dbName != null) {
                 System.err.println("Cannot setup db name or location if correct user has not been given.");
@@ -88,8 +88,8 @@ public class ServerMain {
                 new Thread(persistenceService).start();
                 System.out.println("Persistence service started...");
             } catch (IOException e) {
-                System.err.println("Failed to restore matches due to error: ");
-                e.printStackTrace();
+                System.err.println("Failed to restore matches due to error: " + e.getMessage());
+                //e.printStackTrace();
             }
 
 

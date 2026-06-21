@@ -24,7 +24,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 public class PersistenceService implements Runnable {
@@ -127,11 +126,11 @@ public class PersistenceService implements Runnable {
                     GameSnapshot newSnapshot = m.getSnapshot();
                     if (newSnapshot != null) {
                         //If the match has a valid snapshot, save it
-                        System.out.println("Match "+m.getMatchId()+" had an update. Saving...");
+                        System.out.println("Match " + m.getMatchId() + " had an update. Saving...");
                         matchMap.put(m.getMatchId(), newSnapshot);
                     } else if (lastSaveSnapshots.containsKey(m.getMatchId())) {
                         //If it was already present save it
-                        System.out.println("Match "+m.getMatchId()+" had no update. Preserving...");
+                        System.out.println("Match " + m.getMatchId() + " had no update. Preserving...");
                         matchMap.put(m.getMatchId(), lastSaveSnapshots.get(m.getMatchId()));
                     }
                 }

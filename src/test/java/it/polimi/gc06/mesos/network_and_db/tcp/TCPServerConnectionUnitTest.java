@@ -11,12 +11,12 @@ import it.polimi.gc06.mesos.network.socket.BlockingBox;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.*;
+import java.io.EOFException;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.lang.reflect.Field;
-import java.net.Socket;
-import java.time.Duration;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -309,7 +309,8 @@ public class TCPServerConnectionUnitTest {
             try {
                 Thread.sleep(100);
                 mockResponses.put("OK");
-            } catch (InterruptedException e) {}
+            } catch (InterruptedException e) {
+            }
         });
 
         Thread reqThread = new Thread(() -> {
@@ -317,7 +318,8 @@ public class TCPServerConnectionUnitTest {
                 java.lang.reflect.Method method = TCPServerConnection.class.getDeclaredMethod("requestHandlerLoop");
                 method.setAccessible(true);
                 method.invoke(connection);
-            } catch (Exception e) {}
+            } catch (Exception e) {
+            }
         });
 
         reqThread.start();
@@ -337,7 +339,8 @@ public class TCPServerConnectionUnitTest {
             try {
                 Thread.sleep(100);
                 mockResponses.put("KO");
-            } catch (InterruptedException e) {}
+            } catch (InterruptedException e) {
+            }
         });
 
         Thread reqThread = new Thread(() -> {
@@ -345,7 +348,8 @@ public class TCPServerConnectionUnitTest {
                 java.lang.reflect.Method method = TCPServerConnection.class.getDeclaredMethod("requestHandlerLoop");
                 method.setAccessible(true);
                 method.invoke(connection);
-            } catch (Exception e) {}
+            } catch (Exception e) {
+            }
         });
 
         reqThread.start();
@@ -367,7 +371,8 @@ public class TCPServerConnectionUnitTest {
             try {
                 Thread.sleep(100);
                 mockResponses.put("KO");
-            } catch (InterruptedException e) {}
+            } catch (InterruptedException e) {
+            }
         });
 
         Thread reqThread = new Thread(() -> {
@@ -375,7 +380,8 @@ public class TCPServerConnectionUnitTest {
                 java.lang.reflect.Method method = TCPServerConnection.class.getDeclaredMethod("requestHandlerLoop");
                 method.setAccessible(true);
                 method.invoke(connection);
-            } catch (Exception e) {}
+            } catch (Exception e) {
+            }
         });
 
         reqThread.start();
@@ -394,7 +400,8 @@ public class TCPServerConnectionUnitTest {
             try {
                 Thread.sleep(100);
                 mockResponses.put("OK");
-            } catch (InterruptedException e) {}
+            } catch (InterruptedException e) {
+            }
         });
 
         Thread reqThread = new Thread(() -> {
@@ -402,7 +409,8 @@ public class TCPServerConnectionUnitTest {
                 java.lang.reflect.Method method = TCPServerConnection.class.getDeclaredMethod("requestHandlerLoop");
                 method.setAccessible(true);
                 method.invoke(connection);
-            } catch (Exception e) {}
+            } catch (Exception e) {
+            }
         });
 
         reqThread.start();
@@ -422,7 +430,8 @@ public class TCPServerConnectionUnitTest {
             try {
                 Thread.sleep(100);
                 mockResponses.put("KO");
-            } catch (InterruptedException e) {}
+            } catch (InterruptedException e) {
+            }
         });
 
         Thread reqThread = new Thread(() -> {
@@ -430,7 +439,8 @@ public class TCPServerConnectionUnitTest {
                 java.lang.reflect.Method method = TCPServerConnection.class.getDeclaredMethod("requestHandlerLoop");
                 method.setAccessible(true);
                 method.invoke(connection);
-            } catch (Exception e) {}
+            } catch (Exception e) {
+            }
         });
 
         reqThread.start();
@@ -452,7 +462,8 @@ public class TCPServerConnectionUnitTest {
                 mockResponses.put("1/5 players");
                 Thread.sleep(100);
                 mockResponses.put("1=1/5");
-            } catch (InterruptedException e) {}
+            } catch (InterruptedException e) {
+            }
         });
 
         Thread reqThread = new Thread(() -> {
@@ -460,7 +471,8 @@ public class TCPServerConnectionUnitTest {
                 java.lang.reflect.Method method = TCPServerConnection.class.getDeclaredMethod("requestHandlerLoop");
                 method.setAccessible(true);
                 method.invoke(connection);
-            } catch (Exception e) {}
+            } catch (Exception e) {
+            }
         });
 
         reqThread.start();

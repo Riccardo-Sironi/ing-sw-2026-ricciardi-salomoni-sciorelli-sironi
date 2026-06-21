@@ -1,14 +1,14 @@
 package it.polimi.gc06.mesos.dtos;
 
 import it.polimi.gc06.mesos.model.Color;
-import it.polimi.gc06.mesos.model.cards.Card;
-import it.polimi.gc06.mesos.view.smallModel.SmallModel;
 import it.polimi.gc06.mesos.view.smallModel.PlayerView;
+import it.polimi.gc06.mesos.view.smallModel.SmallModel;
 import org.junit.jupiter.api.*;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.*;
 
 class ChooseTotemColorDTOTest {

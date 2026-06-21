@@ -118,7 +118,7 @@ public class LobbyGuiController {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println("Error loading custom font: " + e.getMessage());
         }
     }
 
@@ -429,7 +429,7 @@ public class LobbyGuiController {
             try {
                 GUI.client.getServerConnection().chooseTotemColor(LoginController.getNickname(), mapTotemToColor(totem));
             } catch (Exception ex) {
-                ex.printStackTrace();
+                System.err.println("Error choosing totem color: " + ex.getMessage());
                 totemSelectionBox.setDisable(false);
             }
         });

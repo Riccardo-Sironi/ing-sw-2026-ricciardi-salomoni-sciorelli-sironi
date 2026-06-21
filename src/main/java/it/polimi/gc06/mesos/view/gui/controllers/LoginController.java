@@ -385,9 +385,13 @@ public class LoginController {
         Font font = Font.loadFont(getClass().getResourceAsStream(FONT_PATH), size);
         if (font == null) return;
 
-        if (node instanceof Label) ((Label) node).setFont(font);
-        else if (node instanceof TextField) ((TextField) node).setFont(font);
-        else if (node instanceof Button) ((Button) node).setFont(font);
+        switch (node) {
+            case Label label -> label.setFont(font);
+            case TextField textField -> textField.setFont(font);
+            case Button button -> button.setFont(font);
+            default -> {
+            }
+        }
     }
 
     /**
