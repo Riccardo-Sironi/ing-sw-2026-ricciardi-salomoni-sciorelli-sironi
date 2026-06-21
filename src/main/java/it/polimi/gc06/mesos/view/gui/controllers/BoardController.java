@@ -450,6 +450,29 @@ public class BoardController {
         }
     }
 
+    public void updateTopRowLayout(boolean showBuildings) {
+        topRowBox.setAlignment(Pos.CENTER);
+        topRowBox.setSpacing(showBuildings ? 20 : 0);
+
+        DoubleBinding topWidth = leftZone.widthProperty().multiply(0.80);
+        if (showBuildings) topWidth = topWidth.subtract(20);
+
+        if (showBuildings) {
+            configureScrollPane(topCharactersScroll, topCharactersContainer, topWidth.multiply(0.7));
+            if (topBuildingsScroll != null) {
+                topBuildingsScroll.setVisible(true);
+                topBuildingsScroll.setManaged(true);
+                configureScrollPane(topBuildingsScroll, topBuildingsContainer, topWidth.multiply(0.3));
+            }
+        } else {
+            configureScrollPane(topCharactersScroll, topCharactersContainer, topWidth.multiply(0.7));
+            if (topBuildingsScroll != null) {
+                topBuildingsScroll.setVisible(false);
+                topBuildingsScroll.setManaged(false);
+            }
+        }
+    }
+
     private Image loadImage(String path) {
         try {
             if (!path.startsWith("/")) path = "/" + path;
@@ -764,8 +787,11 @@ public class BoardController {
     }
 
     private void drawTopBuildingsCards() {
+        updateTopRowLayout(!smallModel.getTopBuildings().isEmpty());
+
+        if (topBuildingsContainer == null) return;
+
         topBuildingsContainer.getChildren().clear();
-        if (smallModel == null) return;
 
         for (int i = 0; i < smallModel.getTopBuildings().size(); i++) {
             Card building = smallModel.getTopBuildings().get(i);
@@ -1319,6 +1345,7 @@ public class BoardController {
 
     public void handleTopBuildingsRefill(BuildingsRefillDTO dto, Runnable onEndActions) {
         updateBottomRowLayout(!smallModel.getBottomBuildings().isEmpty());
+        updateTopRowLayout(!smallModel.getTopBuildings().isEmpty());
         AnimationsManager.refillBuildingsRowAnimation(dto.getTop(), dto.getBottom(), topBuildingsContainer, bottomBuildingsContainer, () -> {
             drawTopBuildingsCards();
             drawBottomBuildingCards();
