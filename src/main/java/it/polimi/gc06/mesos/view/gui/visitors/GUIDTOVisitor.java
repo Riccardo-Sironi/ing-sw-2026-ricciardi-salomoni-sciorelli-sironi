@@ -63,8 +63,6 @@ public class GUIDTOVisitor extends DTOVisitor {
     public void visit(PlayerJoinedLobbyDTO dto) {
         System.out.println("New player joined the lobby!");
 
-        dto.edit(GUI.smallModel);
-
         if (lobbyGuiController != null) {
             Platform.runLater(() -> {
                 lobbyGuiController.refreshLobbyUI();

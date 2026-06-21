@@ -10,8 +10,6 @@ import java.util.concurrent.BlockingQueue;
 public interface VirtualClient extends Runnable, ModelListener {
     String getNickname();
 
-    void setController(GameController controller);
-
     void closeConnection();
 
     void setActionQueue(BlockingQueue<ControllerCommand> queue);

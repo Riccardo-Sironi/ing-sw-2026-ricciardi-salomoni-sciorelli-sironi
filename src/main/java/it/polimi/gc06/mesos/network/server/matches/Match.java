@@ -74,7 +74,6 @@ public class Match {
 
         controller = new GameController(model, notifier);
         hasStarted = true;
-        players.forEach(c -> c.setController(controller));
         players.forEach(c -> c.setActionQueue(actionQueue));
 
         matchExecutorThread = new Thread(this::matchLoop, "MatchExecutorThread-" + matchId);

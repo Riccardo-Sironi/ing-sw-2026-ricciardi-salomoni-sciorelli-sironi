@@ -22,7 +22,6 @@ public class RMIClientManager implements VirtualClient {
     private final String nickname;
     private final ServerConnection rmiClient;
     private final MatchManager sharedManager;
-    private GameController controller;
     private final BlockingQueue<SmallModelEditor> noticeQueue;
     private BlockingQueue<ControllerCommand> actionQueue;
     private boolean closed;
@@ -51,17 +50,6 @@ public class RMIClientManager implements VirtualClient {
     @Override
     public String getNickname() {
         return nickname;
-    }
-
-    /**
-     * Binds the server-side GameController to this virtual client context so it can listen
-     * to game state changes matching this client's game.
-     *
-     * @param controller the active GameController managing this player's match
-     */
-    @Override
-    public void setController(GameController controller) {
-        this.controller = controller;
     }
 
     @Override
@@ -153,15 +141,6 @@ public class RMIClientManager implements VirtualClient {
         if (closed) return;
         closed = true;
         if (nickname != null) sharedManager.logout(nickname);
-    }
-
-    /**
-     * Retrieves the specific game controller tracking this RMI player context parameters.
-     *
-     * @return the GameController managing the tracked setup
-     */
-    public GameController getController() {
-        return controller;
     }
 
     /**

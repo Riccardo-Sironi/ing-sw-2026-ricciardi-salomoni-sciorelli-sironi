@@ -39,15 +39,6 @@ class RMIClientManagerTest {
     @DisplayName("Initialization and getters check")
     void testInitAndGetters() {
         assertEquals(testNickname, clientManager.getNickname());
-        assertNull(clientManager.getController());
-    }
-
-    @Test
-    @Order(2)
-    @DisplayName("Set and get controller correctly")
-    void testSetController() {
-        clientManager.setController(controllerMock);
-        assertEquals(controllerMock, clientManager.getController());
     }
 
     @Test

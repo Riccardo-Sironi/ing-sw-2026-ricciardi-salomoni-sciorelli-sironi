@@ -18,11 +18,9 @@ public class TCPClientManager implements VirtualClient{
     private final BlockingQueue<SmallModelEditor> noticeQueue;
     private final String nickname;
     private final ObjectOutputStream out;
-    private GameController controller;
 
     public TCPClientManager(String nickname, ObjectOutputStream out){
         this.nickname = nickname;
-        this.controller = null;
         this.actionQueue = null;
         this.noticeQueue = new LinkedBlockingQueue<>();
         this.out = out;
@@ -48,15 +46,6 @@ public class TCPClientManager implements VirtualClient{
     @Override
     public String getNickname() {
         return nickname;
-    }
-
-    /**
-     * Hooks this client up to the game controller, allowing it to listen about game updates.
-     * @param controller The active game controller.
-     */
-    @Override
-    public void setController(GameController controller) {
-        this.controller = controller;
     }
 
     /**

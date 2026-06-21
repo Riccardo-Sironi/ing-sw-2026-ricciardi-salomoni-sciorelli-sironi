@@ -142,17 +142,6 @@ public class RMIServerInterfaceImpl extends UnicastRemoteObject implements RMISe
     }
 
     /**
-     * Helper method to get the GameController for a specific player.
-     *
-     * @param nickname the player's nickname
-     * @return the game controller, or null if the player is not found
-     */
-    private GameController getController(String nickname) {
-        RMIClientManager manager = clientManagers.get(nickname);
-        return manager != null ? manager.getController() : null;
-    }
-
-    /**
      * Dispatches the command to place the player's totem on a specific slot in the offer track.
      *
      * @param nickname  the player's nickname

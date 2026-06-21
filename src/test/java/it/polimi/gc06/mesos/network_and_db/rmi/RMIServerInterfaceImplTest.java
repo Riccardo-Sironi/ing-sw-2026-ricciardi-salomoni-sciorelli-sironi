@@ -147,7 +147,6 @@ class RMIServerInterfaceImplTest {
         GameController nullController = (GameController) getControllerMethod.invoke(serverImpl, "Unknown");
         assertNull(nullController);
 
-        when(rmiClientManagerMock.getController()).thenReturn(gameControllerMock);
         injectManagerIntoMap(testUser, rmiClientManagerMock);
 
         GameController foundController = (GameController) getControllerMethod.invoke(serverImpl, testUser);
