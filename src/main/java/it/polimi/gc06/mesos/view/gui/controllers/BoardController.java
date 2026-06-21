@@ -229,58 +229,6 @@ public class BoardController {
                             SoundManager.getInstance().raiseVolume(0.05);
                             updateVolumeDisplay();
                         }
-
-                        // TODO : this could be a greate feature but sometimes animations broke because of it, we'll fix later
-
-                        // HIDE OPPONENTS SIDE BAR
-//                        if (e.getCode() == KeyCode.O) {
-//                            if (!mainRoot.getChildren().contains(opponentsSidebar) && leftZone.getChildren().contains(inventoryBox)) {
-//                                mainRoot.getChildren().add(opponentsSidebar);
-//                                leftZone.prefWidthProperty().bind(mainRoot.widthProperty().multiply(0.85));
-//                            } else {
-//                                mainRoot.getChildren().remove(opponentsSidebar);
-//                                leftZone.prefWidthProperty().bind(mainRoot.widthProperty());
-//                            }
-//                        }
-//                        // FOCUS MODE (HIDE INVENTORY AND OPPONENTS)
-//                        if (e.getCode() == KeyCode.F) {
-//                            Pane root = (Pane) mainRoot.getParent();
-//
-//                            if (inventoryOverlay != null && inventoryOverlay.getChildren().contains(inventoryBox)) {
-//                                hideInventoryOverlay(root);
-//                            }
-//
-//                            if (!leftZone.getChildren().contains(inventoryBox) && !mainRoot.getChildren().contains(opponentsSidebar)) {
-//                                leftZone.getChildren().add(inventoryBox);
-//                                mainRoot.getChildren().add(opponentsSidebar);
-//
-//                                // re-bind the board root height to previous dimension
-//                                boardRoot.prefHeightProperty().bind(leftZone.heightProperty().multiply(0.80));
-//                                leftZone.prefWidthProperty().bind(mainRoot.widthProperty().multiply(0.85));
-//                            } else {
-//                                leftZone.getChildren().remove(inventoryBox);
-//                                mainRoot.getChildren().remove(opponentsSidebar);
-//
-//                                // the board takes the full height of left zone
-//                                boardRoot.prefHeightProperty().bind(leftZone.heightProperty());
-//                                // the left zone takes ful width
-//                                leftZone.prefWidthProperty().bind(mainRoot.widthProperty());
-//                            }
-//                        }
-//                        // SHOW INVENTORY WHILE IN FOCUS MODE
-//                        if (e.getCode() == KeyCode.I) {
-//                            if (leftZone.getChildren().contains(inventoryBox)) {
-//                                return;
-//                            }
-//
-//                            Pane root = (Pane) mainRoot.getParent();
-//
-//                            if (inventoryOverlay != null && inventoryOverlay.getChildren().contains(inventoryBox)) {
-//                                hideInventoryOverlay(root);
-//                            } else {
-//                                showInventoryOverlay(root);
-//                            }
-//                        }
                     });
                 });
             }
@@ -740,7 +688,6 @@ public class BoardController {
             playerCardsContainer.getChildren().add(cardView);
         }
 
-        // TODO : add player buildings container
         for (Card building : p.getBuildings()) {
             CardView cardView = new CardView(imageFetcher.fetch(building));
             cardView.fitHeightProperty().bind(inventoryBox.heightProperty().multiply(RESIZE_CARD_FACTOR));

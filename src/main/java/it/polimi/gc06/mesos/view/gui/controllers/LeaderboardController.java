@@ -116,17 +116,6 @@ public class LeaderboardController {
         Platform.runLater(() -> {
             if (GUI.smallModel != null && GUI.smallModel.getLeaderboard() != null && !GUI.smallModel.getLeaderboard().isEmpty()) {
                 setupStaticLeaderboard(GUI.smallModel.getLeaderboard());
-            } else {
-
-                // TODO Attenzione! Servono ancora questi??
-                List<Score> mockScores = new ArrayList<>();
-                mockScores.add(new Score("A", 47, 10));
-                mockScores.add(new Score("B", 25, 8));
-                mockScores.add(new Score("C", 35, 12));
-                mockScores.add(new Score("D", 56, 3));
-                mockScores.add(new Score("E", 70, 2));
-
-                setupStaticLeaderboard(mockScores);
             }
         });
     }
@@ -314,14 +303,14 @@ public class LeaderboardController {
     /**
      * Compiles structurally constrained elements driving dynamic animations visualizing points naturally spanning intervals precisely.
      *
-     * @param score Valid wrapper maintaining user score metrics.
+     * @param score          Valid wrapper maintaining user score metrics.
      * @param stainAssetPath Asset string path.
-     * @param rank Calculated performance index defining visual mapping structs natively.
-     * @param totemHeight Sizing metric limiting graphical components dynamically.
-     * @param stainHeight Graphic dimensional constraint natively mapped.
-     * @param fontScale The numerical index binding textual limits reliably natively.
-     * @param slotWidth The reactive binding managing width formatting accurately natively.
-     * @param maxScore Extracted bounds formatting relative sizing properties safely effectively natively.
+     * @param rank           Calculated performance index defining visual mapping structs natively.
+     * @param totemHeight    Sizing metric limiting graphical components dynamically.
+     * @param stainHeight    Graphic dimensional constraint natively mapped.
+     * @param fontScale      The numerical index binding textual limits reliably natively.
+     * @param slotWidth      The reactive binding managing width formatting accurately natively.
+     * @param maxScore       Extracted bounds formatting relative sizing properties safely effectively natively.
      * @return Assembled structured layout encapsulation wrapping actions correctly natively.
      */
     private VBox createPlayerSlot(Score score, String stainAssetPath, int rank, double totemHeight, double stainHeight, double fontScale, DoubleBinding slotWidth, int maxScore) {
@@ -406,11 +395,11 @@ public class LeaderboardController {
     /**
      * Resolves layout bindings encapsulating standard totems underneath dynamically mapped visual adjustments matching player choices safely.
      *
-     * @param colorHex Extracted graphical model parameter mapping.
-     * @param stainPath Resolved asset mapping accurately formatting properties naturally natively.
+     * @param colorHex    Extracted graphical model parameter mapping.
+     * @param stainPath   Resolved asset mapping accurately formatting properties naturally natively.
      * @param totemHeight Formatting visual bindings effectively correctly mapping variables.
      * @param stainHeight Formatting visual constraints maintaining internal configurations mapping metrics accurately natively.
-     * @param slotWidth The graphical component formatting mapping struct matching values accurately naturally natively.
+     * @param slotWidth   The graphical component formatting mapping struct matching values accurately naturally natively.
      * @return Fully formatted stack pane containing valid visuals perfectly mapped properly securely.
      */
     private StackPane createTotemWithStain(String colorHex, String stainPath, double totemHeight, double stainHeight, DoubleBinding slotWidth) {
@@ -446,7 +435,7 @@ public class LeaderboardController {
      * Discovers visually accurate struct formats encapsulating the local model tracking metrics properly securely naturally natively.
      *
      * @param nickname The descriptor mapping lookup variables.
-     * @param rank Used safely rendering fallback structures properly.
+     * @param rank     Used safely rendering fallback structures properly.
      * @return Generated valid String representation successfully.
      */
     private String getColorHexFromModel(String nickname, int rank) {
@@ -471,7 +460,7 @@ public class LeaderboardController {
     /**
      * Resolves structural paths driving accurate model graphics appropriately correctly formatting bounds securely properly.
      *
-     * @param iv Local formatting container bound correctly properly natively.
+     * @param iv   Local formatting container bound correctly properly natively.
      * @param path The string defining asset maps effectively mapping models safely properly visually natively.
      */
     private void loadImage(ImageView iv, String path) {

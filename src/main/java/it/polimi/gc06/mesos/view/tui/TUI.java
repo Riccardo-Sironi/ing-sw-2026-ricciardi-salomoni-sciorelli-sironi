@@ -778,7 +778,7 @@ public class TUI implements View, ModelListener {
         }
 
         if (smallModel.isActive()) {
-            terminal.writer().println(Style.GREEN + "It's your Turn!" + Style.RESET);
+            terminal.writer().println(Style.GREEN + smallModel.getPhase() + "> It's your Turn!" + Style.RESET);
         }
 
         if (lineReader.isReading()) {
