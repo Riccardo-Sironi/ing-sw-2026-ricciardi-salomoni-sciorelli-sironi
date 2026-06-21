@@ -618,11 +618,11 @@ public class TUI implements View, ModelListener {
                 suffix = " 🥇 WINNER!";
             } else if (i == 1) {
                 prefix = " 2nd Place ";
-                color = Style.BLUE;
+                color = Style.SILVER;
                 suffix = " 🥈";
             } else if (i == 2) {
                 prefix = " 3rd Place ";
-                color = Style.RED;
+                color = Style.ORANGE;
                 suffix = " 🥉";
             } else {
                 prefix = String.format(" %dth Place ", i + 1);

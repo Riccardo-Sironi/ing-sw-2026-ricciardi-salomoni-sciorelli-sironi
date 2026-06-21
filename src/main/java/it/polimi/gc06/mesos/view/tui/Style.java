@@ -14,12 +14,17 @@ public class Style {
     // ANSI escape code for basic green text.
     public static final String GREEN = "\u001B[32m";
     // ANSI escape code for basic yellow text.
-    public static final String YELLOW = "\u001B[33m";
+    public static final String YELLOW = "\u001B[38;5;226m";
     // ANSI escape code for basic blue text.
     public static final String BLUE = "\u001B[34m";
     // ANSI escape code for basic purple text.
     public static final String PURPLE = "\u001B[35m";
-
+    // ANSI escape code for basic cyan text.
+    public static final String CYAN = "\u001B[36m";
+    // ANSI escape code for basic orange text.
+    public static final String ORANGE = "\u001B[38;5;166m";
+    // ANSI escape code for basic silver text.
+    public static final String SILVER = "\u001B[38;5;250m";
 
     /**
      * Generates an ANSI escape code for a specific RGB true-color.
