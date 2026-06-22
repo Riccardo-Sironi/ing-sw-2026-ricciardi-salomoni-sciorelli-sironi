@@ -62,7 +62,7 @@ cd target/
 java -jar mesos-1.0-server.jar
 ```
 
-> [!TIP] Remote Multiplayer Setup
+> [!TIP]
 > To host a multiplayer session across different external networks (WAN), we recommend utilizing Virtual LAN solutions
 > such as [ZeroTier](https://www.zerotier.com/), [Hamachi](https://vpn.net/),
 > or [Wireguard](https://www.wireguard.com/).
