@@ -197,7 +197,7 @@ public class TuiCardRendererVisitor extends CardVisitor implements TuiRenderer<C
      */
     private String getInventorSymbol(InventionIcon icon) {
         return switch (icon) {
-            case BOAT -> "\u26F5\uFE0E";
+            case BOAT -> "\uD83D\uDEF6";
             case ARROWHEAD -> "\uD83C\uDFF9";
             case HOOK -> "\uD83E\uDE9D";
             case NECKLACE -> "\uD83D\uDCFF";

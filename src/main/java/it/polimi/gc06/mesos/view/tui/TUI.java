@@ -403,9 +403,7 @@ public class TUI implements View, ModelListener {
                 buildingCompleter
         );
     }
-
-    // TODO Finire descrizione di tutte le carte, e anche di altro
-
+    
     /**
      *
      * Displays an interactive help screen containing character cards effects and explanations.
