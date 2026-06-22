@@ -333,7 +333,6 @@ public class LobbyTui implements LobbyView {
                         String color = tokens[1].trim().toUpperCase();
                         try {
                             client.getServerConnection().chooseTotemColor(smallModel.getPlayer().getNickname(), mapTotemToColor(color));
-                            break;
                         } catch (Exception e) {
                             terminal.writer().println(Style.RED + "The color you chose is already in use or is not valid: " + e.getMessage() + Style.RESET);
                         }
