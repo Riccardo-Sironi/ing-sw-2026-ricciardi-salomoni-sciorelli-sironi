@@ -497,22 +497,22 @@ public class BoardController {
     }
 
     public void drawOpponentsStats() {
-        if (!isEndGame) {
-            for (PlayerView opponent : smallModel.getOpponents()) {
-                OpponentBox opp = opponentsBoxes.get(opponent.getNickname());
+        for (PlayerView opponent : smallModel.getOpponents()) {
+            OpponentBox opp = opponentsBoxes.get(opponent.getNickname());
 
-                // we need this to reset the glow effect that tells who is the active player
-                opp.getNicknameText().setEffect(null);
+            // we need this to reset the glow effect that tells who is the active player
+            opp.getNicknameText().setEffect(null);
 
+            if (!isEndGame) {
                 opp.getPrestigeTokensText().setText(String.valueOf(opponent.getNumPrestige()));
-                opp.getFoodTokensText().setText(String.valueOf(opponent.getNumFood()));
-
-                opp.getShamanStarsText().setText(String.valueOf(opponent.getNumShamanStar()));
-                opp.getGatherersText().setText(String.valueOf(opponent.getNumGatherer()));
-                opp.getHuntersText().setText(String.valueOf(opponent.getNumHunter()));
-                opp.getArtistsText().setText(String.valueOf(opponent.getNumArtist()));
-                opp.getBuildersDiscountText().setText(String.valueOf(opponent.getBuildersDiscount()));
             }
+
+            opp.getFoodTokensText().setText(String.valueOf(opponent.getNumFood()));
+            opp.getShamanStarsText().setText(String.valueOf(opponent.getNumShamanStar()));
+            opp.getGatherersText().setText(String.valueOf(opponent.getNumGatherer()));
+            opp.getHuntersText().setText(String.valueOf(opponent.getNumHunter()));
+            opp.getArtistsText().setText(String.valueOf(opponent.getNumArtist()));
+            opp.getBuildersDiscountText().setText(String.valueOf(opponent.getBuildersDiscount()));
         }
     }
 
@@ -678,9 +678,9 @@ public class BoardController {
     }
 
     private void drawPlayerStats() {
-        if (!isEndGame) {
-            PlayerView p = smallModel.getPlayer();
+        PlayerView p = smallModel.getPlayer();
 
+        if (!isEndGame) {
             prestigeTokensText.setText(String.valueOf(p.getNumPrestige()));
 
             if (p.getNumPrestige() < 0) {
@@ -690,14 +690,14 @@ public class BoardController {
                     prestigeTokensImage.setImage(imageFetcher.getPositivePrestigeTokenImage());
                 }
             }
-
-            foodTokensText.setText(String.valueOf(p.getNumFood()));
-            shamanStarsText.setText(String.valueOf(p.getNumShamanStar()));
-            gathererQuantityText.setText(String.valueOf(p.getNumGatherer()));
-            hunterQuantityText.setText(String.valueOf(p.getNumHunter()));
-            artistQuantityText.setText(String.valueOf(p.getNumArtist()));
-            buildersDiscountText.setText(String.valueOf(p.getBuildersDiscount()));
         }
+        
+        foodTokensText.setText(String.valueOf(p.getNumFood()));
+        shamanStarsText.setText(String.valueOf(p.getNumShamanStar()));
+        gathererQuantityText.setText(String.valueOf(p.getNumGatherer()));
+        hunterQuantityText.setText(String.valueOf(p.getNumHunter()));
+        artistQuantityText.setText(String.valueOf(p.getNumArtist()));
+        buildersDiscountText.setText(String.valueOf(p.getBuildersDiscount()));
     }
 
     private void drawPlayerCards() {
