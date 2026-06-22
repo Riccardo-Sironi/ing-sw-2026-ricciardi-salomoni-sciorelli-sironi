@@ -1,6 +1,7 @@
 package it.polimi.gc06.mesos.controller;
 
 import it.polimi.gc06.mesos.dtos.ChooseTotemColorDTO;
+import it.polimi.gc06.mesos.dtos.ErrorDTO;
 import it.polimi.gc06.mesos.dtos.MesosStartedDTO;
 import it.polimi.gc06.mesos.gameExceptions.IllegalGameActionException;
 import it.polimi.gc06.mesos.gameExceptions.IllegalPhaseActionException;
@@ -176,12 +177,13 @@ public class GameController {
      * @param color          the color chosen by the player for their totem.
      */
 
-    public void handleChooseTotemColor(String playerNickname, Color color) throws IllegalGameActionException {
+    public void handleChooseTotemColor(String playerNickname, Color color) {
 
         boolean alreadyChosen = model.getPlayers().stream().anyMatch(player -> player.getPlayerColor() == color);
 
         if (alreadyChosen) {
-            throw new IllegalGameActionException("Color " + color + " has already been chosen by another player.");
+            notifier.notifyChangeToPlayer(playerNickname, new ErrorDTO("Color " + color + " has already been chosen by another player."));
+            return;
         }
 
         model.getPlayers().stream()

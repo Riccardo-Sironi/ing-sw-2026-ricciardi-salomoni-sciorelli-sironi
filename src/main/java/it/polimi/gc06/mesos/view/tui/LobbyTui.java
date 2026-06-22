@@ -314,7 +314,7 @@ public class LobbyTui implements LobbyView {
                     .map(c -> Style.getAnsiFromColorName(c.toString()) + c + Style.RESET)
                     .collect(Collectors.joining(", "));
 
-            while (smallModel.getPlayer().getColor() == null) {
+            do {
                 terminal.writer().println("Please choose your totem color using the command: /set_color <color>");
                 String input = lineReader.readLine("mesos> ");
                 if (input == null || input.trim().isEmpty()) {
@@ -333,12 +333,29 @@ public class LobbyTui implements LobbyView {
                         String color = tokens[1].trim().toUpperCase();
                         try {
                             client.getServerConnection().chooseTotemColor(smallModel.getPlayer().getNickname(), mapTotemToColor(color));
+                            int timeout = 0;
+
+                            while (smallModel.getPlayer().getColor() == null && smallModel.getSystemMessage().isEmpty() && timeout < 20) {
+                                Thread.sleep(100);
+                                timeout++;
+                            }
+                            if (!smallModel.getSystemMessage().isEmpty()) {
+                                terminal.writer().println(Style.RED + "Server Error: " + smallModel.getSystemMessage() + Style.RESET);
+                                smallModel.setSystemMessage("");
+
+                            } else if (smallModel.getPlayer().getColor() != null) {
+                                break;
+                            } else {
+                                terminal.writer().println(Style.RED + "Server timeout" + Style.RESET);
+
+                            }
                         } catch (Exception e) {
                             terminal.writer().println(Style.RED + "The color you chose is already in use or is not valid: " + e.getMessage() + Style.RESET);
+
                         }
                     }
                 }
-            }
+            } while (smallModel.getPlayer().getColor() == null);
 
             int count = 0;
             while (smallModel.getOpponents().stream().anyMatch(o -> o.getColor() == null)) {
