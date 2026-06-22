@@ -1177,8 +1177,8 @@ public class BoardController {
             String[][] commandsList = {
                     {"H", "Toggle Help Menu"},
                     {"M", "Mute / Unmute Music"},
-                    {"-", "Raise Volume"},
-                    {"+", "Lower Volume"},
+                    {"+", "Raise Volume"},
+                    {"-", "Lower Volume"},
                     {"1", "Set 'Colored' Theme"},
                     {"2", "Set 'Darker' Theme"}
             };
