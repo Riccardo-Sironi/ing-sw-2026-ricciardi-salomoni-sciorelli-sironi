@@ -363,6 +363,8 @@ public class LobbyGuiController {
      * Determines remaining unpicked character variables presenting choice menus directly mapping valid model items natively.
      */
     public void drawTotemSelectionBox() {
+
+        totemSelectionBox.setDisable(false);
         totemSelectionBox.getChildren().clear();
 
         if (GUI.smallModel == null || GUI.smallModel.getOpponents() == null) return;
@@ -408,30 +410,32 @@ public class LobbyGuiController {
 
         HBox bowlBox = new HBox();
         bowlBox.setAlignment(Pos.CENTER);
-
         bowlBox.paddingProperty().bind(Bindings.createObjectBinding(() ->
                 new Insets(lobbyRoot.getHeight() * 0.005), lobbyRoot.heightProperty()
         ));
 
         bowlBox.setCursor(Cursor.HAND);
-
         ImageView bowlImage = new ImageView(bowlImg);
         bowlImage.fitHeightProperty().bind(scaleBinding.multiply(BASE_H * 0.10));
         bowlImage.setPreserveRatio(true);
         bowlImage.setEffect(new DropShadow(5, Color.BLACK));
-
         bowlBox.getChildren().add(bowlImage);
+
         setupBowlHoverAnimations(bowlBox);
 
         bowlBox.setOnMouseClicked(e -> {
             SoundManager.getInstance().playClick();
             totemSelectionBox.setDisable(true);
-            try {
-                GUI.client.getServerConnection().chooseTotemColor(LoginController.getNickname(), mapTotemToColor(totem));
-            } catch (Exception ex) {
-                System.err.println("Error choosing totem color: " + ex.getMessage());
-                totemSelectionBox.setDisable(false);
-            }
+
+            java.util.concurrent.CompletableFuture.runAsync(() -> {
+                try {
+                    GUI.client.getServerConnection().chooseTotemColor(LoginController.getNickname(), mapTotemToColor(totem));
+                } catch (Exception ex) {
+                    System.err.println("Error choosing totem color: " + ex.getMessage());
+                } finally {
+                    Platform.runLater(() -> totemSelectionBox.setDisable(false));
+                }
+            });
         });
 
         return bowlBox;
