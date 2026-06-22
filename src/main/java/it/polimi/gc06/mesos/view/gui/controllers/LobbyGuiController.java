@@ -284,12 +284,12 @@ public class LobbyGuiController {
     /**
      * Generates a structural participant entity component stack integrating totems alongside user status displays.
      *
-     * @param index          Slot placement.
-     * @param maxPlayers     Evaluated ceiling limit.
+     * @param index Slot placement.
+     * @param maxPlayers Evaluated ceiling limit.
      * @param currentPlayers Live player objects mapped visually.
-     * @param nameSize       Configured pixel width scalar referencing dynamically typed elements natively.
-     * @param readySize      Configured pixel width scalar tracking text properties.
-     * @param slotWidth      The binding width object constraining elements dynamically.
+     * @param nameSize Configured pixel width scalar referencing dynamically typed elements natively.
+     * @param readySize Configured pixel width scalar tracking text properties.
+     * @param slotWidth The binding width object constraining elements dynamically.
      * @return Output container mapping user slots perfectly.
      */
     private VBox buildPlayerSlot(int index, int maxPlayers, List<PlayerView> currentPlayers,
@@ -440,10 +440,10 @@ public class LobbyGuiController {
     /**
      * Constructs and initializes formatted UI labels applying drop-shadows structurally matching custom application bounds natively.
      *
-     * @param text         The inner literal wrapper value.
+     * @param text The inner literal wrapper value.
      * @param baseFontSize The numerical scale metric representing height.
-     * @param textColor    Color struct tracking internal hues.
-     * @param addShadow    Boolean trigger formatting standard visuals natively.
+     * @param textColor Color struct tracking internal hues.
+     * @param addShadow Boolean trigger formatting standard visuals natively.
      * @return Finished Label Object.
      */
     private Label createCustomLabel(String text, double baseFontSize, Color textColor, boolean addShadow) {
@@ -478,7 +478,7 @@ public class LobbyGuiController {
     /**
      * Composes an interactive layered map coloring structural overlays matching underlying totem struct parameters graphically.
      *
-     * @param stainIndex  Numerical sequence identifying the base structure.
+     * @param stainIndex Numerical sequence identifying the base structure.
      * @param chosenTotem The selected player totem mapping overlay hues.
      * @return Generated ImageView encapsulating lighting adjustments.
      */
@@ -516,7 +516,7 @@ public class LobbyGuiController {
      * Evaluates valid pathways structurally injecting images inside matching containers natively.
      *
      * @param imageView Layout box.
-     * @param path      Source descriptor matching internal paths natively.
+     * @param path Source descriptor matching internal paths natively.
      */
     private void loadImage(ImageView imageView, String path) {
         if (imageView == null) return;
@@ -527,7 +527,7 @@ public class LobbyGuiController {
     /**
      * Executes fading sequences injecting components natively mapping cascade behaviors matching internal layouts dynamically natively.
      *
-     * @param slot        Valid component container dynamically typed.
+     * @param slot Valid component container dynamically typed.
      * @param delayMillis Measured sequential delay pushing updates matching the structural index constraints naturally.
      */
     private void animateSlotEntrance(VBox slot, int delayMillis) {

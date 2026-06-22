@@ -53,6 +53,8 @@ public class LeaderboardController {
     private static final String IMG_STELE = "/imgs/background/lobby_background.png";
     private static final String IMG_FIRE = "/imgs/effect/flames.gif";
     private static final String IMG_SMOKE = "/imgs/effect/smoke.gif";
+    private static final String IMG_FOOD_TOKEN = "/imgs/tokens/food_token.png";
+    private static final String IMG_PRESTIGE_TOKEN = "/imgs/tokens/prestige_token.png";
 
     private static final String[] TOTEM_ASSETS = {
             "/imgs/totems/engraved_totem_1.png",
@@ -82,18 +84,19 @@ public class LeaderboardController {
     private static final double FIRE_LEFT_ANCHOR = 45.0;
 
     private static final double DISTANCE_FROM_BOTTOM = 80.0;
-    private static final double MAX_BAR_HEIGHT = 250.0;
+    private static final double MAX_BAR_HEIGHT = 240.0;
 
     private static final double FONT_SIZE_TITLE = 54.0;
     private static final double FONT_SIZE_NAME = 24.0;
     private static final double FONT_SIZE_SCORE = 36.0;
 
-    private static final double POINTS_PER_SECOND = 10.0;
+    private static final double POINTS_PER_SECOND = 8.0;
 
     private final Random random = new Random();
 
     /**
-     * Called entirely on scene start triggering data-driven structural bindings properly mapping constraints.
+     * Initializes the controller, setting up layout bindings, fonts, visual effects,
+     * and fetching the leaderboard data if available.
      */
     @FXML
     public void initialize() {
@@ -121,7 +124,7 @@ public class LeaderboardController {
     }
 
     /**
-     * Instantiates caching wrappers mitigating layout delays natively rendering text effectively across constraints dynamically.
+     * Loads and caches custom font families from the resources folder.
      */
     private void initFontCache() {
         try (InputStream fontStream = getClass().getResourceAsStream(FONT_PATH)) {
@@ -148,17 +151,17 @@ public class LeaderboardController {
     }
 
     /**
-     * Resolves structural scaled metrics into direct font formatting mappings securely.
+     * Creates a bold Font instance using the cached main font family.
      *
-     * @param size Font descriptor size explicitly applied natively.
-     * @return Fully loaded JavaFX mapping explicitly typed correctly.
+     * @param size The required font size.
+     * @return The configured Font object.
      */
     private Font loadFont(double size) {
         return Font.font(cachedFontFamily, FontWeight.BOLD, size);
     }
 
     /**
-     * Composes fixed positioning bounding boxes encapsulating title strings correctly applying dropshadow profiles accurately.
+     * Sets up the main leaderboard title label with its visual effects and bindings.
      */
     private void setupTitle() {
         Label titleLabel = new Label("LEADERBOARD");
@@ -177,7 +180,7 @@ public class LeaderboardController {
     }
 
     /**
-     * Formats external ambient graphic layers injecting visual blending rules dynamically mapping offsets.
+     * Configures background visual effects like smoke and fire animations.
      */
     private void setupAtmosphere() {
         loadImage(smokeGifView, IMG_SMOKE);
@@ -218,9 +221,9 @@ public class LeaderboardController {
     }
 
     /**
-     * Rebuilds visually driven layout components populating final stats tracking metrics consistently matching player names securely.
+     * Sorts the provided scores and creates the graphical elements for each player.
      *
-     * @param finalScores Fully collected array holding the resolved player performances sequentially.
+     * @param finalScores The list of player scores to display.
      */
     public void setupStaticLeaderboard(List<Score> finalScores) {
         totemsContainer.getChildren().clear();
@@ -246,10 +249,18 @@ public class LeaderboardController {
             Collections.shuffle(displayScores, random);
         }
 
+        displayScores.sort((s1, s2) -> {
+            int scoreCompare = Integer.compare(s2.getPrestigeScore(), s1.getPrestigeScore());
+            if (scoreCompare != 0) {
+                return scoreCompare;
+            }
+            return Integer.compare(s2.getFoodScore(), s1.getFoodScore());
+        });
+
         int maxPlayers = displayScores.size();
 
         int maxScore = displayScores.stream()
-                .mapToInt(s -> Math.max(0, s.getPrestigeScore() + s.getFoodScore()))
+                .mapToInt(s -> Math.max(0, s.getPrestigeScore()))
                 .max()
                 .orElse(1);
 
@@ -301,17 +312,17 @@ public class LeaderboardController {
     }
 
     /**
-     * Compiles structurally constrained elements driving dynamic animations visualizing points naturally spanning intervals precisely.
+     * Builds the visual representation of a single player's score, including points, bars, and totems.
      *
-     * @param score          Valid wrapper maintaining user score metrics.
-     * @param stainAssetPath Asset string path.
-     * @param rank           Calculated performance index defining visual mapping structs natively.
-     * @param totemHeight    Sizing metric limiting graphical components dynamically.
-     * @param stainHeight    Graphic dimensional constraint natively mapped.
-     * @param fontScale      The numerical index binding textual limits reliably natively.
-     * @param slotWidth      The reactive binding managing width formatting accurately natively.
-     * @param maxScore       Extracted bounds formatting relative sizing properties safely effectively natively.
-     * @return Assembled structured layout encapsulation wrapping actions correctly natively.
+     * @param score The player's score data.
+     * @param stainAssetPath The path to the background stain image.
+     * @param rank The player's rank in the leaderboard.
+     * @param totemHeight The base height of the totem image.
+     * @param stainHeight The base height of the stain image.
+     * @param fontScale The scaling factor for fonts.
+     * @param slotWidth The calculated width for this player's column.
+     * @param maxScore The highest score, used to scale the height of the bar.
+     * @return A VBox containing the full visual column for the player.
      */
     private VBox createPlayerSlot(Score score, String stainAssetPath, int rank, double totemHeight, double stainHeight, double fontScale, DoubleBinding slotWidth, int maxScore) {
         VBox playerSlot = new VBox();
@@ -323,12 +334,66 @@ public class LeaderboardController {
 
         String targetColorHex = getColorHexFromModel(score.getNickname(), rank);
 
+        DoubleBinding halfWidthPrestige = scaleBinding.multiply(45);
+        DoubleBinding halfWidthFood = scaleBinding.multiply(30);
+
+        HBox prestigeBox = new HBox();
+        prestigeBox.setAlignment(Pos.CENTER);
+        prestigeBox.setOpacity(0);
+
+        ImageView prestigeIcon = new ImageView(getImage(IMG_PRESTIGE_TOKEN));
+        prestigeIcon.setPreserveRatio(true);
+        prestigeIcon.fitHeightProperty().bind(scaleBinding.multiply(28));
+
+        StackPane prestigeIconContainer = new StackPane(prestigeIcon);
+        prestigeIconContainer.setAlignment(Pos.CENTER_RIGHT);
+        prestigeIconContainer.prefWidthProperty().bind(halfWidthPrestige);
+        prestigeIconContainer.paddingProperty().bind(Bindings.createObjectBinding(() ->
+                new Insets(0, 2 * scaleBinding.get(), 0, 0), scaleBinding));
+
         Label scoreValueLabel = new Label("0");
         scoreValueLabel.fontProperty().bind(Bindings.createObjectBinding(() ->
                 loadFont(FONT_SIZE_SCORE * fontScale * scaleBinding.get()), scaleBinding));
         scoreValueLabel.setTextFill(Color.WHITE);
         scoreValueLabel.setEffect(new DropShadow(5, Color.BLACK));
-        scoreValueLabel.setOpacity(0);
+        scoreValueLabel.setAlignment(Pos.CENTER_LEFT);
+
+        StackPane prestigeTextContainer = new StackPane(scoreValueLabel);
+        prestigeTextContainer.setAlignment(Pos.CENTER_LEFT);
+        prestigeTextContainer.prefWidthProperty().bind(halfWidthPrestige);
+        prestigeTextContainer.paddingProperty().bind(Bindings.createObjectBinding(() ->
+                new Insets(0, 0, 0, 2 * scaleBinding.get()), scaleBinding));
+
+        prestigeBox.getChildren().addAll(prestigeIconContainer, prestigeTextContainer);
+
+        HBox foodBox = new HBox();
+        foodBox.setAlignment(Pos.CENTER);
+        foodBox.setOpacity(0);
+
+        ImageView foodIcon = new ImageView(getImage(IMG_FOOD_TOKEN));
+        foodIcon.setPreserveRatio(true);
+        foodIcon.fitHeightProperty().bind(scaleBinding.multiply(18));
+
+        StackPane foodIconContainer = new StackPane(foodIcon);
+        foodIconContainer.setAlignment(Pos.CENTER_RIGHT);
+        foodIconContainer.prefWidthProperty().bind(halfWidthFood);
+        foodIconContainer.paddingProperty().bind(Bindings.createObjectBinding(() ->
+                new Insets(0, 2 * scaleBinding.get(), 0, 0), scaleBinding));
+
+        Label foodLabel = new Label(String.valueOf(score.getFoodScore()));
+        foodLabel.fontProperty().bind(Bindings.createObjectBinding(() ->
+                loadFont(FONT_SIZE_SCORE * 0.45 * fontScale * scaleBinding.get()), scaleBinding));
+        foodLabel.setTextFill(Color.WHITE);
+        foodLabel.setEffect(new DropShadow(3, Color.BLACK));
+        foodLabel.setAlignment(Pos.CENTER_LEFT);
+
+        StackPane foodTextContainer = new StackPane(foodLabel);
+        foodTextContainer.setAlignment(Pos.CENTER_LEFT);
+        foodTextContainer.prefWidthProperty().bind(halfWidthFood);
+        foodTextContainer.paddingProperty().bind(Bindings.createObjectBinding(() ->
+                new Insets(0, 0, 0, 2 * scaleBinding.get()), scaleBinding));
+
+        foodBox.getChildren().addAll(foodIconContainer, foodTextContainer);
 
         Region scoreBar = new Region();
         scoreBar.setStyle("-fx-background-color: " + targetColorHex + "; -fx-border-color: white; -fx-border-width: 2; -fx-background-radius: 5; -fx-border-radius: 5;");
@@ -347,9 +412,9 @@ public class LeaderboardController {
         nameLabel.setTextFill(Color.WHITE);
         nameLabel.setEffect(new DropShadow(5, Color.BLACK));
 
-        playerSlot.getChildren().addAll(scoreValueLabel, scoreBar, totemStack, nameLabel);
+        playerSlot.getChildren().addAll(prestigeBox, foodBox, scoreBar, totemStack, nameLabel);
 
-        int finalScorePoints = Math.max(0, score.getPrestigeScore() + score.getFoodScore());
+        int finalScorePoints = Math.max(0, score.getPrestigeScore());
         double duration = Math.max(0.1, finalScorePoints / POINTS_PER_SECOND);
 
         Transition climb = new Transition() {
@@ -369,7 +434,7 @@ public class LeaderboardController {
         climb.setOnFinished(e -> {
             scoreValueLabel.setText(String.valueOf(finalScorePoints));
 
-            ScaleTransition st = new ScaleTransition(Duration.millis(300), scoreValueLabel);
+            ScaleTransition st = new ScaleTransition(Duration.millis(300), prestigeBox);
             st.setFromX(1.0);
             st.setFromY(1.0);
             st.setToX(1.3);
@@ -381,9 +446,13 @@ public class LeaderboardController {
 
         PauseTransition initialDelay = new PauseTransition(Duration.seconds(1));
         initialDelay.setOnFinished(e -> {
-            FadeTransition ft = new FadeTransition(Duration.millis(400), scoreValueLabel);
-            ft.setToValue(1.0);
-            ft.play();
+            FadeTransition ftScore = new FadeTransition(Duration.millis(400), prestigeBox);
+            ftScore.setToValue(1.0);
+            ftScore.play();
+
+            FadeTransition ftFood = new FadeTransition(Duration.millis(400), foodBox);
+            ftFood.setToValue(1.0);
+            ftFood.play();
 
             climb.play();
         });
@@ -393,14 +462,14 @@ public class LeaderboardController {
     }
 
     /**
-     * Resolves layout bindings encapsulating standard totems underneath dynamically mapped visual adjustments matching player choices safely.
+     * Creates a StackPane containing a colored background stain and a stone totem.
      *
-     * @param colorHex    Extracted graphical model parameter mapping.
-     * @param stainPath   Resolved asset mapping accurately formatting properties naturally natively.
-     * @param totemHeight Formatting visual bindings effectively correctly mapping variables.
-     * @param stainHeight Formatting visual constraints maintaining internal configurations mapping metrics accurately natively.
-     * @param slotWidth   The graphical component formatting mapping struct matching values accurately naturally natively.
-     * @return Fully formatted stack pane containing valid visuals perfectly mapped properly securely.
+     * @param colorHex The color code for the background stain effect.
+     * @param stainPath The resource path for the stain image.
+     * @param totemHeight The bound height of the totem.
+     * @param stainHeight The bound height of the stain.
+     * @param slotWidth The bound width of the container.
+     * @return The configured StackPane.
      */
     private StackPane createTotemWithStain(String colorHex, String stainPath, double totemHeight, double stainHeight, DoubleBinding slotWidth) {
         StackPane stack = new StackPane();
@@ -432,19 +501,22 @@ public class LeaderboardController {
     }
 
     /**
-     * Discovers visually accurate struct formats encapsulating the local model tracking metrics properly securely naturally natively.
+     * Retrieves the specific color associated with a player from the local model.
+     * If the model or player color is unavailable, it returns a default color based on the rank.
      *
-     * @param nickname The descriptor mapping lookup variables.
-     * @param rank     Used safely rendering fallback structures properly.
-     * @return Generated valid String representation successfully.
+     * @param nickname The player's nickname.
+     * @param rank The player's rank.
+     * @return A hexadecimal color string.
      */
     private String getColorHexFromModel(String nickname, int rank) {
         if (GUI.smallModel != null) {
-            if (nickname.equals(GUI.smallModel.getPlayer().getNickname()) && GUI.smallModel.getPlayer().getColor() != null)
+            if (GUI.smallModel.getPlayer() != null && nickname.equals(GUI.smallModel.getPlayer().getNickname()) && GUI.smallModel.getPlayer().getColor() != null)
                 return Totem.getTotem(GUI.smallModel.getPlayer().getColor()).getTotemColorHex();
-            for (PlayerView opp : GUI.smallModel.getOpponents()) {
-                if (nickname.equals(opp.getNickname()) && opp.getColor() != null)
-                    return Totem.getTotem(opp.getColor()).getTotemColorHex();
+            if (GUI.smallModel.getOpponents() != null) {
+                for (PlayerView opp : GUI.smallModel.getOpponents()) {
+                    if (nickname.equals(opp.getNickname()) && opp.getColor() != null)
+                        return Totem.getTotem(opp.getColor()).getTotemColorHex();
+                }
             }
         }
         return switch (rank) {
@@ -458,10 +530,10 @@ public class LeaderboardController {
     }
 
     /**
-     * Resolves structural paths driving accurate model graphics appropriately correctly formatting bounds securely properly.
+     * Utility method to load an image from a resource path into an ImageView.
      *
-     * @param iv   Local formatting container bound correctly properly natively.
-     * @param path The string defining asset maps effectively mapping models safely properly visually natively.
+     * @param iv The target ImageView.
+     * @param path The resource path of the image.
      */
     private void loadImage(ImageView iv, String path) {
         Image img = getImage(path);
@@ -469,10 +541,10 @@ public class LeaderboardController {
     }
 
     /**
-     * Constructs valid formatting metrics safely checking relative pathways securely effectively cleanly seamlessly natively.
+     * Helper method to load an Image object from a resource path.
      *
-     * @param path Source mapping effectively structurally dynamically seamlessly natively.
-     * @return Safely extracted image object explicitly successfully securely natively.
+     * @param path The resource path.
+     * @return The loaded Image object, or null if not found.
      */
     private Image getImage(String path) {
         URL url = getClass().getResource(path);

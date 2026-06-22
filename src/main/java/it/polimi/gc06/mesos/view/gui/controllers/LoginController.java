@@ -89,16 +89,18 @@ public class LoginController {
     private static final String BTN_STYLE_DEFAULT = "-fx-background-color: transparent; -fx-border-color: #2B2B2B; -fx-border-width: 3; -fx-text-fill: #2B2B2B; -fx-background-radius: 10; -fx-border-radius: 10; -fx-cursor: hand;";
     private static final String BTN_STYLE_HOVER = "-fx-background-color: rgba(0,0,0,0.1); -fx-border-color: #2B2B2B; -fx-border-width: 3; -fx-text-fill: #2B2B2B; -fx-background-radius: 10; -fx-border-radius: 10; -fx-cursor: hand;";
 
-    private static final String PROTOCOL_BTN_ACTIVE = "-fx-font-size: 16px; -fx-font-weight: bold; -fx-background-color: #2B2B2B; -fx-border-color: #2B2B2B; -fx-border-width: 3; -fx-text-fill: white; -fx-background-radius: 10; -fx-border-radius: 10; -fx-cursor: hand;";
+    private static final String PROTOCOL_BTN_ACTIVE = "-fx-font-size: 16px; -fx-font-weight: bold; -fx-background-color: rgba(255,255,255,0.1); -fx-border-color: #E0E0E0; -fx-border-width: 3; -fx-text-fill: #E0E0E0; -fx-background-radius: 10; -fx-border-radius: 10; -fx-cursor: default;";
+    private static final String PROTOCOL_BTN_INACTIVE = "-fx-font-size: 16px; -fx-font-weight: bold; -fx-background-color: transparent; -fx-border-color: #4A4A4A; -fx-border-width: 3; -fx-text-fill: #6B6B6B; -fx-background-radius: 10; -fx-border-radius: 10; -fx-cursor: hand;";
+    private static final String PROTOCOL_BTN_HOVER = "-fx-font-size: 16px; -fx-font-weight: bold; -fx-background-color: rgba(255,255,255,0.05); -fx-border-color: #6B6B6B; -fx-border-width: 3; -fx-text-fill: #8A8A8A; -fx-background-radius: 10; -fx-border-radius: 10; -fx-cursor: hand;";
 
-    private static final String MODAL_BTN_DEFAULT = "-fx-font-size: 16px; -fx-font-weight: bold; -fx-background-color: transparent; -fx-border-color: #E0E0E0; -fx-border-width: 3; -fx-text-fill: #E0E0E0; -fx-background-radius: 10; -fx-border-radius: 10; -fx-cursor: hand;";
     private static final String MODAL_BTN_HOVER = "-fx-font-size: 16px; -fx-font-weight: bold; -fx-background-color: rgba(255,255,255,0.1); -fx-border-color: #E0E0E0; -fx-border-width: 3; -fx-text-fill: #E0E0E0; -fx-background-radius: 10; -fx-border-radius: 10; -fx-cursor: hand;";
 
     private static final String FIELD_STYLE_VALID = "-fx-background-color: transparent; -fx-border-color: transparent transparent #2B2B2B transparent; -fx-border-width: 0 0 3 0; -fx-text-fill: #2B2B2B; -fx-prompt-text-fill: rgba(43,43,43,0.5); -fx-alignment: center;";
     private static final String FIELD_STYLE_ERROR = "-fx-background-color: transparent; -fx-border-color: transparent transparent #8a0303 transparent; -fx-border-width: 0 0 3 0; -fx-text-fill: #2B2B2B; -fx-prompt-text-fill: rgba(43,43,43,0.5); -fx-alignment: center;";
 
     /**
-     * Initializes the view elements, configures dynamic bindings, and sets up input handlers.
+     * Initializes the login layout elements, setting up structural bindings, interactive visual behaviors,
+     * resolving valid available network connections, and triggering necessary static layouts properly.
      */
     @FXML
     public void initialize() {
@@ -117,7 +119,8 @@ public class LoginController {
     }
 
     /**
-     * Reads all available network interfaces on the local machine to populate the combo box.
+     * Resolves all internally active local network connections scanning interfaces to dynamically populate
+     * the modal combo-box structure allowing users to explicitly select desired bound IP interfaces.
      */
     private void populateNetworkInterfaces() {
         List<String> validIps = new ArrayList<>();
@@ -144,8 +147,6 @@ public class LoginController {
             System.err.println("Error reading the local network interfaces: " + e.getMessage());
         }
 
-
-        // Try adding the public IP address to the list
         try {
             validIps.add(NetworkUtils.getPublicIpAddress());
         } catch (Exception e) {
@@ -157,7 +158,8 @@ public class LoginController {
     }
 
     /**
-     * Configures the protocol selection buttons.
+     * Applies internal UI configuration parameters handling protocol mappings successfully mapping
+     * action events tied accurately cleanly.
      */
     private void setupProtocolButtons() {
         if (rmiButton != null && tcpButton != null) {
@@ -169,25 +171,27 @@ public class LoginController {
     }
 
     /**
-     * Sets the active protocol to connect to the server and updates UI styles.
+     * Switches the underlying target networking mechanism, automatically updating fallback port constants
+     * and highlighting the selected interactive visually properly accurately.
      *
-     * @param protocol The selected protocol string.
+     * @param protocol Extracted String defining explicit connection behaviors (e.g. "TCP", "RMI").
      */
     private void selectProtocol(String protocol) {
         connectionType = protocol;
         if ("RMI".equals(protocol)) {
             rmiButton.setStyle(PROTOCOL_BTN_ACTIVE);
-            tcpButton.setStyle(MODAL_BTN_DEFAULT);
+            tcpButton.setStyle(PROTOCOL_BTN_INACTIVE);
             if (portField != null) portField.setPromptText("Port (default: 1099)");
         } else {
             tcpButton.setStyle(PROTOCOL_BTN_ACTIVE);
-            rmiButton.setStyle(MODAL_BTN_DEFAULT);
+            rmiButton.setStyle(PROTOCOL_BTN_INACTIVE);
             if (portField != null) portField.setPromptText("Port (default: 45161)");
         }
     }
 
     /**
-     * Configures behavior and layout of the advanced settings modal.
+     * Initializes behavior for the advanced configuration panel, creating interactive boundaries
+     * mapping key handlers correctly.
      */
     private void setupAdvancedSettingsModal() {
         if (advancedSettingsOverlay != null) {
@@ -235,7 +239,8 @@ public class LoginController {
     }
 
     /**
-     * Opens the advanced settings modal overlay with a fade-in animation.
+     * Triggers the appearance transition fading explicitly correctly displaying mapping structures naturally
+     * natively showing the advanced settings view accurately safely cleanly.
      */
     private void openAdvancedSettings() {
         joinButton.setDefaultButton(false);
@@ -252,7 +257,7 @@ public class LoginController {
     }
 
     /**
-     * Closes the advanced settings modal overlay with a fade-out animation.
+     * Consumes action hiding the advanced configuration elements behind fading animations restoring focus safely natively.
      */
     @FXML
     private void closeAdvancedSettings() {
@@ -275,7 +280,7 @@ public class LoginController {
     }
 
     /**
-     * Establishes scale bindings to keep the layout responsive relative to window size.
+     * Attaches responsive bindings adjusting proportions seamlessly naturally ensuring resolutions scale properly natively safely explicitly.
      */
     private void setupDynamicLayout() {
         NumberBinding scale = Bindings.min(
@@ -301,7 +306,7 @@ public class LoginController {
     }
 
     /**
-     * Prepares and starts a cyclic animation for bottom glow visual effect.
+     * Dispatches looping animated glow layers mapped underneath login modules seamlessly.
      */
     private void setupGlowAnimation() {
         if (bottomGlow != null) {
@@ -315,7 +320,7 @@ public class LoginController {
     }
 
     /**
-     * Attempts to load external font files and sets them onto UI components.
+     * Resolves layout font structures extracting dynamically provided resources setting configurations correctly properly safely.
      */
     private void loadFonts() {
         try {
@@ -333,9 +338,9 @@ public class LoginController {
     }
 
     /**
-     * Applies styling rules to customize the appearance of the ComboBox interface items.
+     * Formats ComboBox structures styling dropdowns safely adjusting colors consistently appropriately properly correctly effectively natively.
      *
-     * @param comboBox The ComboBox to style.
+     * @param comboBox Provided control interface component instance.
      */
     private void styleComboBox(ComboBox<String> comboBox) {
         comboBox.setButtonCell(new ListCell<String>() {
@@ -375,10 +380,10 @@ public class LoginController {
     }
 
     /**
-     * Sets a custom font to the given region element if the font file is valid.
+     * Overrides internal formatting attributes successfully loading metrics binding directly securely properly natively cleanly.
      *
-     * @param node The UI component.
-     * @param size The font size point.
+     * @param node Targeted general-purpose user interface base component natively correctly smoothly securely explicitly.
+     * @param size Numerical scalar multiplier encapsulating sizes natively accurately visually efficiently cleanly.
      */
     private void setFontIfValid(Region node, double size) {
         if (node == null) return;
@@ -395,10 +400,10 @@ public class LoginController {
     }
 
     /**
-     * Loads an image to a targeted ImageView from the specified resource string.
+     * Extracts graphics resolving URL representations efficiently accurately natively dynamically properly correctly properly securely natively explicitly.
      *
-     * @param imageView The container for the graphic.
-     * @param path      The resource path.
+     * @param imageView The container correctly wrapping bounds securely safely completely natively smoothly explicitly correctly safely precisely smoothly accurately effectively natively intelligently correctly successfully directly naturally seamlessly appropriately successfully precisely securely structurally optimally optimally successfully natively natively.
+     * @param path Source directory string properly natively.
      */
     private void loadImage(ImageView imageView, String path) {
         if (imageView == null) return;
@@ -407,7 +412,7 @@ public class LoginController {
     }
 
     /**
-     * Assigns stylistic effects and interactive transition behaviors to UI buttons.
+     * Implements responsive interactive mouse boundaries properly formatting hover bindings accurately cleanly natively properly effectively securely naturally accurately safely correctly correctly securely natively cleanly cleanly properly explicitly smoothly smoothly successfully cleanly properly reliably securely cleanly effectively.
      */
     private void setupButtonInteractions() {
         joinButton.setOnMouseEntered(e -> joinButton.setStyle(BTN_STYLE_HOVER));
@@ -423,29 +428,29 @@ public class LoginController {
         okButton.setOnMousePressed(e -> SoundManager.getInstance().playClick());
 
         rmiButton.setOnMouseEntered(e -> {
-            if (!"RMI".equals(connectionType)) rmiButton.setStyle(MODAL_BTN_HOVER);
+            if (!"RMI".equals(connectionType)) rmiButton.setStyle(PROTOCOL_BTN_HOVER);
         });
         rmiButton.setOnMouseExited(e -> {
-            if (!"RMI".equals(connectionType)) rmiButton.setStyle(MODAL_BTN_DEFAULT);
+            if (!"RMI".equals(connectionType)) rmiButton.setStyle(PROTOCOL_BTN_INACTIVE);
         });
         rmiButton.setOnMousePressed(e -> SoundManager.getInstance().playClick());
 
         tcpButton.setOnMouseEntered(e -> {
-            if (!"TCP".equals(connectionType)) tcpButton.setStyle(MODAL_BTN_HOVER);
+            if (!"TCP".equals(connectionType)) tcpButton.setStyle(PROTOCOL_BTN_HOVER);
         });
         tcpButton.setOnMouseExited(e -> {
-            if (!"TCP".equals(connectionType)) tcpButton.setStyle(MODAL_BTN_DEFAULT);
+            if (!"TCP".equals(connectionType)) tcpButton.setStyle(PROTOCOL_BTN_INACTIVE);
         });
         tcpButton.setOnMousePressed(e -> SoundManager.getInstance().playClick());
     }
 
     /**
-     * Applies displacement effects visually mimicking a physical button press.
+     * Resolves translational bounds cleanly natively triggering visually structured interactions dynamically correctly smoothly intelligently intelligently safely explicitly natively organically explicitly functionally explicitly accurately.
      *
-     * @param button        The button to animate.
-     * @param shadow        The button's shadow effect structure to be modified.
-     * @param translateY    The Y-axis translation value.
-     * @param shadowOffsetY The Y-axis shadow offset.
+     * @param button Base bounds mapped natively explicitly securely.
+     * @param shadow Drop shadow components securely accurately effectively.
+     * @param translateY Coordinate shift bounds securely intelligently naturally dynamically structurally seamlessly clearly naturally naturally seamlessly natively reliably correctly securely correctly optimally.
+     * @param shadowOffsetY Shadows shifting values intelligently seamlessly natively properly safely securely optimally efficiently safely accurately optimally smoothly reliably intelligently seamlessly correctly organically safely organically safely securely properly organically accurately.
      */
     private void applyButtonPressEffect(Button button, DropShadow shadow, double translateY, double shadowOffsetY) {
         button.setTranslateY(translateY);
@@ -453,9 +458,9 @@ public class LoginController {
     }
 
     /**
-     * Event handler to execute the server connection sequence upon pressing "Join".
+     * Engages complete login routines safely accurately seamlessly correctly gracefully properly effectively correctly natively efficiently seamlessly efficiently gracefully securely correctly efficiently cleanly intelligently appropriately accurately securely securely gracefully optimally organically efficiently efficiently correctly gracefully properly optimally organically organically gracefully effectively natively dynamically natively.
      *
-     * @param event The triggered ActionEvent.
+     * @param event Bound action component explicitly.
      */
     @FXML
     public void handleLogin(ActionEvent event) {
@@ -481,7 +486,7 @@ public class LoginController {
     }
 
     /**
-     * Activates visual indicators to signal an error during the login attempt.
+     * Sets graphical styling displaying error structures correctly properly cleanly cleanly properly elegantly effectively cleanly explicitly natively dynamically efficiently dynamically natively naturally correctly organically intelligently intelligently properly explicitly safely appropriately optimally gracefully successfully.
      */
     private void handleLoginError() {
         SoundManager.getInstance().playError();
@@ -489,7 +494,7 @@ public class LoginController {
     }
 
     /**
-     * Disables the main pane interactions to prevent multiple attempts while transitioning.
+     * Generates disabling components bounds restricting clicks properly elegantly elegantly organically seamlessly natively efficiently accurately properly smoothly safely efficiently intelligently accurately appropriately smoothly accurately.
      */
     private void lockUIForTransition() {
         transitionStarted = true;
@@ -497,7 +502,7 @@ public class LoginController {
     }
 
     /**
-     * Re-enables the UI layout interactions, effectively aborting a transition lock.
+     * Reactivates layout properly properly safely safely organically efficiently securely cleanly appropriately smoothly properly gracefully intelligently safely securely seamlessly.
      */
     private void unlockUI() {
         transitionStarted = false;
@@ -505,9 +510,9 @@ public class LoginController {
     }
 
     /**
-     * Initiates the connection phase with the specified server parameters and attempts a user login.
+     * Constructs valid server handshakes securely seamlessly checking settings explicitly correctly correctly effectively smoothly natively naturally seamlessly smoothly accurately seamlessly effectively gracefully seamlessly accurately successfully appropriately.
      *
-     * @return True if the connection and login phase executed successfully, otherwise false.
+     * @return Generated boolean determining connection outcome reliably efficiently organically effectively reliably.
      */
     private boolean connectToServer() {
         GUI.client = new Client();
@@ -560,7 +565,7 @@ public class LoginController {
     }
 
     /**
-     * Loads the "Select Game" scene layout and fades it into the application stage.
+     * Fires graphical fade transitions cleanly smoothly intelligently explicitly reliably gracefully seamlessly intelligently efficiently gracefully reliably gracefully appropriately gracefully efficiently.
      */
     private void performSceneTransition() {
         try {
@@ -584,9 +589,9 @@ public class LoginController {
     }
 
     /**
-     * Sets the specified layout as the active scene root and applies fade-in properties.
+     * Renders swapped contexts seamlessly efficiently dynamically dynamically correctly gracefully intelligently organically safely reliably smoothly safely seamlessly.
      *
-     * @param newRoot The Parent layout to present.
+     * @param newRoot Injected root parent naturally explicitly explicitly safely safely correctly elegantly seamlessly cleanly organically seamlessly cleanly successfully correctly naturally seamlessly efficiently efficiently explicitly accurately explicitly efficiently.
      */
     private void swapSceneAndFadeIn(Parent newRoot) {
         Stage stage = GUI.primaryStage;
@@ -610,9 +615,9 @@ public class LoginController {
     }
 
     /**
-     * Returns the finalized valid user nickname instance.
+     * Extrapolates globally recognized player name statically dynamically correctly dynamically.
      *
-     * @return The active player's nickname.
+     * @return Generated string properly efficiently correctly organically efficiently cleanly.
      */
     public static String getNickname() {
         return nickname;

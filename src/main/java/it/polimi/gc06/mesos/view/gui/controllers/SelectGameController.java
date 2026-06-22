@@ -155,7 +155,7 @@ public class SelectGameController {
      * Safely attempts to load a graphical resource.
      *
      * @param imageView The destination container.
-     * @param path      The resource path string.
+     * @param path The resource path string.
      */
     private void loadImage(ImageView imageView, String path) {
         if (imageView == null) return;
@@ -232,7 +232,7 @@ public class SelectGameController {
     }
 
     /**
-     * Executes the create match remote protocol invocation binding the host onto the new game layout instance.
+     * Executes the CreateMatch remote protocol invocation binding the host onto the new game layout instance.
      *
      * @param event The ActionEvent dispatched by selecting a size count button.
      */
@@ -259,7 +259,7 @@ public class SelectGameController {
     /**
      * Requests joining an existing match session onto the server backend.
      *
-     * @param matchId    The unique server assignment identification.
+     * @param matchId The unique server assignment identification.
      * @param maxPlayers Maximum players expected on the match for SmallModel mapping constraints.
      */
     private void handleJoin(int matchId, int maxPlayers) {
@@ -299,10 +299,10 @@ public class SelectGameController {
     /**
      * Produces visually assembled list elements summarizing available match lobbies dynamically.
      *
-     * @param matchName      Label descriptor detailing standard room identifiers.
-     * @param matchId        Target networking hook parameter.
+     * @param matchName Label descriptor detailing standard room identifiers.
+     * @param matchId Target networking hook parameter.
      * @param currentPlayers Live player registry count within the room.
-     * @param maxPlayers     The ceiling registry cap per active model constraints.
+     * @param maxPlayers The ceiling registry cap per active model constraints.
      * @return Generated HBox row UI fragment to append natively.
      */
     private HBox createMatchItemUI(String matchName, int matchId, int currentPlayers, int maxPlayers) {
@@ -341,7 +341,7 @@ public class SelectGameController {
     /**
      * Utilities method formatting and applying DropShadow profiles around text displays uniformly.
      *
-     * @param text      The string to render.
+     * @param text The string to render.
      * @param textColor Color wrapper descriptor applied across standard properties.
      * @return Fully formatted JavaFX Label element wrapper.
      */
