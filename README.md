@@ -63,7 +63,6 @@ java -jar mesos-1.0-server.jar
 ```
 
 > [!TIP] Remote Multiplayer Setup
->
 > To host a multiplayer session across different external networks (WAN), we recommend utilizing Virtual LAN solutions
 > such as [ZeroTier](https://www.zerotier.com/), [Hamachi](https://vpn.net/),
 > or [Wireguard](https://www.wireguard.com/).
@@ -71,7 +70,6 @@ java -jar mesos-1.0-server.jar
 > router.
 >
 > Remember to launch the jar with the command:
->
 > ```bash
 > java --ip=SERVER_PUBLIC_IP_ADDRESS -jar mesos-1.0-server.jar
 > ```
@@ -96,15 +94,16 @@ java -jar mesos-1.0-server.jar
 
 * Run the .jar inside your own operating systems' **Command Prompt** for the client with the following command
 
-  ```bash
-  java -jar mesos-1.0-client.jar
-  ```
+```bash
+java -jar mesos-1.0-client.jar
+ ```
+
+* Follow the instructions that appear on the screen to start a game (make sure to enter the correct Server IP).
 
 > [!TIP]
 > You might need to add execution privileges for the .jar file and mvnw on Unix-based systems using
 > ```chmod +x mesos-1.0-client.jar``` and/or ```chmod +x mvnw```)
 
-* Follow the instructions that appear on the screen to start a game (make sure to enter the correct Server IP).
 
 > [!TIP]
 > When connecting to a remote server over the internet—whether through a Virtual LAN (such
@@ -114,8 +113,7 @@ java -jar mesos-1.0-server.jar
 > If you choose to play via RMI over these external networks, you must launch the client application by explicitly
 > defining your routing IP (your Virtual LAN IP or your Public IP, depending on your setup) using the following JVM
 > argument, or select the correct IP address when starting the client:
-
-```bash
+> ```bash
 > java --ip=YOUR_PUBLIC_IP_ADDRESS -jar mesos-1.0-client.jar
 > ```
 
