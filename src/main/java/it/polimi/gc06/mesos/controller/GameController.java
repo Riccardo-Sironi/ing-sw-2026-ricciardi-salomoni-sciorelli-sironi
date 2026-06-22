@@ -71,7 +71,7 @@ public class GameController {
      * @throws IllegalGameActionException  if the action is not allowed in the current phase.
      * @throws IndexOutOfBoundsException   if the card index is out of bounds.
      */
-    public void handleCardPickBottomRow(String playerNickname, int cardIndex) throws IllegalGameActionException, IndexOutOfBoundsException {
+    public void handleCardPickBottomRow(String playerNickname, int cardIndex) throws IllegalPhaseActionException, IndexOutOfBoundsException {
         TurnManager turnManager = model.getTurnManager();
         Player activePlayer = turnManager.getActivePlayer();
         if (!activePlayer.getNickname().equals(playerNickname)) {
@@ -93,7 +93,7 @@ public class GameController {
      * @throws IllegalGameActionException  if the action is not allowed in the current phase or if the player is trying to perform an action that is not his turn.
      * @throws IndexOutOfBoundsException   if the card index is out of bounds.
      */
-    public void handleCardPickTopRow(String playerNickname, int cardIndex) throws IllegalGameActionException, IndexOutOfBoundsException {
+    public void handleCardPickTopRow(String playerNickname, int cardIndex) throws IllegalPhaseActionException, IndexOutOfBoundsException {
         TurnManager turnManager = model.getTurnManager();
 
         Player activePlayer = turnManager.getActivePlayer();
@@ -116,7 +116,7 @@ public class GameController {
      * @throws IllegalGameActionException  if the action is not allowed in the current phase or if the player is trying to perform an action that is not his turn.
      * @throws IndexOutOfBoundsException   if the card index is out of bounds.
      */
-    public void handleBuildingPickBottomRow(String playerNickname, int cardIndex) throws IllegalGameActionException, IndexOutOfBoundsException {
+    public void handleBuildingPickBottomRow(String playerNickname, int cardIndex) throws IllegalPhaseActionException, IndexOutOfBoundsException {
         TurnManager turnManager = model.getTurnManager();
 
 
@@ -139,7 +139,7 @@ public class GameController {
      * @throws IllegalGameActionException  if the action is not allowed in the current phase or if the player is trying to perform an action that is not his turn.
      * @throws IndexOutOfBoundsException   if the card index is out of bounds.
      */
-    public void handleBuildingPickTopRow(String playerNickname, int cardIndex) throws IllegalGameActionException, IndexOutOfBoundsException {
+    public void handleBuildingPickTopRow(String playerNickname, int cardIndex) throws IllegalPhaseActionException, IndexOutOfBoundsException {
         TurnManager turnManager = model.getTurnManager();
         Player activePlayer = turnManager.getActivePlayer();
 
@@ -176,7 +176,14 @@ public class GameController {
      * @param color          the color chosen by the player for their totem.
      */
 
-    public void handleChooseTotemColor(String playerNickname, Color color) {
+    public void handleChooseTotemColor(String playerNickname, Color color) throws IllegalGameActionException {
+
+        boolean alreadyChosen = model.getPlayers().stream().anyMatch(player -> player.getPlayerColor() == color);
+
+        if (alreadyChosen) {
+            throw new IllegalGameActionException("Color " + color + " has already been chosen by another player.");
+        }
+
         model.getPlayers().stream()
                 .filter(player -> player.getNickname().equals(playerNickname))
                 .findFirst().ifPresent(p -> p.setPlayerColor(color));
