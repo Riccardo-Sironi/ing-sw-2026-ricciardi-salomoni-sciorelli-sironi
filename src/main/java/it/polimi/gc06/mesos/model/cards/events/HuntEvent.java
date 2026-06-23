@@ -7,17 +7,28 @@ import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingRegistryKey;
 
 import java.util.Objects;
 
+/**
+ * Represents the Hunt Event card, which rewards the player with food and prestige
+ * based on the number of hunters in their tribe.
+ */
 public class HuntEvent extends EventCard {
 
     private int prestigeGain;
 
+    /**
+     * Constructs a default HuntEvent.
+     */
     public HuntEvent() {
         super(false);
         this.prestigeGain = -1;
     }
 
     /**
+     * Constructs a HuntEvent with specified parameters.
      * For testing purpose only!
+     *
+     * @param era The era of the event card.
+     * @param prestigeGain The prestige gained for each hunter.
      */
     public HuntEvent(Era era, int prestigeGain) {
         super(false, era);
@@ -27,7 +38,7 @@ public class HuntEvent extends EventCard {
     /**
      * Prestige setter. This should be called only once during initialization.
      *
-     * @param prestigeGain the prestige gained for each hunter.
+     * @param prestigeGain The prestige gained for each hunter.
      */
     public void setPrestigeGain(int prestigeGain) {
         this.prestigeGain = prestigeGain;
@@ -36,18 +47,17 @@ public class HuntEvent extends EventCard {
     /**
      * Prestige getter.
      *
-     * @return prestigeGain the prestige gained for each hunter.
+     * @return The prestige gained for each hunter.
      */
     public int getPrestigeGain() {
         return this.prestigeGain;
     }
 
-
     /**
-     * this method is used to accept a visitor that will visit the card and apply
+     * This method is used to accept a visitor that will visit the card and apply
      * the effects of the card on the player that has chosen to resolve it.
      *
-     * @param visitor the visitor that will visit the card.
+     * @param visitor The visitor that will visit the card.
      */
     @Override
     public void accept(CardVisitor visitor) {
@@ -55,12 +65,12 @@ public class HuntEvent extends EventCard {
     }
 
     /**
-     * this method is used to resolve the event card:
+     * This method is used to resolve the event card:
      * takes the number of HUNTERS for every player and if it's greater than 0 adds
      * to the player that has chosen to resolve the card as many food tokens as the number
      * of HUNTERS and as many prestige tokens as the number of HUNTERS multiplied by the prestige on the card.
      *
-     * @param player the player that is resolving the event
+     * @param player The player that is resolving the event.
      */
     @Override
     public void resolveEvent(Player player) {
@@ -80,13 +90,12 @@ public class HuntEvent extends EventCard {
         }
     }
 
-
     /**
-     * this method compares this HuntEvent to the specified object.
+     * This method compares this HuntEvent to the specified object.
      * Two HuntEvents are considered equal if they provide the same prestige gain.
      *
-     * @param o the reference object with which to compare.
-     * @return true if this object has the same prestige gain as the argument; false otherwise.
+     * @param o The reference object with which to compare.
+     * @return True if this object has the same prestige gain as the argument; false otherwise.
      */
     @Override
     public boolean equals(Object o) {
@@ -95,11 +104,10 @@ public class HuntEvent extends EventCard {
         return prestigeGain == huntEvent.prestigeGain;
     }
 
-
     /**
-     * this method calculate the hash code of the HuntEvent based on its prestige gain.
+     * This method calculate the hash code of the HuntEvent based on its prestige gain.
      *
-     * @return the hash code of the HuntEvent.
+     * @return The hash code of the HuntEvent.
      */
     @Override
     public int hashCode() {

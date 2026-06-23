@@ -8,16 +8,29 @@ import it.polimi.gc06.mesos.model.cards.buildings.ModifierBuildingRegistryKey;
 import java.util.ArrayList;
 import java.util.Objects;
 
+/**
+ * Represents the Sustenance Event card.
+ * Players must pay food to feed their tribe, and lose prestige for any unfed characters.
+ */
 public class SustenanceEvent extends EventCard {
 
     private static final int defaultGathererDiscount = 3;
     private int numPrestigeLoss;
 
+    /**
+     * Constructs a default SustenanceEvent.
+     */
     public SustenanceEvent() {
         super(true);
         numPrestigeLoss = -1;
     }
 
+    /**
+     * Constructs a SustenanceEvent with specified parameters.
+     *
+     * @param era The era of the event card.
+     * @param prestigeLoss The prestige lost for each unfed character.
+     */
     public SustenanceEvent(Era era, int prestigeLoss) {
         super(true, era);
         this.numPrestigeLoss = prestigeLoss;
@@ -26,7 +39,7 @@ public class SustenanceEvent extends EventCard {
     /**
      * Prestige lost setter. This should be called only once during initialization.
      *
-     * @param prestigeLoss the prestige lost if the player loses the event.
+     * @param prestigeLoss The prestige lost if the player loses the event.
      */
     public void setPrestigeLoss(int prestigeLoss) {
         this.numPrestigeLoss = prestigeLoss;
@@ -35,7 +48,7 @@ public class SustenanceEvent extends EventCard {
     /**
      * Prestige lost getter
      *
-     * @return prestigeLoss the prestige lost if the player loses the event.
+     * @return The prestige lost if the player loses the event.
      */
     public int getPrestigeLoss() {
         return this.numPrestigeLoss;
@@ -43,10 +56,10 @@ public class SustenanceEvent extends EventCard {
 
 
     /**
-     * this method is used to accept a visitor that will visit the card and apply
+     * This method is used to accept a visitor that will visit the card and apply
      * the effects of the card on the player that has chosen to resolve it.
      *
-     * @param visitor the visitor that will visit the card.
+     * @param visitor The visitor that will visit the card.
      */
     @Override
     public void accept(CardVisitor visitor) {
@@ -54,14 +67,14 @@ public class SustenanceEvent extends EventCard {
     }
 
     /**
-     * this method is used to resolve the event card:
+     * This method is used to resolve the event card:
      * it gets the total number of character cards of the player and initialize the gatherers counter
      * and the required food. if the required food is greater than 0 it initializes the current food
      * and if the player has enough food to pay it removes it; otherwise it removes food and initialize the
      * unfed characters (remaining food that needs to be paid) and removes the prestige written on the card
      * multiplied by the unfed characters.
      *
-     * @param player the player that is resolving the event
+     * @param player The player that is resolving the event.
      */
     @Override
     public void resolveEvent(Player player) {
@@ -92,6 +105,13 @@ public class SustenanceEvent extends EventCard {
         }
     }
 
+    /**
+     * Calculates the amount of food required to feed the player's tribe,
+     * considering any active discounts or specific building effects.
+     *
+     * @param player The player whose food requirement is being calculated.
+     * @return The amount of food required.
+     */
     private int getRequiredFood(Player player) {
         int totalCharacterCards = player.getCharacterDeck().values().stream()
                 .mapToInt(ArrayList::size)
@@ -127,11 +147,11 @@ public class SustenanceEvent extends EventCard {
 
 
     /**
-     * this method compares this SustenanceEvent to the specified object.
-     * two SustenanceEvents are considered equal if they have the same prestige loss penalty.
+     * This method compares this SustenanceEvent to the specified object.
+     * Two SustenanceEvents are considered equal if they have the same prestige loss penalty.
      *
-     * @param o the reference object with which to compare.
-     * @return true if this object has the same penalty as the argument; false otherwise.
+     * @param o The reference object with which to compare.
+     * @return True if this object has the same penalty as the argument; false otherwise.
      */
     @Override
     public boolean equals(Object o) {
@@ -142,9 +162,9 @@ public class SustenanceEvent extends EventCard {
 
 
     /**
-     * this method calculates the hash code of the SustenanceEvent based on its num of prestige loss.
+     * This method calculates the hash code of the SustenanceEvent based on its num of prestige loss.
      *
-     * @return the hash code of the SustenanceEvent.
+     * @return The hash code of the SustenanceEvent.
      */
     @Override
     public int hashCode() {
