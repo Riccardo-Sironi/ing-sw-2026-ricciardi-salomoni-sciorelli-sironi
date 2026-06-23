@@ -2,8 +2,6 @@
 
 <div align="center">
   <img src="https://img.shields.io/badge/Java-25-blue" alt="Java"/>
-</div>
-<div align="center">
   <img src="https://img.shields.io/badge/Maven-C71A36?style=for-the-badge&logo=apachemaven&logoColor=white" alt="Maven"/>
   <img src="https://img.shields.io/badge/JavaFX-FF0000?style=for-the-badge&logo=openjdk&logoColor=white" alt="JavaFX"/>
 </div>
@@ -23,6 +21,11 @@ The codebase has been designed from scratch following strict **SOLID** principle
 *OOP/Functional* paradigms. The structural backbone of the application relies on the **MVC (Model-View-Controller)**
 architectural pattern, enriched with standard GoF design patterns (Factory Method, Observer, State, Command, etc.) to
 ensure high cohesion and low coupling.
+
+Check out the official Mesos Board Game Rules for more
+details : [IT](documents/mesos_rules_it.pdf) / [EN](documents/mesos_rules_en.pdf)
+
+Check out the [requirements document](documents/requirements_mesos.pdf) for more details about the project.
 
 </div>
 
@@ -149,11 +152,57 @@ experience.
 
 It also features a help menu (accessed by pressing `H`) , showing custom keyboard shortcuts.
 
-![1](src/main/resources/imgs/readme/start_gui.gif)
-![2](src/main/resources/imgs/readme/login_gui.png)
-![3](src/main/resources/imgs/readme/match_sel_gui.png)
-![4](src/main/resources/imgs/readme/main_gui.gif)
-![0](src/main/resources/imgs/readme/help_gui.png)
+---
+
+<p align="center">
+  <b>Start Screen</b><br>
+  <img src="src/main/resources/imgs/readme/start_gui.gif" width="80%"/>
+</p>
+
+---
+
+<p align="center">
+  <b>Login</b><br>
+  <img src="src/main/resources/imgs/readme/login_gui.png" width="80%"/>
+</p>
+
+---
+
+<p align="center">
+  <b>Match Selection and Creation</b><br>
+  <img src="src/main/resources/imgs/readme/match_sel_gui.png" width="80%"/>
+</p>
+
+---
+
+<p align="center">
+  <b>Waiting Lobby</b><br>
+  <img src="src/main/resources/imgs/readme/lobby_gui.png" width="80%"/>
+</p>
+
+---
+
+<p align="center">
+  <b>Game Interface</b><br>
+  <img src="src/main/resources/imgs/readme/gui-1.png" width="80%"/>
+  <img src="src/main/resources/imgs/readme/gui-2.png" width="80%"/>
+</p>
+
+---
+
+<p align="center">
+  <b>Help and Sounds Volume Overlay</b><br>
+  <img src="src/main/resources/imgs/readme/help_gui.png" width="80%"/>
+</p>
+
+---
+
+<p align="center">
+  <b>Animations Example</b><br>
+  <img src="src/main/resources/imgs/readme/main_gui.gif" width="80%"/>
+</p>
+
+---
 
 ## TUI
 
@@ -166,9 +215,28 @@ easier
 for players to
 interact with the game without needing to remember all the command syntax.
 
-![5](src/main/resources/imgs/readme/lobby_tui.png)
-![6](src/main/resources/imgs/readme/tui.png)
-![7](src/main/resources/imgs/readme/main_tui.gif)
+---
+
+<p align="center">
+  <b>Waiting Lobby</b><br>
+  <img src="src/main/resources/imgs/readme/lobby_tui.png" width="80%"/>
+</p>
+
+---
+
+<p align="center">
+  <b>Game Interface</b><br>
+  <img src="src/main/resources/imgs/readme/tui.png" width="80%"/>
+</p>
+
+---
+
+<p align="center">
+  <b>Gameplay Example</b><br>
+  <img src="src/main/resources/imgs/readme/main_tui.gif" width="80%"/>
+</p>
+
+---
 
 ## Available Commands (TUI)
 
