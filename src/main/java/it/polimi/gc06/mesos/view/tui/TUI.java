@@ -196,17 +196,17 @@ public class TUI implements View, ModelListener {
                             }
                             break;
 
-                        case "/end_turn":
+                        case "/skip":
                             try {
                                 client.getServerConnection().handleSkip(smallModel.getPlayer().getNickname());
                             } catch (Exception e) {
                                 smallModel.setSystemMessage(Style.RED + "You cannot perform this action right now!" + Style.RESET);
                             }
-                            statusMessage = "Ending turn...";
+                            statusMessage = "Skipping turn...";
                             break;
                         case "/help":
                             if (tokens.length < 2) {
-                                statusMessage = "Available commands: /place_totem, /pick_card, /end_turn, /quit, /pick_card, /pick_building, /clear, /buildings, /board";
+                                statusMessage = "Available commands: /place_totem, /pick_card, /skip, /quit, /pick_card, /pick_building, /clear, /buildings, /board";
                             } else {
                                 switch (tokens[1].toLowerCase()) {
                                     case "place_totem":
@@ -215,8 +215,8 @@ public class TUI implements View, ModelListener {
                                     case "pick_card":
                                         statusMessage = "Usage: /pick_card <top/bottom> <card_id> - Pick a card from the specified row (0-based index). Example: /pick_card top 2";
                                         break;
-                                    case "end_turn":
-                                        statusMessage = "Ends the current turn, if possible (A turn cannot be ended unless all mandatory actions have been performed, such as placing a totem or picking a card).";
+                                    case "skip":
+                                        statusMessage = "Skips the current turn, if possible (A turn cannot be skipped unless all mandatory actions have been performed, such as placing a totem or picking a card).";
                                         break;
                                     case "clear":
                                         statusMessage = "Clears the System output.";
@@ -236,7 +236,7 @@ public class TUI implements View, ModelListener {
                                         statusMessage = "Usage: /pick_building <top/bottom> <building_id> - Pick a building from the available options.";
                                         break;
                                     default:
-                                        statusMessage = "Available commands: /place_totem, /pick_card, /end_turn, /quit, /pick_card, /pick_building, /clear, /buildings, /board";
+                                        statusMessage = "Available commands: /place_totem, /pick_card, /skip, /quit, /pick_card, /pick_building, /clear, /buildings, /board";
                                 }
                             }
                             break;
@@ -404,8 +404,8 @@ public class TUI implements View, ModelListener {
         };
 
         return new AggregateCompleter(
-                new ArgumentCompleter(new StringsCompleter("/pick_card", "/pick_building", "/end_turn", "/quit", "/clear", "/board", "/buildings"), NullCompleter.INSTANCE),
-                new ArgumentCompleter(new StringsCompleter("/help"), new StringsCompleter("place_totem", "pick_card", "end_turn", "clear", "cards", "buildings", "quit", "board", "pick_building"), NullCompleter.INSTANCE),
+                new ArgumentCompleter(new StringsCompleter("/pick_card", "/pick_building", "/skip", "/quit", "/clear", "/board", "/buildings"), NullCompleter.INSTANCE),
+                new ArgumentCompleter(new StringsCompleter("/help"), new StringsCompleter("place_totem", "pick_card", "skip", "clear", "cards", "buildings", "quit", "board", "pick_building"), NullCompleter.INSTANCE),
                 new ArgumentCompleter(new StringsCompleter("/place_totem"), totemCompleter, NullCompleter.INSTANCE),
                 cardCompleter,
                 boardCompleter,

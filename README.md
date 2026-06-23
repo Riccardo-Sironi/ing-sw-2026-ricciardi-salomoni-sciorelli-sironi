@@ -170,6 +170,19 @@ interact with the game without needing to remember all the command syntax.
 ![6](src/main/resources/imgs/readme/tui.png)
 ![7](src/main/resources/imgs/readme/main_tui.gif)
 
+## Available Commands (TUI)
+
+| Command                            | Description                                  |
+|:-----------------------------------|:---------------------------------------------|
+| `/pick_card <top/bottom> <id>`     | Picks a card from the specified position     |
+| `/pick_building <top/bottom> <id>` | Picks a building from the specified position |
+| `/place_totem <tile>`              | Places a totem on the specified tile         |
+| `/skip`                            | Skips your turn                              |
+| `/help`                            | Displays help information                    |
+| `/clear`                           | Clears the terminal                          |
+| `/buildings`                       | Displays available buildings                 |
+| `/board <player>`                  | Displays the specified player's board        |
+
 ---
 
 # Testing
