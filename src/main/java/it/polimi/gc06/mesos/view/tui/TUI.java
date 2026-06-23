@@ -206,7 +206,7 @@ public class TUI implements View, ModelListener {
                             break;
                         case "/help":
                             if (tokens.length < 2) {
-                                statusMessage = "Available commands: /place_totem, /pick_card, /end_turn, quit";
+                                statusMessage = "Available commands: /place_totem, /pick_card, /end_turn, /quit, /pick_card, /pick_building, /clear, /buildings, /board";
                             } else {
                                 switch (tokens[1].toLowerCase()) {
                                     case "place_totem":
@@ -223,8 +223,20 @@ public class TUI implements View, ModelListener {
                                         break;
                                     case "cards":
                                         showCardHelp();
+                                    case "buildings":
+                                        statusMessage = "Displays the list of available buildings and their effects.";
+                                        break;
+                                    case "board":
+                                        statusMessage = "Usage: /board <nickname> - Displays the board of the specified player. If no nickname is provided, it shows your own board. Example: /board pippo";
+                                        break;
+                                    case "quit":
+                                        statusMessage = "Quits the game and closes the application.";
+                                        break;
+                                    case "pick_building":
+                                        statusMessage = "Usage: /pick_building <top/bottom> <building_id> - Pick a building from the available options.";
+                                        break;
                                     default:
-                                        statusMessage = "Available commands: /place_totem, /pick_card, /end_turn, /quit";
+                                        statusMessage = "Available commands: /place_totem, /pick_card, /end_turn, /quit, /pick_card, /pick_building, /clear, /buildings, /board";
                                 }
                             }
                             break;
@@ -393,7 +405,7 @@ public class TUI implements View, ModelListener {
 
         return new AggregateCompleter(
                 new ArgumentCompleter(new StringsCompleter("/pick_card", "/pick_building", "/end_turn", "/quit", "/clear", "/board", "/buildings"), NullCompleter.INSTANCE),
-                new ArgumentCompleter(new StringsCompleter("/help"), new StringsCompleter("place_totem", "pick_card", "end_turn", "clear", "cards"), NullCompleter.INSTANCE),
+                new ArgumentCompleter(new StringsCompleter("/help"), new StringsCompleter("place_totem", "pick_card", "end_turn", "clear", "cards", "buildings", "quit", "board", "pick_building"), NullCompleter.INSTANCE),
                 new ArgumentCompleter(new StringsCompleter("/place_totem"), totemCompleter, NullCompleter.INSTANCE),
                 cardCompleter,
                 boardCompleter,
