@@ -3,15 +3,20 @@ package it.polimi.gc06.mesos.controller.commands;
 import it.polimi.gc06.mesos.controller.GameController;
 import it.polimi.gc06.mesos.model.Color;
 
+/**
+ * Defines the various types of requests that a player can send to the server.
+ * Each enum value implements the ControllerCaller interface to map the action
+ * to the appropriate GameController handler method.
+ */
 public enum Request implements ControllerCaller {
 
     OFFER_TRACK_REQUEST {
         /**
          * This method invokes the handler for placing a totem on the offer track.
          *
-         * @param controller the game controller.
-         * @param nickname the nickname of the player.
-         * @param index the index of the chosen offer track tile.
+         * @param controller The game controller.
+         * @param nickname The nickname of the player.
+         * @param index The index of the chosen offer track tile.
          */
         @Override
         public void call(GameController controller, String nickname, int index) {
@@ -22,9 +27,9 @@ public enum Request implements ControllerCaller {
         /**
          * This method invokes the handler for picking a card from the top row.
          *
-         * @param controller the game controller.
-         * @param nickname the nickname of the player.
-         * @param index the index of the card in the top row.
+         * @param controller The game controller.
+         * @param nickname The nickname of the player.
+         * @param index The index of the card in the top row.
          */
         @Override
         public void call(GameController controller, String nickname, int index) {
@@ -35,9 +40,9 @@ public enum Request implements ControllerCaller {
         /**
          * This method invokes the handler for picking a card from the bottom row.
          *
-         * @param controller the game controller.
-         * @param nickname the nickname of the player.
-         * @param index the index of the card in the bottom row.
+         * @param controller The game controller.
+         * @param nickname The nickname of the player.
+         * @param index The index of the card in the bottom row.
          */
         @Override
         public void call(GameController controller, String nickname, int index) {
@@ -48,9 +53,9 @@ public enum Request implements ControllerCaller {
         /**
          * This method invokes the handler for picking a building from the top row.
          *
-         * @param controller the game controller.
-         * @param nickname the nickname of the player.
-         * @param index the index of the building in the top row.
+         * @param controller The game controller.
+         * @param nickname The nickname of the player.
+         * @param index The index of the building in the top row.
          */
         @Override
         public void call(GameController controller, String nickname, int index) {
@@ -61,9 +66,9 @@ public enum Request implements ControllerCaller {
         /**
          * This method invokes the handler for picking a building from the bottom row.
          *
-         * @param controller the game controller.
-         * @param nickname the nickname of the player.
-         * @param index the index of the building in the bottom row.
+         * @param controller The game controller.
+         * @param nickname The nickname of the player.
+         * @param index The index of the building in the bottom row.
          */
         @Override
         public void call(GameController controller, String nickname, int index) {
@@ -74,9 +79,9 @@ public enum Request implements ControllerCaller {
         /**
          * This method invokes the handler for choosing the player's totem color.
          *
-         * @param controller the game controller.
-         * @param nickname the nickname of the player.
-         * @param index the index corresponding to the chosen color in the Color enum.
+         * @param controller The game controller.
+         * @param nickname The nickname of the player.
+         * @param index The index corresponding to the chosen color in the Color enum.
          */
         @Override
         public void call(GameController controller, String nickname, int index) {
@@ -90,8 +95,8 @@ public enum Request implements ControllerCaller {
         /**
          * This method invokes the handler to skip a pick action.
          *
-         * @param controller the game controller.
-         * @param nickname the nickname of the player skipping the action.
+         * @param controller The game controller.
+         * @param nickname The nickname of the player skipping the action.
          * @param index NOT USED in this request.
          */
         @Override

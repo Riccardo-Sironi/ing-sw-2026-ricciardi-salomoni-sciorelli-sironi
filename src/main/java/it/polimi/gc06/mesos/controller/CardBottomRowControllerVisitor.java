@@ -8,12 +8,23 @@ import it.polimi.gc06.mesos.model.cards.characters.CharacterCard;
 import it.polimi.gc06.mesos.model.cards.events.EventCard;
 import it.polimi.gc06.mesos.model.gameTurnManager.TurnManager;
 
+/**
+ * A visitor that handles the logic for picking a card from the bottom row.
+ * It safely routes character cards to the turn manager while rejecting event cards,
+ * which cannot be manually picked by players.
+ */
 public class CardBottomRowControllerVisitor extends CardVisitor {
     private final TurnManager turnManager;
     private final Player activePlayer;
     private final GameModel model;
 
-
+    /**
+     * Constructs a new CardBottomRowControllerVisitor.
+     *
+     * @param turnManager The game's turn manager.
+     * @param activePlayer The player attempting to pick the card.
+     * @param model The main game model.
+     */
     public CardBottomRowControllerVisitor(TurnManager turnManager, Player activePlayer, GameModel model) {
         this.turnManager = turnManager;
         this.activePlayer = activePlayer;
@@ -23,7 +34,7 @@ public class CardBottomRowControllerVisitor extends CardVisitor {
     /**
      * This method visits a CharacterCard and triggers the logic to pick it from the bottom row.
      *
-     * @param card the CharacterCard being visited.
+     * @param card The CharacterCard being visited.
      */
     @Override
     public void visit(CharacterCard card) {
@@ -34,8 +45,8 @@ public class CardBottomRowControllerVisitor extends CardVisitor {
      * This method visits an EventCard.
      * Since EventCards cannot be directly picked by players, this method throws an exception.
      *
-     * @param card the EventCard being visited.
-     * @throws IllegalGameActionException ALWAYS, as event cards cannot be picked.
+     * @param card The EventCard being visited.
+     * @throws IllegalGameActionException Always, as event cards cannot be picked.
      */
     @Override
     public void visit(EventCard card) {

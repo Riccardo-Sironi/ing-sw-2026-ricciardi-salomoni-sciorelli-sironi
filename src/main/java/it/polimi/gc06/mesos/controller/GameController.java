@@ -16,11 +16,22 @@ import it.polimi.gc06.mesos.model.gameTurnManager.TurnManager;
 
 import java.util.List;
 
+/**
+ * The main controller for the Mesos game.
+ * It handles incoming player requests, validates if it is the player's turn,
+ * and delegates the execution of the actions to the underlying game model and turn manager.
+ */
 public class GameController {
 
     private final GameModel model;
     private final DTONotifier notifier;
 
+    /**
+     * Constructs a new GameController.
+     *
+     * @param model The game model to manage.
+     * @param notifier The notifier used to broadcast state changes to clients.
+     */
     public GameController(GameModel model, DTONotifier notifier) {
         this.model = model;
         this.notifier = notifier;
@@ -29,7 +40,7 @@ public class GameController {
     /**
      * Retrieves the main game model associated with this controller.
      *
-     * @return the GameModel instance.
+     * @return The GameModel instance.
      */
     public GameModel getModel() {
         return model;
@@ -38,9 +49,9 @@ public class GameController {
     /**
      * Handles the request of tile placement.
      *
-     * @param playerNickname the player performing the action.
-     * @param tileIndex      the index of the tile where the player wants to be placed.
-     * @throws IllegalPhaseActionException if the action is not allowed in the current phase or if the player is trying to perform an action that is not his turn.
+     * @param playerNickname The player performing the action.
+     * @param tileIndex The index of the tile where the player wants to be placed.
+     * @throws IllegalPhaseActionException If the action is not allowed in the current phase or if the player is trying to perform an action that is not his turn.
      */
     public void handleTotemOfferTilePlacement(String playerNickname, int tileIndex) throws IllegalPhaseActionException {
         TurnManager turnManager = model.getTurnManager();
@@ -66,11 +77,11 @@ public class GameController {
     /**
      * Handles the request of card picking from bottom row.
      *
-     * @param playerNickname the player performing the action.
-     * @param cardIndex      the index of the card that the player wants to pick.
-     * @throws IllegalPhaseActionException if the player is trying to perform an action that is not his turn.
-     * @throws IllegalGameActionException  if the action is not allowed in the current phase.
-     * @throws IndexOutOfBoundsException   if the card index is out of bounds.
+     * @param playerNickname The player performing the action.
+     * @param cardIndex The index of the card that the player wants to pick.
+     * @throws IllegalPhaseActionException If the player is trying to perform an action that is not his turn.
+     * @throws IllegalGameActionException If the action is not allowed in the current phase.
+     * @throws IndexOutOfBoundsException If the card index is out of bounds.
      */
     public void handleCardPickBottomRow(String playerNickname, int cardIndex) throws IllegalPhaseActionException, IndexOutOfBoundsException {
         TurnManager turnManager = model.getTurnManager();
@@ -88,11 +99,11 @@ public class GameController {
     /**
      * Handles the request of card picking from top row.
      *
-     * @param playerNickname the player performing the action.
-     * @param cardIndex      the index of the card that the player wants to pick.
-     * @throws IllegalPhaseActionException if the player is trying to perform an action that is not his turn.
-     * @throws IllegalGameActionException  if the action is not allowed in the current phase or if the player is trying to perform an action that is not his turn.
-     * @throws IndexOutOfBoundsException   if the card index is out of bounds.
+     * @param playerNickname The player performing the action.
+     * @param cardIndex The index of the card that the player wants to pick.
+     * @throws IllegalPhaseActionException If the player is trying to perform an action that is not his turn.
+     * @throws IllegalGameActionException If the action is not allowed in the current phase or if the player is trying to perform an action that is not his turn.
+     * @throws IndexOutOfBoundsException If the card index is out of bounds.
      */
     public void handleCardPickTopRow(String playerNickname, int cardIndex) throws IllegalPhaseActionException, IndexOutOfBoundsException {
         TurnManager turnManager = model.getTurnManager();
@@ -111,11 +122,11 @@ public class GameController {
     /**
      * Handles the request of building picking from bottom row.
      *
-     * @param playerNickname the player performing the action.
-     * @param cardIndex      the index of the building that the player wants to pick.
-     * @throws IllegalPhaseActionException if the player is trying to perform an action that is not his turn.
-     * @throws IllegalGameActionException  if the action is not allowed in the current phase or if the player is trying to perform an action that is not his turn.
-     * @throws IndexOutOfBoundsException   if the card index is out of bounds.
+     * @param playerNickname The player performing the action.
+     * @param cardIndex The index of the building that the player wants to pick.
+     * @throws IllegalPhaseActionException If the player is trying to perform an action that is not his turn.
+     * @throws IllegalGameActionException If the action is not allowed in the current phase or if the player is trying to perform an action that is not his turn.
+     * @throws IndexOutOfBoundsException If the card index is out of bounds.
      */
     public void handleBuildingPickBottomRow(String playerNickname, int cardIndex) throws IllegalPhaseActionException, IndexOutOfBoundsException {
         TurnManager turnManager = model.getTurnManager();
@@ -134,11 +145,11 @@ public class GameController {
     /**
      * Handles the request of building picking from top row.
      *
-     * @param playerNickname the player performing the action.
-     * @param cardIndex      the index of the building that the player wants to pick.
-     * @throws IllegalPhaseActionException if the player is trying to perform an action that is not his turn.
-     * @throws IllegalGameActionException  if the action is not allowed in the current phase or if the player is trying to perform an action that is not his turn.
-     * @throws IndexOutOfBoundsException   if the card index is out of bounds.
+     * @param playerNickname The player performing the action.
+     * @param cardIndex The index of the building that the player wants to pick.
+     * @throws IllegalPhaseActionException If the player is trying to perform an action that is not his turn.
+     * @throws IllegalGameActionException If the action is not allowed in the current phase or if the player is trying to perform an action that is not his turn.
+     * @throws IndexOutOfBoundsException If the card index is out of bounds.
      */
     public void handleBuildingPickTopRow(String playerNickname, int cardIndex) throws IllegalPhaseActionException, IndexOutOfBoundsException {
         TurnManager turnManager = model.getTurnManager();
@@ -155,9 +166,9 @@ public class GameController {
     /**
      * Handles the request of skipping the pick phase.
      *
-     * @param playerNickname the player performing the action.
-     * @throws IllegalGameActionException if the action is not allowed in the current phase or if the player is trying
-     *                                    to perform an action that is not his turn.
+     * @param playerNickname The player performing the action.
+     * @throws IllegalGameActionException If the action is not allowed in the current phase or if the player is trying
+     * to perform an action that is not his turn.
      */
     public void handlePickSkip(String playerNickname) throws IllegalGameActionException {
         TurnManager turnManager = model.getTurnManager();
@@ -173,10 +184,9 @@ public class GameController {
      * This method is used to handle the request of totem color choice from the player,
      * it updates the model and notifies all clients about the change.
      *
-     * @param playerNickname the nickname of the player who is choosing the totem color.
-     * @param color          the color chosen by the player for their totem.
+     * @param playerNickname The nickname of the player who is choosing the totem color.
+     * @param color The color chosen by the player for their totem.
      */
-
     public void handleChooseTotemColor(String playerNickname, Color color) {
 
         boolean alreadyChosen = model.getPlayers().stream().anyMatch(player -> player.getPlayerColor() == color);
@@ -207,7 +217,7 @@ public class GameController {
     /**
      * Checks whether the game has reached the end state.
      *
-     * @return true if the game is finished, false otherwise.
+     * @return True if the game is finished, false otherwise.
      */
     public boolean isGameFinished() {
         return model.isFinished();

@@ -4,18 +4,33 @@ import it.polimi.gc06.mesos.controller.GameController;
 
 import java.io.Serializable;
 
+/**
+ * Encapsulates a player's action into a serializable command object.
+ * This allows requests to be sent over the network from the client
+ * and executed securely on the server's GameController.
+ */
 public class ControllerCommand implements Serializable {
 
     private Request request;
     private int index;
     private String nickname;
 
+    /**
+     * Constructs an empty ControllerCommand with default null or negative values.
+     */
     public ControllerCommand() {
         this.request = null;
         this.index = -1;
         this.nickname = null;
     }
 
+    /**
+     * Constructs a ControllerCommand with the specified parameters.
+     *
+     * @param nickname The player's nickname.
+     * @param index The target index for the action.
+     * @param request The specific Request to be executed.
+     */
     public ControllerCommand(String nickname, int index, Request request) {
         this.nickname = nickname;
         this.index = index;
@@ -25,7 +40,7 @@ public class ControllerCommand implements Serializable {
     /**
      * This method sets the request type for this command.
      *
-     * @param request the specific Request to be executed.
+     * @param request The specific Request to be executed.
      */
     public void setRequest(Request request) {
         this.request = request;
@@ -34,7 +49,7 @@ public class ControllerCommand implements Serializable {
     /**
      * This method sets the index associated with this command.
      *
-     * @param index the target index.
+     * @param index The target index.
      */
     public void setIndex(int index) {
         this.index = index;
@@ -43,7 +58,7 @@ public class ControllerCommand implements Serializable {
     /**
      * This method sets the nickname of the player issuing the command.
      *
-     * @param nickname the player's nickname.
+     * @param nickname The player's nickname.
      */
     public void setNickname(String nickname) {
         this.nickname = nickname;
@@ -52,7 +67,7 @@ public class ControllerCommand implements Serializable {
     /**
      * This method retrieves the nickname of the player issuing the command.
      *
-     * @return the player's nickname.
+     * @return The player's nickname.
      */
     public String getNickname() {
         return this.nickname;
@@ -61,8 +76,8 @@ public class ControllerCommand implements Serializable {
     /**
      * This method executes the encapsulated request on the provided controller.
      *
-     * @param controller the game controller that will handle the request.
-     * @throws Exception if an error occurs during the execution of the command.
+     * @param controller The game controller that will handle the request.
+     * @throws Exception If an error occurs during the execution of the command.
      */
     public void execute(GameController controller) throws Exception {
         request.call(controller, this.nickname, this.index);
@@ -70,6 +85,7 @@ public class ControllerCommand implements Serializable {
 
     /**
      * Debug only.
+     * * @return The request associated with this command.
      */
     public Request getRequest() {
         return request;
@@ -77,6 +93,7 @@ public class ControllerCommand implements Serializable {
 
     /**
      * Debug only.
+     * * @return The index associated with this command.
      */
     public int getIndex() {
         return index;
