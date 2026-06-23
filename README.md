@@ -61,7 +61,7 @@ cd target/
 
 # Server configuration
 
-* Run the .jar file for the server with the following command:
+Run the .jar file for the server with the following command:
 
 ```bash
 java -jar mesos-1.0-server.jar
