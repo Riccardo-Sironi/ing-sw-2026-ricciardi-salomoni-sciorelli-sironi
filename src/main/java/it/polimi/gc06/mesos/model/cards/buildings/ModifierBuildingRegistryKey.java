@@ -1,5 +1,9 @@
 package it.polimi.gc06.mesos.model.cards.buildings;
 
+/**
+ * Enumerates the distinct keys identifying the unique effects provided
+ * by specific ModifierBuildingCards.
+ */
 public enum ModifierBuildingRegistryKey {
     PICK_FROM_TOP,
     TILE_FOOD_BONUS,

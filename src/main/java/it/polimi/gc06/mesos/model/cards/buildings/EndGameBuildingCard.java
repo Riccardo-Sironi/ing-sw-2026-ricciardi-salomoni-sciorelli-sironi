@@ -6,19 +6,31 @@ import it.polimi.gc06.mesos.model.cards.CardVisitor;
 
 import java.util.Objects;
 
+/**
+ * Represents a building card that awards additional prestige points at the end of the game,
+ * dynamically calculated based on a specific rule or condition related to the player's inventory.
+ */
 public class EndGameBuildingCard extends BuildingCard {
 
     private EndGameBuildingFunction prestigeEffect;
 
     /**
-     * @param prestigeEffect please use standard function in enum EndGameBuildingFunction
-     *                       For testing purpose only!
+     * Constructs an EndGameBuildingCard with specified parameters.
+     * For testing purpose only!
+     *
+     * @param era The era of the card.
+     * @param prestigeGain The base prestige gain.
+     * @param foodCost The food cost to build.
+     * @param prestigeEffect Please use standard function in enum EndGameBuildingFunction.
      */
     public EndGameBuildingCard(Era era, int prestigeGain, int foodCost, EndGameBuildingFunction prestigeEffect) {
         super(era, prestigeGain, foodCost);
         this.prestigeEffect = prestigeEffect;
     }
 
+    /**
+     * Constructs a default empty EndGameBuildingCard.
+     */
     public EndGameBuildingCard() {
         super();
         prestigeEffect = null;
@@ -27,9 +39,9 @@ public class EndGameBuildingCard extends BuildingCard {
     /**
      * Prestige getter.
      *
-     * @param owner the owner of the card.
-     * @return the prestige gained at the end of the game.
-     * @throws IllegalArgumentException if the owner is null.
+     * @param owner The owner of the card.
+     * @return The prestige gained at the end of the game.
+     * @throws IllegalArgumentException If the owner is null.
      */
     @Override
     public int getPrestigeGain(Player owner) {
@@ -40,9 +52,9 @@ public class EndGameBuildingCard extends BuildingCard {
     /**
      * PrestigeEffect setter. This should be called only once.
      *
-     * @param prestigeEffect the prestige gained by the card at the end of the game (represented by an enum for JSON extraction).
-     * @throws IllegalStateException    gets thrown if this setter is called more than once.
-     * @throws IllegalArgumentException if the prestigeEffect is negative
+     * @param prestigeEffect The prestige gained by the card at the end of the game (represented by an enum for JSON extraction).
+     * @throws IllegalStateException Gets thrown if this setter is called more than once.
+     * @throws IllegalArgumentException If the prestigeEffect is null.
      */
     public void setPrestigeEffect(EndGameBuildingFunction prestigeEffect) throws IllegalStateException, IllegalArgumentException {
         if (prestigeEffect == null) throw new IllegalArgumentException();
@@ -53,27 +65,27 @@ public class EndGameBuildingCard extends BuildingCard {
     /**
      * PrestigeEffect getter. This method used by Jackson to save the prestige effect.
      *
-     * @return the prestige effect.
+     * @return The prestige effect.
      */
     public EndGameBuildingFunction getPrestigeEffect(){
         return prestigeEffect;
     }
 
     /**
-     * this method is used to accept a visitor that will visit the card and apply
+     * This method is used to accept a visitor that will visit the card and apply
      * the effects of the card on the player that has chosen to resolve it.
      *
-     * @param visitor the visitor that will visit the card.
+     * @param visitor The visitor that will visit the card.
      */
     @Override
     public void accept(CardVisitor visitor) {visitor.visit(this);}
 
     /**
-     * this method is used to compare two EndGameBuildingCard objects.
-     * it returns true if the two objects are equal, false otherwise.
+     * This method is used to compare two EndGameBuildingCard objects.
+     * It returns true if the two objects are equal, false otherwise.
      *
-     * @param o the reference object with which to compare.
-     * @return true if this object is the same as the obj argument; false otherwise.
+     * @param o The reference object with which to compare.
+     * @return True if this object is the same as the obj argument; false otherwise.
      */
     @Override
     public boolean equals(Object o) {
@@ -83,9 +95,9 @@ public class EndGameBuildingCard extends BuildingCard {
     }
 
     /**
-     * this method is used to calculate the hash code of the EndGameBuildingCard object.
+     * This method is used to calculate the hash code of the EndGameBuildingCard object.
      *
-     * @return the code of the EndGameBuildingCard object.
+     * @return The code of the EndGameBuildingCard object.
      */
     @Override
     public int hashCode() {
