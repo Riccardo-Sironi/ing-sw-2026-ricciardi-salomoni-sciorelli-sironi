@@ -8,11 +8,22 @@ import it.polimi.gc06.mesos.model.cards.events.SustenanceEvent;
 
 import java.util.ArrayList;
 
+/**
+ * A visitor responsible for initializing the bottom and top rows during the game setup or era change.
+ * It routes character cards to the bottom row and event cards to the top row.
+ */
 public class BottomRowInitVisitor extends CardVisitor {
     ArrayList<TribeCard> bottomRow;
     ArrayList<TribeCard> topRow;
     int maxTopRowSize;
 
+    /**
+     * Constructs a new BottomRowInitVisitor.
+     *
+     * @param bottomRow The list representing the bottom row of cards.
+     * @param topRow The list representing the top row of cards.
+     * @param maxTopRowSize The maximum allowed size for the top row.
+     */
     public BottomRowInitVisitor(ArrayList<TribeCard> bottomRow, ArrayList<TribeCard> topRow, int maxTopRowSize) {
         this.bottomRow = bottomRow;
         this.topRow = topRow;
@@ -22,8 +33,8 @@ public class BottomRowInitVisitor extends CardVisitor {
     /**
      * This method visits a RitualEvent card and adds it to the top row.
      *
-     * @param ritual the RitualEvent card to be visited.
-     * @throws IllegalStateException if the top row exceeds its maximum allowed size during initialization.
+     * @param ritual The RitualEvent card to be visited.
+     * @throws IllegalStateException If the top row exceeds its maximum allowed size during initialization.
      */
     @Override
     public void visit(RitualEvent ritual) throws IllegalStateException {
@@ -37,8 +48,8 @@ public class BottomRowInitVisitor extends CardVisitor {
     /**
      * This method visits a SustenanceEvent card and adds it to the top row.
      *
-     * @param sustenance the SustenanceEvent card to be visited.
-     * @throws IllegalStateException if the top row exceeds its maximum allowed size during initialization.
+     * @param sustenance The SustenanceEvent card to be visited.
+     * @throws IllegalStateException If the top row exceeds its maximum allowed size during initialization.
      */
     @Override
     public void visit(SustenanceEvent sustenance) throws IllegalStateException {
@@ -52,8 +63,8 @@ public class BottomRowInitVisitor extends CardVisitor {
     /**
      * This method visits a HuntEvent card and adds it to the top row.
      *
-     * @param hunt the HuntEvent card to be visited.
-     * @throws IllegalStateException if the top row exceeds its maximum allowed size during initialization.
+     * @param hunt The HuntEvent card to be visited.
+     * @throws IllegalStateException If the top row exceeds its maximum allowed size during initialization.
      */
     @Override
     public void visit(HuntEvent hunt) throws IllegalStateException {
@@ -67,8 +78,8 @@ public class BottomRowInitVisitor extends CardVisitor {
     /**
      * This method visits a PaintingsEvent card and adds it to the top row.
      *
-     * @param paintings the PaintingsEvent card to be visited.
-     * @throws IllegalStateException if the top row exceeds its maximum allowed size during initialization.
+     * @param paintings The PaintingsEvent card to be visited.
+     * @throws IllegalStateException If the top row exceeds its maximum allowed size during initialization.
      */
     @Override
     public void visit(PaintingsEvent paintings) throws IllegalStateException {
@@ -82,7 +93,7 @@ public class BottomRowInitVisitor extends CardVisitor {
     /**
      * This method visits a HunterCard and adds it to the bottom row.
      *
-     * @param card the HunterCard to be visited.
+     * @param card The HunterCard to be visited.
      */
     @Override
     public void visit(HunterCard card) {
@@ -92,7 +103,7 @@ public class BottomRowInitVisitor extends CardVisitor {
     /**
      * This method visits a ShamanCard and adds it to the bottom row.
      *
-     * @param card the ShamanCard to be visited.
+     * @param card The ShamanCard to be visited.
      */
     @Override
     public void visit(ShamanCard card) {
@@ -100,9 +111,9 @@ public class BottomRowInitVisitor extends CardVisitor {
     }
 
     /**
-     * This method visits a ArtistCard and adds it to the bottom row.
+     * This method visits an ArtistCard and adds it to the bottom row.
      *
-     * @param card the ArtistCard to be visited.
+     * @param card The ArtistCard to be visited.
      */
     @Override
     public void visit(ArtistCard card) {
@@ -112,7 +123,7 @@ public class BottomRowInitVisitor extends CardVisitor {
     /**
      * This method visits a BuilderCard and adds it to the bottom row.
      *
-     * @param card the BuilderCard to be visited.
+     * @param card The BuilderCard to be visited.
      */
     @Override
     public void visit(BuilderCard card) {
@@ -120,9 +131,9 @@ public class BottomRowInitVisitor extends CardVisitor {
     }
 
     /**
-     * This method visits a InventorCard and adds it to the bottom row.
+     * This method visits an InventorCard and adds it to the bottom row.
      *
-     * @param card the InventorCard to be visited.
+     * @param card The InventorCard to be visited.
      */
     @Override
     public void visit(InventorCard card) {
@@ -132,7 +143,7 @@ public class BottomRowInitVisitor extends CardVisitor {
     /**
      * This method visits a GathererCard and adds it to the bottom row.
      *
-     * @param card the GathererCard to be visited.
+     * @param card The GathererCard to be visited.
      */
     @Override
     public void visit(GathererCard card) {

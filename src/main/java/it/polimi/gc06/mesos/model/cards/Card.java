@@ -14,6 +14,10 @@ import it.polimi.gc06.mesos.model.cards.events.SustenanceEvent;
 
 import java.io.Serializable;
 
+/**
+ * The root interface for all cards in the Mesos game.
+ * It defines the base contract for the Visitor pattern and includes Jackson annotations for polymorphic serialization.
+ */
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.PROPERTY,
@@ -35,8 +39,12 @@ import java.io.Serializable;
         @JsonSubTypes.Type(value = RitualEvent.class, name = "RitualEvent"),
         @JsonSubTypes.Type(value = SustenanceEvent.class, name = "SustenanceEvent")
 })
-
 public interface Card extends Serializable {
 
+    /**
+     * Accepts a CardVisitor to perform operations based on the concrete type of this card.
+     *
+     * @param visitor The visitor that will process this card.
+     */
     void accept(CardVisitor visitor);
 }
