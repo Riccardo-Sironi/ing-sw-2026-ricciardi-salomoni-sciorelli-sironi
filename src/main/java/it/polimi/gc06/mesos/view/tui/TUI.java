@@ -403,7 +403,7 @@ public class TUI implements View, ModelListener {
                 buildingCompleter
         );
     }
-    
+
     /**
      *
      * Displays an interactive help screen containing character cards effects and explanations.
@@ -491,8 +491,22 @@ public class TUI implements View, ModelListener {
 
             String[] buildingsTitle = centerOnScreen(new String[]{"--- BUILDINGS ---"}, terminal);
             terminal.writer().println("\n" + buildingsTitle[0] + "\n");
-            tuiBoardRenderer.printCardRow(targetPlayer.getBuildings());
-            terminal.writer().flush();
+            List<Card> playerBuildings = targetPlayer.getBuildings();
+
+            TuiBuildingEffectVisitor effectVisitor = new TuiBuildingEffectVisitor();
+
+            for (int i = 0; i < playerBuildings.size(); i++) {
+                Card b = playerBuildings.get(i);
+                String name = String.join(" ", b.getClass().getSimpleName().split("(?=\\p{Upper})"));
+                String effect = effectVisitor.getEffect(b);
+
+                terminal.writer().println(Style.YELLOW + name + Style.RESET);
+                terminal.writer().println("\tEffect: " + effect);
+                terminal.writer().println("\tCost: " + effectVisitor.getCost() + " Food");
+                terminal.writer().println("\tPrestige: " + effectVisitor.getPrestige() + " Points");
+
+                terminal.writer().println("");
+            }
         }
 
         while (true) {
