@@ -147,7 +147,7 @@ transitions and game events. The interface is designed to be intuitive, providin
 a seamless gaming
 experience.
 
-It also features a help menu, showing custom keyboard shortcuts.
+It also features a help menu (accessed by pressing `H`) , showing custom keyboard shortcuts.
 
 ![1](src/main/resources/imgs/readme/start_gui.gif)
 ![2](src/main/resources/imgs/readme/login_gui.png)
