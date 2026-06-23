@@ -97,13 +97,13 @@ java -jar mesos-1.0-server.jar
 
 # Client configuration
 
-* Run the .jar inside your own operating systems' **Command Prompt** for the client with the following command
+Run the .jar inside your own operating systems' **Command Prompt** for the client with the following command
 
 ```bash
 java -jar mesos-1.0-client.jar
  ```
 
-* Follow the instructions that appear on the screen to start a game (make sure to enter the correct Server IP).
+Follow the instructions that appear on the screen to start a game (make sure to enter the correct Server IP).
 
 
 > [!TIP]
