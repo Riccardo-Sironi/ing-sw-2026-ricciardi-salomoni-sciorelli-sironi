@@ -23,6 +23,11 @@ public class TurnOrderTileView extends TileView {
         this.totemPieces = new ArrayList<>();
     }
 
+    /**
+     * Returns a binding for the true width of the tile; this method is used to help place the Totem in the correct position.
+     *
+     * @return the {@link DoubleBinding} representing the true width of the tile
+     */
     private DoubleBinding getTrueWidth() {
         return Bindings.createDoubleBinding(() -> {
             Image img = imageView.getImage();
@@ -33,6 +38,11 @@ public class TurnOrderTileView extends TileView {
         }, widthProperty(), heightProperty(), imageView.imageProperty());
     }
 
+    /**
+     * Returns a binding for the true height of the tile; this method is used to help place the Totem in the correct position.
+     *
+     * @return the {@link DoubleBinding} representing the true height of the tile
+     */
     private DoubleBinding getTrueHeight() {
         return Bindings.createDoubleBinding(() -> {
             Image img = imageView.getImage();
@@ -43,11 +53,21 @@ public class TurnOrderTileView extends TileView {
         }, widthProperty(), heightProperty(), imageView.imageProperty());
     }
 
+    /**
+     * Set the list of TotemPieceView objects to be displayed on the tile and update their positions accordingly.
+     *
+     * @param totemPieces the {@link ArrayList} of {@link TotemPieceView} objects to be displayed on the tile
+     */
     public void setTotemPieces(ArrayList<TotemPieceView> totemPieces) {
         this.totemPieces = totemPieces;
         setupTotems();
     }
 
+    /**
+     * Set up the TotemPieceView objects on the tile based on their positions defined in TurnOrderTileInfo.
+     * This method removes any existing TotemPieceView objects and adds the new ones, binding their layout properties
+     * to the true width and height of the tile.
+     */
     private void setupTotems() {
         this.getChildren().removeIf(node -> node instanceof Pane);
 
@@ -91,6 +111,13 @@ public class TurnOrderTileView extends TileView {
         }
     }
 
+    /**
+     * Set up the player name popup for the given TotemPieceView.
+     * This method creates a popup that displays the player's nickname and totem type when the mouse hovers over the
+     * TotemPieceView.
+     *
+     * @param totemPiece the {@link TotemPieceView} for which the popup is to be set up.
+     */
     private void setupPlayerNamePopup(TotemPieceView totemPiece) {
         Totem totemType = Totem.getTotem(totemPiece.getPlayer().getColor());
         if (totemType == Totem.NONE) return;
@@ -109,6 +136,11 @@ public class TurnOrderTileView extends TileView {
         });
     }
 
+    /**
+     * Get the totem pieces currently displayed on the tile.
+     *
+     * @return the {@link ArrayList} of {@link TotemPieceView} objects currently displayed on the tile
+     */
     public ArrayList<TotemPieceView> getTotemPieces() {
         return totemPieces;
     }

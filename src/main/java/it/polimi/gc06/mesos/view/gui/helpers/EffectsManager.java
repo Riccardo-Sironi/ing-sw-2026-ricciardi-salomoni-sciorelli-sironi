@@ -77,7 +77,6 @@ public class EffectsManager {
         card.setStyle("-fx-cursor: default; -fx-focus-traversable: false");
 
         card.setMouseTransparent(true);
-        card.setCanBePicked(false);
     }
 
     /**
@@ -131,7 +130,6 @@ public class EffectsManager {
         });
 
         card.setMouseTransparent(false);
-        card.setCanBePicked(true);
     }
 
     public static void normalCard(CardView card) {
@@ -144,7 +142,6 @@ public class EffectsManager {
         card.setCursor(Cursor.DEFAULT);
 
         card.setMouseTransparent(true);
-        card.setCanBePicked(false);
     }
 
     public static TranslateTransition createCardMoveTransition(CardView card, double toX, double toY, double duration) {
@@ -277,7 +274,7 @@ public class EffectsManager {
                         "-fx-border-radius: 8px;" +
                         "-fx-padding: 8px 15px;"
         );
-        
+
         popupContent.setAlignment(Pos.CENTER);
         popupContent.setMouseTransparent(true);
 

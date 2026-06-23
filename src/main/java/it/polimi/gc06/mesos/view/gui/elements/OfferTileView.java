@@ -19,6 +19,11 @@ public class OfferTileView extends TileView {
         super(image);
     }
 
+    /**
+     * Returns a binding for the true width of the tile; this method is used to help place the Totem in the correct position.
+     *
+     * @return the {@link DoubleBinding} representing the true width of the tile
+     */
     private DoubleBinding getTrueWidth() {
         return Bindings.createDoubleBinding(() -> {
             Image img = imageView.getImage();
@@ -29,6 +34,11 @@ public class OfferTileView extends TileView {
         }, widthProperty(), heightProperty(), imageView.imageProperty());
     }
 
+    /**
+     * Returns a binding for the true height of the tile; this method is used to help place the Totem in the correct position.
+     *
+     * @return the {@link DoubleBinding} representing the true height of the tile
+     */
     private DoubleBinding getTrueHeight() {
         return Bindings.createDoubleBinding(() -> {
             Image img = imageView.getImage();
@@ -39,11 +49,23 @@ public class OfferTileView extends TileView {
         }, widthProperty(), heightProperty(), imageView.imageProperty());
     }
 
+    /**
+     * Set the center position of the Totem in percentage of the tile's true width and height.
+     *
+     * @param xPercent the x-coordinate of the center position as a percentage
+     * @param yPercent the y-coordinate of the center position as a percentage
+     */
     public void setCenterPercentage(double xPercent, double yPercent) {
         this.centerSlot = new Point2D(xPercent, yPercent);
         rebindTotemLayout();
     }
 
+    /**
+     * Set the TotemPieceView to be displayed on the tile. This method removes any existing TotemPieceView and adds the
+     * new one, binding its size and position to the tile's dimensions.
+     *
+     * @param totemPieceView the {@link TotemPieceView} object to be set on the tile.
+     */
     public void setTotem(TotemPieceView totemPieceView) {
         this.getChildren().removeIf(node -> node instanceof Pane);
 
@@ -64,6 +86,9 @@ public class OfferTileView extends TileView {
         }
     }
 
+    /**
+     * Rebinds the layout of the TotemPieceView to the tile's dimensions.
+     */
     private void rebindTotemLayout() {
         if (this.currentTotemView != null) {
             DoubleBinding trueW = getTrueWidth();
@@ -86,6 +111,10 @@ public class OfferTileView extends TileView {
         }
     }
 
+    /**
+     * Sets up a popup that displays the player's name when hovering over the TotemPieceView. The popup is shown when
+     * the mouse enters the TotemPieceView, follows the mouse movement, and is hidden when the mouse exits.
+     */
     private void setupPlayerNamePopup() {
         if (this.currentTotemView == null) return;
         this.playerNamePopup = EffectsManager.createTotemPopup(Totem.getTotem(currentTotemView.getPlayer().getColor()), currentTotemView.getPlayer().getNickname());
@@ -103,6 +132,11 @@ public class OfferTileView extends TileView {
         });
     }
 
+    /**
+     * Get the current TotemPieceView displayed on the tile.
+     *
+     * @return the {@link TotemPieceView} currently displayed on the tile, or null if no TotemPieceView is set.
+     */
     public TotemPieceView getTotem() {
         return this.currentTotemView;
     }

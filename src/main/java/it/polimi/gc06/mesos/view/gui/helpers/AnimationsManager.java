@@ -25,10 +25,10 @@ public class AnimationsManager {
      * * The card will visually move from its original position to the player's inventory area, creating a more engaging user experience.
      * * It is called before redrawing the personal decks of the target player, based on the small model data.
      *
-     * @param card
-     * @param targetContainer
-     * @param mainRoot
-     * @param onEndAction
+     * @param card            the {@link CardView} object representing the card to be animated
+     * @param targetContainer the {@link HBox} container representing the player's inventory area where the card will be moved to
+     * @param mainRoot        the {@link HBox} representing the main root of the scene
+     * @param onEndAction     the {@link Runnable} action to be executed after the animation ends
      */
     public static void cardPickAnimation(CardView card, HBox targetContainer, HBox mainRoot, Runnable onEndAction) {
         card.setOnMouseClicked(null);
@@ -132,11 +132,12 @@ public class AnimationsManager {
      * The totem piece will visually move from the player's turn order tile to the target offer tile, creating a more
      * engaging user experience.
      *
-     * @param tile
-     * @param turnOrderTile
-     * @param offerTrackTiles
-     * @param mainRoot
-     * @param onEndAction
+     * @param tile            the {@link OfferTileView} object representing the target offer tile where the totem piece will be placed
+     * @param owner           the nickname of the player who owns the totem piece being moved
+     * @param turnOrderTile   the {@link TurnOrderTileView} object representing the player's turn order tile containing the totem piece
+     * @param offerTrackTiles the list of {@link OfferTileView} objects representing all offer tiles in the game
+     * @param mainRoot        the {@link HBox} representing the main root of the scene
+     * @param onEndAction     the {@link Runnable} action to be executed after the animation ends
      */
     public static void totemSetAnimation(OfferTileView tile, String owner, TurnOrderTileView turnOrderTile, ArrayList<OfferTileView> offerTrackTiles, HBox mainRoot, Runnable onEndAction) {
         TotemPieceView totemMoved = turnOrderTile.getTotemPieces().stream()
@@ -224,6 +225,17 @@ public class AnimationsManager {
         }
     }
 
+    /**
+     * This method orchestrate the refill animation for the cards rows, first it clears the target containers,
+     * then it animates the bottom row and then the top row.
+     *
+     * @param top           the {@link List} of {@link Card} of the top row
+     * @param bottom        the {@link List} of {@link Card} of the bottom row
+     * @param deckContainer the {@link HBox} where the deck is displayed
+     * @param topTarget     the {@link HBox} where the top row of cards will be displayed
+     * @param bottomTarget  the {@link HBox} where the bottom row of cards will be displayed
+     * @param onEndAction   the {@link Runnable} to be executed when the animation is complete
+     */
     public static void refillCardsRowAnimation(List<Card> top, List<Card> bottom, HBox deckContainer, HBox topTarget, HBox bottomTarget, Runnable onEndAction) {
         bottomTarget.getChildren().clear();
 
@@ -238,6 +250,15 @@ public class AnimationsManager {
         });
     }
 
+    /**
+     * This method animates the movement of a list of cards from a source container to a target container.
+     *
+     * @param index     the index of the card currently animating.
+     * @param cards     the {@link List} of cards yet to be animated.
+     * @param sourceBox the {@link HBox} initially containing the cards.
+     * @param targetBox the {@link HBox} where the cards will be moved.
+     * @param onListEnd the action ({@link Runnable}) to perform when the list animation is complete.
+     */
     private static void animateCardListMove(int index, List<Card> cards, HBox sourceBox, HBox targetBox, Runnable onListEnd) {
         if (index >= cards.size()) {
             if (onListEnd != null) onListEnd.run();
@@ -255,6 +276,16 @@ public class AnimationsManager {
         });
     }
 
+    /**
+     * This method animates the movement of a single card from a source container to a target container. The movement is a
+     * smooth transition that visually represents the card being moved from one location to another.
+     *
+     * @param card        the {@link Card} to animate.
+     * @param index       the index of the card currently animating.
+     * @param sourceBox   the {@link HBox} containing the source cards.
+     * @param targetBox   the {@link HBox} where the cards will be moved.
+     * @param onEndAction the action ({@link Runnable}) to perform when the animation is complete.
+     */
     private static void animateCardMove(Card card, int index, HBox sourceBox, HBox targetBox, Runnable onEndAction) {
         Pane root = (Pane) sourceBox.getScene().getRoot();
         Pane overlayPane = new Pane();
@@ -326,6 +357,15 @@ public class AnimationsManager {
         moveTransition.play();
     }
 
+    /**
+     * This method animates the displaying of a list of cards from the deck to the target container.
+     *
+     * @param index         the index of the card to animate.
+     * @param cards         the {@link List} of cards yet to be animated.
+     * @param deckContainer the {@link HBox} initially containing the cards.
+     * @param targetBox     the {@link HBox} where the cards will be moved.
+     * @param onListEnd     the action ({@link Runnable}) to perform when the list animation is complete.
+     */
     private static void animateCardListWithFly(int index, List<Card> cards, HBox deckContainer, HBox targetBox, Runnable onListEnd) {
         if (index >= cards.size()) {
             if (onListEnd != null) onListEnd.run();
@@ -343,6 +383,16 @@ public class AnimationsManager {
         });
     }
 
+    /**
+     * This method animates a card flying from the deck to the target container. The card will visually "fly"" from the
+     * deck to the target container, creating a more engaging user experience. The animation includes a flip effect to
+     * reveal the card's face as it reaches the target.
+     *
+     * @param cardToDraw    the {@link Card} to animate.
+     * @param deckContainer the {@link HBox} initially containing the card.
+     * @param targetBox     the {@link HBox} where the card will be moved.
+     * @param onEndAction   the action ({@link Runnable}) to perform when the animation is complete.
+     */
     private static void animateCardFlyFromDeck(Card cardToDraw, HBox deckContainer, HBox targetBox, Runnable onEndAction) {
         Pane root = (Pane) deckContainer.getScene().getRoot();
         Pane overlayPane = new Pane();
@@ -422,7 +472,16 @@ public class AnimationsManager {
         flyAndFlip.play();
     }
 
-
+    /**
+     * This method orchestrate the refill animations for the buildings rows, first it clears the target containers,
+     * then it animates the top row and then the bottom row.
+     *
+     * @param top          the {@link List} of cards for the top row.
+     * @param bottom       the {@link List} of cards for the bottom row.
+     * @param topTarget    the {@link HBox} for the top row.
+     * @param bottomTarget the {@link HBox} for the bottom row.
+     * @param onEndAction  the action ({@link Runnable}) to perform when the animation is complete.
+     */
     public static void refillBuildingsRowAnimation(List<Card> top, List<Card> bottom, HBox topTarget, HBox bottomTarget, Runnable onEndAction) {
         topTarget.getChildren().clear();
         bottomTarget.getChildren().clear();
@@ -470,6 +529,14 @@ public class AnimationsManager {
         parallel.play();
     }
 
+    /**
+     * This method animates the resolution of an event card, displaying it in the center of the screen with a
+     * fade-in and scale-up effect, followed by a slight scale-down before disappearing.
+     *
+     * @param eventCard      the {@link Card} to animate.
+     * @param eventContainer the {@link HBox} containing the event card.
+     * @param onEndAction    the action ({@link Runnable}) to perform when the animation is complete.
+     */
     public static void eventResolutionAnimation(Card eventCard, HBox eventContainer, Runnable onEndAction) {
         Pane root = (Pane) eventContainer.getScene().getRoot();
 

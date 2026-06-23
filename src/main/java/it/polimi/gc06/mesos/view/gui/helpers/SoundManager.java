@@ -48,6 +48,11 @@ public class SoundManager {
 
     }
 
+    /**
+     * Get the singleton instance of the SoundManager class. If the instance does not exist, it will be created.
+     *
+     * @return the {@link SoundManager} instance
+     */
     public static SoundManager getInstance() {
         if (instance == null) {
             instance = new SoundManager();
@@ -55,38 +60,62 @@ public class SoundManager {
         return instance;
     }
 
+    /**
+     * Play the start music track. This method sets the background music to the start media and switches to it.
+     */
     public void playStartMusic() {
         backgroundMusic = startMedia;
         switchMusic(startMedia);
     }
 
+    /**
+     * Play the lobby music track. This method sets the background music to the lobby media and switches to it.
+     */
     public void playLobbyMusic() {
         backgroundMusic = lobbyMedia;
         switchMusic(lobbyMedia);
     }
 
+    /**
+     * Play the game music track. This method sets the background music to the game media and switches to it.
+     */
     public void playGameMusic() {
         backgroundMusic = gameMedia;
         switchMusic(gameMedia);
     }
 
+    /**
+     * Play the era 3 music track. This method sets the background music to the era 3 media and switches to it.
+     */
     public void playEraIIIMusic() {
         backgroundMusic = era3Media;
         switchMusic(era3Media);
     }
 
+    /**
+     * Play the click sound effect.
+     */
     public void playClick() {
         if (!isMuted) clickSound.play();
     }
 
+    /**
+     * Play the error sound effect.
+     */
     public void playError() {
         if (!isMuted) errorSound.play();
     }
 
+    /**
+     * Play the totem sound effect.
+     */
     public void playTotem() {
         if (!isMuted) totemSound.play();
     }
 
+    /**
+     * Play the card flip sound effect.
+     */
     public void playCardFlip() {
         if (!isMuted) {
             //cardFlipSound.stop();
@@ -94,6 +123,9 @@ public class SoundManager {
         }
     }
 
+    /**
+     * Play the pick card sound effect.
+     */
     public void playPickCard() {
         if (!isMuted) {
             //pickCardSound.stop();
@@ -101,6 +133,12 @@ public class SoundManager {
         }
     }
 
+    /**
+     * Switch the background music to a new track. If the new track is the same as the current one, no action is taken.
+     * If there is a current track playing, it will fade out before switching to the new track.
+     *
+     * @param newMedia the {@link Media} object representing the new music track to switch to
+     */
     private void switchMusic(Media newMedia) {
         if (isMuted) return;
 
@@ -125,6 +163,11 @@ public class SoundManager {
         fadeOut.play();
     }
 
+    /**
+     * Start a new music track.
+     *
+     * @param media the {@link Media} object representing the music track to start
+     */
     private void startNewTrack(Media media) {
         currentMusicPlayer = new MediaPlayer(media);
         currentMusicPlayer.setCycleCount(MediaPlayer.INDEFINITE);
@@ -138,12 +181,18 @@ public class SoundManager {
         fadeIn.play();
     }
 
+    /**
+     * Start the background music for the game.
+     */
     public void startBackgroundMusic() {
         if (backgroundMusic != null && !isMuted) {
             switchMusic(backgroundMusic);
         }
     }
 
+    /**
+     * Stop the background music for the game.
+     */
     public void stopBackgroundMusic() {
         if (backgroundMusic != null) {
             currentMusicPlayer.stop();
@@ -151,6 +200,11 @@ public class SoundManager {
         }
     }
 
+    /**
+     * Raise in game volume.
+     *
+     * @param increment the amount to increase the volume by, in the range [0.0, 1.0]
+     */
     public void raiseVolume(double increment) {
         userVolume += increment;
         if (userVolume > 1.0) {
@@ -162,8 +216,13 @@ public class SoundManager {
         }
     }
 
-    public void lowerVolume(double increment) {
-        userVolume -= increment;
+    /**
+     * Lower in game volume.
+     *
+     * @param decrement the amount to decrease the volume by, in the range [0.0 ,1.0]
+     */
+    public void lowerVolume(double decrement) {
+        userVolume -= decrement;
         if (userVolume < 0.0) {
             userVolume = 0.0;
         }
@@ -173,14 +232,27 @@ public class SoundManager {
         }
     }
 
+    /**
+     * Get the current user volume.
+     *
+     * @return the double value representing the current volume.
+     */
     public double getVolume() {
         return userVolume;
     }
 
+    /**
+     * Get if the sound is muted or not.
+     *
+     * @return true if the sound is muted, false otherwise.
+     */
     public boolean isMuted() {
         return isMuted;
     }
 
+    /**
+     * Toggle the mute for the in game sounds in general.
+     */
     public void toggleMute() {
         isMuted = !isMuted;
         if (isMuted) {

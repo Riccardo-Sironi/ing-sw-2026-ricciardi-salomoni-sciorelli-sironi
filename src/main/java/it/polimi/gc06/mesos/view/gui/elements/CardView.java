@@ -10,31 +10,31 @@ import static it.polimi.gc06.mesos.view.gui.GUI.imageFetcher;
 public class CardView extends ImageView {
 
     private Card card;
-    private boolean canBePicked;
 
     public CardView(Image image) {
         super(image);
         if (image == null) this.setImage(imageFetcher.getNullCardImage());
         this.setPreserveRatio(true);
         this.setSmooth(true);
-        this.canBePicked = false;
 
         EffectsManager.normalCard(this);
     }
 
+    /**
+     * Set the Card object associated with the relative view
+     *
+     * @param card the {@link Card} object to be associated with the view
+     */
     public void setCard(Card card) {
         this.card = card;
     }
 
+    /**
+     * Get the Card object associated with the relative view
+     *
+     * @return the {@link Card} object associated with the view
+     */
     public Card getCard() {
         return card;
-    }
-
-    public boolean canBePicked() {
-        return canBePicked;
-    }
-
-    public void setCanBePicked(boolean canBePicked) {
-        this.canBePicked = canBePicked;
     }
 }

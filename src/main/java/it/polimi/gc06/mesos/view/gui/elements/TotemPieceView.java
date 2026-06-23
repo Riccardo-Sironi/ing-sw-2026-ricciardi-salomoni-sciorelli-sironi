@@ -8,7 +8,7 @@ import static it.polimi.gc06.mesos.view.gui.GUI.imageFetcher;
 
 public class TotemPieceView extends ImageView {
     private PlayerView player;
-    
+
     public TotemPieceView() {
         super();
         this.setImage(imageFetcher.getTotemImage());
@@ -26,6 +26,9 @@ public class TotemPieceView extends ImageView {
         applyTotemEffect();
     }
 
+    /**
+     * Applies a drop shadow effect to the totem piece to enhance its visual appearance.
+     */
     public void applyTotemEffect() {
         DropShadow shadow = new DropShadow();
         shadow.setRadius(2.0);
@@ -35,10 +38,20 @@ public class TotemPieceView extends ImageView {
         this.setEffect(shadow);
     }
 
+    /**
+     * Returns the PlayerView associated with this totem piece.
+     *
+     * @return the {@link PlayerView} associated.
+     */
     public PlayerView getPlayer() {
         return player;
     }
 
+    /**
+     * Sets the PlayerView associated with this totem piece.
+     *
+     * @param player the {@link PlayerView} to associate.
+     */
     public void setPlayer(PlayerView player) {
         this.player = player;
         if (this.player != null) {
