@@ -18,11 +18,21 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
+/**
+ * A factory and manager class responsible for bootstrapping a complete GameModel.
+ * It loads cards, tiles, and configurations from local JSON files, instantiates players,
+ * sets up the board, and links all internal components (like the registry and turn manager) together.
+ */
 public class ModelInstancesManager {
 
     public static final String JSON_PATH = "/it/polimi/gc06/mesos/jsons/";
     private final DTONotifier notifier;
 
+    /**
+     * Constructs a new ModelInstancesManager.
+     *
+     * @param notifier The network notifier to be injected into the game model components.
+     */
     public ModelInstancesManager(DTONotifier notifier){
         this.notifier = notifier;
     }
@@ -32,10 +42,10 @@ public class ModelInstancesManager {
      * for cards, modifier buildings, turn order tiles, and offer tracks.
      * It also sets up players, the game board, and the turn manager based on the provided list of nicknames.
      *
-     * @param nicknames the list of player nicknames to join the game.
-     * @return a fully initialized GameModel ready to be played.
-     * @throws IOException if there is an error reading the JSON configuration files.
-     * @throws IllegalArgumentException if the nicknames list is null, empty, or has an invalid size.
+     * @param nicknames The list of player nicknames to join the game.
+     * @return A fully initialized GameModel ready to be played.
+     * @throws IOException If there is an error reading the JSON configuration files.
+     * @throws IllegalArgumentException If the nicknames list is null, empty, or has an invalid size.
      */
     public GameModel createGame(List<String> nicknames) throws IOException, IllegalArgumentException {
 

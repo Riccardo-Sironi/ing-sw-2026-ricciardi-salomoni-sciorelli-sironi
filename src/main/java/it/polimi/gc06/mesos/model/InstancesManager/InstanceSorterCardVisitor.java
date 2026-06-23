@@ -12,6 +12,11 @@ import it.polimi.gc06.mesos.model.cards.events.SustenanceEvent;
 import java.util.ArrayList;
 import java.util.EnumMap;
 
+/**
+ * A specialized visitor used during the initialization phase to sort a raw list of parsed
+ * cards into structured collections mapped by Era. It also injects the ModifierBuildingsRegistry
+ * into specific event cards that require it.
+ */
 public class InstanceSorterCardVisitor extends CardVisitor {
 
     private final EnumMap<Era, ArrayList<TribeCard>> tribeCards;
@@ -19,6 +24,11 @@ public class InstanceSorterCardVisitor extends CardVisitor {
     private final ArrayList<EventCard> finalEvents;
     private final ModifierBuildingsRegistry registry;
 
+    /**
+     * Constructs a new InstanceSorterCardVisitor.
+     *
+     * @param registry The registry containing game rule modifiers, to be injected into events.
+     */
     public InstanceSorterCardVisitor(ModifierBuildingsRegistry registry) {
         this.tribeCards = new EnumMap<Era, ArrayList<TribeCard>>(Era.class);
         this.buildingCards = new EnumMap<Era, ArrayList<BuildingCard>>(Era.class);
@@ -33,7 +43,7 @@ public class InstanceSorterCardVisitor extends CardVisitor {
     /**
      * This method visits a BuildingCard and adds it to the appropriate era list.
      *
-     * @param card the BuildingCard to be sorted.
+     * @param card The BuildingCard to be sorted.
      */
     @Override
     public void visit(BuildingCard card) {
@@ -43,7 +53,7 @@ public class InstanceSorterCardVisitor extends CardVisitor {
     /**
      * This method visits a EndGameBuildingCard and adds it to the appropriate era list.
      *
-     * @param building the EndGameBuildingCard to be sorted.
+     * @param building The EndGameBuildingCard to be sorted.
      */
     @Override
     public void visit(EndGameBuildingCard building) {
@@ -53,7 +63,7 @@ public class InstanceSorterCardVisitor extends CardVisitor {
     /**
      * This method visits a ModifierBuildingCard and adds it to the appropriate era list.
      *
-     * @param building the ModifierBuildingCard to be sorted.
+     * @param building The ModifierBuildingCard to be sorted.
      */
     @Override
     public void visit(ModifierBuildingCard building) {
@@ -63,7 +73,7 @@ public class InstanceSorterCardVisitor extends CardVisitor {
     /**
      * This method visits a ObserverSetBuildingCard and adds it to the appropriate era list.
      *
-     * @param building the ObserverSetBuildingCard to be sorted.
+     * @param building The ObserverSetBuildingCard to be sorted.
      */
     @Override
     public void visit(ObserverSetBuildingCard building) {
@@ -73,7 +83,7 @@ public class InstanceSorterCardVisitor extends CardVisitor {
     /**
      * This method visits a ObserverPairBuildingCard and adds it to the appropriate era list.
      *
-     * @param building the ObserverPairBuildingCard to be sorted.
+     * @param building The ObserverPairBuildingCard to be sorted.
      */
     @Override
     public void visit(ObserverPairBuildingCard building) {
@@ -83,7 +93,7 @@ public class InstanceSorterCardVisitor extends CardVisitor {
     /**
      * This method visits a general TribeCard and adds it to the appropriate era list.
      *
-     * @param card the TribeCard to be sorted.
+     * @param card The TribeCard to be sorted.
      */
     @Override
     public void visit(TribeCard card) {
@@ -93,7 +103,7 @@ public class InstanceSorterCardVisitor extends CardVisitor {
     /**
      * This method visits a general HunterCard and adds it to the appropriate era list.
      *
-     * @param card the HunterCard to be sorted.
+     * @param card The HunterCard to be sorted.
      */
     @Override
     public void visit(HunterCard card) {
@@ -103,7 +113,7 @@ public class InstanceSorterCardVisitor extends CardVisitor {
     /**
      * This method visits a general ShamanCard and adds it to the appropriate era list.
      *
-     * @param card the ShamanCard to be sorted.
+     * @param card The ShamanCard to be sorted.
      */
     @Override
     public void visit(ShamanCard card) {
@@ -113,7 +123,7 @@ public class InstanceSorterCardVisitor extends CardVisitor {
     /**
      * This method visits a general ArtistCard and adds it to the appropriate era list.
      *
-     * @param card the ArtistCard to be sorted.
+     * @param card The ArtistCard to be sorted.
      */
     @Override
     public void visit(ArtistCard card) {
@@ -123,7 +133,7 @@ public class InstanceSorterCardVisitor extends CardVisitor {
     /**
      * This method visits a general BuilderCard and adds it to the appropriate era list.
      *
-     * @param card the BuilderCard to be sorted.
+     * @param card The BuilderCard to be sorted.
      */
     @Override
     public void visit(BuilderCard card) {
@@ -133,7 +143,7 @@ public class InstanceSorterCardVisitor extends CardVisitor {
     /**
      * This method visits a general InventorCard and adds it to the appropriate era list.
      *
-     * @param card the InventorCard to be sorted.
+     * @param card The InventorCard to be sorted.
      */
     @Override
     public void visit(InventorCard card) {
@@ -143,7 +153,7 @@ public class InstanceSorterCardVisitor extends CardVisitor {
     /**
      * This method visits a general GathererCard and adds it to the appropriate era list.
      *
-     * @param card the GathererCard to be sorted.
+     * @param card The GathererCard to be sorted.
      */
     @Override
     public void visit(GathererCard card) {
@@ -154,7 +164,7 @@ public class InstanceSorterCardVisitor extends CardVisitor {
      * Visits an EventCard, injects the modifier registry into it,
      * and adds it to the appropriate era list.
      *
-     * @param card the EventCard to be sorted.
+     * @param card The EventCard to be sorted.
      */
     @Override
     public void visit(EventCard card) {
@@ -167,7 +177,7 @@ public class InstanceSorterCardVisitor extends CardVisitor {
      * and adds it either to the final events list (if Era III)
      * or the regular era list.
      *
-     * @param card the RitualEvent to be sorted.
+     * @param card The RitualEvent to be sorted.
      */
     @Override
     public void visit(RitualEvent card) {
@@ -181,7 +191,7 @@ public class InstanceSorterCardVisitor extends CardVisitor {
      * and adds it either to the final events list (if Era III)
      * or the regular era list.
      *
-     * @param card the SustenanceEvent to be sorted.
+     * @param card The SustenanceEvent to be sorted.
      */
     @Override
     public void visit(SustenanceEvent card) {
@@ -193,7 +203,7 @@ public class InstanceSorterCardVisitor extends CardVisitor {
     /**
      * This method retrieves the sorted map of TribeCards categorized by Era.
      *
-     * @return an EnumMap containing lists of TribeCards for each Era.
+     * @return An EnumMap containing lists of TribeCards for each Era.
      */
     public EnumMap<Era, ArrayList<TribeCard>> getTribeCards() {
         return tribeCards;
@@ -202,7 +212,7 @@ public class InstanceSorterCardVisitor extends CardVisitor {
     /**
      * This method retrieves the sorted map of BuildingCard categorized by Era.
      *
-     * @return an EnumMap containing lists of BuildingCard for each Era.
+     * @return An EnumMap containing lists of BuildingCard for each Era.
      */
     public EnumMap<Era, ArrayList<BuildingCard>> getBuildingCards() {
         return buildingCards;
@@ -211,7 +221,7 @@ public class InstanceSorterCardVisitor extends CardVisitor {
     /**
      * This method retrieves the final events allocated for Era III.
      *
-     * @return an array containing the final EventCards.
+     * @return An array containing the final EventCards.
      */
     public EventCard[] getFinalEvents() {
         return finalEvents.toArray(new EventCard[2]);
