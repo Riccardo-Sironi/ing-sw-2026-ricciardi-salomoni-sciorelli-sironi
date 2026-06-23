@@ -3,12 +3,22 @@ package it.polimi.gc06.mesos.dtos;
 import it.polimi.gc06.mesos.view.smallModel.PlayerView;
 import it.polimi.gc06.mesos.view.smallModel.SmallModel;
 
+/**
+ * Broadcasts that a player's totem has been moved back from the offer track
+ * to a specific index on the turn order tile.
+ */
 public class TotemTurnMoveDTO implements SmallModelEditor {
 
     private int index;
     private String player;
     private Integer sequenceNumber;
 
+    /**
+     * Constructs a new TotemTurnMoveDTO.
+     *
+     * @param player The nickname of the player whose totem is moving.
+     * @param index The target slot index on the turn order tile.
+     */
     public TotemTurnMoveDTO(String player, int index) {
         this.player = player;
         this.index = index;
@@ -18,9 +28,9 @@ public class TotemTurnMoveDTO implements SmallModelEditor {
     /**
      * {@inheritDoc}
      *
-     * @param smallModel the client's small model.
-     * @throws IllegalStateException if shuffling fails due to broken slot assumptions.
-     * @throws Error                 on failure.
+     * @param smallModel The client's small model.
+     * @throws IllegalStateException If shuffling fails due to broken slot assumptions.
+     * @throws Error On failure.
      */
     @Override
     public void edit(SmallModel smallModel) throws IllegalStateException, Error {
@@ -45,7 +55,7 @@ public class TotemTurnMoveDTO implements SmallModelEditor {
     /**
      * {@inheritDoc}
      *
-     * @param visitor
+     * @param visitor The visitor handling this DTO.
      */
     @Override
     public void accept(DTOVisitor visitor) {

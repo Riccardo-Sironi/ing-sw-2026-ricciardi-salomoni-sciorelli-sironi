@@ -6,6 +6,10 @@ import it.polimi.gc06.mesos.view.smallModel.SmallModel;
 
 import java.util.Set;
 
+/**
+ * Updates a specific player's aggregated statistics and collections.
+ * Can patch all fields or just character counts depending on the constructor used.
+ */
 public class PlayerRecapDTO implements SmallModelEditor {
 
     //everything can be null
@@ -21,6 +25,20 @@ public class PlayerRecapDTO implements SmallModelEditor {
     private final Set<InventionIcon> collectedIcons;
     private Integer sequenceNumber;
 
+    /**
+     * Constructs a complete PlayerRecapDTO with all stats.
+     *
+     * @param nickname The target player's nickname.
+     * @param buildersDiscount The player's builder discount.
+     * @param shamanStar The player's shaman star modifier.
+     * @param artistNumber The number of artist characters.
+     * @param builderNumber The number of builder characters.
+     * @param gathererNumber The number of gatherer characters.
+     * @param hunterNumber The number of hunter characters.
+     * @param inventorNumber The number of inventor characters.
+     * @param shamanNumber The number of shaman characters.
+     * @param collectedIcons The set of collected invention icons.
+     */
     public PlayerRecapDTO(String nickname, Integer buildersDiscount, Integer shamanStar, Integer artistNumber,
                           Integer builderNumber, Integer gathererNumber, Integer hunterNumber, Integer inventorNumber,
                           Integer shamanNumber, Set<InventionIcon> collectedIcons) {
@@ -37,6 +55,17 @@ public class PlayerRecapDTO implements SmallModelEditor {
         this.sequenceNumber = null;
     }
 
+    /**
+     * Constructs a partial PlayerRecapDTO updating only character counts.
+     *
+     * @param nickname The target player's nickname.
+     * @param shamanNumber The number of shaman characters.
+     * @param inventorNumber The number of inventor characters.
+     * @param hunterNumber The number of hunter characters.
+     * @param gathererNumber The number of gatherer characters.
+     * @param builderNumber The number of builder characters.
+     * @param artistNumber The number of artist characters.
+     */
     public PlayerRecapDTO(String nickname, Integer shamanNumber, Integer inventorNumber, Integer hunterNumber,
                           Integer gathererNumber, Integer builderNumber, Integer artistNumber) {
         this.nickname = nickname;
@@ -52,7 +81,13 @@ public class PlayerRecapDTO implements SmallModelEditor {
         this.sequenceNumber = null;
     }
 
-
+    /**
+     * {@inheritDoc}
+     *
+     * @param smallModel The client's small model.
+     * @throws IllegalStateException If the nickname given is not present in the smallModel.
+     * @throws Error On critical failures.
+     */
     @Override
     public void edit(SmallModel smallModel) throws IllegalStateException, Error {
         //finds the player by nickname
@@ -75,7 +110,7 @@ public class PlayerRecapDTO implements SmallModelEditor {
     /**
      * {@inheritDoc}
      *
-     * @param visitor
+     * @param visitor The visitor handling this DTO.
      */
     @Override
     public void accept(DTOVisitor visitor) {
@@ -85,7 +120,7 @@ public class PlayerRecapDTO implements SmallModelEditor {
     /**
      * Get the player's nickname.
      *
-     * @return the player's nickname
+     * @return The player's nickname.
      */
     public String getPlayer() {
         return nickname;

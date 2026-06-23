@@ -13,9 +13,10 @@ public class PickTopRowDTO implements SmallModelEditor {
     private Integer sequenceNumber;
 
     /**
+     * Constructs a new PickTopRowDTO.
      *
-     * @param player    player who picked it.
-     * @param cardIndex
+     * @param player The nickname of the player who picked the card.
+     * @param cardIndex The index of the card in the top row.
      */
     public PickTopRowDTO(String player, int cardIndex) {
         this.player = player;
@@ -26,8 +27,8 @@ public class PickTopRowDTO implements SmallModelEditor {
     /**
      * {@inheritDoc}
      *
-     * @param smallModel the client's small model.
-     * @throws IllegalStateException if the target player is not found.
+     * @param smallModel The client's small model.
+     * @throws IllegalStateException If the target player is not found.
      */
     @Override
     public void edit(SmallModel smallModel) {
@@ -42,14 +43,14 @@ public class PickTopRowDTO implements SmallModelEditor {
     }
 
     /**
-     * @return the nickname of the drafting player.
+     * @return The nickname of the drafting player.
      */
     public String getPlayer() {
         return player;
     }
 
     /**
-     * @return the index from where the card was drafted.
+     * @return The index from where the card was drafted.
      */
     public int getCardIndex() {
         return cardIndex;
@@ -58,18 +59,28 @@ public class PickTopRowDTO implements SmallModelEditor {
     /**
      * {@inheritDoc}
      *
-     * @param visitor
+     * @param visitor The visitor handling this DTO.
      */
     @Override
     public void accept(DTOVisitor visitor) {
         visitor.visit(this);
     }
 
+    /**
+     * Sets the sequence number for this DTO.
+     *
+     * @param sNum The sequence number.
+     */
     @Override
     public void setSequenceNumber(int sNum) {
         sequenceNumber = sNum;
     }
 
+    /**
+     * Retrieves the sequence number of this DTO.
+     *
+     * @return The sequence number, or null if not set.
+     */
     @Override
     public Integer getSequenceNumber() {
         return sequenceNumber;
