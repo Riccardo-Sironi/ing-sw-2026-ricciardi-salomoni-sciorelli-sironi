@@ -22,7 +22,7 @@ The codebase has been designed from scratch following strict **SOLID** principle
 architectural pattern, enriched with standard GoF design patterns (Factory Method, Observer, State, Command, etc.) to
 ensure high cohesion and low coupling.
 
-Check out the official Mesos Board Game Rules for more
+Check out the official Mesos Game Rules for more
 details : [IT](documents/mesos_rules_it.pdf) / [EN](documents/mesos_rules_en.pdf)
 
 Check out the [requirements document](documents/requirements_mesos.pdf) for more details about the project.

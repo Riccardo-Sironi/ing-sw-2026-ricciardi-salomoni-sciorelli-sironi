@@ -8,7 +8,7 @@ public record TurnOrderTile(ArrayList<TileSlot> slots) {
      * TurnOrderTile constructor.
      *
      * @param slots represents the tile slots on the turn order tile
-     * @throws IllegalArgumentException {@inheritDoc}
+     * @throws IllegalArgumentException if slots is null
      */
     public TurnOrderTile {
         if (slots == null) throw new IllegalArgumentException();
