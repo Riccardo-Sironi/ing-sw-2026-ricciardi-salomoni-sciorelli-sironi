@@ -21,12 +21,20 @@ public class MatchManager {
     private final Set<String> loggedUsers;
     private final AtomicInteger idGenerator;
 
+    /**
+     * Constructs a MatchManager with a specific starting ID for new matches.
+     *
+     * @param largestResumedMatchId The largest ID among the restored matches, to ensure uniqueness.
+     */
     public MatchManager(int largestResumedMatchId) {
         activeMatches = new ConcurrentHashMap<>();
         loggedUsers = ConcurrentHashMap.newKeySet();
         idGenerator = new AtomicInteger(largestResumedMatchId + 1);
     }
 
+    /**
+     * Constructs a MatchManager starting with match ID 0.
+     */
     public MatchManager() {
         activeMatches = new ConcurrentHashMap<>();
         loggedUsers = ConcurrentHashMap.newKeySet();
@@ -36,8 +44,8 @@ public class MatchManager {
     /**
      * Attempts to register a user globally on the server.
      *
-     * @param nick the nickname to log in
-     * @return true if the nickname was successfully registered, false if it is already taken
+     * @param nick The nickname to log in.
+     * @return True if the nickname was successfully registered, false if it is already taken.
      */
     public boolean login(String nick) {
         if (loggedUsers.add(nick)) {
@@ -51,8 +59,8 @@ public class MatchManager {
      * Logs out a user, gracefully removing them from any active matches
      * and freeing up their nickname for future connections.
      *
-     * @param nick the nickname of the user to log out
-     * @return true if the user was successfully logged out
+     * @param nick The nickname of the user to log out.
+     * @return True if the user was successfully logged out.
      */
     public synchronized boolean logout(String nick) {
         activeMatches.forEach((_, m) -> m.removePlayer(nick));
@@ -63,8 +71,8 @@ public class MatchManager {
      * Creates a new {@link Match} and automatically handles the cleanup
      * of matches that have already ended.
      *
-     * @param numOfPlayers the required number of players for the new match
-     * @return the newly created match instance
+     * @param numOfPlayers The required number of players for the new match.
+     * @return The newly created match instance.
      */
     public synchronized Match createMatch(int numOfPlayers) {
         removeClosedMatches();
@@ -75,7 +83,7 @@ public class MatchManager {
     }
 
     /**
-     * removes from the list all closed matches
+     * Removes from the list all closed matches.
      */
     private void removeClosedMatches() {
         //check if a match should be removed (memory leak handling)
@@ -86,7 +94,7 @@ public class MatchManager {
     /**
      * Retrieves a formatted, comma-separated string of matches that can still be joined.
      *
-     * @return a formatted string of available matches (e.g. "id:currentPlayers/maxPlayers,...")
+     * @return A formatted string of available matches (e.g. "id:currentPlayers/maxPlayers,...").
      */
     public String getAvailableMatchesString() {
         removeClosedMatches();
@@ -101,7 +109,8 @@ public class MatchManager {
     /**
      * Retrieves a formatted, comma-separated string of matches that can still be joined by the specified player.
      *
-     * @return a formatted string of available matches (e.g. "id:currentPlayers/maxPlayers,...")
+     * @param nickname The nickname of the player.
+     * @return A formatted string of available matches (e.g. "id:currentPlayers/maxPlayers,...").
      */
     public String getAvailableMatchesString(String nickname) {
         removeClosedMatches();
@@ -122,9 +131,9 @@ public class MatchManager {
     }
 
     /**
-     * Returns all not ended matches
+     * Returns all not ended matches.
      *
-     * @return an {@link Collection} view of active matches.
+     * @return A {@link Collection} view of active matches.
      */
     public synchronized Collection<Match> getActiveMatches() {
         removeClosedMatches();
@@ -134,8 +143,8 @@ public class MatchManager {
     /**
      * Retrieves the match ID of the match a player is currently in, if any.
      *
-     * @param nickname The player's nickname
-     * @return the match ID, if the player is in any. Otherwise, returns -1.
+     * @param nickname The player's nickname.
+     * @return The match ID, if the player is in any. Otherwise, returns -1.
      */
     public int getPlayersMatchId(String nickname) {
         removeClosedMatches();
@@ -150,8 +159,8 @@ public class MatchManager {
     /**
      * Retrieves the ratio of current players to max players for a specific match.
      *
-     * @param matchId
-     * @return a formatted string "current/max"
+     * @param matchId The ID of the match to query.
+     * @return A formatted string "current/max".
      */
     public String getMatchInfo(int matchId) {
         removeClosedMatches();
@@ -164,9 +173,9 @@ public class MatchManager {
      * Connects a {@link VirtualClient} to a specific match, running required thread-safety
      * checks to ensure the match isn't full or already in progress.
      *
-     * @param matchId the ID of the match to join
-     * @param client  the client requesting to join
-     * @return true if the client successfully joined the match, false otherwise
+     * @param matchId The ID of the match to join.
+     * @param client The client requesting to join.
+     * @return True if the client successfully joined the match, false otherwise.
      */
     public boolean joinMatch(int matchId, VirtualClient client) {
         removeClosedMatches();
@@ -188,8 +197,8 @@ public class MatchManager {
     /**
      * Create a match identical to the one lost due to server crash.
      *
-     * @param matchId the previous match id.
-     * @param model   the game model representing the previous game state.
+     * @param matchId The previous match id.
+     * @param model The game model representing the previous game state.
      */
     public void restoreMatch(int matchId, GameModel model) {
         RestoredMatch match = new RestoredMatch(matchId, model);
@@ -198,10 +207,10 @@ public class MatchManager {
     }
 
     /**
-     * Checks if a user result logged by his nickname.
+     * Checks if a user is logged in by his nickname.
      *
-     * @param nickname of the user that will be checked.
-     * @return if the user result logged.
+     * @param nickname The nickname of the user that will be checked.
+     * @return True if the user is logged in, false otherwise.
      */
     public boolean isUserLogged(String nickname) {
         return loggedUsers.contains(nickname);
@@ -210,8 +219,8 @@ public class MatchManager {
     /**
      * Checks if a match has started.
      *
-     * @param id the id of {@link Match} that will be checked.
-     * @return if the match has started.
+     * @param id The id of {@link Match} that will be checked.
+     * @return True if the match has started, false otherwise.
      */
     public boolean hasMatchStarted(int id) {
         removeClosedMatches();
@@ -222,8 +231,8 @@ public class MatchManager {
     /**
      * Checks if a match has ended.
      *
-     * @param id the id of {@link Match} that will be checked.
-     * @return if the match has ended.
+     * @param id The id of {@link Match} that will be checked.
+     * @return True if the match has ended, false otherwise.
      */
     public boolean hasMatchEnded(int id) {
         removeClosedMatches();
@@ -232,10 +241,10 @@ public class MatchManager {
     }
 
     /**
-     * Checks if a match has ended.
+     * Checks if a match is running (started but not ended).
      *
-     * @param id the id of {@link Match} that will be checked.
-     * @return if the match is running.
+     * @param id The id of {@link Match} that will be checked.
+     * @return True if the match is running, false otherwise.
      */
     public boolean isMatchRunning(int id) {
         removeClosedMatches();

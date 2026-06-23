@@ -8,8 +8,18 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Scanner;
 
+/**
+ * Utility class providing network-related helper methods, such as retrieving public
+ * and local IP addresses.
+ */
 public class NetworkUtils {
 
+    /**
+     * Retrieves the public IP address of the machine.
+     *
+     * @return The public IP address as a string.
+     * @throws Exception If the network request fails.
+     */
     public static String getPublicIpAddress() throws Exception {
         URL url = new URI("https://api.ipify.org").toURL();
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -26,6 +36,11 @@ public class NetworkUtils {
         return "";
     }
 
+    /**
+     * Retrieves the local IP address. If multiple interfaces exist, it prompts the user to select one.
+     *
+     * @return The selected local IP address.
+     */
     public static String getLocalIpAddress() {
         List<String> validIps = new ArrayList<>();
         List<String> displayNames = new ArrayList<>();

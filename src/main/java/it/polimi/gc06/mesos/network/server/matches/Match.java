@@ -20,8 +20,8 @@ import java.util.stream.Collectors;
 
 /**
  * Represents an individual game session hosted on the server.
- * It acts as a bridge between the network layer {@link VirtualClient (Clients)} and the core game logic {@link GameController (GameController)},
- * coordinating the players' action queue and running the main game loop until a winner emerges or the match is aborted.
+ * It acts as a bridge between the network layer (VirtualClients) and the core game logic (GameController),
+ * coordinating the players' action queue and running the main game loop.
  */
 public class Match {
     protected final BlockingQueue<VirtualClient> players;
@@ -43,8 +43,8 @@ public class Match {
     /**
      * Initializes a new match waiting for players to join.
      *
-     * @param matchId      the unique identifier for this match
-     * @param numOfPlayers the required capacity of players needed to start the game
+     * @param matchId The unique identifier for this match.
+     * @param numOfPlayers The required capacity of players needed to start the game.
      */
     public Match(int matchId, int numOfPlayers) {
         players = new LinkedBlockingQueue<>();
@@ -64,7 +64,7 @@ public class Match {
      * Generates a new game model via the instance manager and starts the internal match executor loop
      * to begin processing player actions.
      *
-     * @throws IOException if there's an error during the creation of the match components
+     * @throws IOException If there's an error during the creation of the match components.
      */
     protected synchronized void start() throws IOException {
         ArrayList<String> playerNames = players.stream().map(VirtualClient::getNickname).collect(Collectors.toCollection(ArrayList::new));
@@ -83,8 +83,8 @@ public class Match {
     /**
      * Checks if a player with the given nickname is currently part of this match.
      *
-     * @param nickname The player's nickname
-     * @return true if the player is found inside the match, false otherwise
+     * @param nickname The player's nickname.
+     * @return True if the player is found inside the match, false otherwise.
      */
     public boolean hasPlayer(String nickname) {
         return players.stream().anyMatch(client -> client.getNickname().equals(nickname));
@@ -92,9 +92,8 @@ public class Match {
 
     /**
      * The main execution loop of the match.
-     * Constantly polls the {@link #actionQueue action queue} for incoming player commands, executes them against the game controller,
-     * and handles any exceptions.
-     * Automatically attempts to save the leaderboard whenever the game reaches its natural end.
+     * Constantly polls the {@link #actionQueue} for incoming player commands, executes them against the game controller,
+     * and handles any exceptions. Automatically attempts to save the leaderboard whenever the game reaches its natural end.
      */
     protected void matchLoop() {
         while (!hasEnded()) {
@@ -132,20 +131,22 @@ public class Match {
     }
 
     /**
-     * @return the unique match ID assigned to this session
+     * Retrieves the unique match ID assigned to this session.
+     *
+     * @return The unique match ID.
      */
     public int getMatchId() {
         return matchId;
     }
 
     /**
-     * Attempts to add a new {@link VirtualClient client} to the match.
+     * Attempts to add a new {@link VirtualClient} to the match.
      * If the match reaches its target capacity with this new player, the game will start automatically!
      *
-     * @param c the client trying to join
-     * @return always true
-     * @throws IllegalStateException if the match is full or has already started
-     * @throws IOException           if there is an issue establishing the initial game model for the clients
+     * @param c The client trying to join.
+     * @return Always true.
+     * @throws IllegalStateException If the match is full or has already started.
+     * @throws IOException If there is an issue establishing the initial game model for the clients.
      */
     public synchronized boolean addPlayer(VirtualClient c) throws IllegalStateException, IOException {
         if (isFull() || hasStarted) throw new IllegalStateException();
@@ -171,8 +172,8 @@ public class Match {
     /**
      * Removes the player from the match and gracefully interrupts their internal thread, if present.
      *
-     * @param nickname the nickname of the player that needs to be removed.
-     * @return true if the player was found and removed from the match.
+     * @param nickname The nickname of the player that needs to be removed.
+     * @return True if the player was found and removed from the match.
      */
     public synchronized boolean removePlayer(String nickname) {
         VirtualClient client = players.stream().filter(c -> c.getNickname().equals(nickname)).findFirst()
@@ -186,7 +187,7 @@ public class Match {
      * Forcefully terminates the match, disconnecting all active players
      * and stopping all background threads tied to this session.
      *
-     * @return true if the match was currently running and has now been killed, false otherwise.
+     * @return True if the match was currently running and has now been killed, false otherwise.
      */
     public synchronized boolean killMatch() {
         hasBeenForcefullyEnded = true;
@@ -202,50 +203,65 @@ public class Match {
     }
 
     /**
-     * @return true if the match has reached its maximum player capacity
+     * Checks if the match has reached its maximum player capacity.
+     *
+     * @return True if full, false otherwise.
      */
     public boolean isFull() {
         return players.size() == matchMaxPlayers;
     }
 
     /**
-     * @return the maximum number of players allowed in this match
+     * Retrieves the maximum number of players allowed in this match.
+     *
+     * @return The max number of players.
      */
     public int getMatchMaxPlayers() {
         return matchMaxPlayers;
     }
 
     /**
-     * @return the current number of players waiting or actively playing in the match
+     * Retrieves the current number of players waiting or actively playing in the match.
+     *
+     * @return The number of players.
      */
     public int getMatchNumOfPlayers() {
         return players.size();
     }
 
     /**
-     * @return true if the game has officially begun
+     * Checks if the game has officially begun.
+     *
+     * @return True if started, false otherwise.
      */
     public boolean hasStarted() {
         return hasStarted;
     }
 
     /**
-     * @return true if the game has reached its natural conclusion or was forcefully ended early
+     * Checks if the game has reached its natural conclusion or was forcefully ended early.
+     *
+     * @return True if ended, false otherwise.
      */
     public boolean hasEnded() {
         return hasBeenForcefullyEnded || (controller != null && controller.isGameFinished());
     }
 
     /**
-     * Returns the model state as a small record, can be used to save match state
+     * Returns the model state as a snapshot, used to save match state.
      *
-     * @return the gameSnapshot
+     * @return The GameSnapshot, or null if model is not yet initialized.
      */
     public GameSnapshot getSnapshot() {
         if (model == null) return null;
         return model.getLatestSnapshot();
     }
 
+    /**
+     * Accepts a visitor to perform operations on the match.
+     *
+     * @param mv The visitor instance.
+     */
     public void accept(MatchVisitor mv) {
         mv.visit(this);
     }

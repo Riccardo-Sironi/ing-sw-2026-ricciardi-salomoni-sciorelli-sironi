@@ -26,6 +26,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * A background service that periodically saves the state of active matches to a JSON backup file,
+ * enabling game recovery after server crashes.
+ */
 public class PersistenceService implements Runnable {
 
     public static final String backupFileName = "matchBackup.json";
@@ -40,6 +44,11 @@ public class PersistenceService implements Runnable {
     private final Map<Integer, GameModel> backupMatches;
     private MatchManager matchManager;
 
+    /**
+     * Initializes the persistence service, creating backup directories and loading existing match state if present.
+     *
+     * @throws IOException If file system operations fail.
+     */
     public PersistenceService() throws IOException {
         //creates matchBackup.json if not present
         try {

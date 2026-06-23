@@ -15,11 +15,11 @@ public class LeaderboardDAO {
     /**
      * Sets the info for the db connection. Must be called before any other function.
      *
-     * @param user the user of the db for this application, must have full access to db cannot be {@code null}
-     * @param password the password for the user, cannot be {@code null}
-     * @param databaseName can be {@code null} and default name (GC06_Mesos_DB) will be used
-     * @param location can be {@code null} if it is on localHost
-     * @throws IllegalArgumentException if {@code user} or {@code password} are null.
+     * @param user The user of the db for this application, must have full access to db cannot be {@code null}.
+     * @param password The password for the user, cannot be {@code null}.
+     * @param databaseName Can be {@code null} and default name (GC06_Mesos_DB) will be used.
+     * @param location Can be {@code null} if it is on localHost.
+     * @throws IllegalArgumentException If {@code user} or {@code password} are null.
      */
     public static void setDbInfo(String user, String password, String databaseName, String location) throws IllegalArgumentException{
         if(user == null || password == null) throw new IllegalArgumentException();
@@ -30,9 +30,9 @@ public class LeaderboardDAO {
     }
 
     /**
-     * Connect to db server and creates the db
+     * Connect to db server and creates the db.
      *
-     * @throws SQLException
+     * @throws SQLException If an error occurs while connecting to the database or executing the creation queries.
      */
     public synchronized static void init() throws SQLException {
 
@@ -69,8 +69,8 @@ public class LeaderboardDAO {
     /**
      * Get all leaderboards saved with db. Before that, if not present, tries to create the db.
      *
-     * @return the leaderboards. {@code null} if db info have not been set.
-     * @throws SQLException if, when not saved locally, fails to get leaderboards from the db.
+     * @return The leaderboards. {@code null} if db info have not been set.
+     * @throws SQLException If, when not saved locally, fails to get leaderboards from the db.
      */
     public synchronized static List<Leaderboard> getLeaderboards() throws SQLException {
 
@@ -113,9 +113,9 @@ public class LeaderboardDAO {
     /**
      * Saves a leaderboard to the db. Before that, if not present, tries to create the db.
      *
-     * @param l the leaderboard.
+     * @param l The leaderboard.
      * @return {@code false} if db info have not been set.
-     * @throws SQLException if it fails to save {@code l} on the db.
+     * @throws SQLException If it fails to save {@code l} on the db.
      */
     public synchronized static boolean saveLeaderboard(Leaderboard l) throws SQLException {
 
