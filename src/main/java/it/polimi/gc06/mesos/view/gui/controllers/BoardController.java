@@ -41,6 +41,11 @@ import java.util.function.Consumer;
 
 import static it.polimi.gc06.mesos.view.gui.GUI.*;
 
+/**
+ * Controller responsible for the main board scene of the GUI.
+ * It manages the visual components of the board, including rows of cards, the offer track,
+ * player statistics, opponents' dashboards, and handles user interactions with game objects.
+ */
 public class BoardController {
 
     @FXML
@@ -185,6 +190,9 @@ public class BoardController {
 
     private boolean isEndGame = false;
 
+    /**
+     * Initializes the controller, binding layout configurations and drawing the board.
+     */
     @FXML
     public void initialize() {
 
@@ -197,6 +205,9 @@ public class BoardController {
         drawEverything();
     }
 
+    /**
+     * Sets up keyboard shortcuts and scene listeners for user interaction.
+     */
     public void setupGameCommands() {
         mainRoot.sceneProperty().addListener((observable, oldScene, newScene) -> {
             if (newScene != null) {
@@ -235,6 +246,10 @@ public class BoardController {
         });
     }
 
+    /**
+     * Triggers a full re-render of all UI components on the board.
+     * Refreshes text displays, cards, decks, tracks, buttons, and player/opponent statistics.
+     */
     public void drawEverything() {
         drawEraText();
         drawRoundText();
@@ -258,6 +273,11 @@ public class BoardController {
         setActivePlayerEffect();
     }
 
+    /**
+     * Establishes the dynamic scaling and architectural layout of the main view.
+     * Binds widths, heights, and layout properties of the central board area,
+     * inventory boxes, stat boxes, and scrolling containers relative to the window size.
+     */
     private void setupArchitecturalLayout() {
         final double WIDTH_LEFT_ZONE = 0.85;
         final double WIDTH_OPPONENTS = 0.15;
@@ -355,6 +375,14 @@ public class BoardController {
         skipButton.setImage(imageFetcher.getSkipButtonImage());
     }
 
+    /**
+     * Configures the layout and bindings for a specific token container.
+     *
+     * @param container The VBox representing the token container.
+     * @param containerImageView The ImageView to display the token icon.
+     * @param containerImage The actual Image to load into the ImageView.
+     * @param containerText The Text component displaying the token quantity.
+     */
     private void configureTokensContainer(VBox container, ImageView containerImageView, Image containerImage,
                                           Text containerText) {
         container.prefWidthProperty().bind(tokensBox.widthProperty().divide(2));
@@ -374,6 +402,14 @@ public class BoardController {
         containerText.wrappingWidthProperty().bind(container.widthProperty());
     }
 
+    /**
+     * Configures the layout and bindings for a specific player statistic container.
+     *
+     * @param container The VBox representing the stat container.
+     * @param containerImageView The ImageView to display the stat icon.
+     * @param containerImage The actual Image to load into the ImageView.
+     * @param containerText The Text component displaying the stat value.
+     */
     private void configureStatContainer(VBox container, ImageView containerImageView,
                                         Image containerImage, Text containerText) {
         container.prefWidthProperty().bind(playerStatsBox.widthProperty().divide(5));
@@ -393,6 +429,13 @@ public class BoardController {
         containerText.wrappingWidthProperty().bind(container.widthProperty());
     }
 
+    /**
+     * Configures a ScrollPane and its internal container for horizontal card scrolling.
+     *
+     * @param scroll The ScrollPane to configure.
+     * @param container The internal HBox containing the scrollable elements.
+     * @param widthBinding The dynamic width binding to apply to the ScrollPane.
+     */
     private void configureScrollPane(ScrollPane scroll, HBox container, DoubleBinding widthBinding) {
         if (scroll == null || container == null) return;
         scroll.prefWidthProperty().bind(widthBinding);
@@ -406,6 +449,10 @@ public class BoardController {
         container.setSpacing(10);
     }
 
+    /**
+     * Applies the specific visual styling (background colors, borders, and clipping)
+     * to the player's local inventory layout.
+     */
     private void configureInventoryStyle() {
         String mainColor = "0,0,0";
         String color = "0,0,0";
@@ -427,6 +474,11 @@ public class BoardController {
         });
     }
 
+    /**
+     * Updates the layout configurations of the bottom card row depending on the visibility of buildings.
+     *
+     * @param showBuildings A boolean indicating whether the buildings scroll pane should be visible and managed.
+     */
     public void updateBottomRowLayout(boolean showBuildings) {
         bottomRowBox.setAlignment(Pos.CENTER);
         bottomRowBox.setSpacing(showBuildings ? 20 : 0);
@@ -450,6 +502,11 @@ public class BoardController {
         }
     }
 
+    /**
+     * Updates the layout configurations of the top card row depending on the visibility of buildings.
+     *
+     * @param showBuildings A boolean indicating whether the buildings scroll pane should be visible and managed.
+     */
     public void updateTopRowLayout(boolean showBuildings) {
         topRowBox.setAlignment(Pos.CENTER);
         topRowBox.setSpacing(showBuildings ? 20 : 0);
@@ -473,6 +530,12 @@ public class BoardController {
         }
     }
 
+    /**
+     * Utility method to safely load an Image from the specified resource path.
+     *
+     * @param path The relative resource path of the image.
+     * @return The loaded {@link Image}, or null if the image cannot be found.
+     */
     private Image loadImage(String path) {
         try {
             if (!path.startsWith("/")) path = "/" + path;
@@ -483,6 +546,10 @@ public class BoardController {
         }
     }
 
+    /**
+     * Initializes and populates the sidebar representing the opponents' status.
+     * Generates an {@link OpponentBox} for each opponent registered in the small model.
+     */
     public void initOpponentsSideBar() {
         opponentsSidebar.getChildren().clear();
         opponentsSidebar.setSpacing(15);
@@ -496,6 +563,10 @@ public class BoardController {
         }
     }
 
+    /**
+     * Updates the statistical values (tokens, gatherers, hunters, artists, discounts)
+     * displayed in the opponents' sidebar to reflect the current game state.
+     */
     public void drawOpponentsStats() {
         for (PlayerView opponent : smallModel.getOpponents()) {
             OpponentBox opp = opponentsBoxes.get(opponent.getNickname());
@@ -516,6 +587,10 @@ public class BoardController {
         }
     }
 
+    /**
+     * Fetches and visually updates the list of character and building cards
+     * currently held by each opponent in their respective sidebar sections.
+     */
     public void drawOpponentsCards() {
         for (PlayerView opponent : smallModel.getOpponents()) {
             OpponentBox opp = opponentsBoxes.get(opponent.getNickname());
@@ -536,6 +611,10 @@ public class BoardController {
         }
     }
 
+    /**
+     * Updates the visual theme (background and borders) of the opponents' sidebars
+     * according to the currently active {@link LayoutConfiguration} and player totem colors.
+     */
     public void drawOpponentsTheme() {
         for (PlayerView opponent : smallModel.getOpponents()) {
             OpponentBox opp = opponentsBoxes.get(opponent.getNickname());
@@ -571,6 +650,15 @@ public class BoardController {
         }
     }
 
+    /**
+     * Factory method to create an interactive layout container for a single opponent.
+     * Includes click-to-expand animations for revealing the opponent's card inventory.
+     *
+     * @param nickname The opponent's username.
+     * @param rgbColor The hex/RGB string representation of the opponent's assigned color.
+     * @param opponent The {@link PlayerView} data model for this opponent.
+     * @return A fully configured {@link OpponentBox} containing stats and an expandable card inventory.
+     */
     private OpponentBox createOpponentInventoryBox(String nickname, String rgbColor, PlayerView opponent) {
         OpponentBox container = new OpponentBox(nickname, rgbColor, opponent);
 
@@ -654,6 +742,15 @@ public class BoardController {
         return container;
     }
 
+    /**
+     * Helper method to create a dynamically scaling VBox containing an icon and a text label.
+     * Used primarily for building the UI representation of player statistics.
+     *
+     * @param imagePath    The path to the icon image.
+     * @param divideFactor A scaling factor applied against the opponent sidebar width.
+     * @param textSetter   A consumer to inject the created Text node into the parent container.
+     * @return A styled VBox displaying the requested icon and text.
+     */
     private VBox createResponsiveStat(String imagePath, double divideFactor, Consumer<Text> textSetter) {
         VBox stat = new VBox(5);
         stat.setAlignment(Pos.CENTER);
@@ -677,6 +774,10 @@ public class BoardController {
         return stat;
     }
 
+    /**
+     * Refreshes the local player's statistical displays (prestige, food, character counts, discounts).
+     * Handles visual updates like negative prestige token images.
+     */
     private void drawPlayerStats() {
         PlayerView p = smallModel.getPlayer();
 
@@ -700,6 +801,9 @@ public class BoardController {
         buildersDiscountText.setText(String.valueOf(p.getBuildersDiscount()));
     }
 
+    /**
+     * Refreshes the local player's character and building cards in their main inventory scroll pane.
+     */
     private void drawPlayerCards() {
         PlayerView p = smallModel.getPlayer();
 
@@ -718,6 +822,9 @@ public class BoardController {
         }
     }
 
+    /**
+     * Applies the current {@link LayoutConfiguration} theme to the local player's inventory box.
+     */
     private void drawInventoryTheme() {
         PlayerView p = smallModel.getPlayer();
 
@@ -743,6 +850,10 @@ public class BoardController {
         inventoryBox.setStyle(backgroundInventoryStyle + borderInventoryStyle);
     }
 
+    /**
+     * Updates the central deck view, displaying the remaining number of cards
+     * and the correct deck back image based on the current game Era or Endgame state.
+     */
     private void drawDeck() {
         if (smallModel == null) return;
 
@@ -756,6 +867,10 @@ public class BoardController {
         deckImage.setImage(imageFetcher.getDeckBackImage(smallModel.getEra()));
     }
 
+    /**
+     * Renders the cards currently available in the top row of the game board.
+     * Attaches click listeners to handle asynchronous card-picking actions via the server connection.
+     */
     private void drawTopRowCards() {
         topCharactersContainer.getChildren().clear();
         if (smallModel == null) return;
@@ -786,6 +901,9 @@ public class BoardController {
         }
     }
 
+    /**
+     * Draws the building cards for the top row.
+     */
     private void drawTopBuildingsCards() {
         updateTopRowLayout(!smallModel.getTopBuildings().isEmpty());
 
@@ -820,6 +938,9 @@ public class BoardController {
         }
     }
 
+    /**
+     * Draws the character cards for the bottom row.
+     */
     private void drawBottomRowCards() {
         bottomCharactersContainer.getChildren().clear();
         if (smallModel == null) return;
@@ -851,6 +972,9 @@ public class BoardController {
         }
     }
 
+    /**
+     * Draws the building cards for the bottom row.
+     */
     private void drawBottomBuildingCards() {
         updateBottomRowLayout(!smallModel.getBottomBuildings().isEmpty());
 
@@ -884,6 +1008,9 @@ public class BoardController {
         }
     }
 
+    /**
+     * Updates the visibility and state of the skip button based on the current game phase.
+     */
     private void drawSkipButton() {
         boolean isSkippablePhase = smallModel.getPhase().equals("offer_resolution") ||
                 smallModel.getPhase().equals("end_of_round");
@@ -897,6 +1024,9 @@ public class BoardController {
         }
     }
 
+    /**
+     * Configures the popup to display the current number of cards in the deck.
+     */
     private void setupDeckPopup() {
         Popup nCards = createDeckPopup();
         deckImage.setOnMouseEntered((event -> {
@@ -910,6 +1040,11 @@ public class BoardController {
         deckImage.setOnMouseExited((event -> nCards.hide()));
     }
 
+    /**
+     * Creates and returns the deck count popup instance.
+     *
+     * @return The configured Popup for the deck.
+     */
     public Popup createDeckPopup() {
         Popup popup = new Popup();
         HBox popupContent = new HBox();
@@ -934,6 +1069,12 @@ public class BoardController {
         return popup;
     }
 
+    /**
+     * Applies card effects to all CardViews within a specific container.
+     *
+     * @param container The HBox containing the CardViews.
+     * @param drawNum The draw count factor used for effect calculations.
+     */
     private void applyEffectToContainerCardViews(HBox container, int drawNum) {
         if (container == null) return;
         for (Node node : container.getChildren()) {
@@ -944,6 +1085,9 @@ public class BoardController {
         }
     }
 
+    /**
+     * Initializes the visual representation of the turn order tile.
+     */
     private void initTurnOrderTile() {
         Image turnOrderImage = imageFetcher.getTurnOrderTileImage();
         turnOrderTile = new TurnOrderTileView(turnOrderImage);
@@ -958,6 +1102,9 @@ public class BoardController {
         turnOrderContainer.getChildren().add(turnOrderTile);
     }
 
+    /**
+     * Draws the turn order tile, displaying current player positions.
+     */
     public void drawTurnOrderTile() {
         if (turnOrderTile == null) {
             initTurnOrderTile();
@@ -979,6 +1126,9 @@ public class BoardController {
         }
     }
 
+    /**
+     * Initializes the offer track view elements.
+     */
     private void initOfferTrack() {
         offerTrackTiles = new ArrayList<>();
 
@@ -990,6 +1140,9 @@ public class BoardController {
         }
     }
 
+    /**
+     * Draws the offer track, updating totem positions on each tile.
+     */
     private void drawOfferTrack() {
         if (offerTrackTiles == null) {
             initOfferTrack();
@@ -1024,6 +1177,12 @@ public class BoardController {
         }
     }
 
+    /**
+     * Creates a single offer tile view with correct scaling.
+     *
+     * @param tileSlotView The data model for the tile.
+     * @return The initialized OfferTileView.
+     */
     private OfferTileView createOfferTile(TileSlotView tileSlotView) {
         Image img = imageFetcher.fetch(tileSlotView);
         OfferTileView tile = new OfferTileView(img);
@@ -1040,6 +1199,9 @@ public class BoardController {
         return tile;
     }
 
+    /**
+     * Applies visual effects to identify the currently active player on the board.
+     */
     public void setActivePlayerEffect() {
         if (this.currentActivePlayer == null) {
             this.currentActivePlayer = turnOrderTile.getTotemPieces().getFirst().getPlayer().getNickname();
@@ -1088,6 +1250,11 @@ public class BoardController {
         }
     }
 
+    /**
+     * Configures the behavior and visuals of the skip button.
+     *
+     * @param canSkip True if the player is allowed to skip.
+     */
     private void toggleSkipButton(boolean canSkip) {
         skipButton.pseudoClassStateChanged(DISABLED_STYLE, !canSkip);
         skipButton.setCursor(canSkip ? Cursor.HAND : Cursor.DEFAULT);
@@ -1139,6 +1306,9 @@ public class BoardController {
         }
     }
 
+    /**
+     * Toggles the help overlay visibility.
+     */
     private void toggleHelpOverlay() {
         Pane root = (Pane) mainRoot.getParent();
 
@@ -1229,6 +1399,9 @@ public class BoardController {
         }
     }
 
+    /**
+     * Updates the displayed volume level in the help menu.
+     */
     private void updateVolumeDisplay() {
         if (volumeText != null) {
             if (SoundManager.getInstance().isMuted()) {
@@ -1242,10 +1415,18 @@ public class BoardController {
         }
     }
 
+    /**
+     * Updates the era display text on the board.
+     */
     private void drawEraText() {
         eraText.setText(smallModel.getEra().toString().replace("_", " "));
     }
 
+    /**
+     * Updates the phase display text on the board.
+     *
+     * @param phase The current game phase name.
+     */
     private void drawPhaseText(String phase) {
         phaseText.setText(
                 switch (phase) {
@@ -1258,10 +1439,18 @@ public class BoardController {
         );
     }
 
+    /**
+     * Updates the round display text on the board.
+     */
     private void drawRoundText() {
         roundText.setText("Round " + smallModel.getRound());
     }
 
+    /**
+     * Shows the inventory overlay.
+     *
+     * @param root The root pane.
+     */
     private void showInventoryOverlay(Pane root) {
         if (inventoryOverlay == null) {
             inventoryOverlay = new StackPane();
@@ -1285,6 +1474,11 @@ public class BoardController {
         }
     }
 
+    /**
+     * Hides the inventory overlay.
+     *
+     * @param root The root pane.
+     */
     private void hideInventoryOverlay(Pane root) {
         inventoryOverlay.getChildren().remove(inventoryBox);
         root.getChildren().remove(inventoryOverlay);
@@ -1295,6 +1489,14 @@ public class BoardController {
         inventoryBox.setMaxHeight(Region.USE_COMPUTED_SIZE);
     }
 
+    /**
+     * Orchestrates the visual card pick animation.
+     *
+     * @param playerNickname The player who picked the card.
+     * @param sourceContainer The container from which the card was picked.
+     * @param cardIndex The index of the card in the container.
+     * @param boardUpdatesAndUnlock Callback to execute after animation.
+     */
     private void playCardPickAnimation(String playerNickname, HBox sourceContainer, int cardIndex, Runnable boardUpdatesAndUnlock) {
         CardView card = null;
 
@@ -1327,6 +1529,9 @@ public class BoardController {
         }
     }
 
+    /**
+     * Updates the board effects, applying visual changes to card views based on the current draw capacity.
+     */
     public void updateAllBoardEffects() {
         applyEffectToContainerCardViews(topCharactersContainer, smallModel.getTopDrawNum());
         applyEffectToContainerCardViews(topBuildingsContainer, smallModel.getTopDrawNum());
@@ -1334,6 +1539,12 @@ public class BoardController {
         applyEffectToContainerCardViews(bottomBuildingsContainer, smallModel.getBottomDrawNum());
     }
 
+    /**
+     * Handles the refill animation for the top card row.
+     *
+     * @param dto The refill DTO.
+     * @param onEndActions Runnable to run at the end.
+     */
     public void handleTopRowRefill(TopRowRefillDTO dto, Runnable onEndActions) {
         AnimationsManager.refillCardsRowAnimation(dto.getTop(), dto.getBottom(), deckContainer, topCharactersContainer, bottomCharactersContainer, () -> {
             drawTopRowCards();
@@ -1343,6 +1554,12 @@ public class BoardController {
         });
     }
 
+    /**
+     * Handles the refill animation for the top building row.
+     *
+     * @param dto The refill DTO.
+     * @param onEndActions Runnable to run at the end.
+     */
     public void handleTopBuildingsRefill(BuildingsRefillDTO dto, Runnable onEndActions) {
         updateBottomRowLayout(!smallModel.getBottomBuildings().isEmpty());
         updateTopRowLayout(!smallModel.getTopBuildings().isEmpty());
@@ -1354,6 +1571,12 @@ public class BoardController {
         });
     }
 
+    /**
+     * Handles the animation for picking a top row card.
+     *
+     * @param dto The pick DTO.
+     * @param onEndActions Runnable to run at the end.
+     */
     public void handleTopRowPick(PickTopRowDTO dto, Runnable onEndActions) {
         playCardPickAnimation(dto.getPlayer(), topCharactersContainer, dto.getCardIndex(), () -> {
             if (!smallModel.getPhase().equals(new PlacingTotemPhase().toString())) drawTopRowCards();
@@ -1363,6 +1586,12 @@ public class BoardController {
         });
     }
 
+    /**
+     * Handles the animation for picking a bottom row card.
+     *
+     * @param dto The pick DTO.
+     * @param onEndActions Runnable to run at the end.
+     */
     public void handleBottomRowPick(PickBottomRowDTO dto, Runnable onEndActions) {
         playCardPickAnimation(dto.getPlayer(), bottomCharactersContainer, dto.getCardIndex(), () -> {
             if (!smallModel.getPhase().equals(new PlacingTotemPhase().toString())) drawBottomRowCards();
@@ -1372,6 +1601,12 @@ public class BoardController {
         });
     }
 
+    /**
+     * Handles the animation for picking a top building.
+     *
+     * @param dto The pick DTO.
+     * @param onEndActions Runnable to run at the end.
+     */
     public void handleTopBuildingsPick(PickTopBuildingsDTO dto, Runnable onEndActions) {
         playCardPickAnimation(dto.getPlayer(), topBuildingsContainer, dto.getCardIndex(), () -> {
             if (!smallModel.getPhase().equals(new PlacingTotemPhase().toString())) drawTopBuildingsCards();
@@ -1381,6 +1616,12 @@ public class BoardController {
         });
     }
 
+    /**
+     * Handles the animation for picking a bottom building.
+     *
+     * @param dto The pick DTO.
+     * @param onEndActions Runnable to run at the end.
+     */
     public void handleBottomBuildingsPick(PickBottomBuildingsDTO dto, Runnable onEndActions) {
         playCardPickAnimation(dto.getPlayer(), bottomBuildingsContainer, dto.getCardIndex(), () -> {
             if (!smallModel.getPhase().equals(new PlacingTotemPhase().toString())) drawBottomBuildingCards();
@@ -1390,6 +1631,12 @@ public class BoardController {
         });
     }
 
+    /**
+     * Handles the animation for totem movement.
+     *
+     * @param dto The move DTO.
+     * @param endOfAnimation Runnable to run at the end.
+     */
     public void handleTotemMoved(TotemOfferMoveDTO dto, Runnable endOfAnimation) {
         AnimationsManager.totemSetAnimation(offerTrackTiles.get(dto.getIndex()), dto.getPlayer(), turnOrderTile, offerTrackTiles, mainRoot, () -> {
             drawOfferTrack();
@@ -1398,10 +1645,18 @@ public class BoardController {
         });
     }
 
+    /**
+     * Handles round change notifications.
+     */
     public void handleRoundChanged() {
         drawRoundText();
     }
 
+    /**
+     * Handles active player change notifications.
+     *
+     * @param dto The state change DTO.
+     */
     public void handleActivePlayerChanged(PlayerStateChangeDTO dto) {
         this.currentActivePlayer = dto.getPlayer();
         setActivePlayerEffect();
@@ -1409,6 +1664,11 @@ public class BoardController {
         drawSkipButton();
     }
 
+    /**
+     * Handles player resource change notifications.
+     *
+     * @param dto The resource change DTO.
+     */
     public void handlePlayerResourcesChange(PlayerResourcesChangeDTO dto) {
         if (dto.getPlayer().equals(smallModel.getPlayer().getNickname())) {
             drawPlayerStats();
@@ -1418,6 +1678,11 @@ public class BoardController {
         updateAllBoardEffects();
     }
 
+    /**
+     * Handles player recap notifications.
+     *
+     * @param dto The recap DTO.
+     */
     public void handlePlayerRecap(PlayerRecapDTO dto) {
         if (dto.getPlayer().equals(smallModel.getPlayer().getNickname())) {
             drawPlayerStats();
@@ -1427,6 +1692,11 @@ public class BoardController {
         updateAllBoardEffects();
     }
 
+    /**
+     * Handles phase change notifications.
+     *
+     * @param phase The new phase name.
+     */
     public void handlePhaseChanged(String phase) {
         drawPhaseText(phase);
 
@@ -1437,6 +1707,9 @@ public class BoardController {
         drawOfferTrack();
     }
 
+    /**
+     * Handles era change notifications.
+     */
     public void handleEraChanged() {
         if (smallModel.getEra() == Era.ERA_III) {
             SoundManager.getInstance().playEraIIIMusic();
@@ -1444,17 +1717,29 @@ public class BoardController {
         drawEraText();
     }
 
+    /**
+     * Handles totem turn move notifications.
+     */
     public void handleTotemTurnMove() {
         drawTurnOrderTile();
         drawOfferTrack();
     }
 
+    /**
+     * Handles event resolution animations.
+     *
+     * @param dto The resolution DTO.
+     * @param onEndActions Runnable to run at the end.
+     */
     public void handleEventResolved(EventResolvedDTO dto, Runnable onEndActions) {
         AnimationsManager.eventResolutionAnimation(dto.getEventCard(), mainRoot, () -> {
             if (onEndActions != null) onEndActions.run();
         });
     }
 
+    /**
+     * Handles game end logic, clearing the UI board.
+     */
     public void handleEndGame() {
         topCharactersContainer.getChildren().clear();
         bottomCharactersContainer.getChildren().clear();
