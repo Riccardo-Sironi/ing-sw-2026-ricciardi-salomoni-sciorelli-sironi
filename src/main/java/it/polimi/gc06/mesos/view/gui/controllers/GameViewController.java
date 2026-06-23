@@ -34,6 +34,10 @@ public class GameViewController {
     private ImageView overlay;
     private SequentialTransition overlaySequence;
 
+    /**
+     * Initializes the controller, sets up UI bindings, starts the game music,
+     * and performs the initial setup for overlays and the game board.
+     */
     @FXML
     public void initialize() {
 
@@ -64,6 +68,10 @@ public class GameViewController {
         showEraOverlay(smallModel.getEra(), () -> showPhaseOverlay(smallModel.getPhase(), null));
     }
 
+    /**
+     * Configures the overlay container and initializes the animation sequences
+     * used for phase and era transitions.
+     */
     private void initOverlays() {
         overlaysBox.prefWidthProperty().bind(root.widthProperty());
         overlaysBox.prefHeightProperty().bind(root.heightProperty());
@@ -107,6 +115,12 @@ public class GameViewController {
         overlaySequence = new SequentialTransition(fadeIn, scaleIn, scaleOut, fadeOut);
     }
 
+    /**
+     * Executes the visual animation sequence for an overlay.
+     *
+     * @param image          The image to display.
+     * @param endOfAnimation Runnable to execute after the animation completes.
+     */
     private void playOverlay(Image image, Runnable endOfAnimation) {
         if (overlay == null || image == null) return;
 
@@ -131,18 +145,34 @@ public class GameViewController {
         overlaySequence.playFromStart();
     }
 
+    /**
+     * Triggers the display of the phase transition overlay.
+     *
+     * @param phase          The identifier of the current phase.
+     * @param endOfAnimation Runnable to execute after the animation finishes.
+     */
     public void showPhaseOverlay(String phase, Runnable endOfAnimation) {
         if (smallModel.getPhase() == null) return;
 
         playOverlay(imageFetcher.getPhaseOverlayImage(phase), endOfAnimation);
     }
 
+    /**
+     * Triggers the display of the era transition overlay.
+     *
+     * @param era            The current era enum value.
+     * @param endOfAnimation Runnable to execute after the animation finishes.
+     */
     public void showEraOverlay(Era era, Runnable endOfAnimation) {
         if (smallModel.getEra() == null) return;
 
         playOverlay(imageFetcher.getEraOverlayImage(era), endOfAnimation);
     }
 
+    /**
+     * Updates the root container's background style based on the current era
+     * retrieved from the model.
+     */
     public void drawEraBackground() {
         String backgroundUrl = imageFetcher.getEraBackgroundsImage(smallModel.getEra());
 
@@ -160,10 +190,18 @@ public class GameViewController {
         root.setStyle(style);
     }
 
+    /**
+     * Navigates the application to the leaderboard scene.
+     */
     public void handleLeaderboardChange() {
         changeScene(GameScene.LEADERBOARD.getPath());
     }
 
+    /**
+     * Handles the end-game visual transition by showing a blurred overlay.
+     *
+     * @param endOfAnimation Runnable to execute after the fade-in animation.
+     */
     public void handleEndGame(Runnable endOfAnimation) {
 
         endGameBlurBox.setVisible(true);
