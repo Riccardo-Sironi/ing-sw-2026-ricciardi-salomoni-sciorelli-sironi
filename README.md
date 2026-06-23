@@ -2,6 +2,9 @@
 
 <div align="center">
   <img src="https://img.shields.io/badge/Java-25-blue" alt="Java"/>
+</div>
+
+<div align="center">
   <img src="https://img.shields.io/badge/Maven-C71A36?style=for-the-badge&logo=apachemaven&logoColor=white" alt="Maven"/>
   <img src="https://img.shields.io/badge/JavaFX-FF0000?style=for-the-badge&logo=openjdk&logoColor=white" alt="JavaFX"/>
 </div>
