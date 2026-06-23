@@ -54,6 +54,11 @@ described in the next section.
 cd target/
 ```
 
+
+> [!CAUTION]
+> You might need to add execution privileges for mvnw on Unix-based systems using 
+> ```chmod +x mvnw```
+
 # Server configuration
 
 * Run the .jar file for the server with the following command:
@@ -74,9 +79,9 @@ java -jar mesos-1.0-server.jar
 > java --ip=SERVER_PUBLIC_IP_ADDRESS -jar mesos-1.0-server.jar
 > ```
 
-> [!TIP]
-> You might need to add execution privileges for the .jar file and mvnw on Unix-based systems using
-> ```chmod +x mesos-1.0-server.jar``` and/or ```chmod +x mvnw```)
+> [!CAUTION]
+> You might need to add execution privileges for the .jar file on Unix-based systems using
+> ```chmod +x mesos-1.0-server.jar```
 
 ## Available arguments
 
@@ -100,10 +105,6 @@ java -jar mesos-1.0-client.jar
 
 * Follow the instructions that appear on the screen to start a game (make sure to enter the correct Server IP).
 
-> [!TIP]
-> You might need to add execution privileges for the .jar file and mvnw on Unix-based systems using
-> ```chmod +x mesos-1.0-client.jar``` and/or ```chmod +x mvnw```)
-
 
 > [!TIP]
 > When connecting to a remote server over the internet—whether through a Virtual LAN (such
@@ -116,6 +117,10 @@ java -jar mesos-1.0-client.jar
 > ```bash
 > java --ip=YOUR_PUBLIC_IP_ADDRESS -jar mesos-1.0-client.jar
 > ```
+
+> [!CAUTION]
+> You might need to add execution privileges for the .jar file on Unix-based systems using
+> ```chmod +x mesos-1.0-client.jar``` 
 
 ## Available arguments
 
