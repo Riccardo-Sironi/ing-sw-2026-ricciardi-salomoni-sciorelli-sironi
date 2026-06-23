@@ -1,10 +1,7 @@
 package it.polimi.gc06.mesos.view.tui;
 
 import it.polimi.gc06.mesos.controller.ModelListener;
-import it.polimi.gc06.mesos.dtos.DTOVisitor;
-import it.polimi.gc06.mesos.dtos.EndGameDTO;
-import it.polimi.gc06.mesos.dtos.EventResolvedDTO;
-import it.polimi.gc06.mesos.dtos.SmallModelEditor;
+import it.polimi.gc06.mesos.dtos.*;
 import it.polimi.gc06.mesos.model.cards.Card;
 import it.polimi.gc06.mesos.model.cards.events.EventCard;
 import it.polimi.gc06.mesos.network.client.Client;
@@ -116,6 +113,7 @@ public class TUI implements View, ModelListener {
 
                     if (input == null || input.trim().isEmpty()) {
                         statusMessage = "";
+                        smallModel.setSystemMessage("");
                         continue;
                     }
 
@@ -128,6 +126,9 @@ public class TUI implements View, ModelListener {
                     if (command.equals("exit")) {
                         System.exit(0);
                     }
+
+                    statusMessage = "";
+                    smallModel.setSystemMessage("");
 
                     // If the input wasn't empty, we're definitely gonna need to redraw the whole scene
                     needsRedraw = true;
@@ -157,7 +158,6 @@ public class TUI implements View, ModelListener {
                                         } catch (Exception e) {
                                             smallModel.setSystemMessage(Style.RED + "An error occurred while trying to perform this action!" + Style.RESET);
                                         }
-                                        smallModel.setSystemMessage("Picking card in slot " + tokens[2] + " from the top row");
                                         break;
                                     case "bottom":
                                         try {
@@ -165,7 +165,6 @@ public class TUI implements View, ModelListener {
                                         } catch (Exception e) {
                                             smallModel.setSystemMessage(Style.RED + "You cannot perform this action right now!" + Style.RESET);
                                         }
-                                        statusMessage = "Picking card in slot " + tokens[2] + " from the bottom row";
                                         break;
                                     default:
                                         statusMessage = Style.RED + "Invalid row type: " + tokens[1] + ". Use 'top' or 'bottom'." + Style.RESET;
@@ -183,7 +182,6 @@ public class TUI implements View, ModelListener {
                                         } catch (Exception e) {
                                             smallModel.setSystemMessage(Style.RED + "An error occurred while trying to perform this action!" + Style.RESET);
                                         }
-                                        smallModel.setSystemMessage("Picking building number " + tokens[2] + " from the top row");
                                         break;
                                     case "bottom":
                                         try {
@@ -191,7 +189,6 @@ public class TUI implements View, ModelListener {
                                         } catch (Exception e) {
                                             smallModel.setSystemMessage(Style.RED + "You cannot perform this action right now!" + Style.RESET);
                                         }
-                                        statusMessage = "Picking building number " + tokens[2] + " from the bottom row";
                                         break;
                                     default:
                                         statusMessage = Style.RED + "Invalid row type: " + tokens[1] + ". Use 'top' or 'bottom'." + Style.RESET;
@@ -713,6 +710,11 @@ public class TUI implements View, ModelListener {
             eventDisplayQueue.offer(dto.getEventCard());
         }
 
+        /**
+         * Signals we've reached the end of the game
+         *
+         * @param dto the patch getting visited.
+         */
         @Override
         public void visit(EndGameDTO dto) {
             hasGameEnded = true;
@@ -724,8 +726,33 @@ public class TUI implements View, ModelListener {
          * @param dto the patch getting visited.
          */
         @Override
-        public void visit(SmallModelEditor dto) {
+        public void visit(ErrorDTO dto) {
+            statusMessage = "";
+            // We've received an error message, no need to clear the systemMessage
             needsRedraw = true;
+            render();
+
+            // Render twice to clear the screen of any artifact left from Jline line reading.
+            // Since this is a very lightweight interface, it won't affect the performances at all
+            // ensuring at the same time a smooth gameplay feeling
+            render();
+        }
+
+        /**
+         * If the dto we received is a generic small model update, we should just flag the interface to be redrawn, so that the new state gets rendered.
+         *
+         * @param dto the patch getting visited.
+         */
+        @Override
+        public void visit(SmallModelEditor dto) {
+            smallModel.setSystemMessage("");
+            statusMessage = "";
+            needsRedraw = true;
+            render();
+
+            // Render twice to clear the screen of any artifact left from Jline line reading.
+            // Since this is a very lightweight interface, it won't affect the performances at all
+            // ensuring at the same time a smooth gameplay feeling
             render();
         }
     }
@@ -757,11 +784,13 @@ public class TUI implements View, ModelListener {
         if (currentlyDisplayingEvent != null) {
             drawEventAsciiArt(currentlyDisplayingEvent);
 
+            terminal.writer().flush();
+
             if (lineReader.isReading()) {
                 lineReader.callWidget(LineReader.REDRAW_LINE);
                 lineReader.callWidget(LineReader.REDISPLAY);
+                terminal.writer().flush();
             }
-            terminal.writer().flush();
             needsRedraw = false;
             return;
         }
