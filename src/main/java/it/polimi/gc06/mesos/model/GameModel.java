@@ -24,6 +24,10 @@ import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * The core entity representing the state of a single game match.
+ * It manages players, the board, the decks, and orchestrates the setup and teardown of the game.
+ */
 public class GameModel implements GameInfo {
 
     private final Board board;
@@ -36,6 +40,17 @@ public class GameModel implements GameInfo {
     private Timestamp endTimestamp;
     private GameSnapshot latestSnapshot;
 
+    /**
+     * Constructs a new GameModel.
+     *
+     * @param board The game board.
+     * @param buildingCardsDecks The decks of building cards grouped by era.
+     * @param tribeCardsDeck The decks of tribe cards grouped by era.
+     * @param finalEventCards The event cards reserved for the final era.
+     * @param players The list of players.
+     * @param turnManager The manager handling the flow of turns.
+     * @param notifier The network notifier to dispatch updates.
+     */
     public GameModel(Board board, EnumMap<Era, ArrayList<BuildingCard>> buildingCardsDecks,
                      EnumMap<Era, ArrayList<TribeCard>> tribeCardsDeck, EventCard[] finalEventCards,
                      ArrayList<Player> players, TurnManager turnManager, DTONotifier notifier) {
@@ -54,6 +69,8 @@ public class GameModel implements GameInfo {
      * This method initializes the game session by setting up the board, randomizing player order, and distributing
      * initial food tokens based on player count. It also checks that the number of players is within the allowed
      * range (2 to 5) before starting the game.
+     *
+     * @throws IllegalStateException If the player count is invalid or the board initialization fails.
      */
     public void startGame() {
         if ((players.size() < 2 || players.size() > 5)) {
@@ -98,6 +115,12 @@ public class GameModel implements GameInfo {
         }
     }
 
+    /**
+     * Packages the current starting state of the board and players into a DTO targeted at a specific player.
+     *
+     * @param nickname The nickname of the player receiving the initialization data.
+     * @return A SmallModelEditor DTO containing the lobby and board initial state.
+     */
     public SmallModelEditor getStartingStateAsDTO(String nickname) {
 
         Map<String, Integer> foodMap = new HashMap<>();
@@ -194,7 +217,7 @@ public class GameModel implements GameInfo {
     /**
      * This method retrieves the maximum number of shaman stars currently held by any player.
      *
-     * @return the highest number of shaman stars among all players. If there are no players, returns 0
+     * @return The highest number of shaman stars among all players. If there are no players, returns 0.
      */
     @Override
     public int getMaxStars() {
@@ -206,10 +229,9 @@ public class GameModel implements GameInfo {
     }
 
     /**
-     * this method retrieves the minimum number of shaman stars currently held by any player.
+     * This method retrieves the minimum number of shaman stars currently held by any player.
      *
-     * @return the lowest number of shaman stars among all players.
-     * if there are no players, returns 0
+     * @return The lowest number of shaman stars among all players. If there are no players, returns 0.
      */
     @Override
     public int getMinStars() {
@@ -221,17 +243,22 @@ public class GameModel implements GameInfo {
     }
 
     /**
-     * this method is used to add an observer to the board
+     * This method is used to add an observer to the board
      * to be notified during the card drawing process.
-     * It checks if the observer is already in the list
+     * It checks if the observer is already in the list.
      *
-     * @param observer the observer to add.
+     * @param observer The observer to add.
      */
     @Override
     public void addObserver(DrawObserver observer) {
         board.addObserver(observer);
     }
 
+    /**
+     * Retrieves the number of players that currently hold the maximum amount of shaman stars.
+     *
+     * @return The count of players tied for the most shaman stars.
+     */
     @Override
     public int getNumPlayerMaxStars() {
         int maxStars = this.getMaxStars();
@@ -241,54 +268,54 @@ public class GameModel implements GameInfo {
     }
 
     /**
-     * this method retrieves the deck containing all building cards, categorized by Era.
+     * This method retrieves the deck containing all building cards, categorized by Era.
      *
-     * @return an EnumMap mapping each Era to its corresponding list of building cards.
+     * @return An EnumMap mapping each Era to its corresponding list of building cards.
      */
     public EnumMap<Era, ArrayList<BuildingCard>> getBuildingCardsDecks() {
         return buildingCardsDecks;
     }
 
     /**
-     * this method retrieves the deck containing all tribe cards, categorized by Era.
+     * This method retrieves the deck containing all tribe cards, categorized by Era.
      *
-     * @return an EnumMap mapping each Era to its corresponding list of tribe cards.
+     * @return An EnumMap mapping each Era to its corresponding list of tribe cards.
      */
     public EnumMap<Era, ArrayList<TribeCard>> getTribeCardsDeck() {
         return tribeCardsDeck;
     }
 
     /**
-     * this method retrieves the final event cards used at the end of the game.
+     * This method retrieves the final event cards used at the end of the game.
      *
-     * @return an array containing the 2 final event cards.
+     * @return An array containing the 2 final event cards.
      */
     public EventCard[] getFinalEventCards() {
         return finalEventCards;
     }
 
     /**
-     * this method retrieves the physical game board.
+     * This method retrieves the physical game board.
      *
-     * @return the board managing the cards currently in play.
+     * @return The board managing the cards currently in play.
      */
     public Board getBoard() {
         return board;
     }
 
     /**
-     * this method retrieves the list of players currently participating in the game.
+     * This method retrieves the list of players currently participating in the game.
      *
-     * @return an ArrayList containing all players in the game.
+     * @return An ArrayList containing all players in the game.
      */
     public ArrayList<Player> getPlayers() {
         return players;
     }
 
     /**
-     * this method retrieves the turn manager responsible for orchestrating the game phases.
+     * This method retrieves the turn manager responsible for orchestrating the game phases.
      *
-     * @return the current TurnManager.
+     * @return The current TurnManager.
      */
     public TurnManager getTurnManager() {
         return turnManager;
@@ -297,8 +324,8 @@ public class GameModel implements GameInfo {
     /**
      * Leaderboard getter.
      *
-     * @return the leaderboard of the match, with timestamp the moment of the call
-     * @throws IllegalStateException if the game is not finished yet.
+     * @return The leaderboard of the match, with timestamp the moment of the call.
+     * @throws IllegalStateException If the game is not finished yet.
      */
     public Leaderboard getLeaderboard() throws IllegalStateException {
         if (!isFinished()) throw new IllegalStateException("Game is not finished yet");
@@ -314,7 +341,7 @@ public class GameModel implements GameInfo {
     /**
      * Returns whether the game has ended.
      *
-     * @return true if it has finished.
+     * @return True if it has finished.
      */
     public boolean isFinished() {
         return endTimestamp != null;
@@ -323,7 +350,7 @@ public class GameModel implements GameInfo {
     /**
      * Sets the notifier of the model and each subcomponent. Is used when restoring game.
      *
-     * @param notifier the notifier.
+     * @param notifier The notifier.
      */
     public void setNotifier(DTONotifier notifier) {
         this.notifier = notifier;
@@ -335,8 +362,8 @@ public class GameModel implements GameInfo {
     /**
      * Sends resume DTO to all clients (when a match is restored and the game should resume where left).
      *
-     * @throws IllegalStateException if model configuration are inconsistent:
-     *                               1. there are player in the turn orderTile not present in players board list.
+     * @throws IllegalStateException If model configuration are inconsistent
+     * (e.g. there are player in the turn orderTile not present in players board list).
      */
     public void sendResumeInfo() throws IllegalStateException {
 
@@ -414,10 +441,18 @@ public class GameModel implements GameInfo {
                 new GameResumeDTO(m)));
     }
 
+    /**
+     * Retrieves the latest saved snapshot of the game.
+     *
+     * @return The GameSnapshot representing the last saved state.
+     */
     public synchronized GameSnapshot getLatestSnapshot() {
         return this.latestSnapshot;
     }
 
+    /**
+     * Captures and stores a complete snapshot of the current game state for persistence.
+     */
     public synchronized void saveSnapshot() {
         //players mapping
         List<PlayerSnapshot> playerSnapshots = getPlayers().stream().map(p -> new PlayerSnapshot(

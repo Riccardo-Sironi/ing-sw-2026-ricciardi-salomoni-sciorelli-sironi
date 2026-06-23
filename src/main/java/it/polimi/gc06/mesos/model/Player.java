@@ -8,6 +8,10 @@ import it.polimi.gc06.mesos.model.cards.characters.*;
 
 import java.util.*;
 
+/**
+ * Represents a player in the game, managing their resources, acquired cards,
+ * and current modifiers or effects derived from those cards.
+ */
 public class Player {
 
     private final String nickname;
@@ -38,6 +42,14 @@ public class Player {
     private int topDrawNum;
     private int bottomDrawNum;
 
+    /**
+     * Constructs a new Player.
+     *
+     * @param nickname The player's unique nickname.
+     * @param color The player's assigned color.
+     * @param registry The registry containing game rule modifiers.
+     * @param notifier The network notifier to dispatch updates.
+     */
     public Player(String nickname, Color color, ModifierBuildingsRegistry registry, DTONotifier notifier) {
         this.nickname = nickname;
         this.threeStarCard = registry.get(ModifierBuildingRegistryKey.RITUAL_THREE_STAR_CARD);
@@ -72,7 +84,7 @@ public class Player {
     /**
      * Returns the nickname of the player.
      *
-     * @return the string representing the player's nickname
+     * @return The string representing the player's nickname.
      */
     public String getNickname() {
         return this.nickname;
@@ -82,7 +94,7 @@ public class Player {
      * Returns the character deck of the player, which is a map that associates each character type
      * with a list of character cards of that type.
      *
-     * @return the enum map of the player's character deck arrays
+     * @return The enum map of the player's character deck arrays.
      */
     public EnumMap<CharacterType, ArrayList<CharacterCard>> getCharacterDeck() {
         return this.characterDeck;
@@ -93,8 +105,8 @@ public class Player {
      * type by using the visitor pattern. It handles the increment of the shaman stars and the update of the character
      * sets and inventor pairs if the player has the corresponding building cards in their building deck.
      *
-     * @param card the character card to be added to the player's character deck
-     * @throws IllegalArgumentException if the card is null
+     * @param card The character card to be added to the player's character deck.
+     * @throws IllegalArgumentException If the card is null.
      */
     public void addCharacterCards(CharacterCard card) throws IllegalArgumentException {
         if (card == null) throw new IllegalArgumentException("Card cannot be null");
@@ -173,7 +185,7 @@ public class Player {
     /**
      * Returns the building deck of the player.
      *
-     * @return the array list of the player's building deck
+     * @return The array list of the player's building deck.
      */
     public ArrayList<BuildingCard> getBuildingCards() {
         return this.buildingDeck;
@@ -182,8 +194,8 @@ public class Player {
     /**
      * Adds a building card to the player's building deck.
      *
-     * @param card the building card to be added to the player's building deck
-     * @throws IllegalArgumentException if the card is null
+     * @param card The building card to be added to the player's building deck.
+     * @throws IllegalArgumentException If the card is null.
      */
     public void addBuildingCards(BuildingCard card) throws IllegalArgumentException {
         if (card == null) throw new IllegalArgumentException("Card cannot be null");
@@ -194,8 +206,8 @@ public class Player {
      * Adds a set building card to the player's building deck. The overloaded method is called when the player picks the
      * specific building card which keeps track of character sets completed by the player.
      *
-     * @param card the set building card to be added to the player's building deck
-     * @throws IllegalArgumentException if the card is null
+     * @param card The set building card to be added to the player's building deck.
+     * @throws IllegalArgumentException If the card is null.
      */
     public void addBuildingCards(ObserverSetBuildingCard card) throws IllegalArgumentException {
 
@@ -211,8 +223,8 @@ public class Player {
      * Adds a pair building card to the player's building deck. The overloaded method is called when the player picks the
      * specific building card which keeps track of inventor pairs completed by the player.
      *
-     * @param card the pair building card to be added to the player's building deck
-     * @throws IllegalArgumentException if the card is null
+     * @param card The pair building card to be added to the player's building deck.
+     * @throws IllegalArgumentException If the card is null.
      */
     public void addBuildingCards(ObserverPairBuildingCard card) throws IllegalArgumentException {
 
@@ -228,7 +240,7 @@ public class Player {
      * This method checks if the player has the character sets map initialized, which means that the player has picked
      * the specific building card which keeps track of character sets completed by the player.
      *
-     * @return true if the player has the character sets map initialized, false otherwise
+     * @return True if the player has the character sets map initialized, false otherwise.
      */
     public boolean hasSetBuildingCard() {
         return charactersSets != null;
@@ -238,7 +250,7 @@ public class Player {
      * This method checks if the player has the inventor pairs map initialized, which means that the player has picked
      * the specific building card which keeps track of inventor pairs completed by the player.
      *
-     * @return true if the player has the inventor pairs map initialized, false otherwise
+     * @return True if the player has the inventor pairs map initialized, false otherwise.
      */
     public boolean hasPairBuildingCard() {
         return inventorPairs != null;
@@ -247,17 +259,17 @@ public class Player {
     /**
      * Returns the number of food tokens the player has.
      *
-     * @return the integer representing the number of food tokens the player has
+     * @return The integer representing the number of food tokens the player has.
      */
     public int getFoodTokens() {
         return this.foodTokens;
     }
 
     /**
-     * Adds food tokens to the player
+     * Adds food tokens to the player.
      *
-     * @param amount the integer value of food tokens to be added to the player
-     * @throws IllegalArgumentException if the amount of food tokens to be added is negative
+     * @param amount The integer value of food tokens to be added to the player.
+     * @throws IllegalArgumentException If the amount of food tokens to be added is negative.
      */
     public void addFoodTokens(int amount) throws IllegalArgumentException {
         if (amount < 0) throw new IllegalArgumentException("Amount must be non-negative");
@@ -270,9 +282,9 @@ public class Player {
     /**
      * Removes food tokens from the player if the player has enough food tokens.
      *
-     * @param amount the integer value of food tokens to be removed from the player
-     * @throws IllegalArgumentException if the amount of food tokens to be removed is negative
-     * @throws IllegalStateException    if the player does not have enough food tokens to be removed
+     * @param amount The integer value of food tokens to be removed from the player.
+     * @throws IllegalArgumentException If the amount of food tokens to be removed is negative.
+     * @throws IllegalStateException If the player does not have enough food tokens to be removed.
      */
     public void removeFoodTokens(int amount) throws IllegalStateException {
         if (amount < 0) throw new IllegalArgumentException("Amount must be non-negative");
@@ -287,7 +299,7 @@ public class Player {
     /**
      * Returns the number of prestige tokens the player has.
      *
-     * @return the integer representing the number of prestige tokens the player has
+     * @return The integer representing the number of prestige tokens the player has.
      */
     public int getPrestigeTokens() {
         return this.prestigeTokens;
@@ -296,8 +308,8 @@ public class Player {
     /**
      * Adds prestige tokens to the player.
      *
-     * @param amount the integer value of prestige tokens to be added to the player
-     * @throws IllegalArgumentException if the amount of prestige tokens to be added is negative
+     * @param amount The integer value of prestige tokens to be added to the player.
+     * @throws IllegalArgumentException If the amount of prestige tokens to be added is negative.
      */
     public void addPrestigeTokens(int amount) throws IllegalArgumentException {
         if (amount < 0) throw new IllegalArgumentException("Amount must be non-negative");
@@ -311,8 +323,8 @@ public class Player {
      * Removes prestige tokens from the player. Prestige count on the player can be negative, so there is no check
      * on the amount of prestige tokens to be removed.
      *
-     * @param amount the integer value of prestige tokens to be removed from the player
-     * @throws IllegalArgumentException if the amount of prestige tokens to be removed is negative
+     * @param amount The integer value of prestige tokens to be removed from the player.
+     * @throws IllegalArgumentException If the amount of prestige tokens to be removed is negative.
      */
     public void removePrestigeTokens(int amount) throws IllegalArgumentException {
         if (amount < 0) throw new IllegalArgumentException("Amount must be non-negative");
@@ -325,17 +337,17 @@ public class Player {
     /**
      * Returns the color of the player.
      *
-     * @return the enum value of the color of the player
+     * @return The enum value of the color of the player.
      */
     public Color getPlayerColor() {
         return this.color;
     }
 
     /**
-     * this method is used to set the color of the player.
-     * It is called when the player picks the totem card, which allows the player to choose
+     * This method is used to set the color of the player.
+     * It is called when the player picks the totem card, which allows the player to choose.
      *
-     * @param color the enum value of the color to be set for the player
+     * @param color The enum value of the color to be set for the player.
      */
     public void setPlayerColor(Color color) {
         this.color = color;
@@ -346,7 +358,7 @@ public class Player {
      * in the player's character deck and the shaman stars from the three star building card if the player has it in
      * their building deck.
      *
-     * @return the integer representing the number of shaman stars the player has
+     * @return The integer representing the number of shaman stars the player has.
      */
     public int getShamanStars() {
         return this.shamanStars + (buildingDeck.contains(threeStarCard) ? 3 : 0);
@@ -355,8 +367,8 @@ public class Player {
     /**
      * Increases the number of shaman stars the player has by a certain amount.
      *
-     * @param amount the integer value of shaman stars to be added to the player
-     * @throws IllegalArgumentException if the amount of shaman stars to be added is negative
+     * @param amount The integer value of shaman stars to be added to the player.
+     * @throws IllegalArgumentException If the amount of shaman stars to be added is negative.
      */
     public void increaseShamanStars(int amount) throws IllegalArgumentException {
         if (amount < 0) throw new IllegalArgumentException("Amount must be non-negative");
@@ -366,7 +378,7 @@ public class Player {
     /**
      * Returns the number of hunter cards the player has in their character deck.
      *
-     * @return the integer representing the number of hunter cards the player has in their character deck
+     * @return The integer representing the number of hunter cards the player has in their character deck.
      */
     public int getHuntersCounter() {
         return this.characterDeck.get(CharacterType.HUNTER).size();
@@ -375,7 +387,7 @@ public class Player {
     /**
      * Returns the number of artist cards the player has in their character deck.
      *
-     * @return the integer representing the number of artist cards the player has in their character deck
+     * @return The integer representing the number of artist cards the player has in their character deck.
      */
     public int getArtistsCounter() {
         return this.characterDeck.get(CharacterType.ARTIST).size();
@@ -384,7 +396,7 @@ public class Player {
     /**
      * Returns the number of gatherer cards the player has in their character deck.
      *
-     * @return the integer representing the number of gatherer cards the player has in their character deck
+     * @return The integer representing the number of gatherer cards the player has in their character deck.
      */
     public int getGatherersCounter() {
         return this.characterDeck.get(CharacterType.GATHERER).size();
@@ -393,16 +405,27 @@ public class Player {
     /**
      * Returns the number of inventor cards the player has in their character deck.
      *
-     * @return the integer representing the number of inventor cards the player has in their character deck
+     * @return The integer representing the number of inventor cards the player has in their character deck.
      */
     public int getInventorsCounter() {
         return this.characterDeck.get(CharacterType.INVENTOR).size();
     }
 
+    /**
+     * Retrieves the allowed top draws for the player.
+     *
+     * @return The top draw limit.
+     */
     public int getTopDrawNum() {
         return topDrawNum;
     }
 
+    /**
+     * Sets the allowed top draws for the player.
+     *
+     * @param topDrawNum The new top draw limit.
+     * @throws IllegalArgumentException If the amount is negative.
+     */
     public void setTopDrawNum(int topDrawNum) throws IllegalArgumentException {
         if (topDrawNum < 0) throw new IllegalArgumentException("Amount must be non-negative");
         this.topDrawNum = topDrawNum;
@@ -411,10 +434,21 @@ public class Player {
         ));
     }
 
+    /**
+     * Retrieves the allowed bottom draws for the player.
+     *
+     * @return The bottom draw limit.
+     */
     public int getBottomDrawNum() {
         return bottomDrawNum;
     }
 
+    /**
+     * Sets the allowed bottom draws for the player.
+     *
+     * @param bottomDrawNum The new bottom draw limit.
+     * @throws IllegalArgumentException If the amount is negative.
+     */
     public void setBottomDrawNum(int bottomDrawNum) throws IllegalArgumentException {
         if (bottomDrawNum < 0) throw new IllegalArgumentException("Amount must be non-negative");
         this.bottomDrawNum = bottomDrawNum;
@@ -423,6 +457,11 @@ public class Player {
         ));
     }
 
+    /**
+     * Sets the game environment.
+     *
+     * @param gameInfo The active game environment reference.
+     */
     public void setEnvironment(GameInfo gameInfo) {
         this.gameInfo = gameInfo;
     }
@@ -431,8 +470,8 @@ public class Player {
      * Returns the game environment of the player, which is the object that contains all the information about the game
      * state.
      *
-     * @return the GameInfo object representing the game environment of the player
-     * @throws IllegalStateException if the game environment is not available for the player
+     * @return The GameInfo object representing the game environment of the player.
+     * @throws IllegalStateException If the game environment is not available for the player.
      */
     public GameInfo getEnvironment() throws IllegalStateException {
         if (this.gameInfo == null) {
@@ -446,7 +485,7 @@ public class Player {
      * with the number of complete sets of that character type the player has in their character deck. The method is called
      * when the player picks the specific building card which keeps track of character sets completed by the player.
      *
-     * @throws IllegalStateException if the character sets map has already been initialized
+     * @throws IllegalStateException If the character sets map has already been initialized.
      */
     protected void initCharactersSets() throws IllegalStateException {
         if (charactersSets != null) throw new IllegalStateException("Character sets have already been initialized");
@@ -468,7 +507,7 @@ public class Player {
      * Returns the character sets map of the player, which is a map that associates each character type with the number
      * of characters of that type picked by the player after the map initialization.
      *
-     * @return the enum map of the player's characters sets
+     * @return The enum map of the player's characters sets.
      */
     public EnumMap<CharacterType, Integer> getCharactersSets() {
         return charactersSets;
@@ -478,9 +517,9 @@ public class Player {
      * This method increases the number of character sets of a specific character type by 1. It is called when
      * the player picks a character card of that type after the character sets map has been initialized.
      *
-     * @param cType the character type of which the number of character sets must be increased
-     * @throws IllegalArgumentException if the character type is null
-     * @throws IllegalStateException    if the character sets map has not been initialized
+     * @param cType The character type of which the number of character sets must be increased.
+     * @throws IllegalArgumentException If the character type is null.
+     * @throws IllegalStateException If the character sets map has not been initialized.
      */
     protected void increaseCharactersSets(CharacterType cType) throws IllegalArgumentException, IllegalStateException {
         if (cType == null) throw new IllegalArgumentException("Character type cannot be null");
@@ -493,7 +532,7 @@ public class Player {
      * the player picks a character card of a specific type after the character sets map has been initialized and
      * the player has completed at least one set of characters types.
      *
-     * @throws IllegalStateException if the character sets map has not been initialized
+     * @throws IllegalStateException If the character sets map has not been initialized.
      */
     public void decreaseCharactersSets() throws IllegalStateException {
         if (charactersSets == null) throw new IllegalStateException("Character sets have not been initialized");
@@ -504,8 +543,8 @@ public class Player {
      * This method checks if the player has completed at least one set of character types, which means that the minimum
      * number of cards in each character type deck is at least 1.
      *
-     * @return true if the player has completed at least one set of character types, false otherwise
-     * @throws IllegalStateException if the character sets map has not been initialized
+     * @return True if the player has completed at least one set of character types, false otherwise.
+     * @throws IllegalStateException If the character sets map has not been initialized.
      */
     public boolean hasCompletedSet() throws IllegalStateException {
         if (charactersSets == null) throw new IllegalStateException("Character sets have not been initialized");
@@ -519,7 +558,7 @@ public class Player {
      * with the number of pairs of that icon the player has in their character deck. The method is called when the player
      * picks the specific building card which keeps track of inventor pairs completed by the player.
      *
-     * @throws IllegalStateException if the inventor pairs map has already been initialized
+     * @throws IllegalStateException If the inventor pairs map has already been initialized.
      */
     public void initInventorPairs() throws IllegalStateException {
         if (inventorPairs != null) throw new IllegalStateException("Inventor pairs have already been initialized");
@@ -543,9 +582,9 @@ public class Player {
      * This method increase the counter for the inventor pairs of a specific invention icon by 1. It is called when
      * the player picks an inventor card with that icon after the inventor pairs map has been initialized.
      *
-     * @param icon the invention icon of which the number of inventor pairs must be increased
-     * @throws IllegalArgumentException if the invention icon is null
-     * @throws IllegalStateException    if the inventor pairs map has not been initialized
+     * @param icon The invention icon of which the number of inventor pairs must be increased.
+     * @throws IllegalArgumentException If the invention icon is null.
+     * @throws IllegalStateException If the inventor pairs map has not been initialized.
      */
     public void increaseInventorPairs(InventionIcon icon) throws IllegalArgumentException, IllegalStateException {
         if (icon == null) throw new IllegalArgumentException("Icon cannot be null");
@@ -557,7 +596,7 @@ public class Player {
      * This method decreases the counter for the inventor pairs that the player has completed. It checks the values of
      * the map and if the value of an icon is 2 (so the player has completed a pair of that icon) it sets it to 0.
      *
-     * @throws IllegalStateException if the inventor pairs map has not been initialized
+     * @throws IllegalStateException If the inventor pairs map has not been initialized.
      */
     public void decreaseInventorPair() throws IllegalStateException {
         if (inventorPairs == null) throw new IllegalStateException("Inventor pairs have not been initialized");
@@ -568,8 +607,8 @@ public class Player {
      * This method checks if the player has completed at least one pair of inventor cards, which means that at least
      * one value in the inventor pairs map is 2.
      *
-     * @return true if the player has completed at least one pair of inventor cards, false otherwise
-     * @throws IllegalStateException if the inventor pairs map has not been initialized
+     * @return True if the player has completed at least one pair of inventor cards, false otherwise.
+     * @throws IllegalStateException If the inventor pairs map has not been initialized.
      */
     public boolean hasCompletedPair() throws IllegalStateException {
         if (inventorPairs == null) throw new IllegalStateException("Inventor pairs have not been initialized");
@@ -582,12 +621,17 @@ public class Player {
      * Returns the inventor pairs map of the player, which is a map that associates each invention icon with the number
      * of pairs of that icon the player has in their character deck after the inventor pairs map has been initialized.
      *
-     * @return the enum map of the player's inventor pairs
+     * @return The enum map of the player's inventor pairs.
      */
     public EnumMap<InventionIcon, Integer> getInventorPairs() {
         return inventorPairs;
     }
 
+    /**
+     * Calculates the total food discount provided by the builder cards.
+     *
+     * @return The integer representing the accumulated builder discount.
+     */
     public int getBuildersDiscount() {
         int foodDiscount = 0;
 
@@ -600,6 +644,8 @@ public class Player {
 
     /**
      * Returns the total prestige gained from builder cards (the amount written in the bottom-right corner).
+     *
+     * @return The total prestige gained from builders.
      */
     public int getBuildersPrestige() {
         int prestigeGained = 0;
@@ -614,16 +660,16 @@ public class Player {
     /**
      * Get the number of different inventor icons.
      *
-     * @return the number of different inventor icons.
+     * @return The number of different inventor icons.
      */
     public int getNumOfIcon() {
         return getInventorIcons().size();
     }
 
     /**
-     * Get all the different inventor icons
+     * Get all the different inventor icons.
      *
-     * @return the {@link Set} containing all the collected inventor icons
+     * @return The {@link Set} containing all the collected inventor icons.
      */
     public Set<InventionIcon> getInventorIcons() {
         InventorIconVisitor visitor = new InventorIconVisitor();
@@ -636,12 +682,27 @@ public class Player {
         return iconSet;
     }
 
+    /**
+     * Sets the notifier to dispatch updates to the client.
+     *
+     * @param notifier The DTONotifier instance.
+     */
     public void setNotifier(DTONotifier notifier) {
         this.notifier = notifier;
     }
 
     /**
      * Forces the specified state onto the player. Used to recover games on server crash.
+     *
+     * @param prestigeTokens The restored prestige tokens.
+     * @param foodTokens The restored food tokens.
+     * @param shamanStars The restored shaman stars count.
+     * @param topDrawNum The restored top draw limit.
+     * @param bottomDrawNum The restored bottom draw limit.
+     * @param savedCharacterDeck The restored map of character cards.
+     * @param savedBuildingDeck The restored list of building cards.
+     * @param savedCharactersSets The restored map of character sets tracking.
+     * @param savedInventorPairs The restored map of inventor pairs tracking.
      */
     public void forceState(
             int prestigeTokens, int foodTokens, int shamanStars,
