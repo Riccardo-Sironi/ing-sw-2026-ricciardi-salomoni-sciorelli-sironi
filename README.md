@@ -38,6 +38,8 @@ ensure high cohesion and low coupling.
 | **Persistence**      |   🟢   | Server-side persistance on crashes, allowing players to restart from where they had left                                              |
 | **Database**         |   🟢   | Seamless database integration for a full leaderboard of the matches                                                                   |
 
+---
+
 # How to Build
 
 Ensure you have **Java 25+** and **Maven** installed on your machine. To compile the project and build the executable
@@ -54,10 +56,11 @@ described in the next section.
 cd target/
 ```
 
-
 > [!CAUTION]
-> You might need to add execution privileges for mvnw on Unix-based systems using 
+> You might need to add execution privileges for mvnw on Unix-based systems using
 > ```chmod +x mvnw```
+
+---
 
 # Server configuration
 
@@ -95,6 +98,8 @@ java -jar mesos-1.0-server.jar
 | `--rmi`       | Specifies the RMI port number for client connections (default: 1099).         |
 | `--rmiexport` | Specifies the RMI export port number for client connections (default: 1100).  |
 
+---
+
 # Client configuration
 
 Run the .jar inside your own operating systems' **Command Prompt** for the client with the following command
@@ -120,7 +125,7 @@ Follow the instructions that appear on the screen to start a game (make sure to 
 
 > [!CAUTION]
 > You might need to add execution privileges for the .jar file on Unix-based systems using
-> ```chmod +x mesos-1.0-client.jar``` 
+> ```chmod +x mesos-1.0-client.jar```
 
 ## Available arguments
 
@@ -129,6 +134,8 @@ Follow the instructions that appear on the screen to start a game (make sure to 
 | `--gui`  | Starts the game in GUI mode                               |
 | `--cli`  | Starts the game in CLI mode                               |
 | `--port` | Specifies the RMI export port number for server callbacks |
+
+---
 
 # Gameplay features
 
@@ -163,6 +170,8 @@ interact with the game without needing to remember all the command syntax.
 ![6](src/main/resources/imgs/readme/tui.png)
 ![7](src/main/resources/imgs/readme/main_tui.gif)
 
+---
+
 # Testing
 
 ![Class Coverage](https://img.shields.io/badge/Class%20Coverage-97%25-green)
@@ -190,6 +199,8 @@ The simulation is highly modular. By default, it is configured to run 3 sessions
 more extensive data gathering.
 
 ![montecarlo](src/main/resources/imgs/readme/montecarlo.png)
+
+---
 
 # Group GC06
 
