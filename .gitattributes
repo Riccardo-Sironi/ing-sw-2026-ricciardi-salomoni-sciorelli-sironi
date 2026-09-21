@@ -1,0 +1,5 @@
+*.html -linguist-detectable
+*.css -linguist-detectable
+*.js -linguist-detectable
+*.xml -linguist-detectable
+*.cmd -linguist-detectable

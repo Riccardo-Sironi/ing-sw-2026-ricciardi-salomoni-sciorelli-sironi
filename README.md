@@ -9,6 +9,8 @@
   <img src="https://img.shields.io/badge/JavaFX-FF0000?style=for-the-badge&logo=openjdk&logoColor=white" alt="JavaFX"/>
 </div>
 
+<div align="center"> <h2> Grade: 30L / 30 </h2> </div>
+
 <br>
 
 <div>
@@ -294,3 +296,15 @@ more extensive data gathering.
 | **Tommaso Salomoni**  | [tommaso.salomoni@mail.polimi.it](mailto:tommaso.salomoni@mail.polimi.it)   | https://github.com/salotom         |
 | **Filippo Sciorelli** | [filippo.sciorelli@mail.polimi.it](mailto:filippo.sciorelli@mail.polimi.it) | https://github.com/fsciorelli      |
 | **Riccardo Sironi**   | [riccardo1.sironi@mail.polimi.it](mailto:riccardo1.sironi@mail.polimi.it)   | https://github.com/Riccardo-Sironi |
+
+--- 
+# Disclaimer
+Mesos is a board game developed and published by Cranio Creations Srl.
+
+All graphical assets of this project, related to the tabletop editorial product, have been used under Cranio Creations Srl. approval and for educational purposes only.
+
+Any distribution, copying, or reproduction of these contents and images in any form outside of this project is strictly forbidden, as is the redistribution and publication of the contents and images for other purposes.
+
+Commercial use of the aforementioned content is forbidden.
+
+
